@@ -301,6 +301,11 @@ export const AuthenticationPageComponent = props => {
     // Already authenticated, redirect back to the page the user tried to access
     return <Redirect to={from} />;
   } else if (shouldRedirectToLandingPage) {
+    // Models are redirected to create their profile after completing signup.
+    const currentUserType = user.attributes.profile?.publicData?.userType || userType;
+    if (currentUserType === 'model') {
+      return <NamedRedirect name="NewListingPage" />;
+    }
     // Already authenticated, redirect to the landing page (this was direct access to /login or /signup)
     return <NamedRedirect name="LandingPage" />;
   } else if (show404) {
