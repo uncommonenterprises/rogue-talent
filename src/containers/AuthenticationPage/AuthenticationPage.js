@@ -264,6 +264,9 @@ export const AuthenticationPageComponent = props => {
 
   const user = ensureCurrentUser(currentUser);
   const currentUserLoaded = !!user.id;
+  // Models are guided to create their profile after signup, so several
+  // post-signup destinations differ from the default (buyer) flow.
+  const isModel = (user.attributes.profile?.publicData?.userType || userType) === 'model';
   // We only want to show the email verification dialog in the signup
   // tab if the user isn't being redirected somewhere else
   // (i.e. `from` is present). We must also check the `emailVerified`
@@ -302,8 +305,7 @@ export const AuthenticationPageComponent = props => {
     return <Redirect to={from} />;
   } else if (shouldRedirectToLandingPage) {
     // Models are redirected to create their profile after completing signup.
-    const currentUserType = user.attributes.profile?.publicData?.userType || userType;
-    if (currentUserType === 'model') {
+    if (isModel) {
       return <NamedRedirect name="NewListingPage" />;
     }
     // Already authenticated, redirect to the landing page (this was direct access to /login or /signup)
@@ -452,6 +454,7 @@ export const AuthenticationPageComponent = props => {
             <EmailVerificationInfo
               name={user.attributes.profile.firstName}
               email={<span className={css.email}>{user.attributes.email}</span>}
+              closeLinkName={isModel ? 'NewListingPage' : 'ProfileSettingsPage'}
               onResendVerificationEmail={onResendVerificationEmail}
               resendErrorMessage={
                 <ResendVerificationErrorMessage
