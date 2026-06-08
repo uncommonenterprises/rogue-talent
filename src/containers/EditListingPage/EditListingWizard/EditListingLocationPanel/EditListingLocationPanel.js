@@ -95,6 +95,9 @@ const EditListingLocationPanel = props => {
       <H3 as="h1">
         <FormattedMessage id={panelHeadingProps.id} values={{ ...panelHeadingProps.values }} />
       </H3>
+      <p className={css.guidance}>
+        <FormattedMessage id="EditListingLocationPanel.guidance" />
+      </p>
       <EditListingLocationForm
         className={css.form}
         initialValues={state.initialValues}

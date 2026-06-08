@@ -157,6 +157,9 @@ const EditListingPricingPanel = props => {
       <H3 as="h1">
         <FormattedMessage id={panelHeadingProps.id} values={{ ...panelHeadingProps.values }} />
       </H3>
+      <p className={css.guidance}>
+        <FormattedMessage id="EditListingPricingPanel.guidance" />
+      </p>
       {priceCurrencyValid ? (
         <EditListingPricingForm
           className={css.form}

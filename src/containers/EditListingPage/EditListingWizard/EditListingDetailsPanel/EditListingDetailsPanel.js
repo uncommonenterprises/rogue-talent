@@ -379,6 +379,9 @@ const EditListingDetailsPanel = props => {
       <H3 as="h1">
         <FormattedMessage id={panelHeadingProps.id} values={{ ...panelHeadingProps.values }} />
       </H3>
+      <p className={css.guidance}>
+        <FormattedMessage id="EditListingDetailsPanel.guidance" />
+      </p>
 
       {canShowEditListingDetailsForm ? (
         <EditListingDetailsForm

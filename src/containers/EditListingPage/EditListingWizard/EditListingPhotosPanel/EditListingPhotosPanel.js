@@ -84,6 +84,9 @@ const EditListingPhotosPanel = props => {
       <H3 as="h1">
         <FormattedMessage id={panelHeadingProps.id} values={{ ...panelHeadingProps.values }} />
       </H3>
+      <p className={css.guidance}>
+        <FormattedMessage id="EditListingPhotosPanel.guidance" />
+      </p>
       {/* <H3 as="h1">
         {isPublished ? (
           <FormattedMessage
