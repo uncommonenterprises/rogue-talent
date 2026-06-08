@@ -30,13 +30,13 @@ Rogue Talent (roguetalent.co) is a two-sided marketplace for professional models
 
 ## Phase 2 development — what's been done
 1. ✅ Terminology/language changes (en.json commit b82fb2c3d1)
+2. ✅ Post-signup redirect for models — models (userType = 'model') are redirected to `/l/new` (Create your profile) after signup instead of the default landing page (commit 0ad369239). Follow-ups: email-verification 'Later' link points models to profile creation (ccd65f868); own-profile banners use profile-first wording (272dac672).
 
 ## Phase 2 — current task (do this next)
-**Post-signup redirect for models:** After a model completes signup, redirect them to `/l/new` (Create your profile) instead of the default landing page. Only applies to users with userType = 'model'. This is the highest-priority UX fix — models currently have no clear next step after signing up.
+**Improve wizard step copy:** Add model-specific guidance/description text to each Create-your-profile wizard panel (Your details, Your rates, Your portfolio, Your availability, Your location). Self-contained copy work in en.json + EditListingPage panels.
 
 ## Phase 2 — upcoming tasks (after current)
-1. Improve wizard step copy — add model-specific guidance/description text to each wizard panel (Your details, Your rates, Your portfolio, Your availability, Your location)
-2. Unified onboarding wizard — merge user profile fields (measurements, gender, experience level, modelling categories etc.) with listing fields into one coherent wizard flow. Currently these are split: profile fields live in Account Settings, listing fields in the Create your profile wizard.
+1. Unified onboarding wizard — merge user profile fields (measurements, gender, experience level, modelling categories etc.) with listing fields into one coherent wizard flow. Currently these are split: profile fields live in Account Settings, listing fields in the Create your profile wizard.
 
 ## Environment variables (set in Railway)
 ```
