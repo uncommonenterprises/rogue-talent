@@ -24,7 +24,12 @@ import css from './CustomExtendedDataField.module.css';
 
 const createFilterOptions = options => options.map(o => ({ key: `${o.option}`, label: o.label }));
 
-const getLabel = fieldConfig => fieldConfig?.saveConfig?.label || fieldConfig?.label;
+const getLabel = fieldConfig => {
+  const label = fieldConfig?.saveConfig?.label || fieldConfig?.label;
+  const isRequired = !!fieldConfig?.saveConfig?.isRequired;
+  // Flag optional custom fields so users can tell required from optional at a glance.
+  return label && !isRequired ? `${label} (optional)` : label;
+};
 
 const CustomFieldEnum = props => {
   const { name, fieldConfig, defaultRequiredMessage, formId, intl } = props;

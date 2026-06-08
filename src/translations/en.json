@@ -294,7 +294,7 @@
   "EditListingPage.screenreader.removeImage": "Remove image",
   "EditListingPage.titleCreateListing": "Create your profile | {panelHeading}",
   "EditListingPage.titleEditListing": "Edit your profile | {panelHeading}",
-  "EditListingPhotosForm.addImagesTip": "Tip: Upload 2-3 good-quality photos from different angles.",
+  "EditListingPhotosForm.addImagesTip": "Tip: Upload your full portfolio — the more high-quality shots the better. Include headshots and a range of looks (editorial, commercial, full-length). There's no limit, so show your best work.",
   "EditListingPhotosForm.chooseImage": "+ Add a photo…",
   "EditListingPhotosForm.imageRequired": "You need to add at least one photo.",
   "EditListingPhotosForm.imageTypes": ".JPG or .PNG. Max. 20 MB",
