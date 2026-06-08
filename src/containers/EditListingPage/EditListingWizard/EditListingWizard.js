@@ -51,6 +51,7 @@ import {
 // Import modules from this directory
 import EditListingWizardTab, {
   DETAILS,
+  PROFILE,
   PRICING,
   PRICING_AND_STOCK,
   DELIVERY,
@@ -98,7 +99,14 @@ const tabsForListingType = (processName, listingTypeConfig) => {
   // Note 3: The first tab creates a draft listing and title is mandatory attribute for it.
   //         Details tab asks for "title" and is therefore the first tab in the wizard flow.
   const tabs = {
-    ['default-booking']: [DETAILS, ...locationMaybe, PRICING, AVAILABILITY, ...styleOrPhotosTab],
+    ['default-booking']: [
+      DETAILS,
+      PROFILE,
+      ...locationMaybe,
+      PRICING,
+      AVAILABILITY,
+      ...styleOrPhotosTab,
+    ],
     ['default-purchase']: [DETAILS, PRICING_AND_STOCK, ...deliveryMaybe, ...styleOrPhotosTab],
     ['default-negotiation']: [DETAILS, ...locationMaybe, ...pricingMaybe, ...styleOrPhotosTab],
     ['default-inquiry']: [DETAILS, ...locationMaybe, ...pricingMaybe, ...styleOrPhotosTab],
@@ -124,6 +132,9 @@ const tabLabelAndSubmit = (intl, tab, isNewListingFlow, isPriceDisabled, process
   if (tab === DETAILS) {
     labelKey = 'EditListingWizard.tabLabelDetails';
     submitButtonKey = `EditListingWizard.${processNameString}${newOrEdit}.saveDetails`;
+  } else if (tab === PROFILE) {
+    labelKey = 'EditListingWizard.tabLabelProfile';
+    submitButtonKey = `EditListingWizard.${processNameString}${newOrEdit}.saveProfile`;
   } else if (tab === PRICING) {
     labelKey = 'EditListingWizard.tabLabelPricing';
     submitButtonKey = `EditListingWizard.${processNameString}${newOrEdit}.savePricing`;
@@ -211,14 +222,58 @@ const hasValidListingFieldsInExtendedData = (publicData, privateData, config) =>
 };
 
 /**
+ * Validate required user-profile fields (config.user.userFields) against the current
+ * user's public profile data. Used to decide whether the "About you" (PROFILE) tab is
+ * complete in the new-listing flow. Only public, model-applicable, required fields are checked.
+ *
+ * @param {Object} currentUser API entity
+ * @param {Object} config marketplace configuration
+ * @return {boolean} true if all required model profile fields have a value
+ */
+const hasRequiredProfileFields = (currentUser, config) => {
+  const userType = currentUser?.attributes?.profile?.publicData?.userType;
+  const publicData = currentUser?.attributes?.profile?.publicData || {};
+  const userFields = config.user?.userFields || [];
+
+  return userFields.reduce((isValid, fieldConfig) => {
+    const { key, scope = 'public', schemaType, saveConfig = {}, userTypeConfig } =
+      fieldConfig || {};
+    if (scope !== 'public') {
+      return isValid;
+    }
+    const isTargetUserType =
+      !userTypeConfig?.limitToUserTypeIds || userTypeConfig?.userTypeIds?.includes(userType);
+    const isRequired = !!saveConfig.isRequired && isTargetUserType;
+    if (!isRequired) {
+      return isValid;
+    }
+
+    const value = publicData[key];
+    const hasValue =
+      schemaType === SCHEMA_TYPE_MULTI_ENUM
+        ? Array.isArray(value) && value.length > 0
+        : schemaType === SCHEMA_TYPE_BOOLEAN
+        ? value === true || value === false
+        : schemaType === SCHEMA_TYPE_LONG
+        ? typeof value === 'number' && Number.isInteger(value)
+        : typeof value === 'string'
+        ? value.length > 0
+        : value != null;
+    return isValid && hasValue;
+  }, true);
+};
+
+/**
  * Check if a wizard tab is completed.
  *
  * @param tab wizard's tab
  * @param listing is contains some specific data if tab is completed
+ * @param config marketplace configuration
+ * @param currentUser API entity (used by the PROFILE tab, which saves to the user not the listing)
  *
  * @return true if tab / step is completed.
  */
-const tabCompleted = (tab, listing, config) => {
+const tabCompleted = (tab, listing, config, currentUser) => {
   const {
     availabilityPlan,
     description,
@@ -256,6 +311,8 @@ const tabCompleted = (tab, listing, config) => {
         unitType &&
         hasValidListingFieldsInExtendedData(publicData, privateData, config)
       );
+    case PROFILE:
+      return hasRequiredProfileFields(currentUser, config);
     case PRICING:
       return !!price;
     case PRICING_AND_STOCK:
@@ -285,12 +342,17 @@ const tabCompleted = (tab, listing, config) => {
  *
  * @return object containing activity / editability of different tabs of this wizard
  */
-const tabsActive = (isNew, listing, tabs, config) => {
+const tabsActive = (isNew, listing, tabs, config, currentUser) => {
   return tabs.reduce((acc, tab) => {
     const previousTabIndex = tabs.findIndex(t => t === tab) - 1;
     const validTab = previousTabIndex >= 0;
     const hasListingType = !!listing?.attributes?.publicData?.listingType;
-    const prevTabComletedInNewFlow = tabCompleted(tabs[previousTabIndex], listing, config);
+    const prevTabComletedInNewFlow = tabCompleted(
+      tabs[previousTabIndex],
+      listing,
+      config,
+      currentUser
+    );
     const isActive =
       validTab && !isNew ? hasListingType : validTab && isNew ? prevTabComletedInNewFlow : true;
     return { ...acc, [tab]: isActive };
@@ -551,7 +613,7 @@ class EditListingWizard extends Component {
 
     // Check if wizard tab is active / linkable.
     // When creating a new listing, we don't allow users to access next tab until the current one is completed.
-    const tabsStatus = tabsActive(isNewListingFlow, currentListing, tabs, config);
+    const tabsStatus = tabsActive(isNewListingFlow, currentListing, tabs, config, currentUser);
 
     // Redirect user to first tab when encoutering outdated draft listings.
     if (invalidExistingListingType && isNewListingFlow && selectedTab !== tabs[0]) {
@@ -693,6 +755,7 @@ class EditListingWizard extends Component {
                 fetchInProgress={fetchInProgress}
                 onListingTypeChange={selectedListingType => this.setState({ selectedListingType })}
                 onManageDisableScrolling={onManageDisableScrolling}
+                currentUser={currentUser}
                 config={config}
                 routeConfiguration={routeConfiguration}
                 intl={intl}

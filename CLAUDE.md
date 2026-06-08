@@ -31,12 +31,14 @@ Rogue Talent (roguetalent.co) is a two-sided marketplace for professional models
 ## Phase 2 development — what's been done
 1. ✅ Terminology/language changes (en.json commit b82fb2c3d1)
 2. ✅ Post-signup redirect for models — models (userType = 'model') are redirected to `/l/new` (Create your profile) after signup instead of the default landing page (commit 0ad369239). Follow-ups: email-verification 'Later' link points models to profile creation (ccd65f868); own-profile banners use profile-first wording (272dac672).
+3. ✅ Wizard step guidance copy — each Create-your-profile panel (details, portfolio, rates, location, availability) now shows a model-specific guidance paragraph beneath its heading (commit 147547baf). Adds a `.guidance` style per panel CSS module + five `*.guidance` keys in en.json.
+4. ✅ Unified onboarding wizard — new "About you" tab added to the Create-your-profile wizard (after "Your details") that renders the model's user-profile custom fields (`config.user.userFields`, from Console) and saves them to the user profile via `updateProfile`. Fields remain editable in Account Settings too. New `EditListingProfilePanel/` (panel + form + CSS); wired through `EditListingWizardTab.js`, `EditListingWizard.js` (tab order, label/save keys, `hasRequiredProfileFields` gating, `currentUser` threaded into `tabCompleted`/`tabsActive`), and `EditListingPage.js` (`onUpdateProfile` dispatch + profile update state). Model fields themselves live in Sharetribe Console, not the repo — surfaced at runtime via `mergeUserConfig` in configHelpers.js.
 
 ## Phase 2 — current task (do this next)
-**Improve wizard step copy:** Add model-specific guidance/description text to each Create-your-profile wizard panel (Your details, Your rates, Your portfolio, Your availability, Your location). Self-contained copy work in en.json + EditListingPage panels.
+_(none queued — Phase 2 onboarding tasks complete; define next priorities)_
 
 ## Phase 2 — upcoming tasks (after current)
-1. Unified onboarding wizard — merge user profile fields (measurements, gender, experience level, modelling categories etc.) with listing fields into one coherent wizard flow. Currently these are split: profile fields live in Account Settings, listing fields in the Create your profile wizard.
+_(none queued)_
 
 ## Environment variables (set in Railway)
 ```

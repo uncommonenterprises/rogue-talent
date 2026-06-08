@@ -17,11 +17,13 @@ import EditListingLocationPanel from './EditListingLocationPanel/EditListingLoca
 import EditListingPhotosPanel from './EditListingPhotosPanel/EditListingPhotosPanel';
 import EditListingPricingPanel from './EditListingPricingPanel/EditListingPricingPanel';
 import EditListingPricingAndStockPanel from './EditListingPricingAndStockPanel/EditListingPricingAndStockPanel';
+import EditListingProfilePanel from './EditListingProfilePanel/EditListingProfilePanel';
 import EditListingStylePanel from './EditListingStylePanel/EditListingStylePanel';
 
 import css from './EditListingWizardTab.module.css';
 
 export const DETAILS = 'details';
+export const PROFILE = 'profile';
 export const PRICING = 'pricing';
 export const PRICING_AND_STOCK = 'pricing-and-stock';
 export const DELIVERY = 'delivery';
@@ -33,6 +35,7 @@ export const STYLE = 'style';
 // EditListingWizardTab component supports these tabs
 export const SUPPORTED_TABS = [
   DETAILS,
+  PROFILE,
   PRICING,
   PRICING_AND_STOCK,
   DELIVERY,
@@ -102,12 +105,16 @@ const EditListingWizardTab = props => {
     onDeleteAvailabilityException,
     onUpdateListing,
     onCreateListingDraft,
+    onUpdateProfile,
     onImageUpload,
     onManageDisableScrolling,
     onListingTypeChange,
     onRemoveImage,
     updatedTab,
     updateInProgress,
+    profileUpdateInProgress,
+    updateProfileError,
+    currentUser,
     tabSubmitButtonText,
     config,
     routeConfiguration,
@@ -166,6 +173,22 @@ const EditListingWizardTab = props => {
       });
   };
 
+  // The "About you" (PROFILE) tab saves to the current user's profile rather than
+  // to the listing, so it has its own completion handler. On success it advances the
+  // new-listing flow to the next tab using the already-created draft listing's id.
+  const onCompleteEditListingProfileTab = (tab, updateValues) => {
+    return onUpdateProfile(updateValues)
+      .then(response => {
+        const succeeded = !response?.error;
+        if (succeeded && isNewListingFlow && currentListing.id) {
+          automaticRedirectsForNewListingFlow(tab, currentListing.id);
+        }
+      })
+      .catch(e => {
+        // No need for extra actions
+      });
+  };
+
   const panelProps = tab => {
     return {
       className: css.panel,
@@ -201,6 +224,18 @@ const EditListingWizardTab = props => {
           {...panelProps(DETAILS)}
           onListingTypeChange={onListingTypeChange}
           config={config}
+        />
+      );
+    }
+    case PROFILE: {
+      return (
+        <EditListingProfilePanel
+          {...panelProps(PROFILE)}
+          currentUser={currentUser}
+          config={config}
+          updateInProgress={profileUpdateInProgress}
+          errors={{ updateProfileError }}
+          onSubmit={values => onCompleteEditListingProfileTab(PROFILE, values)}
         />
       );
     }

@@ -24,6 +24,7 @@ import { ensureOwnListing } from '../../util/data';
 import { hasPermissionToPostListings, isUserAuthorized } from '../../util/userHelpers';
 import { getMarketplaceEntities } from '../../ducks/marketplaceData.duck';
 import { manageDisableScrolling, isScrollingDisabled } from '../../ducks/ui.duck';
+import { updateProfile } from '../ProfileSettingsPage/ProfileSettingsPage.duck';
 import {
   stripeAccountClearError,
   getStripeConnectAccountLink,
@@ -144,6 +145,7 @@ export const EditListingPageComponent = props => {
     onCreateListingDraft,
     onPublishListingDraft,
     onUpdateListing,
+    onUpdateProfile,
     onImageUpload,
     onRemoveListingImage,
     onManageDisableScrolling,
@@ -153,6 +155,8 @@ export const EditListingPageComponent = props => {
     page,
     params,
     location,
+    profileUpdateInProgress,
+    updateProfileError,
     scrollingDisabled,
     stripeAccountFetched,
     stripeAccount,
@@ -288,6 +292,9 @@ export const EditListingPageComponent = props => {
           onAddAvailabilityException={onAddAvailabilityException}
           onDeleteAvailabilityException={onDeleteAvailabilityException}
           onUpdateListing={onUpdateListing}
+          onUpdateProfile={onUpdateProfile}
+          profileUpdateInProgress={profileUpdateInProgress}
+          updateProfileError={updateProfileError}
           onCreateListingDraft={onCreateListingDraft}
           onPublishListingDraft={onPublishListingDraft}
           onPayoutDetailsChange={onPayoutDetailsChange}
@@ -352,6 +359,11 @@ const mapStateToProps = state => {
 
   const { authScopes } = state.auth;
 
+  const {
+    updateInProgress: profileUpdateInProgress,
+    updateProfileError,
+  } = state.ProfileSettingsPage;
+
   return {
     getAccountLinkInProgress,
     getAccountLinkError,
@@ -364,6 +376,8 @@ const mapStateToProps = state => {
     fetchInProgress: createStripeAccountInProgress,
     getOwnListing,
     page,
+    profileUpdateInProgress,
+    updateProfileError,
     scrollingDisabled: isScrollingDisabled(state),
     authScopes,
   };
@@ -375,6 +389,7 @@ const mapDispatchToProps = dispatch => ({
   onDeleteAvailabilityException: params => dispatch(requestDeleteAvailabilityException(params)),
 
   onUpdateListing: (tab, values, config) => dispatch(requestUpdateListing(tab, values, config)),
+  onUpdateProfile: data => dispatch(updateProfile(data)),
   onCreateListingDraft: (values, config) => dispatch(requestCreateListingDraft(values, config)),
   onPublishListingDraft: listingId => dispatch(requestPublishListingDraft(listingId)),
   onImageUpload: (data, listingImageConfig) =>
