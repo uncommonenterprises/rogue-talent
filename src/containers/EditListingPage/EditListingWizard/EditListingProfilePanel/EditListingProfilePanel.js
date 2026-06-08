@@ -12,25 +12,20 @@ import { H3 } from '../../../../components';
 import EditListingProfileForm from './EditListingProfileForm';
 import css from './EditListingProfilePanel.module.css';
 
-// Console-configured user fields with one of these keys are treated as a model's
-// "city" and are NOT rendered here, because location is captured by the city
-// autocomplete below (which saves to the listing's geolocation, powering search).
-// Remove the corresponding user field in Sharetribe Console to retire it fully.
-const CITY_PROFILE_FIELD_KEYS = ['city', 'town', 'location'];
-
 const getUserType = currentUser => currentUser?.attributes?.profile?.publicData?.userType;
 
-const getPublicUserFields = (config, currentUser) => {
+// Note: the model's city/location is captured by the city autocomplete below (saved to
+// the listing's geolocation), not by a user field — so there is no separate "city" user
+// field to render here.
+const getPublicUserFields = config => {
   const userFields = config?.user?.userFields || [];
-  return userFields.filter(
-    uf => uf.scope === 'public' && !CITY_PROFILE_FIELD_KEYS.includes(uf.key)
-  );
+  return userFields.filter(uf => uf.scope === 'public');
 };
 
 const getInitialValues = props => {
   const { currentUser, config, listing } = props;
   const userType = getUserType(currentUser);
-  const publicUserFields = getPublicUserFields(config, currentUser);
+  const publicUserFields = getPublicUserFields(config);
   const profilePublicData = currentUser?.attributes?.profile?.publicData || {};
 
   // Location is stored on the listing (geolocation + publicData.location.address).
@@ -91,7 +86,7 @@ const EditListingProfilePanel = props => {
 
   const classes = classNames(rootClassName || css.root, className);
   const userType = getUserType(currentUser);
-  const publicUserFields = getPublicUserFields(config, currentUser);
+  const publicUserFields = getPublicUserFields(config);
 
   return (
     <main className={classes}>
