@@ -22,18 +22,44 @@ const getPublicUserFields = config => {
   return userFields.filter(uf => uf.scope === 'public');
 };
 
+// Resolve the listing type info needed to create the draft. Uses the type already on the
+// listing if present, otherwise the single configured listing type (this marketplace has
+// one: model-profile). Returns {} if it can't be resolved (e.g. multiple types) — in
+// which case the draft can't be created here and the flow falls back to Details.
+const getListingTypeValues = (listing, config) => {
+  const publicData = listing?.attributes?.publicData || {};
+  const { listingType, transactionProcessAlias, unitType } = publicData;
+  if (listingType && transactionProcessAlias && unitType) {
+    return { listingType, transactionProcessAlias, unitType };
+  }
+  const listingTypes = config?.listing?.listingTypes || [];
+  if (listingTypes.length === 1) {
+    const { listingType: type, transactionType } = listingTypes[0] || {};
+    if (type && transactionType?.alias && transactionType?.unitType) {
+      return {
+        listingType: type,
+        transactionProcessAlias: transactionType.alias,
+        unitType: transactionType.unitType,
+      };
+    }
+  }
+  return {};
+};
+
 const getInitialValues = props => {
   const { currentUser, config, listing } = props;
   const userType = getUserType(currentUser);
   const publicUserFields = getPublicUserFields(config);
   const profilePublicData = currentUser?.attributes?.profile?.publicData || {};
 
-  // Location is stored on the listing (geolocation + publicData.location.address).
-  const { geolocation, publicData: listingPublicData } = listing?.attributes || {};
+  // Display name is the listing title; location is stored on the listing
+  // (geolocation + publicData.location.address).
+  const { title, geolocation, publicData: listingPublicData } = listing?.attributes || {};
   const address = listingPublicData?.location?.address;
   const locationFieldsPresent = address && geolocation;
 
   return {
+    title,
     ...initialValuesForUserFields(profilePublicData, 'public', userType, publicUserFields),
     location: locationFieldsPresent
       ? { search: address, selectedPlace: { address, origin: geolocation } }
@@ -74,6 +100,7 @@ const EditListingProfilePanel = props => {
     className,
     rootClassName,
     currentUser,
+    listing,
     config,
     disabled,
     ready,
@@ -109,7 +136,7 @@ const EditListingProfilePanel = props => {
         fetchErrors={errors}
         autoFocus
         onSubmit={values => {
-          const { location, ...rest } = values;
+          const { title, location, ...rest } = values;
           const { selectedPlace } = location || {};
           const { address, origin } = selectedPlace || {};
 
@@ -119,14 +146,19 @@ const EditListingProfilePanel = props => {
             },
           };
           const listingValues = {
+            title: title.trim(),
             geolocation: origin,
-            publicData: { location: { address } },
+            publicData: {
+              ...getListingTypeValues(listing, config),
+              location: { address },
+            },
           };
 
           // Persist chosen place so the autocomplete keeps it through re-renders.
           setState({
             initialValues: {
               ...rest,
+              title,
               location: { search: address, selectedPlace: { address, origin } },
             },
           });

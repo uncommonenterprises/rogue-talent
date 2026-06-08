@@ -443,6 +443,7 @@ const EditListingDetailsPanel = props => {
             })
           )}
           hasPredefinedListingType={hasExistingListingType || !!validPreselectedListingType}
+          hasExistingTitle={!!listing?.attributes?.title}
           selectableCategories={listingCategories}
           pickSelectedCategories={values =>
             pickCategoryFields(values, categoryKey, 1, listingCategories)

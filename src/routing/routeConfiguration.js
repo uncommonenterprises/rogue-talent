@@ -168,7 +168,7 @@ const routeConfiguration = (layoutConfig, accessControlConfig) => {
       component: () => (
         <NamedRedirect
           name="EditListingPage"
-          params={{ slug: draftSlug, id: draftId, type: 'new', tab: 'details' }}
+          params={{ slug: draftSlug, id: draftId, type: 'new', tab: 'profile' }}
         />
       ),
     },

@@ -173,21 +173,26 @@ const EditListingWizardTab = props => {
       });
   };
 
-  // The "About you" (PROFILE) tab is a dual-save step: the model's profile fields are
-  // saved to the current user (onUpdateProfile), while the city they're based in is
-  // saved to the listing's geolocation (onUpdateListing). On success it advances the
-  // new-listing flow to the next tab using the already-created draft listing's id.
+  // The "About you" (PROFILE) tab is the first step and a dual-save: the model's profile
+  // fields are saved to the current user (onUpdateProfile), while the display name (title)
+  // and city are saved to the listing. Because it's first, in the new-listing flow it
+  // CREATES the draft (onCreateListingDraft); otherwise it updates the existing listing.
+  // On success it advances the new-listing flow to the next tab using the listing's id.
   const onCompleteEditListingProfileTab = (tab, { profileValues, listingValues }) => {
     const profileUpdate = onUpdateProfile(profileValues);
-    const listingUpdate = onUpdateListing(tab, { ...listingValues, id: currentListing.id }, config);
+    const listingUpdate = isNewURI
+      ? onCreateListingDraft(listingValues, config)
+      : onUpdateListing(tab, { ...listingValues, id: currentListing.id }, config);
 
     return Promise.all([profileUpdate, listingUpdate])
-      .then(([profileResponse]) => {
-        // onUpdateListing rejects on failure (caught below); onUpdateProfile resolves
-        // with a rejected action carrying `error`, so check that too before advancing.
+      .then(([profileResponse, listingResponse]) => {
+        // onCreateListingDraft/onUpdateListing reject on failure (caught below);
+        // onUpdateProfile resolves with a rejected action carrying `error`, so check that
+        // too before advancing. The listing id comes from the create/update response.
         const succeeded = !profileResponse?.error;
-        if (succeeded && isNewListingFlow && currentListing.id) {
-          automaticRedirectsForNewListingFlow(tab, currentListing.id);
+        const listingId = listingResponse?.data?.data?.id;
+        if (succeeded && isNewListingFlow && listingId) {
+          automaticRedirectsForNewListingFlow(tab, listingId);
         }
       })
       .catch(e => {

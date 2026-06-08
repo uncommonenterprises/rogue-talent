@@ -99,10 +99,11 @@ const tabsForListingType = (processName, listingTypeConfig) => {
   // Note 3: The first tab creates a draft listing and title is mandatory attribute for it.
   //         Details tab asks for "title" and is therefore the first tab in the wizard flow.
   const tabs = {
-    // Note: the separate LOCATION tab is intentionally omitted for the booking (model)
-    // flow — the model's city is captured inside the PROFILE ("About you") step and
-    // saved to the listing there, so there is no standalone location step.
-    ['default-booking']: [DETAILS, PROFILE, PRICING, AVAILABILITY, ...styleOrPhotosTab],
+    // Note: PROFILE ("About you") is intentionally the FIRST tab for the booking (model)
+    // flow — it collects the model's display name (which seeds the listing title and
+    // creates the draft), their city (saved to the listing), and their profile fields
+    // (saved to the user). The separate LOCATION tab is omitted; the city lives in PROFILE.
+    ['default-booking']: [PROFILE, DETAILS, PRICING, AVAILABILITY, ...styleOrPhotosTab],
     ['default-purchase']: [DETAILS, PRICING_AND_STOCK, ...deliveryMaybe, ...styleOrPhotosTab],
     ['default-negotiation']: [DETAILS, ...locationMaybe, ...pricingMaybe, ...styleOrPhotosTab],
     ['default-inquiry']: [DETAILS, ...locationMaybe, ...pricingMaybe, ...styleOrPhotosTab],
@@ -308,16 +309,15 @@ const tabCompleted = (tab, listing, config, currentUser) => {
         hasValidListingFieldsInExtendedData(publicData, privateData, config)
       );
     case PROFILE:
-      // The PROFILE ("About you") step saves profile fields to the user and the model's
-      // city to the listing's geolocation. Its profile "required fields" can already be
-      // satisfied from a previous session, so to keep the new-listing flow's sequential
-      // tab unlocking intact we also require DETAILS to be complete and the city to be
-      // set on the listing — otherwise the tab after PROFILE would unlock too early.
+      // PROFILE ("About you") is the first tab: it creates the draft from the display
+      // name (title), captures the city (listing geolocation), and saves profile fields
+      // to the user. It's complete once the title and city are on the listing and the
+      // required profile fields are present.
       return !!(
-        tabCompleted(DETAILS, listing, config, currentUser) &&
-        hasRequiredProfileFields(currentUser, config) &&
+        title &&
         geolocation &&
-        publicData?.location?.address
+        publicData?.location?.address &&
+        hasRequiredProfileFields(currentUser, config)
       );
     case PRICING:
       return !!price;

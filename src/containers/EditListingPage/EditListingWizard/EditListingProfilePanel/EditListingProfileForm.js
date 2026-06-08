@@ -10,6 +10,8 @@ import {
   autocompleteSearchRequired,
   autocompletePlaceSelected,
   composeValidators,
+  required,
+  maxLength,
 } from '../../../../util/validators';
 
 // Import shared components
@@ -18,12 +20,14 @@ import {
   Form,
   CustomExtendedDataField,
   FieldLocationAutocompleteInput,
+  FieldTextInput,
 } from '../../../../components';
 
 // Import modules from this directory
 import css from './EditListingProfileForm.module.css';
 
 const identity = v => v;
+const DISPLAY_NAME_MAX_LENGTH = 60;
 
 const ErrorMessages = props => {
   const { fetchErrors } = props;
@@ -104,6 +108,13 @@ export const EditListingProfileForm = props => (
       const cityNotRecognizedMessage = intl.formatMessage({
         id: 'EditListingProfileForm.cityNotRecognized',
       });
+      const displayNameRequiredMessage = intl.formatMessage({
+        id: 'EditListingProfileForm.displayNameRequired',
+      });
+      const displayNameTooLongMessage = intl.formatMessage(
+        { id: 'EditListingProfileForm.displayNameTooLong' },
+        { maxLength: DISPLAY_NAME_MAX_LENGTH }
+      );
 
       const userFieldProps = getPropsForCustomUserFieldInputs(userFields, userType, false);
 
@@ -111,13 +122,29 @@ export const EditListingProfileForm = props => (
         <Form className={classes} onSubmit={handleSubmit}>
           <ErrorMessages fetchErrors={fetchErrors} />
 
+          <FieldTextInput
+            id={`${formId}.title`}
+            name="title"
+            className={css.displayName}
+            type="text"
+            label={intl.formatMessage({ id: 'EditListingProfileForm.displayNameLabel' })}
+            placeholder={intl.formatMessage({
+              id: 'EditListingProfileForm.displayNamePlaceholder',
+            })}
+            maxLength={DISPLAY_NAME_MAX_LENGTH}
+            autoFocus={autoFocus}
+            validate={composeValidators(
+              required(displayNameRequiredMessage),
+              maxLength(displayNameTooLongMessage, DISPLAY_NAME_MAX_LENGTH)
+            )}
+          />
+
           <FieldLocationAutocompleteInput
             rootClassName={css.location}
             inputClassName={css.locationAutocompleteInput}
             iconClassName={css.locationAutocompleteInputIcon}
             predictionsClassName={css.predictionsRoot}
             validClassName={css.validLocation}
-            autoFocus={autoFocus}
             name="location"
             id={`${formId}.location`}
             label={intl.formatMessage({ id: 'EditListingProfileForm.cityLabel' })}

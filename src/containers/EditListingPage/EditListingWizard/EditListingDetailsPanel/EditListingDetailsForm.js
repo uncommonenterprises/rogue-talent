@@ -329,6 +329,7 @@ const EditListingDetailsForm = props => (
         selectableListingTypes,
         selectableCategories,
         hasPredefinedListingType = false,
+        hasExistingTitle = false,
         pickSelectedCategories,
         categoryPrefix,
         saveActionMsg,
@@ -420,7 +421,9 @@ const EditListingDetailsForm = props => (
             />
           )}
 
-          {showTitle && isCompatibleCurrency && (
+          {/* The display name (title) is collected in the "About you" step, which runs
+              first and creates the draft — so it's hidden here once already set. */}
+          {showTitle && !hasExistingTitle && isCompatibleCurrency && (
             <FieldTextInput
               id={`${formId}title`}
               name="title"
