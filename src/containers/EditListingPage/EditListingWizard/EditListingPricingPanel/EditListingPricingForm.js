@@ -12,7 +12,7 @@ import { types as sdkTypes } from '../../../../util/sdkLoader';
 import { FIXED, isBookingProcess } from '../../../../transactions/transaction';
 
 // Import shared components
-import { Button, Form, FieldCurrencyInput } from '../../../../components';
+import { Button, Form, FieldCurrencyInput, CustomExtendedDataField } from '../../../../components';
 
 import BookingPriceVariants from './BookingPriceVariants';
 import StartTimeInterval from './StartTimeInverval';
@@ -105,6 +105,7 @@ export const EditListingPricingForm = props => (
         handleSubmit,
         marketplaceCurrency,
         unitType,
+        rateFields = [],
         listingTypeConfig,
         isPriceVariationsInUse,
         listingMinimumPriceSubUnits = 0,
@@ -179,6 +180,20 @@ export const EditListingPricingForm = props => (
               pristine={pristine}
             />
           ) : null}
+
+          {/* Secondary rate fields (half-day, hourly) shown beside the day-rate price. */}
+          {rateFields.map(field => {
+            const namespacedKey =
+              field.scope === 'private' ? `priv_${field.key}` : `pub_${field.key}`;
+            return (
+              <CustomExtendedDataField
+                key={namespacedKey}
+                name={namespacedKey}
+                fieldConfig={field}
+                formId={formId}
+              />
+            );
+          })}
 
           <Button
             className={css.submitButton}

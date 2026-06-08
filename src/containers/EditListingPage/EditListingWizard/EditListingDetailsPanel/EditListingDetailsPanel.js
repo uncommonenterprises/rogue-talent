@@ -21,6 +21,7 @@ import { isBookingProcessAlias } from '../../../../transactions/transaction';
 import { H3, ListingLink } from '../../../../components';
 
 // Import modules from this directory
+import { isRateListingField } from '../rateFields';
 import ErrorMessage from './ErrorMessage';
 import EditListingDetailsForm from './EditListingDetailsForm';
 import css from './EditListingDetailsPanel.module.css';
@@ -314,7 +315,9 @@ const EditListingDetailsPanel = props => {
   const classes = classNames(rootClassName || css.root, className);
   const { publicData, state } = listing?.attributes || {};
   const listingTypes = config.listing.listingTypes;
-  const listingFields = config.listing.listingFields;
+  // Rate fields (half-day/hourly) are handled on the Pricing tab, so they're excluded
+  // here — from rendering, initial values, and the submit pick — all via this filter.
+  const listingFields = config.listing.listingFields.filter(f => !isRateListingField(f));
   const listingCategories = config.categoryConfiguration.categories;
   const categoryKey = config.categoryConfiguration.key;
 

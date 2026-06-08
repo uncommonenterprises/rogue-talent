@@ -7,7 +7,7 @@ import { richText } from '../../../util/richText';
 import { ensureUser, ensureCurrentUser } from '../../../util/data';
 import { propTypes } from '../../../util/types';
 
-import { AvatarLarge, NamedLink, InlineTextButton } from '../../../components';
+import { AvatarLarge, NamedLink, InlineTextButton, VerifiedBadge } from '../../../components';
 
 import css from './UserCard.module.css';
 
@@ -157,7 +157,10 @@ const UserCard = props => {
         <AvatarLarge className={css.avatar} user={user} />
         <div className={css.info}>
           <div className={css.headingRow}>
-            <FormattedMessage id="UserCard.heading" values={{ name: displayName }} />
+            <span className={css.headingName}>
+              <FormattedMessage id="UserCard.heading" values={{ name: displayName }} />
+              <VerifiedBadge className={css.verifiedBadge} user={ensuredUser} />
+            </span>
             {editProfileDesktop}
           </div>
           {hasBio ? <ExpandableBio className={css.desktopBio} bio={bio} /> : null}

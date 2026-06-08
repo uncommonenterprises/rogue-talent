@@ -325,7 +325,7 @@
   "EditListingPricingAndStockPanel.listingPriceCurrencyInvalid": "The listing currency is different from the marketplace currency ({marketplaceCurrency}). You cannot edit the price.",
   "EditListingPricingAndStockPanel.title": "Pricing & stock of {listingTitle}",
   "EditListingPricingForm.priceInputPlaceholder": "Add a price…",
-  "EditListingPricingForm.pricePerProduct": "Price {unitType, select, day {per day} night {per night} hour {per hour} other {}}",
+  "EditListingPricingForm.pricePerProduct": "{unitType, select, day {Day rate} night {Price per night} hour {Price per hour} other {Price}}",
   "EditListingPricingForm.priceRequired": "You need to add a valid price.",
   "EditListingPricingForm.priceTooLow": "Price should be at least {minPrice}.",
   "EditListingPricingForm.priceVariant.addPriceVariant": "+ Add a price variation",
@@ -345,7 +345,7 @@
   "EditListingPricingForm.showListingFailed": "Fetching listing data failed.",
   "EditListingPricingForm.updateFailed": "Failed to update listing. Please try again.",
   "EditListingPricingPanel.createListingTitle": "Your rates",
-  "EditListingPricingPanel.guidance": "Set your day rate. Clients book and pay you directly — no agency taking a cut — and you can update your rate whenever you like.",
+  "EditListingPricingPanel.guidance": "Set your rates — your day rate is used for bookings, and you can add optional half-day and hourly rates too. Clients book and pay you directly, with no agency taking a cut, and you can update your rates whenever you like.",
   "EditListingPricingPanel.listingPriceCurrencyInvalid": "The listing currency is different from the marketplace currency ({marketplaceCurrency}). You cannot edit the price.",
   "EditListingPricingPanel.title": "Edit the pricing of {listingTitle}",
   "EditListingProfileForm.cityLabel": "Which city are you based in?",
@@ -1468,5 +1468,6 @@
   "UserNav.accountSettings": "Account settings",
   "UserNav.profileSettings": "Profile settings",
   "UserNav.screenreader.userNav": "User profile navigation",
-  "UserNav.yourListings": "Your listings"
+  "UserNav.yourListings": "Your listings",
+  "VerifiedBadge.label": "Verified"
 }

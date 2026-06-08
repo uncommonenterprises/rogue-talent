@@ -60,6 +60,7 @@ import EditListingWizardTab, {
   PHOTOS,
   STYLE,
 } from './EditListingWizardTab';
+import { isRateListingField } from './rateFields';
 import css from './EditListingWizard.module.css';
 
 // This is the initial tab on editlisting wizard.
@@ -212,10 +213,15 @@ const hasValidListingFieldsInExtendedData = (publicData, privateData, config) =>
     }
     return true;
   };
-  return config.listing.listingFields.reduce((isValid, fieldConfig) => {
-    const data = fieldConfig.scope === 'private' ? privateData : publicData;
-    return isValid && isValidField(fieldConfig, data);
-  }, true);
+  // Rate fields live on the Pricing tab, so they must not gate the Details step
+  // (a required rate field would otherwise deadlock: Details can't complete until the
+  // rate is set, but the rate is entered on a later tab that Details unlocks).
+  return config.listing.listingFields
+    .filter(fieldConfig => !isRateListingField(fieldConfig))
+    .reduce((isValid, fieldConfig) => {
+      const data = fieldConfig.scope === 'private' ? privateData : publicData;
+      return isValid && isValidField(fieldConfig, data);
+    }, true);
 };
 
 /**
