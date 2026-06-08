@@ -4,36 +4,59 @@ import arrayMutators from 'final-form-arrays';
 import classNames from 'classnames';
 
 // Import configs and util modules
-import { FormattedMessage } from '../../../../util/reactIntl';
+import { FormattedMessage, useIntl } from '../../../../util/reactIntl';
 import { getPropsForCustomUserFieldInputs } from '../../../../util/userHelpers';
+import {
+  autocompleteSearchRequired,
+  autocompletePlaceSelected,
+  composeValidators,
+} from '../../../../util/validators';
 
 // Import shared components
-import { Button, Form, CustomExtendedDataField } from '../../../../components';
+import {
+  Button,
+  Form,
+  CustomExtendedDataField,
+  FieldLocationAutocompleteInput,
+} from '../../../../components';
 
 // Import modules from this directory
 import css from './EditListingProfileForm.module.css';
 
-const ErrorMessage = props => {
-  const { fetchErrors } = props;
-  const { updateProfileError } = fetchErrors || {};
+const identity = v => v;
 
-  return updateProfileError ? (
-    <p className={css.error}>
-      <FormattedMessage id="EditListingProfileForm.updateFailed" />
-    </p>
-  ) : null;
+const ErrorMessages = props => {
+  const { fetchErrors } = props;
+  const { updateProfileError, updateListingError } = fetchErrors || {};
+
+  return (
+    <>
+      {updateProfileError ? (
+        <p className={css.error}>
+          <FormattedMessage id="EditListingProfileForm.updateFailed" />
+        </p>
+      ) : null}
+      {updateListingError ? (
+        <p className={css.error}>
+          <FormattedMessage id="EditListingProfileForm.updateFailed" />
+        </p>
+      ) : null}
+    </>
+  );
 };
 
 /**
  * The EditListingProfileForm component. Renders the model's custom user-profile
- * fields (from config.user.userFields) so they can be filled in during the
- * Create-your-profile wizard rather than only in Account Settings.
+ * fields (from config.user.userFields) plus a city-level location autocomplete, so a
+ * model fills in their profile (saved to the user) and where they're based (saved to
+ * the listing's geolocation) in a single "About you" wizard step.
  *
  * @component
  * @param {Object} props
  * @param {string} [props.formId] - The form id
  * @param {string} [props.className] - Custom class that extends the default class for the root element
  * @param {string} [props.rootClassName] - Custom class that overrides the default class for the root element
+ * @param {boolean} [props.autoFocus] - Whether the first input should be focused
  * @param {Array} props.userFields - The user field configurations to render
  * @param {string} props.userType - The current user's user type (used to filter fields)
  * @param {boolean} [props.disabled] - Whether the form is disabled
@@ -42,7 +65,7 @@ const ErrorMessage = props => {
  * @param {string} props.saveActionMsg - The save action button label
  * @param {boolean} [props.updated] - Whether the form was just updated
  * @param {boolean} [props.updateInProgress] - Whether the save is in progress
- * @param {Object} [props.fetchErrors] - The fetch errors ({ updateProfileError })
+ * @param {Object} [props.fetchErrors] - The fetch errors ({ updateProfileError, updateListingError })
  * @returns {JSX.Element}
  */
 export const EditListingProfileForm = props => (
@@ -54,6 +77,7 @@ export const EditListingProfileForm = props => (
         formId = 'EditListingProfileForm',
         className,
         rootClassName,
+        autoFocus,
         disabled,
         ready,
         handleSubmit,
@@ -65,28 +89,51 @@ export const EditListingProfileForm = props => (
         updated,
         updateInProgress = false,
         fetchErrors,
+        values,
       } = formRenderProps;
 
+      const intl = useIntl();
       const classes = classNames(rootClassName || css.root, className);
       const submitReady = (updated && pristine) || ready;
       const submitInProgress = updateInProgress;
       const submitDisabled = invalid || disabled || submitInProgress;
 
+      const cityRequiredMessage = intl.formatMessage({
+        id: 'EditListingProfileForm.cityRequired',
+      });
+      const cityNotRecognizedMessage = intl.formatMessage({
+        id: 'EditListingProfileForm.cityNotRecognized',
+      });
+
       const userFieldProps = getPropsForCustomUserFieldInputs(userFields, userType, false);
 
       return (
         <Form className={classes} onSubmit={handleSubmit}>
-          <ErrorMessage fetchErrors={fetchErrors} />
+          <ErrorMessages fetchErrors={fetchErrors} />
 
-          {userFieldProps.length === 0 ? (
-            <p className={css.noFields}>
-              <FormattedMessage id="EditListingProfileForm.noFields" />
-            </p>
-          ) : (
-            userFieldProps.map(({ key, ...fieldProps }) => (
-              <CustomExtendedDataField key={key} {...fieldProps} formId={formId} />
-            ))
-          )}
+          <FieldLocationAutocompleteInput
+            rootClassName={css.location}
+            inputClassName={css.locationAutocompleteInput}
+            iconClassName={css.locationAutocompleteInputIcon}
+            predictionsClassName={css.predictionsRoot}
+            validClassName={css.validLocation}
+            autoFocus={autoFocus}
+            name="location"
+            id={`${formId}.location`}
+            label={intl.formatMessage({ id: 'EditListingProfileForm.cityLabel' })}
+            placeholder={intl.formatMessage({ id: 'EditListingProfileForm.cityPlaceholder' })}
+            useDefaultPredictions={false}
+            format={identity}
+            valueFromForm={values.location}
+            validate={composeValidators(
+              autocompleteSearchRequired(cityRequiredMessage),
+              autocompletePlaceSelected(cityNotRecognizedMessage)
+            )}
+          />
+
+          {userFieldProps.map(({ key, ...fieldProps }) => (
+            <CustomExtendedDataField key={key} {...fieldProps} formId={formId} />
+          ))}
 
           <Button
             className={css.submitButton}

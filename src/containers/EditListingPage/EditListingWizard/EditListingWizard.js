@@ -99,14 +99,10 @@ const tabsForListingType = (processName, listingTypeConfig) => {
   // Note 3: The first tab creates a draft listing and title is mandatory attribute for it.
   //         Details tab asks for "title" and is therefore the first tab in the wizard flow.
   const tabs = {
-    ['default-booking']: [
-      DETAILS,
-      PROFILE,
-      ...locationMaybe,
-      PRICING,
-      AVAILABILITY,
-      ...styleOrPhotosTab,
-    ],
+    // Note: the separate LOCATION tab is intentionally omitted for the booking (model)
+    // flow — the model's city is captured inside the PROFILE ("About you") step and
+    // saved to the listing there, so there is no standalone location step.
+    ['default-booking']: [DETAILS, PROFILE, PRICING, AVAILABILITY, ...styleOrPhotosTab],
     ['default-purchase']: [DETAILS, PRICING_AND_STOCK, ...deliveryMaybe, ...styleOrPhotosTab],
     ['default-negotiation']: [DETAILS, ...locationMaybe, ...pricingMaybe, ...styleOrPhotosTab],
     ['default-inquiry']: [DETAILS, ...locationMaybe, ...pricingMaybe, ...styleOrPhotosTab],
@@ -312,7 +308,17 @@ const tabCompleted = (tab, listing, config, currentUser) => {
         hasValidListingFieldsInExtendedData(publicData, privateData, config)
       );
     case PROFILE:
-      return hasRequiredProfileFields(currentUser, config);
+      // The PROFILE ("About you") step saves profile fields to the user and the model's
+      // city to the listing's geolocation. Its profile "required fields" can already be
+      // satisfied from a previous session, so to keep the new-listing flow's sequential
+      // tab unlocking intact we also require DETAILS to be complete and the city to be
+      // set on the listing — otherwise the tab after PROFILE would unlock too early.
+      return !!(
+        tabCompleted(DETAILS, listing, config, currentUser) &&
+        hasRequiredProfileFields(currentUser, config) &&
+        geolocation &&
+        publicData?.location?.address
+      );
     case PRICING:
       return !!price;
     case PRICING_AND_STOCK:

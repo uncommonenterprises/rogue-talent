@@ -173,13 +173,19 @@ const EditListingWizardTab = props => {
       });
   };
 
-  // The "About you" (PROFILE) tab saves to the current user's profile rather than
-  // to the listing, so it has its own completion handler. On success it advances the
+  // The "About you" (PROFILE) tab is a dual-save step: the model's profile fields are
+  // saved to the current user (onUpdateProfile), while the city they're based in is
+  // saved to the listing's geolocation (onUpdateListing). On success it advances the
   // new-listing flow to the next tab using the already-created draft listing's id.
-  const onCompleteEditListingProfileTab = (tab, updateValues) => {
-    return onUpdateProfile(updateValues)
-      .then(response => {
-        const succeeded = !response?.error;
+  const onCompleteEditListingProfileTab = (tab, { profileValues, listingValues }) => {
+    const profileUpdate = onUpdateProfile(profileValues);
+    const listingUpdate = onUpdateListing(tab, { ...listingValues, id: currentListing.id }, config);
+
+    return Promise.all([profileUpdate, listingUpdate])
+      .then(([profileResponse]) => {
+        // onUpdateListing rejects on failure (caught below); onUpdateProfile resolves
+        // with a rejected action carrying `error`, so check that too before advancing.
+        const succeeded = !profileResponse?.error;
         if (succeeded && isNewListingFlow && currentListing.id) {
           automaticRedirectsForNewListingFlow(tab, currentListing.id);
         }
@@ -233,8 +239,8 @@ const EditListingWizardTab = props => {
           {...panelProps(PROFILE)}
           currentUser={currentUser}
           config={config}
-          updateInProgress={profileUpdateInProgress}
-          errors={{ updateProfileError }}
+          updateInProgress={profileUpdateInProgress || updateInProgress}
+          errors={{ ...errors, updateProfileError }}
           onSubmit={values => onCompleteEditListingProfileTab(PROFILE, values)}
         />
       );
