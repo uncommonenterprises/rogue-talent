@@ -105,16 +105,12 @@ const EditListingWizardTab = props => {
     onDeleteAvailabilityException,
     onUpdateListing,
     onCreateListingDraft,
-    onUpdateProfile,
     onImageUpload,
     onManageDisableScrolling,
     onListingTypeChange,
     onRemoveImage,
     updatedTab,
     updateInProgress,
-    profileUpdateInProgress,
-    updateProfileError,
-    currentUser,
     tabSubmitButtonText,
     config,
     routeConfiguration,
@@ -173,25 +169,20 @@ const EditListingWizardTab = props => {
       });
   };
 
-  // The "About you" (PROFILE) tab is the first step and a dual-save: the model's profile
-  // fields are saved to the current user (onUpdateProfile), while the display name (title)
-  // and city are saved to the listing. Because it's first, in the new-listing flow it
-  // CREATES the draft (onCreateListingDraft); otherwise it updates the existing listing.
-  // On success it advances the new-listing flow to the next tab using the listing's id.
-  const onCompleteEditListingProfileTab = (tab, { profileValues, listingValues }) => {
-    const profileUpdate = onUpdateProfile(profileValues);
+  // The "About you" (PROFILE) tab is the first step. It saves everything to the listing:
+  // the display name (title), the city (geolocation), and the model's attribute fields
+  // (listing custom fields). Because it's first, in the new-listing flow it CREATES the
+  // draft (onCreateListingDraft); otherwise it updates the existing listing. On success it
+  // advances the new-listing flow to the next tab using the listing's id.
+  const onCompleteEditListingProfileTab = (tab, listingValues) => {
     const listingUpdate = isNewURI
       ? onCreateListingDraft(listingValues, config)
       : onUpdateListing(tab, { ...listingValues, id: currentListing.id }, config);
 
-    return Promise.all([profileUpdate, listingUpdate])
-      .then(([profileResponse, listingResponse]) => {
-        // onCreateListingDraft/onUpdateListing reject on failure (caught below);
-        // onUpdateProfile resolves with a rejected action carrying `error`, so check that
-        // too before advancing. The listing id comes from the create/update response.
-        const succeeded = !profileResponse?.error;
-        const listingId = listingResponse?.data?.data?.id;
-        if (succeeded && isNewListingFlow && listingId) {
+    return listingUpdate
+      .then(response => {
+        const listingId = response?.data?.data?.id;
+        if (isNewListingFlow && listingId) {
           automaticRedirectsForNewListingFlow(tab, listingId);
         }
       })
@@ -242,10 +233,7 @@ const EditListingWizardTab = props => {
       return (
         <EditListingProfilePanel
           {...panelProps(PROFILE)}
-          currentUser={currentUser}
           config={config}
-          updateInProgress={profileUpdateInProgress || updateInProgress}
-          errors={{ ...errors, updateProfileError }}
           onSubmit={values => onCompleteEditListingProfileTab(PROFILE, values)}
         />
       );

@@ -43,11 +43,15 @@ Rogue Talent (roguetalent.co) is a two-sided marketplace for professional models
    - **"Studio access"** field deleted in Console (was nonsensical for models).
    - **Rates consolidated on "Your rates":** half-day/hourly are Console listing fields (`half_day_rate`, `hourly_rate`) — now rendered on the Pricing tab beside the day rate (native price), not on Details. Shared keys in `EditListingWizard/rateFields.js`; excluded from the Details form/submit and the Details completion check; rendered + saved by `EditListingPricingPanel`/`Form`. Day-rate label changed to "Day rate".
 
-## Phase 2 — current task (do this next)
-_(none queued — Phase 2 onboarding tasks complete; define next priorities)_
+## Phase 3 — Client discovery (in progress)
+**Model attributes moved from USER fields → LISTING fields** so they're searchable and display natively (Sharetribe search/CustomListingFields read listings, not user profiles). The operator converted 14 public model-attribute fields to listing fields in Console (keys in `EditListingWizard/profileFields.js` → `PROFILE_LISTING_FIELD_KEYS`); `date_of_birth` (private) + `id_verified` (metadata badge) stay as user fields.
+- **"About you" now collects these as listing fields** (not user fields): renders `config.listing.listingFields` filtered to the profile keys, saves to the listing's `publicData` (no more `updateProfile` from this step). `EditListingProfilePanel`/`Form` rewired; `EditListingWizardTab.onCompleteEditListingProfileTab` is now a listing-only save; `EditListingWizard` gating (`hasValidListingFieldsInExtendedData` takes a field filter; PROFILE validates its own fields, DETAILS excludes rate + profile fields); Details panel excludes profile keys.
+- **Profile-page display:** `ListingPage/CustomListingFields.js` detail gate changed from `isDetail` (opt-in) to `isDetail !== false` (opt-out), because the no-code Console doesn't set `isDetail` — otherwise enum/number attributes wouldn't show.
+- **Search filters** appear automatically for the filterable fields (Console `filterConfig`).
+- **Still TODO:** (a) migrate any existing models' user-profile attribute values → their listing `publicData` (or just re-enter test profiles); (b) then delete the old user fields in Console; (c) verify search filters + profile display on Railway.
 
-## Phase 2 — upcoming tasks (after current)
-_(none queued)_
+## Phase 2 — done
+_(Phase 2 onboarding tasks complete — see "Phase 2 development" above.)_
 
 ## Environment variables (set in Railway)
 ```

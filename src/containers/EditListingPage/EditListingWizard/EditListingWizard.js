@@ -61,6 +61,7 @@ import EditListingWizardTab, {
   STYLE,
 } from './EditListingWizardTab';
 import { isRateListingField } from './rateFields';
+import { isProfileListingField } from './profileFields';
 import css from './EditListingWizard.module.css';
 
 // This is the initial tab on editlisting wizard.
@@ -102,8 +103,8 @@ const tabsForListingType = (processName, listingTypeConfig) => {
   const tabs = {
     // Note: PROFILE ("About you") is intentionally the FIRST tab for the booking (model)
     // flow — it collects the model's display name (which seeds the listing title and
-    // creates the draft), their city (saved to the listing), and their profile fields
-    // (saved to the user). The separate LOCATION tab is omitted; the city lives in PROFILE.
+    // creates the draft), their city, and their profile attribute fields. All of it saves
+    // to the listing. The separate LOCATION tab is omitted; the city lives in PROFILE.
     ['default-booking']: [PROFILE, DETAILS, PRICING, AVAILABILITY, ...styleOrPhotosTab],
     ['default-purchase']: [DETAILS, PRICING_AND_STOCK, ...deliveryMaybe, ...styleOrPhotosTab],
     ['default-negotiation']: [DETAILS, ...locationMaybe, ...pricingMaybe, ...styleOrPhotosTab],
@@ -172,7 +173,7 @@ const tabLabelAndSubmit = (intl, tab, isNewListingFlow, isPriceDisabled, process
  * @param {Object} publicData
  * @param {Object} privateData
  */
-const hasValidListingFieldsInExtendedData = (publicData, privateData, config) => {
+const hasValidListingFieldsInExtendedData = (publicData, privateData, config, fieldFilter) => {
   const isValidField = (fieldConfig, fieldData) => {
     const { key, schemaType, enumOptions = [], saveConfig = {} } = fieldConfig;
 
@@ -213,56 +214,13 @@ const hasValidListingFieldsInExtendedData = (publicData, privateData, config) =>
     }
     return true;
   };
-  // Rate fields live on the Pricing tab, so they must not gate the Details step
-  // (a required rate field would otherwise deadlock: Details can't complete until the
-  // rate is set, but the rate is entered on a later tab that Details unlocks).
-  return config.listing.listingFields
-    .filter(fieldConfig => !isRateListingField(fieldConfig))
-    .reduce((isValid, fieldConfig) => {
-      const data = fieldConfig.scope === 'private' ? privateData : publicData;
-      return isValid && isValidField(fieldConfig, data);
-    }, true);
-};
-
-/**
- * Validate required user-profile fields (config.user.userFields) against the current
- * user's public profile data. Used to decide whether the "About you" (PROFILE) tab is
- * complete in the new-listing flow. Only public, model-applicable, required fields are checked.
- *
- * @param {Object} currentUser API entity
- * @param {Object} config marketplace configuration
- * @return {boolean} true if all required model profile fields have a value
- */
-const hasRequiredProfileFields = (currentUser, config) => {
-  const userType = currentUser?.attributes?.profile?.publicData?.userType;
-  const publicData = currentUser?.attributes?.profile?.publicData || {};
-  const userFields = config.user?.userFields || [];
-
-  return userFields.reduce((isValid, fieldConfig) => {
-    const { key, scope = 'public', schemaType, saveConfig = {}, userTypeConfig } =
-      fieldConfig || {};
-    if (scope !== 'public') {
-      return isValid;
-    }
-    const isTargetUserType =
-      !userTypeConfig?.limitToUserTypeIds || userTypeConfig?.userTypeIds?.includes(userType);
-    const isRequired = !!saveConfig.isRequired && isTargetUserType;
-    if (!isRequired) {
-      return isValid;
-    }
-
-    const value = publicData[key];
-    const hasValue =
-      schemaType === SCHEMA_TYPE_MULTI_ENUM
-        ? Array.isArray(value) && value.length > 0
-        : schemaType === SCHEMA_TYPE_BOOLEAN
-        ? value === true || value === false
-        : schemaType === SCHEMA_TYPE_LONG
-        ? typeof value === 'number' && Number.isInteger(value)
-        : typeof value === 'string'
-        ? value.length > 0
-        : value != null;
-    return isValid && hasValue;
+  // The caller passes a filter so each tab only validates the fields it owns (e.g. Details
+  // excludes rate fields → Pricing tab, and profile fields → About-you tab; About-you
+  // validates only its profile fields). Otherwise a required field on a later tab could
+  // deadlock an earlier tab's completion.
+  return config.listing.listingFields.filter(fieldFilter).reduce((isValid, fieldConfig) => {
+    const data = fieldConfig.scope === 'private' ? privateData : publicData;
+    return isValid && isValidField(fieldConfig, data);
   }, true);
 };
 
@@ -272,11 +230,10 @@ const hasRequiredProfileFields = (currentUser, config) => {
  * @param tab wizard's tab
  * @param listing is contains some specific data if tab is completed
  * @param config marketplace configuration
- * @param currentUser API entity (used by the PROFILE tab, which saves to the user not the listing)
  *
  * @return true if tab / step is completed.
  */
-const tabCompleted = (tab, listing, config, currentUser) => {
+const tabCompleted = (tab, listing, config) => {
   const {
     availabilityPlan,
     description,
@@ -312,18 +269,25 @@ const tabCompleted = (tab, listing, config, currentUser) => {
         listingType &&
         transactionProcessAlias &&
         unitType &&
-        hasValidListingFieldsInExtendedData(publicData, privateData, config)
+        // Validate only the "offering" listing fields — rate fields (Pricing tab) and
+        // profile fields (About-you tab) are handled on their own steps.
+        hasValidListingFieldsInExtendedData(
+          publicData,
+          privateData,
+          config,
+          f => !isRateListingField(f) && !isProfileListingField(f)
+        )
       );
     case PROFILE:
-      // PROFILE ("About you") is the first tab: it creates the draft from the display
-      // name (title), captures the city (listing geolocation), and saves profile fields
-      // to the user. It's complete once the title and city are on the listing and the
-      // required profile fields are present.
+      // PROFILE ("About you") is the first tab: it creates the draft from the display name
+      // (title), captures the city (listing geolocation), and saves the model's attribute
+      // fields to the listing. It's complete once the title and city are on the listing and
+      // the required profile listing fields are present.
       return !!(
         title &&
         geolocation &&
         publicData?.location?.address &&
-        hasRequiredProfileFields(currentUser, config)
+        hasValidListingFieldsInExtendedData(publicData, privateData, config, isProfileListingField)
       );
     case PRICING:
       return !!price;
@@ -354,17 +318,12 @@ const tabCompleted = (tab, listing, config, currentUser) => {
  *
  * @return object containing activity / editability of different tabs of this wizard
  */
-const tabsActive = (isNew, listing, tabs, config, currentUser) => {
+const tabsActive = (isNew, listing, tabs, config) => {
   return tabs.reduce((acc, tab) => {
     const previousTabIndex = tabs.findIndex(t => t === tab) - 1;
     const validTab = previousTabIndex >= 0;
     const hasListingType = !!listing?.attributes?.publicData?.listingType;
-    const prevTabComletedInNewFlow = tabCompleted(
-      tabs[previousTabIndex],
-      listing,
-      config,
-      currentUser
-    );
+    const prevTabComletedInNewFlow = tabCompleted(tabs[previousTabIndex], listing, config);
     const isActive =
       validTab && !isNew ? hasListingType : validTab && isNew ? prevTabComletedInNewFlow : true;
     return { ...acc, [tab]: isActive };
@@ -625,7 +584,7 @@ class EditListingWizard extends Component {
 
     // Check if wizard tab is active / linkable.
     // When creating a new listing, we don't allow users to access next tab until the current one is completed.
-    const tabsStatus = tabsActive(isNewListingFlow, currentListing, tabs, config, currentUser);
+    const tabsStatus = tabsActive(isNewListingFlow, currentListing, tabs, config);
 
     // Redirect user to first tab when encoutering outdated draft listings.
     if (invalidExistingListingType && isNewListingFlow && selectedTab !== tabs[0]) {
@@ -767,7 +726,6 @@ class EditListingWizard extends Component {
                 fetchInProgress={fetchInProgress}
                 onListingTypeChange={selectedListingType => this.setState({ selectedListingType })}
                 onManageDisableScrolling={onManageDisableScrolling}
-                currentUser={currentUser}
                 config={config}
                 routeConfiguration={routeConfiguration}
                 intl={intl}

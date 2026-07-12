@@ -5,7 +5,6 @@ import classNames from 'classnames';
 
 // Import configs and util modules
 import { FormattedMessage, useIntl } from '../../../../util/reactIntl';
-import { getPropsForCustomUserFieldInputs } from '../../../../util/userHelpers';
 import {
   autocompleteSearchRequired,
   autocompletePlaceSelected,
@@ -31,29 +30,19 @@ const DISPLAY_NAME_MAX_LENGTH = 60;
 
 const ErrorMessages = props => {
   const { fetchErrors } = props;
-  const { updateProfileError, updateListingError } = fetchErrors || {};
+  const { updateListingError } = fetchErrors || {};
 
-  return (
-    <>
-      {updateProfileError ? (
-        <p className={css.error}>
-          <FormattedMessage id="EditListingProfileForm.updateFailed" />
-        </p>
-      ) : null}
-      {updateListingError ? (
-        <p className={css.error}>
-          <FormattedMessage id="EditListingProfileForm.updateFailed" />
-        </p>
-      ) : null}
-    </>
-  );
+  return updateListingError ? (
+    <p className={css.error}>
+      <FormattedMessage id="EditListingProfileForm.updateFailed" />
+    </p>
+  ) : null;
 };
 
 /**
- * The EditListingProfileForm component. Renders the model's custom user-profile
- * fields (from config.user.userFields) plus a city-level location autocomplete, so a
- * model fills in their profile (saved to the user) and where they're based (saved to
- * the listing's geolocation) in a single "About you" wizard step.
+ * The EditListingProfileForm component. Renders the model's display name, a city-level
+ * location autocomplete, and their profile attribute fields (config.listing.listingFields
+ * for the model), all saved to the listing in a single "About you" wizard step.
  *
  * @component
  * @param {Object} props
@@ -61,15 +50,14 @@ const ErrorMessages = props => {
  * @param {string} [props.className] - Custom class that extends the default class for the root element
  * @param {string} [props.rootClassName] - Custom class that overrides the default class for the root element
  * @param {boolean} [props.autoFocus] - Whether the first input should be focused
- * @param {Array} props.userFields - The user field configurations to render
- * @param {string} props.userType - The current user's user type (used to filter fields)
+ * @param {Array} props.profileFields - The model-attribute listing field configs to render
  * @param {boolean} [props.disabled] - Whether the form is disabled
  * @param {boolean} [props.ready] - Whether the form is ready
  * @param {Function} props.onSubmit - The submit function
  * @param {string} props.saveActionMsg - The save action button label
  * @param {boolean} [props.updated] - Whether the form was just updated
  * @param {boolean} [props.updateInProgress] - Whether the save is in progress
- * @param {Object} [props.fetchErrors] - The fetch errors ({ updateProfileError, updateListingError })
+ * @param {Object} [props.fetchErrors] - The fetch errors ({ updateListingError })
  * @returns {JSX.Element}
  */
 export const EditListingProfileForm = props => (
@@ -85,8 +73,7 @@ export const EditListingProfileForm = props => (
         disabled,
         ready,
         handleSubmit,
-        userFields,
-        userType,
+        profileFields = [],
         invalid,
         pristine,
         saveActionMsg,
@@ -115,8 +102,6 @@ export const EditListingProfileForm = props => (
         { id: 'EditListingProfileForm.displayNameTooLong' },
         { maxLength: DISPLAY_NAME_MAX_LENGTH }
       );
-
-      const userFieldProps = getPropsForCustomUserFieldInputs(userFields, userType, false);
 
       return (
         <Form className={classes} onSubmit={handleSubmit}>
@@ -158,9 +143,12 @@ export const EditListingProfileForm = props => (
             )}
           />
 
-          {userFieldProps.map(({ key, ...fieldProps }) => (
-            <CustomExtendedDataField key={key} {...fieldProps} formId={formId} />
-          ))}
+          {profileFields.map(field => {
+            const name = field.scope === 'private' ? `priv_${field.key}` : `pub_${field.key}`;
+            return (
+              <CustomExtendedDataField key={name} name={name} fieldConfig={field} formId={formId} />
+            );
+          })}
 
           <Button
             className={css.submitButton}

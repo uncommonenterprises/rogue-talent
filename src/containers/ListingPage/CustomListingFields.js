@@ -62,7 +62,15 @@ const CustomListingFields = props => {
     const metadataValue = metadata[key];
     const value = publicDataValue != null ? publicDataValue : metadataValue;
 
-    if (isDetail && isTargetListingType && isTargetCategory && typeof value !== 'undefined') {
+    // Single-value fields (enum/long/boolean/short-text) are shown as detail rows by
+    // default. The no-code Console doesn't set `isDetail`, so treat it as opt-out
+    // (hidden only when explicitly false) — consistent with displayOnListingPage above.
+    if (
+      isDetail !== false &&
+      isTargetListingType &&
+      isTargetCategory &&
+      typeof value !== 'undefined'
+    ) {
       const detailValue = getDetailCustomFieldValue(
         enumOptions,
         value,

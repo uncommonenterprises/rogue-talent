@@ -3,23 +3,46 @@ import classNames from 'classnames';
 
 // Import configs and util modules
 import { FormattedMessage } from '../../../../util/reactIntl';
-import { initialValuesForUserFields, pickUserFieldsData } from '../../../../util/userHelpers';
 
 // Import shared components
 import { H3 } from '../../../../components';
 
 // Import modules from this directory
+import { PROFILE_LISTING_FIELD_KEYS } from '../profileFields';
 import EditListingProfileForm from './EditListingProfileForm';
 import css from './EditListingProfilePanel.module.css';
 
-const getUserType = currentUser => currentUser?.attributes?.profile?.publicData?.userType;
+// The model-attribute listing fields collected on this step (measurements, appearance,
+// experience, categories, links). They live on the LISTING so they are searchable and
+// display natively on the listing page.
+const getProfileFields = config =>
+  (config?.listing?.listingFields || []).filter(f => PROFILE_LISTING_FIELD_KEYS.includes(f.key));
 
-// Note: the model's city/location is captured by the city autocomplete below (saved to
-// the listing's geolocation), not by a user field — so there is no separate "city" user
-// field to render here.
-const getPublicUserFields = config => {
-  const userFields = config?.user?.userFields || [];
-  return userFields.filter(uf => uf.scope === 'public');
+const namespacedKey = field =>
+  field.scope === 'private' ? `priv_${field.key}` : `pub_${field.key}`;
+
+// Namespaced form initial values for the profile fields, read from the listing's data.
+const getProfileFieldInitialValues = (listing, profileFields) => {
+  const { publicData, privateData } = listing?.attributes || {};
+  return profileFields.reduce((acc, field) => {
+    const source = field.scope === 'private' ? privateData : publicData;
+    return { ...acc, [namespacedKey(field)]: source?.[field.key] };
+  }, {});
+};
+
+// Split submitted (namespaced) profile-field values back into listing public/private data.
+const pickProfileFieldData = (values, profileFields) => {
+  const publicData = {};
+  const privateData = {};
+  profileFields.forEach(field => {
+    const ns = namespacedKey(field);
+    if (field.scope === 'private') {
+      privateData[field.key] = values[ns];
+    } else {
+      publicData[field.key] = values[ns];
+    }
+  });
+  return { publicData, privateData };
 };
 
 // Resolve the listing type info needed to create the draft. Uses the type already on the
@@ -47,10 +70,8 @@ const getListingTypeValues = (listing, config) => {
 };
 
 const getInitialValues = props => {
-  const { currentUser, config, listing } = props;
-  const userType = getUserType(currentUser);
-  const publicUserFields = getPublicUserFields(config);
-  const profilePublicData = currentUser?.attributes?.profile?.publicData || {};
+  const { config, listing } = props;
+  const profileFields = getProfileFields(config);
 
   // Display name is the listing title; location is stored on the listing
   // (geolocation + publicData.location.address).
@@ -60,7 +81,7 @@ const getInitialValues = props => {
 
   return {
     title,
-    ...initialValuesForUserFields(profilePublicData, 'public', userType, publicUserFields),
+    ...getProfileFieldInitialValues(listing, profileFields),
     location: locationFieldsPresent
       ? { search: address, selectedPlace: { address, origin: geolocation } }
       : null,
@@ -68,26 +89,26 @@ const getInitialValues = props => {
 };
 
 /**
- * The EditListingProfilePanel — the "About you" wizard step. It lets a model fill in
- * their user-profile custom fields (measurements, experience, categories, etc.) AND the
- * city they're based in, in one step. Profile fields save to the current user (via
- * onUpdateProfile); the city saves to the listing's geolocation (via onUpdateListing),
- * so it powers location-based search. Both saves are dispatched by the parent through
- * the onSubmit handler, which receives { profileValues, listingValues }.
+ * The EditListingProfilePanel — the "About you" wizard step (the first step). It collects
+ * the model's display name, the city they're based in, and their profile attributes
+ * (measurements, appearance, experience, categories, links). All of it saves to the
+ * LISTING: the display name becomes the title (and creates the draft), the city becomes
+ * the geolocation, and the attributes are listing custom fields — so they're searchable
+ * and display natively on the listing page. The parent persists the returned listing
+ * values via onSubmit.
  *
  * @component
  * @param {Object} props
  * @param {string} [props.className] - Custom class that extends the default class for the root element
  * @param {string} [props.rootClassName] - Custom class that overrides the default class for the root element
- * @param {propTypes.currentUser} props.currentUser - The current user
- * @param {propTypes.ownListing} props.listing - The listing (location source)
- * @param {Object} props.config - The marketplace config (provides config.user.userFields)
+ * @param {propTypes.ownListing} props.listing - The listing (source of all values here)
+ * @param {Object} props.config - The marketplace config (provides config.listing.listingFields)
  * @param {boolean} props.disabled - Whether the form is disabled
  * @param {boolean} props.ready - Whether the form is ready
  * @param {boolean} props.panelUpdated - Whether the panel was just updated
  * @param {boolean} props.updateInProgress - Whether a save is in progress
- * @param {Object} props.errors - Errors object ({ updateProfileError, updateListingError })
- * @param {Function} props.onSubmit - Save handler; receives { profileValues, listingValues }
+ * @param {Object} props.errors - Errors object ({ updateListingError })
+ * @param {Function} props.onSubmit - Save handler; receives the listing update values
  * @param {string} props.submitButtonText - The submit button label
  * @returns {JSX.Element}
  */
@@ -99,7 +120,6 @@ const EditListingProfilePanel = props => {
   const {
     className,
     rootClassName,
-    currentUser,
     listing,
     config,
     disabled,
@@ -112,8 +132,7 @@ const EditListingProfilePanel = props => {
   } = props;
 
   const classes = classNames(rootClassName || css.root, className);
-  const userType = getUserType(currentUser);
-  const publicUserFields = getPublicUserFields(config);
+  const profileFields = getProfileFields(config);
 
   return (
     <main className={classes}>
@@ -126,8 +145,7 @@ const EditListingProfilePanel = props => {
       <EditListingProfileForm
         className={css.form}
         initialValues={state.initialValues}
-        userFields={publicUserFields}
-        userType={userType}
+        profileFields={profileFields}
         saveActionMsg={submitButtonText}
         disabled={disabled}
         ready={ready}
@@ -140,18 +158,20 @@ const EditListingProfilePanel = props => {
           const { selectedPlace } = location || {};
           const { address, origin } = selectedPlace || {};
 
-          const profileValues = {
-            publicData: {
-              ...pickUserFieldsData(rest, 'public', userType, publicUserFields),
-            },
-          };
+          const { publicData: profilePublic, privateData: profilePrivate } = pickProfileFieldData(
+            rest,
+            profileFields
+          );
+
           const listingValues = {
             title: title.trim(),
             geolocation: origin,
             publicData: {
               ...getListingTypeValues(listing, config),
               location: { address },
+              ...profilePublic,
             },
+            ...(Object.keys(profilePrivate).length > 0 ? { privateData: profilePrivate } : {}),
           };
 
           // Persist chosen place so the autocomplete keeps it through re-renders.
@@ -163,7 +183,7 @@ const EditListingProfilePanel = props => {
             },
           });
 
-          onSubmit({ profileValues, listingValues });
+          onSubmit(listingValues);
         }}
       />
     </main>

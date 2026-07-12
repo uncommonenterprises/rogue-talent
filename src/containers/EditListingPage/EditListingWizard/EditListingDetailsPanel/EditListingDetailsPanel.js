@@ -22,6 +22,7 @@ import { H3, ListingLink } from '../../../../components';
 
 // Import modules from this directory
 import { isRateListingField } from '../rateFields';
+import { isProfileListingField } from '../profileFields';
 import ErrorMessage from './ErrorMessage';
 import EditListingDetailsForm from './EditListingDetailsForm';
 import css from './EditListingDetailsPanel.module.css';
@@ -315,9 +316,12 @@ const EditListingDetailsPanel = props => {
   const classes = classNames(rootClassName || css.root, className);
   const { publicData, state } = listing?.attributes || {};
   const listingTypes = config.listing.listingTypes;
-  // Rate fields (half-day/hourly) are handled on the Pricing tab, so they're excluded
-  // here — from rendering, initial values, and the submit pick — all via this filter.
-  const listingFields = config.listing.listingFields.filter(f => !isRateListingField(f));
+  // Rate fields (Pricing tab) and profile fields (About-you tab) are collected on their
+  // own steps, so they're excluded here — from rendering, initial values, and the submit
+  // pick — all via this single filter.
+  const listingFields = config.listing.listingFields.filter(
+    f => !isRateListingField(f) && !isProfileListingField(f)
+  );
   const listingCategories = config.categoryConfiguration.categories;
   const categoryKey = config.categoryConfiguration.key;
 
