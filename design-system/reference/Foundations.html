@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rogue Talent — Brand Foundations</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body { background: var(--surface-page); color: var(--text-primary); font-family: var(--font-sans); }
+  a { color: var(--accent-600); text-decoration: none; }
+  a:hover { color: var(--accent-700); text-decoration: underline; }
+
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 40px; }
+  .eyebrow { font-family: var(--font-mono); font-size: var(--text-2xs); letter-spacing: var(--tracking-widest); text-transform: uppercase; color: var(--text-muted); }
+
+  /* ---- Cover ---- */
+  .cover { background: var(--surface-ink); color: var(--on-ink); padding: 72px 0 64px; }
+  .cover .topline { display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-inverse); padding-bottom: 16px; }
+  .cover .topline span { font-family: var(--font-sans); font-weight: var(--weight-bold); font-size: var(--text-2xs); letter-spacing: var(--tracking-wider); text-transform: uppercase; color: var(--ink-400); }
+  .masthead { font-family: var(--font-display); font-weight: var(--weight-extrabold); line-height: 0.86; letter-spacing: var(--tracking-tighter); margin: 44px 0 0; }
+  .masthead .l1 { display: block; font-size: 140px; }
+  .masthead .l2 { display: block; font-size: 140px; color: var(--accent-400); }
+  .cover .sub { margin-top: 36px; display: flex; gap: 40px; }
+  .cover .sub div { font-family: var(--font-sans); font-weight: var(--weight-semibold); font-size: var(--text-xs); letter-spacing: var(--tracking-wide); text-transform: uppercase; color: var(--ink-300); max-width: 240px; line-height: 1.7; }
+
+  /* ---- Section ---- */
+  section { padding: 72px 0; border-bottom: 1px solid var(--border-hairline); }
+  .sec-head { display: flex; align-items: baseline; gap: 20px; margin-bottom: 40px; }
+  .sec-num { font-family: var(--font-sans); font-weight: var(--weight-bold); font-size: var(--text-xs); letter-spacing: var(--tracking-wide); color: var(--accent-500); }
+  .sec-title { font-family: var(--font-display); font-size: var(--text-4xl); font-weight: var(--weight-extrabold); letter-spacing: var(--tracking-tighter); margin: 0; }
+  .sec-desc { margin-left: auto; max-width: 340px; font-size: var(--text-sm); color: var(--text-secondary); line-height: var(--leading-normal); }
+
+  /* ---- Colors ---- */
+  .swatches { display: grid; grid-template-columns: repeat(6, 1fr); gap: 2px; }
+  .sw { aspect-ratio: 3/4; display: flex; flex-direction: column; justify-content: flex-end; padding: 12px 10px; }
+  .sw .n { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; }
+  .sw .h { font-family: var(--font-mono); font-size: 10px; opacity: 0.72; }
+  .accent-row { display: grid; grid-template-columns: repeat(6, 1fr); gap: 2px; margin-top: 24px; }
+
+  /* ---- Type ---- */
+  .type-block { border-top: 1px solid var(--border-hairline); padding: 24px 0; display: grid; grid-template-columns: 160px 1fr; gap: 32px; }
+  .type-block .meta { font-family: var(--font-sans); font-weight: var(--weight-semibold); font-size: var(--text-2xs); letter-spacing: var(--tracking-wide); text-transform: uppercase; color: var(--text-muted); line-height: 1.9; }
+  .specimen-display { font-family: var(--font-display); font-size: 60px; font-weight: var(--weight-extrabold); letter-spacing: var(--tracking-tighter); line-height: 0.98; }
+  .specimen-display i { font-style: normal; color: var(--accent-500); }
+  .specimen-body { font-family: var(--font-sans); font-size: 17px; line-height: var(--leading-normal); color: var(--text-secondary); max-width: 62ch; }
+  .specimen-mono { font-family: var(--font-sans); font-weight: var(--weight-bold); font-size: 13px; letter-spacing: var(--tracking-wider); text-transform: uppercase; color: var(--text-primary); }
+  .specimen-mono b { color: var(--accent-600); }
+
+  /* ---- Spacing ---- */
+  .space-rows { display: flex; flex-direction: column; gap: 8px; }
+  .space-rows .r { display: flex; align-items: center; gap: 20px; }
+  .space-rows .t { width: 150px; font-family: var(--font-mono); font-size: 12px; color: var(--text-secondary); }
+  .space-rows .b { height: 16px; background: var(--ink-900); }
+
+  /* ---- Principles ---- */
+  .principles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; }
+  .principle h3 { font-family: var(--font-display); font-size: var(--text-2xl); font-weight: var(--weight-extrabold); margin: 0 0 10px; letter-spacing: var(--tracking-tight); }
+  .principle p { font-size: var(--text-sm); color: var(--text-secondary); line-height: var(--leading-normal); margin: 0; }
+  .principle .num { font-family: var(--font-sans); font-weight: var(--weight-bold); font-size: var(--text-xs); color: var(--accent-500); display: block; margin-bottom: 14px; }
+
+  .foot { padding: 40px 0 64px; font-family: var(--font-sans); font-weight: var(--weight-semibold); font-size: var(--text-2xs); letter-spacing: var(--tracking-wide); text-transform: uppercase; color: var(--text-muted); display: flex; justify-content: space-between; }
+</style>
+</head>
+<body>
+
+  <header class="cover">
+    <div class="wrap">
+      <div class="topline"><span>Rogue Talent</span><span>Brand Foundations</span><span>Vol. 01 · 2026</span></div>
+      <h1 class="masthead"><span class="l1">Rogue</span><span class="l2">Talent.</span></h1>
+      <div class="sub">
+        <div>A two-sided marketplace. Models and business, connected direct — no agent in the middle.</div>
+        <div>Fashion-forward for talent. Professional and timeless for the businesses that book them.</div>
+      </div>
+    </div>
+  </header>
+
+  <section>
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="sec-num">01</span>
+        <h2 class="sec-title">Colour</h2>
+        <p class="sec-desc">Editorial monochrome on a crisp white base — modern and technical. One electric-cobalt accent carries the "rogue" energy, used sparingly and always with intent.</p>
+      </div>
+      <div class="swatches">
+        <div class="sw" style="background:var(--ink-950);color:var(--ink-100)"><span class="n">Ink 950</span><span class="h">#0A0A0B</span></div>
+        <div class="sw" style="background:var(--ink-800);color:var(--ink-100)"><span class="n">Ink 800</span><span class="h">#202228</span></div>
+        <div class="sw" style="background:var(--ink-600);color:var(--ink-100)"><span class="n">Ink 600</span><span class="h">#52565F</span></div>
+        <div class="sw" style="background:var(--ink-400);color:var(--ink-900)"><span class="n">Ink 400</span><span class="h">#9A9DA5</span></div>
+        <div class="sw" style="background:var(--ink-200);color:var(--ink-800)"><span class="n">Ink 200</span><span class="h">#E2E3E7</span></div>
+        <div class="sw" style="background:var(--ink-50);color:var(--ink-800);outline:1px solid var(--ink-200);outline-offset:-1px"><span class="n">Ink 50</span><span class="h">#F7F8F9</span></div>
+      </div>
+      <div class="accent-row">
+        <div class="sw" style="background:var(--accent-700);color:#fff"><span class="n">Cobalt 700</span><span class="h">#1533B5</span></div>
+        <div class="sw" style="background:var(--accent-600);color:#fff"><span class="n">Cobalt 600</span><span class="h">#1E45DD</span></div>
+        <div class="sw" style="background:var(--accent-500);color:#fff;outline:2px solid var(--ink-900);outline-offset:-2px"><span class="n">Cobalt 500 ★</span><span class="h">#2B57FF</span></div>
+        <div class="sw" style="background:var(--accent-400);color:#fff"><span class="n">Cobalt 400</span><span class="h">#5B7BFF</span></div>
+        <div class="sw" style="background:var(--accent-100);color:var(--ink-700)"><span class="n">Cobalt 100</span><span class="h">#DCE3FF</span></div>
+        <div class="sw" style="background:var(--accent-50);color:var(--ink-700)"><span class="n">Cobalt 50</span><span class="h">#F0F3FF</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="sec-num">02</span>
+        <h2 class="sec-title">Typography</h2>
+        <p class="sec-desc">A characterful grotesque for display, a friendly grotesque for the work, tracked uppercase for labels. Modern, confident, consumer-tech.</p>
+      </div>
+      <div class="type-block">
+        <div class="meta">Bricolage Grotesque<br>Display<br>800 / 700<br>tracking −0.035em</div>
+        <div class="specimen-display">Face <i>the</i> season</div>
+      </div>
+      <div class="type-block">
+        <div class="meta">Hanken Grotesk<br>Text · UI<br>400 / 500 / 600 / 700<br>1.6 line-height</div>
+        <div class="specimen-body">A two-sided marketplace connecting models and the businesses that book them — directly, without an agent in the middle. Clear rates, verified profiles, contracts in hand. The interface stays quiet so the work can be loud.</div>
+      </div>
+      <div class="type-block">
+        <div class="meta">Hanken · tracked<br>Labels · Eyebrows<br>700 · uppercase<br>tracking 0.12em</div>
+        <div class="specimen-mono">Booking <b>Verified</b> · London <b>UK</b> · Editorial</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="sec-num">03</span>
+        <h2 class="sec-title">Space</h2>
+        <p class="sec-desc">A 4px base grid. Editorial layouts breathe — favour the larger steps for section rhythm and generous margins.</p>
+      </div>
+      <div class="space-rows">
+        <div class="r"><span class="t">space-3 · 12px</span><span class="b" style="width:12px"></span></div>
+        <div class="r"><span class="t">space-4 · 16px</span><span class="b" style="width:16px"></span></div>
+        <div class="r"><span class="t">space-5 · 24px</span><span class="b" style="width:24px"></span></div>
+        <div class="r"><span class="t">space-6 · 32px</span><span class="b" style="width:32px"></span></div>
+        <div class="r"><span class="t">space-7 · 48px</span><span class="b" style="width:48px"></span></div>
+        <div class="r"><span class="t">space-8 · 64px</span><span class="b" style="width:64px"></span></div>
+        <div class="r"><span class="t">space-9 · 96px</span><span class="b" style="width:96px"></span></div>
+      </div>
+    </div>
+  </section>
+
+  <section style="border-bottom:0">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="sec-num">04</span>
+        <h2 class="sec-title">Principles</h2>
+        <p class="sec-desc">How the system behaves when the rules aren't written down.</p>
+      </div>
+      <div class="principles">
+        <div class="principle">
+          <span class="num">A</span>
+          <h3>Editorial, not decorated</h3>
+          <p>Whitespace, hairline rules, and a strict grid do the work. Sharp corners, quiet shadows, no gradients. Let the imagery and the type carry the beauty.</p>
+        </div>
+        <div class="principle">
+          <span class="num">B</span>
+          <h3>Two audiences, one voice</h3>
+          <p>Cool and fashion-forward for talent; precise and professional for business. The Didone flatters the models, the grotesque reassures the bookers.</p>
+        </div>
+        <div class="principle">
+          <span class="num">C</span>
+          <h3>Cobalt with intent</h3>
+          <p>The accent is a scalpel, not a highlighter. One cobalt mark per view — a booking action, a live badge, a single word set apart. Red is reserved for danger only.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="wrap foot">
+    <span>Rogue Talent · Brand Foundations</span>
+    <span>The model, disrupted.</span>
+  </footer>
+
+</body>
+</html>

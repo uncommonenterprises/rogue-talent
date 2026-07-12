@@ -1,0 +1,219 @@
+/* ============================================================
+   ROGUE TALENT — DESIGN SYSTEM TOKENS (applied copy)
+   Source of truth: /design-system/tokens/*.css + DESIGN_SYSTEM.md
+   Generated from the design handoff — keep in sync with design-system/.
+   Fonts are loaded via the <link> in public/index.html (not @import here).
+   ============================================================ */
+
+/* ============================================================
+   ROGUE TALENT — COLOR TOKENS
+   Crisp white base, cool true-neutral ink ramp, one electric
+   accent. Modern and technical; red is reserved for danger only.
+   ============================================================ */
+
+:root {
+  /* --- Ink ramp (cool, near-neutral greys) --- */
+  --ink-950: #0a0a0b; /* true black — ink blocks, footers */
+  --ink-900: #131417; /* primary text */
+  --ink-800: #202228;
+  --ink-700: #333640;
+  --ink-600: #52565f; /* secondary text */
+  --ink-500: #71757e; /* muted text, captions */
+  --ink-400: #9a9da5; /* disabled, placeholder */
+  --ink-300: #c4c6cc; /* hairline on dark surfaces */
+  --ink-200: #e2e3e7; /* hairline borders */
+  --ink-100: #eff0f2; /* subtle fills, dividers */
+  --ink-50: #f7f8f9; /* subtle section surface */
+  --white: #ffffff; /* the base — page & product surface */
+
+  /* --- Electric Cobalt — the single accent ---
+     oklch(0.56 0.24 266) · fresh, technical, trustworthy.
+     Cool for talent, professional for business. Used with intent. */
+  --accent-700: #1533b5; /* deep, pressed on light */
+  --accent-600: #1e45dd; /* pressed / active */
+  --accent-500: #2b57ff; /* ACCENT — default */
+  --accent-400: #5b7bff; /* hover, on-dark accent */
+  --accent-100: #dce3ff; /* tint fill */
+  --accent-50: #f0f3ff; /* faint tint surface */
+
+  /* ============================================================
+     SEMANTIC ALIASES — reference these in product & marketing.
+     ============================================================ */
+
+  /* Text */
+  --text-primary: var(--ink-900);
+  --text-secondary: var(--ink-600);
+  --text-muted: var(--ink-500);
+  --text-disabled: var(--ink-400);
+  --text-inverse: var(--white);
+  --text-accent: var(--accent-600);
+
+  /* Surfaces */
+  --surface-page: var(--white); /* the base — marketing & product */
+  --surface-card: var(--white); /* cards, sheets */
+  --surface-subtle: var(--ink-50); /* subtle section fills */
+  --surface-ink: var(--ink-950); /* inverted / editorial black blocks */
+  --surface-accent: var(--accent-500);
+
+  /* Borders & dividers */
+  --border-hairline: var(--ink-200); /* 1px editorial rules */
+  --border-subtle: var(--ink-100);
+  --border-strong: var(--ink-900); /* keyline boxes, focus frames */
+  --border-inverse: var(--ink-700); /* rules on dark surfaces */
+
+  /* On-color foregrounds */
+  --on-ink: var(--white);
+  --on-accent: var(--white);
+
+  /* Focus */
+  --focus-ring: var(--accent-500);
+
+  /* Status — red now means ONE thing: danger. */
+  --status-success: #1e7f52;
+  --status-warning: #b6791c;
+  --status-error: #d22b2b;
+  --status-info: var(--accent-500);
+}
+/* ============================================================
+   ROGUE TALENT — TYPOGRAPHY TOKENS
+   Modern consumer-tech voice: a characterful grotesque display
+   over a friendly, highly-legible grotesque body. Labels are
+   tracked uppercase grotesque. Mono is utility only.
+   ============================================================ */
+
+:root {
+  /* --- Families ---
+     Display: Bricolage Grotesque — contemporary, a little characterful.
+              Wordmark, headlines, big numerals, rates. Weights 700/800.
+     Sans:    Hanken Grotesk — friendly, warm, workhorse grotesque.
+              Body, UI, labels, everything functional. 400–800.
+     Mono:    IBM Plex Mono — UTILITY ONLY. Code, IDs, tabular figures,
+              token names. NOT brand voice — labels use the sans. */
+  --font-display: 'Bricolage Grotesque', 'Helvetica Neue', Arial, sans-serif;
+  --font-sans: 'Hanken Grotesk', 'Helvetica Neue', Arial, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+  /* --- Type scale (px) ---
+     Dramatic jumps at the top for confident display, tight steps for text. */
+  --text-2xs: 11px;
+  --text-xs: 12px;
+  --text-sm: 14px;
+  --text-base: 16px;
+  --text-lg: 18px;
+  --text-xl: 22px;
+  --text-2xl: 28px;
+  --text-3xl: 36px;
+  --text-4xl: 48px;
+  --text-5xl: 64px;
+  --text-6xl: 88px;
+  --text-cover: 128px; /* masthead / hero scale */
+
+  /* --- Weights --- */
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+  --weight-extrabold: 800; /* display headlines & wordmark */
+
+  /* --- Line heights --- */
+  --leading-none: 1;
+  --leading-tight: 1.02; /* display headlines */
+  --leading-snug: 1.28; /* subheads */
+  --leading-normal: 1.6; /* body copy */
+  --leading-relaxed: 1.75; /* long-form */
+
+  /* --- Letter spacing ---
+     Bricolage display wants tight tracking; grotesque labels want it wide. */
+  --tracking-tighter: -0.035em;
+  --tracking-tight: -0.02em;
+  --tracking-normal: 0em;
+  --tracking-wide: 0.06em;
+  --tracking-wider: 0.12em; /* uppercase labels / eyebrows */
+  --tracking-widest: 0.16em; /* spaced-out utility labels */
+
+  /* --- Semantic type roles --- */
+  --role-eyebrow: var(--weight-bold) var(--text-xs) / 1 var(--font-sans);
+  --role-body: var(--weight-regular) var(--text-base) / var(--leading-normal) var(--font-sans);
+  --role-display: var(--weight-extrabold) var(--text-5xl) / var(--leading-tight) var(--font-display);
+}
+/* ============================================================
+   ROGUE TALENT — SPACING & LAYOUT TOKENS
+   4px base grid. Editorial layouts breathe — bias toward the
+   larger steps for section rhythm and margins.
+   ============================================================ */
+
+:root {
+  /* --- Space scale (4px base) --- */
+  --space-0: 0;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+  --space-9: 96px;
+  --space-10: 128px;
+  --space-11: 192px;
+
+  /* --- Layout --- */
+  --container-max: 1280px; /* product / app shell */
+  --container-editorial: 1080px; /* marketing reading measure */
+  --measure-text: 66ch; /* long-form line length */
+  --gutter: var(--space-5);
+  --section-gap: var(--space-9);
+
+  /* --- Editorial grid --- */
+  --grid-columns: 12;
+  --grid-gap: var(--space-5);
+}
+/* ============================================================
+   ROGUE TALENT — RADII, BORDERS & SHADOWS
+   The system is fundamentally rectilinear — print/editorial DNA.
+   Sharp corners by default; a small radius only on interactive
+   product elements; pills reserved for tags & filter chips.
+   Shadows are quiet and cool: no dramatic elevation.
+   ============================================================ */
+
+:root {
+  /* --- Radii --- */
+  --radius-none: 0; /* editorial default — images, cards, blocks */
+  --radius-sm: 2px; /* inputs, buttons (subtle softening) */
+  --radius-md: 4px; /* product cards, menus */
+  --radius-lg: 8px; /* large surfaces, modals */
+  --radius-pill: 999px; /* tags, filter chips, avatars */
+
+  /* --- Border widths --- */
+  --border-0: 0;
+  --border-hair: 1px; /* editorial rules, dividers */
+  --border-key: 1.5px; /* keyline frames */
+  --border-bold: 2px; /* focus / selected emphasis */
+
+  /* --- Shadows (low, neutral, warm-tinted) --- */
+  --shadow-none: none;
+  --shadow-xs: 0 1px 2px rgba(10, 10, 12, 0.05);
+  --shadow-sm: 0 2px 8px rgba(10, 10, 12, 0.06);
+  --shadow-md: 0 8px 28px rgba(10, 10, 12, 0.08);
+  --shadow-lg: 0 24px 56px rgba(10, 10, 12, 0.1);
+  --shadow-focus: 0 0 0 2px var(--white), 0 0 0 4px var(--accent-500);
+}
+/* ============================================================
+   ROGUE TALENT — MOTION TOKENS
+   Editorial restraint: motion is confident and quick, never bouncy.
+   Fades and precise slides; no elastic/overshoot easing.
+   ============================================================ */
+
+:root {
+  --dur-instant: 80ms;
+  --dur-fast: 140ms;
+  --dur-base: 220ms;
+  --dur-slow: 380ms;
+  --dur-editorial: 640ms; /* hero reveals, cover transitions */
+
+  /* Easing — crisp entrance, gentle settle. No overshoot. */
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
+  --ease-editorial: cubic-bezier(0.4, 0, 0.1, 1);
+}

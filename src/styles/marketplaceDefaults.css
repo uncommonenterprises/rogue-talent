@@ -1,5 +1,8 @@
 @import '../assets/sanitize.css';
 @import './customMediaQueries.css';
+/* Rogue Talent design-system tokens (see /design-system/DESIGN_SYSTEM.md). Imported before
+   the :root block below so Sharetribe's variables can be bridged onto the DS tokens. */
+@import './designTokens.css';
 
 /* ================ Custom Properties aka CSS variables ================ */
 
@@ -20,14 +23,15 @@
   * Colors used for different functions (like error texts)
   * Subtle color variants are used in Stripe verification status box
   */
-  --colorSuccess: #138041;
+  /* Base status colours bridged to the design system (§4). Red is danger only. */
+  --colorSuccess: var(--status-success); /* #1E7F52 */
   --colorSuccessDark: #0d542a;
   --colorSuccessLight: #1aad57;
   --colorSuccessSubtle: #f0fff6;
-  --colorFail: #e7000b;
+  --colorFail: var(--status-error); /* #D22B2B */
   --colorFailDark: #cc0000;
   --colorFailSubtle: #fff0f0;
-  --colorAttention: #ffaa00;
+  --colorAttention: var(--status-warning); /* #B6791C */
   --colorAttentionDark: #b25900;
   --colorAttentionSubtle: #fff7f0;
   --colorBannedLight: var(--marketplaceColorLight);
@@ -56,17 +60,21 @@
   * In the future, we are planning to bring more --marketplace* CSS Properties
   * from hosted assets, which means that they could be managed through Console.
   */
-  --marketplaceColor: #6938ef; /* hsl(256, 85%, 58%) */
-  --marketplaceColorLight: #4a12e2; /* hsl(256, 85%, 48%) */
-  --marketplaceColorDark: #8d68f3; /* hsl(256, 85%, 68% */
+  /* Bridged to the design system's electric cobalt accent. NOTE: at runtime Sharetribe
+     overrides --marketplaceColor from the Console branding asset, so this default only
+     applies until the Console "Marketplace colour" is set to #2B57FF (accent-500). */
+  --marketplaceColor: var(--accent-500); /* #2B57FF */
+  --marketplaceColorLight: var(--accent-400); /* #5B7BFF */
+  --marketplaceColorDark: var(--accent-600); /* #1E45DD */
 
   /** 
    * The fill color used by <PrimaryButton>
    * These might be overwritten by values from hosted assets
    */
-  --colorPrimaryButton: #138041;
-  --colorPrimaryButtonDark: #0d542a;
-  --colorPrimaryButtonLight: #1aad57;
+  /* Bridged to cobalt: primary action = accent-500, hover accent-600 (design system §9). */
+  --colorPrimaryButton: var(--accent-500);
+  --colorPrimaryButtonDark: var(--accent-600);
+  --colorPrimaryButtonLight: var(--accent-400);
 
   /** 
    * The fill color used by <SecondaryButton>
@@ -83,8 +91,10 @@
   --colorStatusFinalState: var(--colorGrey600);
 
   /* ================ Font ================ */
-  --fontFamily: -apple-system, BlinkMacSystemFont, 'Inter', Helvetica, Arial, sans-serif,
-    'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+  /* Bridged to the design system: Hanken Grotesk for body/UI (--font-sans). Bricolage
+     Grotesque (--font-display) is used for display moments; IBM Plex Mono (--font-mono)
+     for code/IDs. See /design-system/DESIGN_SYSTEM.md §5. */
+  --fontFamily: var(--font-sans);
 
   --fontWeightRegular: 400;
   --fontWeightMedium: 500;

@@ -19,7 +19,14 @@ Rogue Talent (roguetalent.co) is a two-sided marketplace for professional models
 - The listing type is `model-profile` with calendar booking (daily unit)
 - Commission: 10% provider + 5% customer
 - All users require manual admin approval before full access
-- Brand colour: #c41e3a (crimson red)
+- Brand accent: **electric cobalt `#2B57FF`** (design-system `--accent-500`). Red is danger only. (Superseded the old crimson.) NOTE: the live `--marketplaceColor` is set from the Sharetribe Console branding asset — it must be set to `#2B57FF` in Console or it overrides the code default.
+
+## Design system — USE FOR ALL UI WORK
+The canonical reference is **[`design-system/DESIGN_SYSTEM.md`](design-system/DESIGN_SYSTEM.md)** (brand rules, every token with exact hex/px, component specs, full CSS). **Read it before building any UI.**
+- **Tokens:** use the design-system CSS custom properties — colours (`--ink-*`, `--accent-*`, semantic aliases like `--text-primary`/`--surface-*`/`--border-hairline`), type (`--font-display` Bricolage, `--font-sans` Hanken, `--font-mono`, `--text-*` scale, `--weight-*`, `--leading-*`, `--tracking-*`), spacing (`--space-*`), radii/borders/shadows (`--radius-*`, `--border-*`, `--shadow-*`), motion (`--dur-*`, `--ease-*`). Defined in `src/styles/designTokens.css` (mirrors `design-system/tokens/`), imported by `marketplaceDefaults.css`. **Never invent new colours, fonts, spacing, or radii** — pull from these tokens.
+- **Components:** match the `rt-*` specs (§9 + `design-system/components.css`) — `rt-btn`, `rt-field`/`rt-input`/`rt-select`/`rt-textarea`, `rt-check`/`rt-toggle`, `rt-tag`/`rt-chip`, `rt-badge`/`rt-dot`, `rt-avatar`, `rt-talent` (marketplace card), `rt-nav`, `rt-tabs`/`rt-segmented`. Rebuild them with the repo's patterns (React + CSS Modules on the tokens), preserving exact colours/type/spacing/radii/**states** (hover/active/focus rings). Fonts load via the Google Fonts `<link>` in `public/index.html`.
+- **Rollout:** bridge-and-incremental — tokens/fonts are mapped globally (Sharetribe's `--fontFamily`/`--marketplaceColor`/`--colorPrimaryButton`/status colours now point at the DS tokens in `marketplaceDefaults.css`); rebuild/adopt components per screen as we touch them. Reference `design-system/reference/*.html` for the visual target.
+- **Brand rules to respect:** one cobalt action per view; red = danger only; hairlines over shadows; no gradients; no emoji; Bricolage never italic (accent words in cobalt); green (not red) for availability.
 
 ## Translation changes already made (en.json)
 - "Post a new listing" → "Create your profile" (nav, topbar, manage page)

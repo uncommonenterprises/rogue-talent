@@ -1,0 +1,32 @@
+/* ============================================================
+   ROGUE TALENT — SPACING & LAYOUT TOKENS
+   4px base grid. Editorial layouts breathe — bias toward the
+   larger steps for section rhythm and margins.
+   ============================================================ */
+
+:root {
+  /* --- Space scale (4px base) --- */
+  --space-0: 0;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+  --space-9: 96px;
+  --space-10: 128px;
+  --space-11: 192px;
+
+  /* --- Layout --- */
+  --container-max: 1280px;  /* product / app shell */
+  --container-editorial: 1080px; /* marketing reading measure */
+  --measure-text: 66ch;     /* long-form line length */
+  --gutter: var(--space-5);
+  --section-gap: var(--space-9);
+
+  /* --- Editorial grid --- */
+  --grid-columns: 12;
+  --grid-gap: var(--space-5);
+}

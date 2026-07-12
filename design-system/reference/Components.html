@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rogue Talent — Components</title>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="components.css">
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body { background: var(--surface-page); color: var(--text-primary); font-family: var(--font-sans); }
+  a { color: var(--accent-600); text-decoration: none; }
+  a:hover { color: var(--accent-700); }
+  .wrap { max-width: 1160px; margin: 0 auto; padding: 0 40px; }
+
+  .cover { background: var(--surface-ink); color: var(--on-ink); padding: 56px 0 48px; }
+  .cover .topline { display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-inverse); padding-bottom: 16px; }
+  .cover .topline span { font-weight: 700; font-size: var(--text-2xs); letter-spacing: var(--tracking-wider); text-transform: uppercase; color: var(--ink-400); }
+  .cover h1 { font-family: var(--font-display); font-weight: 800; font-size: 84px; letter-spacing: var(--tracking-tighter); line-height: 0.9; margin: 32px 0 0; }
+  .cover h1 span { color: var(--accent-400); }
+  .cover p { max-width: 520px; margin: 20px 0 0; color: var(--ink-300); font-size: var(--text-base); line-height: var(--leading-normal); }
+
+  section { padding: 64px 0; border-bottom: 1px solid var(--border-hairline); }
+  .sec-head { display: flex; align-items: baseline; gap: 20px; margin-bottom: 36px; }
+  .sec-num { font-weight: 700; font-size: var(--text-xs); letter-spacing: var(--tracking-wide); color: var(--accent-500); }
+  .sec-title { font-family: var(--font-display); font-size: var(--text-3xl); font-weight: 800; letter-spacing: var(--tracking-tight); margin: 0; }
+  .sec-desc { margin-left: auto; max-width: 320px; font-size: var(--text-sm); color: var(--text-secondary); line-height: var(--leading-normal); }
+
+  .specimen { border: 1px solid var(--border-hairline); border-radius: var(--radius-lg); padding: 32px; background: var(--white); }
+  .specimen + .specimen { margin-top: 16px; }
+  .specimen.ink { background: var(--surface-ink); }
+  .row { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; }
+  .row + .row { margin-top: 24px; }
+  .col { display: flex; flex-direction: column; gap: 16px; }
+  .caplabel { font-weight: 700; font-size: var(--text-2xs); letter-spacing: var(--tracking-wider); text-transform: uppercase; color: var(--text-muted); margin-bottom: 16px; }
+  .ink .caplabel { color: var(--ink-400); }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .grid-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; }
+  .fieldset { display: flex; flex-direction: column; gap: 20px; max-width: 420px; }
+</style>
+</head>
+<body>
+
+  <header class="cover">
+    <div class="wrap">
+      <div class="topline"><span>Rogue Talent</span><span>Component Library</span><span>Vol. 01 · 2026</span></div>
+      <h1>Components<span>.</span></h1>
+      <p>The working parts of the marketplace — built entirely on the foundation tokens. Buttons, forms, tags, badges, the talent card, navigation. Link <code style="font-family:var(--font-mono);font-size:13px;color:var(--ink-100)">components.css</code> after <code style="font-family:var(--font-mono);font-size:13px;color:var(--ink-100)">styles.css</code>.</p>
+    </div>
+  </header>
+
+  <!-- NAV -->
+  <section>
+    <div class="wrap">
+      <div class="sec-head"><span class="sec-num">01</span><h2 class="sec-title">Navigation</h2>
+        <p class="sec-desc">Top nav for the marketplace shell. Wordmark, section links, sign-in and a primary action.</p></div>
+      <div class="specimen" style="padding:0;overflow:hidden">
+        <nav class="rt-nav">
+          <a class="rt-nav__brand" href="#">Rogue<span>.</span></a>
+          <div class="rt-nav__links">
+            <a class="rt-nav__link rt-nav__link--active" href="#">Discover</a>
+            <a class="rt-nav__link" href="#">Talent</a>
+            <a class="rt-nav__link" href="#">Bookings</a>
+            <a class="rt-nav__link" href="#">How it works</a>
+          </div>
+          <div class="rt-nav__actions">
+            <a class="rt-nav__link" href="#">Sign in</a>
+            <button class="rt-btn rt-btn--primary rt-btn--sm">Post a booking</button>
+          </div>
+        </nav>
+      </div>
+    </div>
+  </section>
+
+  <!-- BUTTONS -->
+  <section>
+    <div class="wrap">
+      <div class="sec-head"><span class="sec-num">02</span><h2 class="sec-title">Buttons</h2>
+        <p class="sec-desc">Cobalt primary carries the single main action per view. Secondary is an ink keyline; ghost for tertiary. Red is danger only.</p></div>
+      <div class="specimen">
+        <div class="caplabel">Variants</div>
+        <div class="row">
+          <button class="rt-btn rt-btn--primary">Book direct</button>
+          <button class="rt-btn rt-btn--secondary">View profile</button>
+          <button class="rt-btn rt-btn--ghost">Save</button>
+          <button class="rt-btn rt-btn--danger">Cancel booking</button>
+          <button class="rt-btn rt-btn--primary" disabled>Disabled</button>
+        </div>
+        <div class="caplabel" style="margin-top:32px">Sizes &amp; icon</div>
+        <div class="row">
+          <button class="rt-btn rt-btn--primary rt-btn--lg">Large</button>
+          <button class="rt-btn rt-btn--primary">Medium</button>
+          <button class="rt-btn rt-btn--primary rt-btn--sm">Small</button>
+          <button class="rt-btn rt-btn--secondary">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            With icon
+          </button>
+          <button class="rt-btn rt-btn--secondary rt-btn--icon" aria-label="Add">
+            <svg width="18" height="18" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="specimen ink rt-on-ink">
+        <div class="caplabel">On dark surfaces</div>
+        <div class="row">
+          <button class="rt-btn rt-btn--primary">Book direct</button>
+          <button class="rt-btn rt-btn--secondary">View profile</button>
+          <button class="rt-btn rt-btn--ghost">Save</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FORMS -->
+  <section>
+    <div class="wrap">
+      <div class="sec-head"><span class="sec-num">03</span><h2 class="sec-title">Form controls</h2>
+        <p class="sec-desc">Inputs, search, select and textarea. 8px radii, cobalt focus ring, quiet hairline borders. Errors use the danger red.</p></div>
+      <div class="specimen">
+        <div class="grid2">
+          <div class="fieldset">
+            <div class="rt-field">
+              <label class="rt-field__label">Full name <span class="rt-req">*</span></label>
+              <input class="rt-input" type="text" placeholder="Mara Voss">
+            </div>
+            <div class="rt-field">
+              <label class="rt-field__label">Search talent</label>
+              <div class="rt-search">
+                <span class="rt-search__icon">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.5"/><path d="M11 11l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                </span>
+                <input class="rt-input" type="text" placeholder="City, category, name…">
+              </div>
+            </div>
+            <div class="rt-field">
+              <label class="rt-field__label">Category</label>
+              <select class="rt-select">
+                <option>Editorial</option>
+                <option>Runway</option>
+                <option>Commercial</option>
+                <option>Fitness</option>
+              </select>
+              <span class="rt-field__hint">Pick the primary discipline.</span>
+            </div>
+          </div>
+          <div class="fieldset">
+            <div class="rt-field">
+              <label class="rt-field__label">Day rate</label>
+              <input class="rt-input rt-input--error" type="text" value="£ —">
+              <span class="rt-field__error">Enter a rate to publish your profile.</span>
+            </div>
+            <div class="rt-field">
+              <label class="rt-field__label">About</label>
+              <textarea class="rt-textarea" placeholder="A short bio for the businesses who find you…"></textarea>
+            </div>
+            <div class="rt-field">
+              <label class="rt-field__label">Locked field</label>
+              <input class="rt-input" type="text" value="Verified · cannot edit" disabled>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SELECTION -->
+  <section>
+    <div class="wrap">
+      <div class="sec-head"><span class="sec-num">04</span><h2 class="sec-title">Selection</h2>
+        <p class="sec-desc">Checkbox, radio and toggle. Cobalt fill on the selected state; 3px tint focus ring.</p></div>
+      <div class="specimen">
+        <div class="row" style="gap:40px">
+          <label class="rt-check">
+            <input type="checkbox" checked>
+            <span class="rt-check__box"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6.2l2.3 2.3 4.7-5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            Available for travel
+          </label>
+          <label class="rt-check">
+            <input type="checkbox">
+            <span class="rt-check__box"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6.2l2.3 2.3 4.7-5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            Represents self
+          </label>
+          <label class="rt-check rt-check--radio">
+            <input type="radio" name="r" checked>
+            <span class="rt-check__box"><svg width="8" height="8" viewBox="0 0 8 8"><circle cx="4" cy="4" r="4" fill="white"/></svg></span>
+            Talent
+          </label>
+          <label class="rt-check rt-check--radio">
+            <input type="radio" name="r">
+            <span class="rt-check__box"><svg width="8" height="8" viewBox="0 0 8 8"><circle cx="4" cy="4" r="4" fill="white"/></svg></span>
+            Business
+          </label>
+          <label class="rt-toggle">
+            <input type="checkbox" checked>
+            <span class="rt-toggle__track"></span>
+            Accepting bookings
+          </label>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TAGS & CHIPS -->
+  <section>
+    <div class="wrap">
+      <div class="sec-head"><span class="sec-num">05</span><h2 class="sec-title">Tags &amp; chips</h2>
+        <p class="sec-desc">Tags label attributes; filter chips are interactive and show a selected state. Both pill-shaped.</p></div>
+      <div class="specimen">
+        <div class="caplabel">Tags</div>
+        <div class="row">
+          <span class="rt-tag">Editorial</span>
+          <span class="rt-tag">Runway</span>
+          <span class="rt-tag rt-tag--accent">Top booked</span>
+          <span class="rt-tag rt-tag--outline">178cm</span>
+        </div>
+        <div class="caplabel" style="margin-top:32px">Filter chips</div>
+        <div class="row">
+          <span class="rt-chip rt-chip--selected">All
+            <span class="rt-chip__x"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 3l6 6M9 3l-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+          </span>
+          <span class="rt-chip">London</span>
+          <span class="rt-chip">Available this week</span>
+          <span class="rt-chip">Verified only</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BADGES & AVATARS -->
+  <section>
+    <div class="wrap">
+      <div class="sec-head"><span class="sec-num">06</span><h2 class="sec-title">Badges, status &amp; avatars</h2>
+        <p class="sec-desc">Verified is the trust signal (cobalt). Availability uses a quiet green dot. Avatars fall back to a display-type monogram.</p></div>
+      <div class="specimen">
+        <div class="grid2">
+          <div>
+            <div class="caplabel">Badges</div>
+            <div class="row">
+              <span class="rt-badge rt-badge--verified">
+                <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M2.5 6.2l2.3 2.3 4.7-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Verified
+              </span>
+              <span class="rt-badge rt-badge--new">New</span>
+              <span class="rt-badge rt-badge--available"><span class="rt-dot rt-dot--available"></span>Available</span>
+              <span class="rt-badge">Pro</span>
+              <span class="rt-badge rt-badge--ink">Featured</span>
+            </div>
+            <div class="caplabel" style="margin-top:32px">Status</div>
+            <div class="row">
+              <span style="display:inline-flex;align-items:center;gap:8px;font-size:14px;color:var(--text-secondary)"><span class="rt-dot rt-dot--available"></span>Available now</span>
+              <span style="display:inline-flex;align-items:center;gap:8px;font-size:14px;color:var(--text-secondary)"><span class="rt-dot rt-dot--busy"></span>Booked until Fri</span>
+              <span style="display:inline-flex;align-items:center;gap:8px;font-size:14px;color:var(--text-secondary)"><span class="rt-dot rt-dot--off"></span>Offline</span>
+            </div>
+          </div>
+          <div>
+            <div class="caplabel">Avatars</div>
+            <div class="row">
+              <span class="rt-avatar rt-avatar--sm">MV</span>
+              <span class="rt-avatar">MV</span>
+              <span class="rt-avatar rt-avatar--lg">MV</span>
+              <span class="rt-avatar-group" style="margin-left:12px">
+                <span class="rt-avatar rt-avatar--sm">MV</span>
+                <span class="rt-avatar rt-avatar--sm">JD</span>
+                <span class="rt-avatar rt-avatar--sm">KL</span>
+                <span class="rt-avatar rt-avatar--sm" style="background:var(--ink-900);color:var(--white);font-family:var(--font-sans);font-weight:700;font-size:11px">+9</span>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TABS -->
+  <section>
+    <div class="wrap">
+      <div class="sec-head"><span class="sec-num">07</span><h2 class="sec-title">Tabs &amp; segmented</h2>
+        <p class="sec-desc">Underline tabs for page-level sections; the segmented control for the two-sided switch and quick view toggles.</p></div>
+      <div class="specimen">
+        <div class="rt-tabs">
+          <span class="rt-tab rt-tab--active">Portfolio</span>
+          <span class="rt-tab">Rates</span>
+          <span class="rt-tab">Availability</span>
+          <span class="rt-tab">Reviews</span>
+        </div>
+        <div class="row" style="margin-top:32px">
+          <div class="rt-segmented">
+            <input type="radio" name="seg" id="seg-t" checked><label for="seg-t">I'm talent</label>
+            <input type="radio" name="seg" id="seg-b"><label for="seg-b">I'm a business</label>
+          </div>
+          <div class="rt-segmented">
+            <input type="radio" name="view" id="v-grid" checked><label for="v-grid">Grid</label>
+            <input type="radio" name="view" id="v-list"><label for="v-list">List</label>
+            <input type="radio" name="view" id="v-map"><label for="v-map">Map</label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TALENT CARD -->
+  <section style="border-bottom:0">
+    <div class="wrap">
+      <div class="sec-head"><span class="sec-num">08</span><h2 class="sec-title">Talent card</h2>
+        <p class="sec-desc">The hero object of the marketplace. Composes photo, verified badge, name, meta, tags, rate and the primary book action.</p></div>
+      <div class="specimen">
+        <div class="grid-cards">
+
+          <article class="rt-talent">
+            <div class="rt-talent__photo">
+              <span class="rt-badge rt-badge--verified"><svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M2.5 6.2l2.3 2.3 4.7-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Verified</span>
+              <span class="rt-ph">Portfolio</span>
+            </div>
+            <div class="rt-talent__body">
+              <div class="rt-talent__loc">
+                <span class="rt-eyebrow">London · UK</span>
+                <span style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--text-secondary)"><span class="rt-dot rt-dot--available"></span>Available</span>
+              </div>
+              <div class="rt-talent__name">Mara Voss</div>
+              <div class="rt-talent__meta">Editorial · Runway · Campaign · 178cm</div>
+              <div class="rt-talent__tags">
+                <span class="rt-tag">Editorial</span>
+                <span class="rt-tag rt-tag--accent">Top booked</span>
+              </div>
+              <div class="rt-talent__rule"></div>
+              <div class="rt-talent__foot">
+                <span class="rt-talent__rate">£1,200 <small>/ day</small></span>
+                <button class="rt-btn rt-btn--primary rt-btn--sm">Book direct</button>
+              </div>
+            </div>
+          </article>
+
+          <article class="rt-talent">
+            <div class="rt-talent__photo" style="background:repeating-linear-gradient(135deg,#E6E8EC 0 12px,#EEF0F3 12px 24px)">
+              <span class="rt-badge rt-badge--new">New</span>
+              <span class="rt-ph">Portfolio</span>
+            </div>
+            <div class="rt-talent__body">
+              <div class="rt-talent__loc">
+                <span class="rt-eyebrow">Manchester · UK</span>
+                <span style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--text-secondary)"><span class="rt-dot rt-dot--busy"></span>Booked</span>
+              </div>
+              <div class="rt-talent__name">Jonah Reid</div>
+              <div class="rt-talent__meta">Commercial · Fitness · 186cm</div>
+              <div class="rt-talent__tags">
+                <span class="rt-tag">Commercial</span>
+                <span class="rt-tag rt-tag--outline">Fitness</span>
+              </div>
+              <div class="rt-talent__rule"></div>
+              <div class="rt-talent__foot">
+                <span class="rt-talent__rate">£850 <small>/ day</small></span>
+                <button class="rt-btn rt-btn--secondary rt-btn--sm">View profile</button>
+              </div>
+            </div>
+          </article>
+
+          <article class="rt-talent">
+            <div class="rt-talent__photo" style="background:repeating-linear-gradient(135deg,#E9E7EC 0 12px,#F1EFF4 12px 24px)">
+              <span class="rt-badge rt-badge--verified"><svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M2.5 6.2l2.3 2.3 4.7-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Verified</span>
+              <span class="rt-ph">Portfolio</span>
+            </div>
+            <div class="rt-talent__body">
+              <div class="rt-talent__loc">
+                <span class="rt-eyebrow">Paris · FR</span>
+                <span style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--text-secondary)"><span class="rt-dot rt-dot--available"></span>Available</span>
+              </div>
+              <div class="rt-talent__name">Aïcha Ndiaye</div>
+              <div class="rt-talent__meta">Editorial · Couture · 175cm</div>
+              <div class="rt-talent__tags">
+                <span class="rt-tag rt-tag--accent">Top booked</span>
+                <span class="rt-tag">Couture</span>
+              </div>
+              <div class="rt-talent__rule"></div>
+              <div class="rt-talent__foot">
+                <span class="rt-talent__rate">€1,600 <small>/ day</small></span>
+                <button class="rt-btn rt-btn--primary rt-btn--sm">Book direct</button>
+              </div>
+            </div>
+          </article>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+</body>
+</html>

@@ -1,0 +1,69 @@
+/* ============================================================
+   ROGUE TALENT — COLOR TOKENS
+   Crisp white base, cool true-neutral ink ramp, one electric
+   accent. Modern and technical; red is reserved for danger only.
+   ============================================================ */
+
+:root {
+  /* --- Ink ramp (cool, near-neutral greys) --- */
+  --ink-950: #0A0A0B;  /* true black — ink blocks, footers */
+  --ink-900: #131417;  /* primary text */
+  --ink-800: #202228;
+  --ink-700: #333640;
+  --ink-600: #52565F;  /* secondary text */
+  --ink-500: #71757E;  /* muted text, captions */
+  --ink-400: #9A9DA5;  /* disabled, placeholder */
+  --ink-300: #C4C6CC;  /* hairline on dark surfaces */
+  --ink-200: #E2E3E7;  /* hairline borders */
+  --ink-100: #EFF0F2;  /* subtle fills, dividers */
+  --ink-50:  #F7F8F9;  /* subtle section surface */
+  --white:   #FFFFFF;  /* the base — page & product surface */
+
+  /* --- Electric Cobalt — the single accent ---
+     oklch(0.56 0.24 266) · fresh, technical, trustworthy.
+     Cool for talent, professional for business. Used with intent. */
+  --accent-700: #1533B5;  /* deep, pressed on light */
+  --accent-600: #1E45DD;  /* pressed / active */
+  --accent-500: #2B57FF;  /* ACCENT — default */
+  --accent-400: #5B7BFF;  /* hover, on-dark accent */
+  --accent-100: #DCE3FF;  /* tint fill */
+  --accent-50:  #F0F3FF;  /* faint tint surface */
+
+  /* ============================================================
+     SEMANTIC ALIASES — reference these in product & marketing.
+     ============================================================ */
+
+  /* Text */
+  --text-primary: var(--ink-900);
+  --text-secondary: var(--ink-600);
+  --text-muted: var(--ink-500);
+  --text-disabled: var(--ink-400);
+  --text-inverse: var(--white);
+  --text-accent: var(--accent-600);
+
+  /* Surfaces */
+  --surface-page: var(--white);      /* the base — marketing & product */
+  --surface-card: var(--white);      /* cards, sheets */
+  --surface-subtle: var(--ink-50);   /* subtle section fills */
+  --surface-ink: var(--ink-950);     /* inverted / editorial black blocks */
+  --surface-accent: var(--accent-500);
+
+  /* Borders & dividers */
+  --border-hairline: var(--ink-200); /* 1px editorial rules */
+  --border-subtle: var(--ink-100);
+  --border-strong: var(--ink-900);   /* keyline boxes, focus frames */
+  --border-inverse: var(--ink-700);  /* rules on dark surfaces */
+
+  /* On-color foregrounds */
+  --on-ink: var(--white);
+  --on-accent: var(--white);
+
+  /* Focus */
+  --focus-ring: var(--accent-500);
+
+  /* Status — red now means ONE thing: danger. */
+  --status-success: #1E7F52;
+  --status-warning: #B6791C;
+  --status-error: #D22B2B;
+  --status-info: var(--accent-500);
+}

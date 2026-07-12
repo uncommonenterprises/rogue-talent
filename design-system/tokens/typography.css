@@ -1,0 +1,64 @@
+/* ============================================================
+   ROGUE TALENT — TYPOGRAPHY TOKENS
+   Modern consumer-tech voice: a characterful grotesque display
+   over a friendly, highly-legible grotesque body. Labels are
+   tracked uppercase grotesque. Mono is utility only.
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Hanken+Grotesk:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+:root {
+  /* --- Families ---
+     Display: Bricolage Grotesque — contemporary, a little characterful.
+              Wordmark, headlines, big numerals, rates. Weights 700/800.
+     Sans:    Hanken Grotesk — friendly, warm, workhorse grotesque.
+              Body, UI, labels, everything functional. 400–800.
+     Mono:    IBM Plex Mono — UTILITY ONLY. Code, IDs, tabular figures,
+              token names. NOT brand voice — labels use the sans. */
+  --font-display: "Bricolage Grotesque", "Helvetica Neue", Arial, sans-serif;
+  --font-sans: "Hanken Grotesk", "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+  /* --- Type scale (px) ---
+     Dramatic jumps at the top for confident display, tight steps for text. */
+  --text-2xs: 11px;
+  --text-xs: 12px;
+  --text-sm: 14px;
+  --text-base: 16px;
+  --text-lg: 18px;
+  --text-xl: 22px;
+  --text-2xl: 28px;
+  --text-3xl: 36px;
+  --text-4xl: 48px;
+  --text-5xl: 64px;
+  --text-6xl: 88px;
+  --text-cover: 128px; /* masthead / hero scale */
+
+  /* --- Weights --- */
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+  --weight-extrabold: 800; /* display headlines & wordmark */
+
+  /* --- Line heights --- */
+  --leading-none: 1;
+  --leading-tight: 1.02;   /* display headlines */
+  --leading-snug: 1.28;    /* subheads */
+  --leading-normal: 1.6;   /* body copy */
+  --leading-relaxed: 1.75; /* long-form */
+
+  /* --- Letter spacing ---
+     Bricolage display wants tight tracking; grotesque labels want it wide. */
+  --tracking-tighter: -0.035em;
+  --tracking-tight: -0.02em;
+  --tracking-normal: 0em;
+  --tracking-wide: 0.06em;
+  --tracking-wider: 0.12em;  /* uppercase labels / eyebrows */
+  --tracking-widest: 0.16em; /* spaced-out utility labels */
+
+  /* --- Semantic type roles --- */
+  --role-eyebrow: var(--weight-bold) var(--text-xs)/1 var(--font-sans);
+  --role-body: var(--weight-regular) var(--text-base)/var(--leading-normal) var(--font-sans);
+  --role-display: var(--weight-extrabold) var(--text-5xl)/var(--leading-tight) var(--font-display);
+}

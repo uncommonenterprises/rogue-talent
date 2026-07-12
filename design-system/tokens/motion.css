@@ -1,0 +1,19 @@
+/* ============================================================
+   ROGUE TALENT — MOTION TOKENS
+   Editorial restraint: motion is confident and quick, never bouncy.
+   Fades and precise slides; no elastic/overshoot easing.
+   ============================================================ */
+
+:root {
+  --dur-instant: 80ms;
+  --dur-fast: 140ms;
+  --dur-base: 220ms;
+  --dur-slow: 380ms;
+  --dur-editorial: 640ms; /* hero reveals, cover transitions */
+
+  /* Easing — crisp entrance, gentle settle. No overshoot. */
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
+  --ease-editorial: cubic-bezier(0.4, 0, 0.1, 1);
+}
