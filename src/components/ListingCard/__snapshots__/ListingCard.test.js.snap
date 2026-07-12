@@ -7,43 +7,53 @@ exports[`ListingCard matches snapshot 1`] = `
   href="/l/listing1-title/listing1"
 >
   <div
-    class="root aspectRatioWrapper"
+    class="photo"
   >
     <div
-      class="aspectPadding"
-      style="padding-bottom: 100%;"
+      class="root aspectRatioWrapper"
     >
       <div
-        class="aspectBox"
+        class="aspectPadding"
+        style="padding-bottom: 125%;"
       >
         <div
-          style="position: absolute; top: 0px; right: 0px; bottom: 0px; left: 0px;"
-        />
+          class="aspectBox"
+        >
+          <div
+            style="position: absolute; top: 0px; right: 0px; bottom: 0px; left: 0px;"
+          />
+        </div>
       </div>
     </div>
   </div>
   <div
-    class="info"
+    class="body"
   >
     <div
-      class="price"
-      title="55"
+      class="name"
     >
-      ListingCard.price
+      listing1 title
     </div>
     <div
-      class="mainInfo"
+      class="rule"
+    />
+    <div
+      class="foot"
     >
       <div
-        class="title"
+        class="rate"
+        title="55"
       >
-        listing1 title
+        55
+        <small>
+          ListingCard.perDay
+        </small>
       </div>
-      <div
-        class="authorInfo"
+      <span
+        class="viewBtn"
       >
-        ListingCard.author
-      </div>
+        ListingCard.viewProfile
+      </span>
     </div>
   </div>
 </a>
@@ -56,37 +66,45 @@ exports[`ListingCard matches snapshot without price 1`] = `
   href="/l/listing1-title/listing1"
 >
   <div
-    class="root aspectRatioWrapper"
+    class="photo"
   >
     <div
-      class="aspectPadding"
-      style="padding-bottom: 100%;"
+      class="root aspectRatioWrapper"
     >
       <div
-        class="aspectBox"
+        class="aspectPadding"
+        style="padding-bottom: 125%;"
       >
         <div
-          style="position: absolute; top: 0px; right: 0px; bottom: 0px; left: 0px;"
-        />
+          class="aspectBox"
+        >
+          <div
+            style="position: absolute; top: 0px; right: 0px; bottom: 0px; left: 0px;"
+          />
+        </div>
       </div>
     </div>
   </div>
   <div
-    class="info"
+    class="body"
   >
     <div
-      class="mainInfo"
+      class="name"
     >
-      <div
-        class="title"
+      listing1 title
+    </div>
+    <div
+      class="rule"
+    />
+    <div
+      class="foot"
+    >
+      <span />
+      <span
+        class="viewBtn"
       >
-        listing1 title
-      </div>
-      <div
-        class="authorInfo"
-      >
-        ListingCard.author
-      </div>
+        ListingCard.viewProfile
+      </span>
     </div>
   </div>
 </a>

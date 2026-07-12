@@ -450,7 +450,8 @@ export const loadData = (params, search, config) => (dispatch, getState, sdk) =>
         'publicData.priceVariationsEnabled',
         'publicData.priceVariants',
       ],
-      'fields.user': ['profile.displayName', 'profile.abbreviatedName'],
+      // profile.metadata carries id_verified — needed for the Verified badge on result cards
+      'fields.user': ['profile.displayName', 'profile.abbreviatedName', 'profile.metadata'],
       'fields.image': [
         'variants.scaled-small',
         'variants.scaled-medium',

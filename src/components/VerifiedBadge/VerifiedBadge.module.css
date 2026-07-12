@@ -1,16 +1,20 @@
 @import '../../styles/customMediaQueries.css';
 
+/* Design system rt-badge --verified: the cobalt trust signal (see /design-system §9). */
 .root {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  padding: 2px 10px 2px 8px;
-  border-radius: 12px;
-  background-color: hsl(140 52% 95%);
-  color: var(--colorSuccess);
-  font-weight: var(--fontWeightSemiBold);
-  font-size: 13px;
-  line-height: 18px;
+  padding: 4px 9px;
+  border-radius: var(--radius-sm);
+  background-color: var(--accent-50);
+  color: var(--accent-700);
+  font-family: var(--font-sans);
+  font-weight: var(--weight-bold);
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  line-height: 1;
   white-space: nowrap;
   vertical-align: middle;
 }

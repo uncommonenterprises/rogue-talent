@@ -15,9 +15,11 @@ import {
   NamedLink,
   ResponsiveImage,
   ListingCardThumbnail,
+  VerifiedBadge,
+  isUserVerified,
 } from '../../components';
 
-import { getListingCardTranslations } from './ListingCard.helpers';
+import { getListingCardTranslations, getTalentCardData } from './ListingCard.helpers';
 
 import css from './ListingCard.module.css';
 
@@ -107,20 +109,11 @@ export const ListingCard = props => {
     listing,
     renderSizes,
     setActiveListing,
-    showAuthorInfo = true,
     lazyLoadImage = true,
   } = props;
 
   const translations = getListingCardTranslations(listing, config, intl);
-  const {
-    titlePlain,
-    titleFormatted,
-    cardAriaLabel,
-    showPrice,
-    priceTooltip,
-    priceMessage,
-    authorName,
-  } = translations;
+  const { titlePlain, cardAriaLabel, showPrice, priceTooltip } = translations;
 
   const classes = classNames(rootClassName || css.root, className);
 
@@ -134,11 +127,7 @@ export const ListingCard = props => {
   // Render the listing image only if listing images are enabled in the listing type
   const showListingImage = requireListingImage(foundListingTypeConfig);
 
-  const {
-    aspectWidth = 1,
-    aspectHeight = 1,
-    variantPrefix = 'listing-card',
-  } = config.layout.listingImage;
+  const { variantPrefix = 'listing-card' } = config.layout.listingImage;
 
   // Sets the listing as active in the search map when hovered (if the search map is enabled)
   const setActivePropsMaybe = setActiveListing
@@ -148,6 +137,17 @@ export const ListingCard = props => {
       }
     : null;
 
+  // Talent-card (rt-talent) data — model attributes now live on the listing.
+  const { author, location, metaParts, categories, formattedPrice } = getTalentCardData(
+    listing,
+    config,
+    intl
+  );
+  const verified = isUserVerified(author);
+  // Portrait 4:5 photo — the editorial fashion shape (design system §9).
+  const photoAspectWidth = 4;
+  const photoAspectHeight = 5;
+
   return (
     <NamedLink
       className={classes}
@@ -155,45 +155,71 @@ export const ListingCard = props => {
       params={{ id, slug }}
       ariaLabel={cardAriaLabel}
     >
-      {showListingImage ? (
-        <ListingCardImage
-          renderSizes={renderSizes}
-          title={titlePlain}
-          listing={listing}
-          setActivePropsMaybe={setActivePropsMaybe}
-          aspectWidth={aspectWidth}
-          aspectHeight={aspectHeight}
-          variantPrefix={variantPrefix}
-          aspectRatioClassName={aspectRatioClassName}
-          lazyLoadImage={lazyLoadImage}
-        />
-      ) : (
-        <ListingCardThumbnail
-          style={cardStyle}
-          listingTitle={title}
-          className={aspectRatioClassName}
-          width={aspectWidth}
-          height={aspectHeight}
-          setActivePropsMaybe={setActivePropsMaybe}
-        />
-      )}
-      <div className={css.info}>
-        {showPrice ? (
-          <div className={css.price} title={priceTooltip}>
-            {priceMessage}
+      <div className={css.photo}>
+        {showListingImage ? (
+          <ListingCardImage
+            renderSizes={renderSizes}
+            title={titlePlain}
+            listing={listing}
+            setActivePropsMaybe={setActivePropsMaybe}
+            aspectWidth={photoAspectWidth}
+            aspectHeight={photoAspectHeight}
+            variantPrefix={variantPrefix}
+            aspectRatioClassName={aspectRatioClassName}
+            lazyLoadImage={lazyLoadImage}
+          />
+        ) : (
+          <ListingCardThumbnail
+            style={cardStyle}
+            listingTitle={title}
+            className={aspectRatioClassName}
+            width={photoAspectWidth}
+            height={photoAspectHeight}
+            setActivePropsMaybe={setActivePropsMaybe}
+          />
+        )}
+        {verified ? <VerifiedBadge className={css.photoBadge} user={author} /> : null}
+      </div>
+
+      <div className={css.body}>
+        {location ? (
+          <div className={css.loc}>
+            <span className={css.eyebrow}>{location}</span>
           </div>
         ) : null}
-        <div className={css.mainInfo}>
-          {showListingImage && (
-            <div className={classNames(css.title, { [css.lightText]: darkMode })}>
-              {titleFormatted}
+
+        <div className={classNames(css.name, { [css.lightText]: darkMode })}>{titlePlain}</div>
+
+        {metaParts.length > 0 ? (
+          <div className={classNames(css.meta, { [css.lightText]: darkMode })}>
+            {metaParts.join(' · ')}
+          </div>
+        ) : null}
+
+        {categories.length > 0 ? (
+          <div className={css.tags}>
+            {categories.slice(0, 3).map(cat => (
+              <span key={cat} className={css.tag}>
+                {cat}
+              </span>
+            ))}
+          </div>
+        ) : null}
+
+        <div className={css.rule} />
+
+        <div className={css.foot}>
+          {showPrice && formattedPrice ? (
+            <div className={css.rate} title={priceTooltip}>
+              {formattedPrice}
+              <small>{intl.formatMessage({ id: 'ListingCard.perDay' })}</small>
             </div>
+          ) : (
+            <span />
           )}
-          {showAuthorInfo ? (
-            <div className={classNames(css.authorInfo, { [css.lightText]: darkMode })}>
-              {authorName}
-            </div>
-          ) : null}
+          <span className={css.viewBtn}>
+            {intl.formatMessage({ id: 'ListingCard.viewProfile' })}
+          </span>
         </div>
       </div>
     </NamedLink>

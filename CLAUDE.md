@@ -56,7 +56,7 @@ The canonical reference is **[`design-system/DESIGN_SYSTEM.md`](design-system/DE
 - **Profile-page display:** `ListingPage/CustomListingFields.js` detail gate changed from `isDetail` (opt-in) to `isDetail !== false` (opt-out), because the no-code Console doesn't set `isDetail` — otherwise enum/number attributes wouldn't show.
 - **Search filters:** fields are `limitToListingTypeIds: ['model-profile']`, so `pickListingFieldFilters` (SearchPage.shared.js) hid them on `/s` when no type was selected. Fixed: falls back to all active listing types when none selected (single-type marketplace has no type selector).
 - **Rates as currency:** half-day/hourly rate listing fields (`long`) are rendered as `FieldCurrencyInput` on "Your rates" and **stored as subunits** (like price); displayed via `formatMoney` in `CustomListingFields` (rate keys from `EditListingWizard/rateFields.js`).
-- **Still TODO:** verify the full create → display → search loop on Railway; polish search result cards (surface key attributes + Verified badge).
+- **Search result cards (rt-talent):** `ListingCard` rebuilt to the design-system talent card — portrait 4:5 photo with the Verified badge overlay, Bricolage name + rate, location eyebrow, meta line (gender · height · experience), category tags, "View" CTA. Attributes/tags read from `listing.publicData` via `getTalentCardData` (ListingCard.helpers.js); the search query now includes `profile.metadata` for the badge. This is the first design-system component build (see Design system section above).
 
 ## Phase 2 — done
 _(Phase 2 onboarding tasks complete — see "Phase 2 development" above.)_

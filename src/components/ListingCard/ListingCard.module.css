@@ -1,129 +1,155 @@
 @import '../../styles/customMediaQueries.css';
 
+/* ---------------------------------------------------------------
+   TALENT CARD — rt-talent (design system §9)
+   The marketplace's hero object. Rectilinear, hairline over shadow,
+   cobalt used sparingly, Bricolage for the name + rate.
+   --------------------------------------------------------------- */
 .root {
-  /* Layout */
   display: flex;
   flex-direction: column;
+  background: var(--surface-card);
+  border: var(--border-hair) solid var(--border-hairline);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition: box-shadow var(--dur-base) var(--ease-standard),
+    transform var(--dur-base) var(--ease-standard);
 
-  /* Remove link's hover effect */
   &:hover {
     text-decoration: none;
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
   }
 }
 
+/* Photo — portrait 4:5; holds the verified-badge overlay top-left. */
+.photo {
+  position: relative;
+}
+.photoBadge {
+  position: absolute;
+  top: var(--space-3);
+  left: var(--space-3);
+  z-index: 1;
+}
+
+/* Image sub-elements (used by ListingCardImage) */
 .aspectRatioWrapper {
-  transition: var(--transitionStyleButton);
-  background: var(--colorGrey100); /* Loading BG color */
-  border-radius: var(--borderRadiusMedium);
-
-  @media (--viewportMedium) {
-    &:hover {
-      transform: scale(1.02);
-      box-shadow: var(--boxShadowListingCard);
-    }
-  }
+  background: var(--ink-100);
 }
-
 .rootForImage {
-  border: solid 1px var(--colorGrey100);
-  border-radius: var(--borderRadiusMedium);
   width: 100%;
   height: 100%;
+  object-fit: cover;
 }
 
-.title.lightText {
-  color: var(--colorWhite);
-}
-
-.authorInfo.lightText {
-  color: var(--colorWhite);
-}
-
-.info {
-  /* Layout */
+/* Body */
+.body {
+  padding: var(--space-5);
   display: flex;
   flex-direction: column;
-  /* ⚠️ padding width is hardcoded in SectionListings.js calculateCarouselHeight() as cardInfoPadding*/
-  padding: 14px 0 2px 0;
+  gap: var(--space-3);
 }
-
-/* ⚠️ the total calculated height of this selector is hardcoded in SectionListings.js calculateCarouselHeight() as priceHeight*/
-.price {
-  composes: textSmall from global;
-  /* Layout */
-  flex-shrink: 0;
-  margin-bottom: 4px;
-  color: var(--colorGrey700);
-}
-
-.priceValue {
-  /* Font */
-  font-weight: var(--fontWeightSemiBold);
-  color: var(--marketplaceColor);
-
-  /* Remove default margins from font */
-  margin-top: 0;
-  margin-bottom: 0;
-
-  @media (--viewportMedium) {
-    margin-top: 0;
-    margin-bottom: 0;
-  }
-}
-
-.perUnit {
-  /* Font */
-  font-weight: var(--fontWeightSemiBold);
-  color: var(--marketplaceColor);
-
-  /* Remove default margins from font */
-  margin-top: 0;
-  margin-bottom: 0;
-
-  @media (--viewportMedium) {
-    margin-top: 0;
-    margin-bottom: 0;
-  }
-}
-
-.mainInfo {
+.loc {
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
 }
-
-/* ⚠️ the calculated height of this selector is hardcoded in SectionListings.js calculateCarouselHeight() as titleHeightSingleLine */
-.title {
-  /* Font */
-  composes: textSmall from global;
-  font-weight: var(--fontWeightBold);
-  color: var(--colorGrey700);
+.eyebrow {
+  font-family: var(--font-sans);
+  font-weight: var(--weight-bold);
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.name {
+  font-family: var(--font-display);
+  font-weight: var(--weight-extrabold);
+  font-size: var(--text-2xl);
+  letter-spacing: var(--tracking-tight);
+  line-height: 1;
+  color: var(--text-primary);
   margin: 0;
 }
+.meta {
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  line-height: var(--leading-snug);
+}
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.tag {
+  font-family: var(--font-sans);
+  font-weight: var(--weight-semibold);
+  font-size: var(--text-xs);
+  letter-spacing: 0.01em;
+  color: var(--ink-700);
+  background: var(--ink-100);
+  padding: 6px 12px;
+  border-radius: var(--radius-pill);
+}
+.rule {
+  height: 1px;
+  background: var(--border-subtle);
+}
+.foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+.rate {
+  font-family: var(--font-display);
+  font-weight: var(--weight-extrabold);
+  font-size: var(--text-xl);
+  letter-spacing: var(--tracking-tight);
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+.rate small {
+  font-family: var(--font-sans);
+  font-weight: var(--weight-regular);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+/* View CTA — secondary --sm button (kept non-cobalt so a grid of cards doesn't flood the
+   view with the accent; cobalt stays reserved for the one primary action per view). */
+.viewBtn {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  font-family: var(--font-sans);
+  font-weight: var(--weight-bold);
+  font-size: var(--text-xs);
+  color: var(--ink-900);
+  background: var(--white);
+  border: var(--border-key) solid var(--ink-900);
+  padding: 7px 14px;
+  border-radius: var(--radius-md);
+  white-space: nowrap;
+}
+.root:hover .viewBtn {
+  background: var(--ink-50);
+}
 
-/* ⚠️ the calculated height of this selector is hardcoded in SectionListings.js calculateCarouselHeight() as authorInfoHeight & authorInfoHeighMobile */
-.authorInfo {
-  /* Font */
-  composes: marketplaceTinyFontStyles from global;
-  font-weight: var(--fontWeightMedium);
-  color: var(--colorGrey700);
+/* Dark surfaces (map popups) */
+.lightText {
+  color: var(--text-inverse);
+}
 
-  padding-top: 4px;
-  padding-bottom: 4px;
-
-  /* Remove default margins from font */
-  margin-top: 0;
-  margin-bottom: 0;
-
-  @media (--viewportMedium) {
-    margin-top: 0;
-    margin-bottom: 0;
-  }
+/* Price value / per-unit — still referenced by ListingCard.helpers' priceMessage. */
+.priceValue,
+.perUnit {
+  font-weight: var(--fontWeightSemiBold);
+  color: var(--marketplaceColor);
 }
 
 .longWord {
-  /* fallback option */
-  word-break: break-all;
-  /* use break-word if available */
   word-break: break-word;
   hyphens: auto;
 }

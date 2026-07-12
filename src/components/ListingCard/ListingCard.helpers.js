@@ -99,3 +99,49 @@ export const getListingCardTranslations = (listing, config, intl) => {
     cardAriaLabel,
   };
 };
+
+const findListingField = (config, key) =>
+  (config?.listing?.listingFields || []).find(f => f.key === key);
+
+const enumLabel = (fieldConfig, value) =>
+  fieldConfig?.enumOptions?.find(o => `${o.option}` === `${value}`)?.label || value;
+
+/**
+ * Extract the model-attribute data shown on the talent card (rt-talent): the model's
+ * location, a short meta line (gender · height · experience), their categories, and the
+ * formatted day rate. Reads the attributes off the listing's publicData (config maps enum
+ * values to labels).
+ *
+ * @param {Object} listing - listing API entity
+ * @param {Object} config - app configuration
+ * @param {Object} intl - React Intl instance
+ * @returns {Object} { author, location, metaParts: string[], categories: string[], formattedPrice }
+ */
+export const getTalentCardData = (listing, config, intl) => {
+  const { price, publicData } = listing?.attributes || {};
+  const location = publicData?.location?.address || null;
+
+  const gender = publicData?.gender
+    ? enumLabel(findListingField(config, 'gender'), publicData.gender)
+    : null;
+  const height = typeof publicData?.height_cm === 'number' ? `${publicData.height_cm}cm` : null;
+  const experience = publicData?.experience_level
+    ? enumLabel(findListingField(config, 'experience_level'), publicData.experience_level)
+    : null;
+  const metaParts = [gender, height, experience].filter(Boolean);
+
+  const catField = findListingField(config, 'modelling_categories');
+  const categories = Array.isArray(publicData?.modelling_categories)
+    ? publicData.modelling_categories.map(v => enumLabel(catField, v)).filter(Boolean)
+    : [];
+
+  const { formattedPrice } = priceData(price, config.currency, intl);
+
+  return {
+    author: listing?.author,
+    location,
+    metaParts,
+    categories,
+    formattedPrice,
+  };
+};
