@@ -1,33 +1,36 @@
 @import '../../../styles/customMediaQueries.css';
 
+/* Design system rt-chip (interactive filter): pill, Hanken 600, white/ink border;
+   selected uses ink-900 (cobalt is reserved for the one primary action per view). */
 .label,
 .labelSelected {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
   width: auto;
-  height: 35px;
-  min-height: 35px;
+  height: auto;
+  min-height: 0;
 
-  padding: 0 18px;
+  padding: 8px 14px;
   margin: 0 9px 0 0;
 
-  transition: all var(--transitionStyleButton);
+  transition: color var(--dur-fast) var(--ease-standard),
+    background-color var(--dur-fast) var(--ease-standard),
+    border-color var(--dur-fast) var(--ease-standard);
   cursor: pointer;
 
   /* Font */
-  font-weight: var(--fontWeightSemiBold);
-  font-size: 13px;
+  font-weight: var(--weight-semibold);
+  font-size: var(--text-sm);
   line-height: 18px;
-  letter-spacing: 0.2px;
+  letter-spacing: 0.01em;
 
   /* Button text styles */
-  /* Default button text is centered without decorations */
   text-align: center;
   text-decoration: none;
 
   &:focus,
   &:hover {
     outline: none;
-    box-shadow: var(--boxShadowFilterButton);
     text-decoration: none;
   }
 
@@ -37,56 +40,51 @@
   }
 
   @media (--viewportMedium) {
-    height: auto;
-    min-height: 0;
-    padding: var(--marketplaceButtonSmallDesktopPadding);
+    padding: 8px 14px;
     margin: 0;
 
-    font-weight: var(--fontWeightMedium);
-    font-size: 13px;
-    line-height: 20px;
+    font-weight: var(--weight-semibold);
+    font-size: var(--text-sm);
+    line-height: 18px;
   }
 }
 
 .label {
   /* Button borders */
-  border: 1px solid var(--colorGrey100);
-  border-radius: var(--borderRadiusMedium);
+  border: var(--border-hair) solid var(--ink-200);
+  border-radius: var(--radius-pill);
 
-  background-color: var(--colorWhite);
+  background-color: var(--white);
+  color: var(--ink-800);
 
   &:hover,
   &:focus {
-    border-color: var(--colorGrey300);
+    border-color: var(--ink-400);
   }
   &:disabled {
-    border-color: var(--colorGrey100);
-  }
-
-  @media (--viewportMedium) {
-    &:hover,
-    &:focus {
-      border-color: transparent;
-    }
+    border-color: var(--ink-200);
+    color: var(--ink-400);
   }
 }
 
 .labelSelected {
   /* Button borders */
-  border-radius: var(--borderRadiusMedium);
-  border: 1px solid var(--marketplaceColor);
+  border-radius: var(--radius-pill);
+  border: var(--border-hair) solid var(--ink-900);
 
-  /* Button colors: secondary */
-  background-color: var(--marketplaceColor);
-  color: var(--colorWhite);
+  /* Selected: ink fill */
+  background-color: var(--ink-900);
+  color: var(--white);
 
   &:hover,
   &:focus {
-    border: 1px solid var(--marketplaceColorDark);
+    background-color: var(--ink-800);
+    border-color: var(--ink-800);
   }
   &:disabled {
-    background-color: var(--colorGrey100);
-    color: var(--colorWhite);
+    background-color: var(--ink-200);
+    border-color: var(--ink-200);
+    color: var(--white);
   }
 }
 

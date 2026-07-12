@@ -14,10 +14,10 @@
   padding: 0 12px 0 0;
 
   /* fill */
-  background-color: var(--colorWhite);
+  background-color: var(--white);
 
-  /* shadows */
-  box-shadow: var(--boxShadowLight);
+  /* Design system rt-nav: hairline over shadow */
+  border-bottom: var(--border-hair) solid var(--border-hairline);
 
   @media (--viewportLarge) {
     padding: 0 24px 0 0;
@@ -30,7 +30,7 @@
   transition: var(--transitionStyleButton);
 }
 .logoLink:hover {
-  border-bottom: 4px solid var(--marketplaceColor);
+  opacity: 0.85;
   border-radius: 0;
 }
 
@@ -39,8 +39,8 @@
   min-width: 320px;
   height: 100%;
   border-left-style: solid;
-  border-left-width: 1px;
-  border-left-color: var(--colorGrey100);
+  border-left-width: var(--border-hair);
+  border-left-color: var(--border-hairline);
   margin-right: auto;
 }
 
@@ -83,27 +83,24 @@
   }
 }
 
-/* These is used with Inbox, Sign up, and Log in */
+/* These is used with Inbox, Sign up, and Log in — design system rt-nav__link */
 .topbarLink {
   flex-shrink: 0;
 
-  border-bottom: 0px solid;
-  transition: var(--transitionStyleButton);
+  transition: color var(--dur-fast) var(--ease-standard);
 
-  font-weight: var(--fontWeightMedium);
+  font-weight: var(--weight-semibold);
   font-size: 14px;
   line-height: 18px;
   letter-spacing: 0;
-  color: var(--colorGrey700);
+  color: var(--text-secondary);
 
   height: 100%;
   padding: 0 12px 0 12px;
   margin: 0;
 
   &:hover {
-    color: var(--colorBlack);
-    border-bottom: 4px solid var(--marketplaceColor);
-    border-radius: 0;
+    color: var(--text-primary);
     text-decoration: none;
   }
 
@@ -132,8 +129,8 @@
   top: 2px;
   right: -9px;
 
-  /* Style: red dot */
-  background-color: var(--colorFail);
+  /* Style: cobalt notification dot (red is reserved for danger) */
+  background-color: var(--accent-500);
 
   animation-name: notificationPop;
   animation-duration: 0.1s;
@@ -158,14 +155,13 @@
 
 /* Profile menu */
 .profileMenuLabel {
-  border-bottom: 0px solid;
   transition: var(--transitionStyleButton);
 
-  font-weight: var(--fontWeightMedium);
+  font-weight: var(--weight-semibold);
   font-size: 14px;
   line-height: 18px;
   letter-spacing: 0;
-  color: var(--colorGrey700);
+  color: var(--text-secondary);
 
   flex-shrink: 0;
   display: flex;
@@ -175,19 +171,14 @@
   padding: 0 12px 0 12px;
 
   &:hover {
-    border-bottom: 4px solid var(--marketplaceColor);
-    border-radius: 0;
     text-decoration: none;
-  }
-
-  &:active {
-    border-bottom: 0;
+    opacity: 0.85;
   }
 }
 
 .profileMenuIsOpen {
   &:hover {
-    border-bottom: 0;
+    opacity: 1;
   }
 }
 

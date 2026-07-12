@@ -29,28 +29,29 @@
   justify-content: flex-end;
   height: 100%;
 
-  /* Font */
-  font-weight: var(--fontWeightMedium);
+  /* Font — design system rt-tab */
+  font-weight: var(--weight-semibold);
   font-size: 14px;
   line-height: 24px;
 
-  color: var(--colorGrey700);
+  color: var(--text-secondary);
   padding-bottom: 10px;
 
   border-bottom-width: 2px;
   border-bottom-style: solid;
   border-bottom-color: transparent;
 
-  transition: var(--transitionStyleButton);
+  transition: color var(--dur-fast) var(--ease-standard),
+    border-color var(--dur-fast) var(--ease-standard);
 
   &:hover,
   &:focus {
     text-decoration: none;
-    color: var(--colorBlack);
+    color: var(--text-primary);
   }
 
   @media (--viewportMedium) {
-    border-bottom-width: 4px;
+    border-bottom-width: 2px;
     padding: 16px 10px 14px 10px;
   }
 }
@@ -64,8 +65,8 @@
 }
 
 .selectedTabContent {
-  border-bottom-color: var(--colorBlack);
-  color: var(--colorBlack);
+  border-bottom-color: var(--accent-500);
+  color: var(--text-primary);
 }
 
 .disabled {
