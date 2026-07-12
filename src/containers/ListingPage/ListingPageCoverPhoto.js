@@ -304,6 +304,7 @@ export const ListingPageComponent = props => {
               metadata={metadata}
               listingFieldConfigs={listingConfig.listingFields}
               categoryConfiguration={config.categoryConfiguration}
+              marketplaceCurrency={config.currency}
               intl={intl}
             />
 

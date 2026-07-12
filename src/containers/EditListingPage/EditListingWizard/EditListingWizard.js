@@ -61,7 +61,6 @@ import EditListingWizardTab, {
   STYLE,
 } from './EditListingWizardTab';
 import { isRateListingField } from './rateFields';
-import { isProfileListingField } from './profileFields';
 import css from './EditListingWizard.module.css';
 
 // This is the initial tab on editlisting wizard.
@@ -269,26 +268,19 @@ const tabCompleted = (tab, listing, config) => {
         listingType &&
         transactionProcessAlias &&
         unitType &&
-        // Validate only the "offering" listing fields — rate fields (Pricing tab) and
-        // profile fields (About-you tab) are handled on their own steps.
+        // Validate all listing fields except the rate fields, which are on the Pricing tab.
         hasValidListingFieldsInExtendedData(
           publicData,
           privateData,
           config,
-          f => !isRateListingField(f) && !isProfileListingField(f)
+          f => !isRateListingField(f)
         )
       );
     case PROFILE:
       // PROFILE ("About you") is the first tab: it creates the draft from the display name
-      // (title), captures the city (listing geolocation), and saves the model's attribute
-      // fields to the listing. It's complete once the title and city are on the listing and
-      // the required profile listing fields are present.
-      return !!(
-        title &&
-        geolocation &&
-        publicData?.location?.address &&
-        hasValidListingFieldsInExtendedData(publicData, privateData, config, isProfileListingField)
-      );
+      // (title) and captures the city (listing geolocation). It's complete once the title
+      // and city are on the listing. The model's attribute fields live on the next tab.
+      return !!(title && geolocation && publicData?.location?.address);
     case PRICING:
       return !!price;
     case PRICING_AND_STOCK:

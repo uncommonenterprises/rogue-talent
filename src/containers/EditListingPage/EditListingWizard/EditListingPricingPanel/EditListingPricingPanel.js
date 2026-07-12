@@ -41,11 +41,15 @@ const namespacedRateKey = field =>
   field.scope === 'private' ? `priv_${field.key}` : `pub_${field.key}`;
 
 // Namespaced form initial values for the rate fields, read from the listing's extended data.
-const getRateFieldInitialValues = (listing, rateFields) => {
+// Rate values are stored as subunits (like the price), so they're wrapped in Money for the
+// currency input.
+const getRateFieldInitialValues = (listing, rateFields, currency) => {
   const { publicData, privateData } = listing?.attributes || {};
   return rateFields.reduce((acc, field) => {
     const source = field.scope === 'private' ? privateData : publicData;
-    return { ...acc, [namespacedRateKey(field)]: source?.[field.key] };
+    const stored = source?.[field.key];
+    const value = typeof stored === 'number' && currency ? new Money(stored, currency) : null;
+    return { ...acc, [namespacedRateKey(field)]: value };
   }, {});
 };
 
@@ -53,13 +57,17 @@ const getRateFieldInitialValues = (listing, rateFields) => {
 // exporting helper functions that handle the initial values and the submission values.
 // This is a tentative approach to contain logic in one place.
 const getInitialValues = props => {
-  const { listing, listingTypes, config } = props;
+  const { listing, listingTypes, config, marketplaceCurrency } = props;
   const { publicData } = listing?.attributes || {};
   const { unitType } = publicData || {};
   const listingTypeConfig = getListingTypeConfig(publicData, listingTypes);
   // Note: publicData contains priceVariationsEnabled if listing is created with priceVariations enabled.
   const isPriceVariationsInUse = isPriceVariationsEnabled(publicData, listingTypeConfig);
-  const rateFieldValues = getRateFieldInitialValues(listing, getRateFields(config));
+  const rateFieldValues = getRateFieldInitialValues(
+    listing,
+    getRateFields(config),
+    marketplaceCurrency
+  );
 
   const priceValues =
     unitType === FIXED || isPriceVariationsInUse
@@ -235,15 +243,18 @@ const EditListingPricingPanel = props => {
             }
 
             // Merge the secondary rate fields (half-day, hourly) into the listing's
-            // extended data so they're saved alongside the day-rate price.
+            // extended data so they're saved alongside the day-rate price. The currency
+            // inputs produce Money objects; we store their subunit amount (like the price).
             const ratePublicData = {};
             const ratePrivateData = {};
             rateFields.forEach(field => {
               const ns = namespacedRateKey(field);
+              const val = values[ns];
+              const amount = val instanceof Money ? val.amount : val ?? null;
               if (field.scope === 'private') {
-                ratePrivateData[field.key] = values[ns];
+                ratePrivateData[field.key] = amount;
               } else {
-                ratePublicData[field.key] = values[ns];
+                ratePublicData[field.key] = amount;
               }
             });
             updateValues = {
@@ -261,6 +272,7 @@ const EditListingPricingPanel = props => {
                 listing: getOptimisticListing(listing, updateValues),
                 listingTypes,
                 config,
+                marketplaceCurrency,
               }),
             });
             onSubmit(updateValues);

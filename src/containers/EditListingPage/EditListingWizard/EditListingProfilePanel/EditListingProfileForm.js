@@ -17,7 +17,6 @@ import {
 import {
   Button,
   Form,
-  CustomExtendedDataField,
   FieldLocationAutocompleteInput,
   FieldTextInput,
 } from '../../../../components';
@@ -40,9 +39,9 @@ const ErrorMessages = props => {
 };
 
 /**
- * The EditListingProfileForm component. Renders the model's display name, a city-level
- * location autocomplete, and their profile attribute fields (config.listing.listingFields
- * for the model), all saved to the listing in a single "About you" wizard step.
+ * The EditListingProfileForm component. Renders the model's display name and a city-level
+ * location autocomplete for the "About you" wizard step. Both save to the listing (title +
+ * geolocation). The model's attribute fields are collected on the next step ("Your profile").
  *
  * @component
  * @param {Object} props
@@ -50,7 +49,6 @@ const ErrorMessages = props => {
  * @param {string} [props.className] - Custom class that extends the default class for the root element
  * @param {string} [props.rootClassName] - Custom class that overrides the default class for the root element
  * @param {boolean} [props.autoFocus] - Whether the first input should be focused
- * @param {Array} props.profileFields - The model-attribute listing field configs to render
  * @param {boolean} [props.disabled] - Whether the form is disabled
  * @param {boolean} [props.ready] - Whether the form is ready
  * @param {Function} props.onSubmit - The submit function
@@ -73,7 +71,6 @@ export const EditListingProfileForm = props => (
         disabled,
         ready,
         handleSubmit,
-        profileFields = [],
         invalid,
         pristine,
         saveActionMsg,
@@ -142,13 +139,6 @@ export const EditListingProfileForm = props => (
               autocompletePlaceSelected(cityNotRecognizedMessage)
             )}
           />
-
-          {profileFields.map(field => {
-            const name = field.scope === 'private' ? `priv_${field.key}` : `pub_${field.key}`;
-            return (
-              <CustomExtendedDataField key={name} name={name} fieldConfig={field} formId={formId} />
-            );
-          })}
 
           <Button
             className={css.submitButton}

@@ -8,8 +8,13 @@ import {
   pickCategoryFields,
   pickCustomFieldProps,
 } from '../../util/fieldHelpers.js';
+import { formatMoney } from '../../util/currency';
+import { types as sdkTypes } from '../../util/sdkLoader';
+import { RATE_LISTING_FIELD_KEYS } from '../EditListingPage/EditListingWizard/rateFields';
 
 import CustomExtendedDataSection from '../../components/CustomExtendedDataSection/CustomExtendedDataSection.js';
+
+const { Money } = sdkTypes;
 
 /**
  * Renders custom listing fields.
@@ -21,7 +26,14 @@ import CustomExtendedDataSection from '../../components/CustomExtendedDataSectio
  * @returns React.Fragment containing aforementioned components
  */
 const CustomListingFields = props => {
-  const { publicData, metadata, listingFieldConfigs, categoryConfiguration, intl } = props;
+  const {
+    publicData,
+    metadata,
+    listingFieldConfigs,
+    categoryConfiguration,
+    marketplaceCurrency,
+    intl,
+  } = props;
 
   const { key: categoryPrefix, categories: listingCategoriesConfig } = categoryConfiguration;
   const categoriesObj = pickCategoryFields(publicData, categoryPrefix, 1, listingCategoriesConfig);
@@ -80,8 +92,19 @@ const CustomListingFields = props => {
         intl,
         'ListingPage'
       );
+      if (!detailValue) {
+        return filteredConfigs;
+      }
 
-      return detailValue ? filteredConfigs.concat(detailValue) : filteredConfigs;
+      // Rate fields (half-day/hourly) are stored as subunits like the price, so format them
+      // as currency to match the day rate rather than showing a raw number.
+      const isMoneyField = RATE_LISTING_FIELD_KEYS.includes(key);
+      const finalValue =
+        isMoneyField && typeof value === 'number' && marketplaceCurrency
+          ? { ...detailValue, value: formatMoney(intl, new Money(value, marketplaceCurrency)) }
+          : detailValue;
+
+      return filteredConfigs.concat(finalValue);
     }
     return filteredConfigs;
   };

@@ -12,7 +12,7 @@ import { types as sdkTypes } from '../../../../util/sdkLoader';
 import { FIXED, isBookingProcess } from '../../../../transactions/transaction';
 
 // Import shared components
-import { Button, Form, FieldCurrencyInput, CustomExtendedDataField } from '../../../../components';
+import { Button, Form, FieldCurrencyInput } from '../../../../components';
 
 import BookingPriceVariants from './BookingPriceVariants';
 import StartTimeInterval from './StartTimeInverval';
@@ -181,16 +181,22 @@ export const EditListingPricingForm = props => (
             />
           ) : null}
 
-          {/* Secondary rate fields (half-day, hourly) shown beside the day-rate price. */}
+          {/* Secondary rate fields (half-day, hourly) — rendered as currency inputs so they
+              match the day-rate field's £ formatting. Stored as subunits like the price. */}
           {rateFields.map(field => {
             const namespacedKey =
               field.scope === 'private' ? `priv_${field.key}` : `pub_${field.key}`;
             return (
-              <CustomExtendedDataField
+              <FieldCurrencyInput
                 key={namespacedKey}
+                id={`${formId}.${namespacedKey}`}
                 name={namespacedKey}
-                fieldConfig={field}
-                formId={formId}
+                className={css.input}
+                label={field.saveConfig?.label || field.label}
+                placeholder={intl.formatMessage({
+                  id: 'EditListingPricingForm.priceInputPlaceholder',
+                })}
+                currencyConfig={appSettings.getCurrencyFormatting(marketplaceCurrency)}
               />
             );
           })}
