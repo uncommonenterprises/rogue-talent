@@ -447,7 +447,13 @@ export const pickListingFieldFilters = params => {
     : {};
 
   const currentCategories = Object.values(validNestedCategoryParamNames);
-  const currentListingType = Object.values(validListingTypeParamNames);
+  const selectedListingType = Object.values(validListingTypeParamNames);
+  // When no listing type is selected in the search, fall back to ALL of the marketplace's
+  // listing types. Otherwise listing-type-limited filters (how the model-profile attribute
+  // filters are configured) never appear on the default `/s` view — a problem for a
+  // single-listing-type marketplace, which has no listing-type selector to choose from.
+  const currentListingType =
+    selectedListingType.length > 0 ? selectedListingType : activeListingTypes || [];
   const pickedFields = listingFields.reduce((picked, fieldConfig) => {
     const isTargetCategory = isFieldForCategory(currentCategories, fieldConfig);
     const isTargetListingField = isFieldForListingType(currentListingType, fieldConfig);
