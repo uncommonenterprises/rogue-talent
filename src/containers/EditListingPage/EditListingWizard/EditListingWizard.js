@@ -60,7 +60,7 @@ import EditListingWizardTab, {
   PHOTOS,
   STYLE,
 } from './EditListingWizardTab';
-import { isRateListingField } from './rateFields';
+import { isPricingListingField } from './rateFields';
 import css from './EditListingWizard.module.css';
 
 // This is the initial tab on editlisting wizard.
@@ -268,12 +268,13 @@ const tabCompleted = (tab, listing, config) => {
         listingType &&
         transactionProcessAlias &&
         unitType &&
-        // Validate all listing fields except the rate fields, which are on the Pricing tab.
+        // Validate all listing fields except the pricing-tab fields (rates + travel fee
+        // policy), which are collected on the "Your rates" tab.
         hasValidListingFieldsInExtendedData(
           publicData,
           privateData,
           config,
-          f => !isRateListingField(f)
+          f => !isPricingListingField(f)
         )
       );
     case PROFILE:
@@ -282,7 +283,12 @@ const tabCompleted = (tab, listing, config) => {
       // and city are on the listing. The model's attribute fields live on the next tab.
       return !!(title && geolocation && publicData?.location?.address);
     case PRICING:
-      return !!price;
+      // "Your rates" also collects the pricing-tab listing fields (half-day/hourly rates and
+      // the required travel fee policy), so validate those alongside the day-rate price.
+      return !!(
+        price &&
+        hasValidListingFieldsInExtendedData(publicData, privateData, config, isPricingListingField)
+      );
     case PRICING_AND_STOCK:
       return !!price;
     case DELIVERY:

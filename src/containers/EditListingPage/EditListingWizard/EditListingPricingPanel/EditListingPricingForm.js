@@ -12,7 +12,9 @@ import { types as sdkTypes } from '../../../../util/sdkLoader';
 import { FIXED, isBookingProcess } from '../../../../transactions/transaction';
 
 // Import shared components
-import { Button, Form, FieldCurrencyInput } from '../../../../components';
+import { Button, Form, FieldCurrencyInput, CustomExtendedDataField } from '../../../../components';
+
+import { isRateListingField } from '../rateFields';
 
 import BookingPriceVariants from './BookingPriceVariants';
 import StartTimeInterval from './StartTimeInverval';
@@ -105,7 +107,7 @@ export const EditListingPricingForm = props => (
         handleSubmit,
         marketplaceCurrency,
         unitType,
-        rateFields = [],
+        pricingFields = [],
         listingTypeConfig,
         isPriceVariationsInUse,
         listingMinimumPriceSubUnits = 0,
@@ -181,12 +183,13 @@ export const EditListingPricingForm = props => (
             />
           ) : null}
 
-          {/* Secondary rate fields (half-day, hourly) — rendered as currency inputs so they
-              match the day-rate field's £ formatting. Stored as subunits like the price. */}
-          {rateFields.map(field => {
+          {/* Pricing-tab fields, grouped with the day rate. Monetary rates (half-day/hourly)
+              render as currency inputs to match the day-rate £ formatting (stored as subunits);
+              other fields (e.g. travel fee policy) render as their normal input. */}
+          {pricingFields.map(field => {
             const namespacedKey =
               field.scope === 'private' ? `priv_${field.key}` : `pub_${field.key}`;
-            return (
+            return isRateListingField(field) ? (
               <FieldCurrencyInput
                 key={namespacedKey}
                 id={`${formId}.${namespacedKey}`}
@@ -197,6 +200,13 @@ export const EditListingPricingForm = props => (
                   id: 'EditListingPricingForm.priceInputPlaceholder',
                 })}
                 currencyConfig={appSettings.getCurrencyFormatting(marketplaceCurrency)}
+              />
+            ) : (
+              <CustomExtendedDataField
+                key={namespacedKey}
+                name={namespacedKey}
+                fieldConfig={field}
+                formId={formId}
               />
             );
           })}

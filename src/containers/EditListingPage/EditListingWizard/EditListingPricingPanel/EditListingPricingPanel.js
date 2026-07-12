@@ -13,7 +13,7 @@ import { FIXED, isBookingProcess } from '../../../../transactions/transaction';
 import { H3, ListingLink } from '../../../../components';
 
 // Import modules from this directory
-import { RATE_LISTING_FIELD_KEYS } from '../rateFields';
+import { PRICING_LISTING_FIELD_KEYS, RATE_LISTING_FIELD_KEYS } from '../rateFields';
 import EditListingPricingForm from './EditListingPricingForm';
 import {
   getInitialValuesForPriceVariants,
@@ -34,21 +34,26 @@ const getListingTypeConfig = (publicData, listingTypes) => {
 
 // The secondary rate fields (half-day, hourly) are custom listing fields surfaced on this
 // "Your rates" tab beside the day rate (the native price).
-const getRateFields = config =>
-  (config?.listing?.listingFields || []).filter(f => RATE_LISTING_FIELD_KEYS.includes(f.key));
+const getPricingFields = config =>
+  (config?.listing?.listingFields || []).filter(f => PRICING_LISTING_FIELD_KEYS.includes(f.key));
 
 const namespacedRateKey = field =>
   field.scope === 'private' ? `priv_${field.key}` : `pub_${field.key}`;
 
-// Namespaced form initial values for the rate fields, read from the listing's extended data.
-// Rate values are stored as subunits (like the price), so they're wrapped in Money for the
-// currency input.
-const getRateFieldInitialValues = (listing, rateFields, currency) => {
+// Namespaced form initial values for the pricing-tab fields, read from the listing's data.
+// Monetary rate values are stored as subunits (like the price) and wrapped in Money for the
+// currency input; other fields (e.g. the travel fee policy enum) keep their stored value.
+const getPricingFieldInitialValues = (listing, pricingFields, currency) => {
   const { publicData, privateData } = listing?.attributes || {};
-  return rateFields.reduce((acc, field) => {
+  return pricingFields.reduce((acc, field) => {
     const source = field.scope === 'private' ? privateData : publicData;
     const stored = source?.[field.key];
-    const value = typeof stored === 'number' && currency ? new Money(stored, currency) : null;
+    const isRate = RATE_LISTING_FIELD_KEYS.includes(field.key);
+    const value = isRate
+      ? typeof stored === 'number' && currency
+        ? new Money(stored, currency)
+        : null
+      : stored;
     return { ...acc, [namespacedRateKey(field)]: value };
   }, {});
 };
@@ -63,9 +68,9 @@ const getInitialValues = props => {
   const listingTypeConfig = getListingTypeConfig(publicData, listingTypes);
   // Note: publicData contains priceVariationsEnabled if listing is created with priceVariations enabled.
   const isPriceVariationsInUse = isPriceVariationsEnabled(publicData, listingTypeConfig);
-  const rateFieldValues = getRateFieldInitialValues(
+  const rateFieldValues = getPricingFieldInitialValues(
     listing,
-    getRateFields(config),
+    getPricingFields(config),
     marketplaceCurrency
   );
 
@@ -140,7 +145,7 @@ const EditListingPricingPanel = props => {
     intl,
   } = props;
 
-  const rateFields = getRateFields(config);
+  const pricingFields = getPricingFields(config);
 
   const classes = classNames(rootClassName || css.root, className);
   const initialValues = state.initialValues;
@@ -242,19 +247,20 @@ const EditListingPricingPanel = props => {
               updateValues = { price, ...priceVariationsEnabledMaybe };
             }
 
-            // Merge the secondary rate fields (half-day, hourly) into the listing's
-            // extended data so they're saved alongside the day-rate price. The currency
-            // inputs produce Money objects; we store their subunit amount (like the price).
+            // Merge the pricing-tab fields into the listing's extended data so they're saved
+            // alongside the day-rate price. Monetary rate inputs produce Money objects; we
+            // store their subunit amount (like the price). Other fields keep their value.
             const ratePublicData = {};
             const ratePrivateData = {};
-            rateFields.forEach(field => {
+            pricingFields.forEach(field => {
               const ns = namespacedRateKey(field);
               const val = values[ns];
-              const amount = val instanceof Money ? val.amount : val ?? null;
+              const isRate = RATE_LISTING_FIELD_KEYS.includes(field.key);
+              const out = isRate ? (val instanceof Money ? val.amount : val ?? null) : val ?? null;
               if (field.scope === 'private') {
-                ratePrivateData[field.key] = amount;
+                ratePrivateData[field.key] = out;
               } else {
-                ratePublicData[field.key] = amount;
+                ratePublicData[field.key] = out;
               }
             });
             updateValues = {
@@ -279,7 +285,7 @@ const EditListingPricingPanel = props => {
           }}
           marketplaceCurrency={marketplaceCurrency}
           unitType={unitType}
-          rateFields={rateFields}
+          pricingFields={pricingFields}
           listingTypeConfig={listingTypeConfig}
           isPriceVariationsInUse={isPriceVariationsInUse}
           listingMinimumPriceSubUnits={listingMinimumPriceSubUnits}
