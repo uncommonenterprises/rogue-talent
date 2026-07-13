@@ -251,6 +251,9 @@ const TopbarComponent = props => {
     <TopbarMobileMenu
       isAuthenticated={isAuthenticated}
       currentUser={currentUser}
+      currentUserHasListings={currentUserHasListings}
+      isProvider={isProvider}
+      isCustomer={isCustomer}
       onLogout={handleLogout}
       notificationCount={notificationCount}
       currentPage={resolvedCurrentPage}

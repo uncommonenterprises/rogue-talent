@@ -9,6 +9,8 @@ import { ACCOUNT_SETTINGS_PAGES } from '../../../../routing/routeConfiguration';
 import { FormattedMessage } from '../../../../util/reactIntl';
 import { ensureCurrentUser } from '../../../../util/data';
 
+import { primaryActionLink } from '../TopbarDesktop/CustomLinksMenu/PriorityLinks';
+
 import {
   AvatarLarge,
   ExternalLink,
@@ -77,6 +79,9 @@ const TopbarMobileMenu = props => {
     currentPage,
     inboxTab,
     currentUser,
+    currentUserHasListings,
+    isProvider,
+    isCustomer,
     notificationCount = 0,
     customLinks,
     onLogout,
@@ -84,6 +89,13 @@ const TopbarMobileMenu = props => {
   } = props;
 
   const user = ensureCurrentUser(currentUser);
+
+  // Role-aware inbox label: providers (models) see "Requests", customers "My bookings".
+  const inboxLabelId = isProvider
+    ? 'TopbarDesktop.inboxRequests'
+    : isCustomer
+    ? 'TopbarDesktop.inboxBookings'
+    : 'TopbarMobileMenu.inboxLink';
 
   const extraLinks = customLinks.map((linkConfig, index) => {
     return (
@@ -95,9 +107,15 @@ const TopbarMobileMenu = props => {
     );
   });
 
+  // Model who already has a profile links to it ("My profile"); otherwise invite to create one.
+  const primaryLink = primaryActionLink(currentUser, currentUserHasListings);
   const createListingsLinkMaybe = showCreateListingsLink ? (
-    <NamedLink className={css.createNewListingLink} name="NewListingPage">
-      <FormattedMessage id="TopbarMobileMenu.newListingLink" />
+    <NamedLink
+      className={css.createNewListingLink}
+      name={primaryLink.name}
+      params={primaryLink.params}
+    >
+      <FormattedMessage id={primaryLink.labelId} />
     </NamedLink>
   ) : null;
 
@@ -176,7 +194,7 @@ const TopbarMobileMenu = props => {
         <ul className={css.accountLinksWrapper}>
           <li className={classNames(css.inbox, currentPageClass(`InboxPage:${inboxTab}`))}>
             <NamedLink name="InboxPage" params={{ tab: inboxTab }}>
-              <FormattedMessage id="TopbarMobileMenu.inboxLink" />
+              <FormattedMessage id={inboxLabelId} />
               {notificationCountBadge}
             </NamedLink>
           </li>
