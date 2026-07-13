@@ -113,6 +113,7 @@ const EditListingWizardTab = props => {
     updateInProgress,
     tabSubmitButtonText,
     config,
+    currentUser,
     routeConfiguration,
     titleId,
     intl,
@@ -234,6 +235,7 @@ const EditListingWizardTab = props => {
         <EditListingProfilePanel
           {...panelProps(PROFILE)}
           config={config}
+          currentUser={currentUser}
           onSubmit={values => onCompleteEditListingProfileTab(PROFILE, values)}
         />
       );

@@ -35,8 +35,21 @@ const getListingTypeValues = (listing, config) => {
   return {};
 };
 
+// Build a privacy-preserving default display name from the user's signup name:
+// "Lucy" + "Southern" -> "Lucy S.". Falls back to the first name alone (or '')
+// so the field is still editable if the surname is missing.
+const defaultDisplayName = currentUser => {
+  const { firstName, lastName } = currentUser?.attributes?.profile || {};
+  const first = firstName?.trim();
+  if (!first) {
+    return '';
+  }
+  const lastInitial = lastName?.trim()?.charAt(0)?.toUpperCase();
+  return lastInitial ? `${first} ${lastInitial}.` : first;
+};
+
 const getInitialValues = props => {
-  const { listing } = props;
+  const { listing, currentUser } = props;
   // Display name is the listing title; location is stored on the listing
   // (geolocation + publicData.location.address).
   const { title, geolocation, publicData: listingPublicData } = listing?.attributes || {};
@@ -44,7 +57,9 @@ const getInitialValues = props => {
   const locationFieldsPresent = address && geolocation;
 
   return {
-    title,
+    // Pre-fill new profiles with "First L." from the signup name; models who use a
+    // professional name can edit it. Existing listings keep their saved title.
+    title: title || defaultDisplayName(currentUser),
     location: locationFieldsPresent
       ? { search: address, selectedPlace: { address, origin: geolocation } }
       : null,
