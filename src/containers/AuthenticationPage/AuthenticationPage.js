@@ -304,9 +304,15 @@ export const AuthenticationPageComponent = props => {
     // Already authenticated, redirect back to the page the user tried to access
     return <Redirect to={from} />;
   } else if (shouldRedirectToLandingPage) {
-    // Models are redirected to create their profile after completing signup.
     if (isModel) {
-      return <NamedRedirect name="NewListingPage" />;
+      // New models are guided to create their profile; returning models (logging in)
+      // land on their own profile page — their storefront — rather than the client
+      // landing page.
+      return isLogin && user.id ? (
+        <NamedRedirect name="ProfilePage" params={{ id: user.id.uuid }} />
+      ) : (
+        <NamedRedirect name="NewListingPage" />
+      );
     }
     // Already authenticated, redirect to the landing page (this was direct access to /login or /signup)
     return <NamedRedirect name="LandingPage" />;
