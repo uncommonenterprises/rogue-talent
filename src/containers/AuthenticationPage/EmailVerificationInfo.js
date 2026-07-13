@@ -2,7 +2,7 @@ import React from 'react';
 
 import { FormattedMessage } from '../../util/reactIntl';
 
-import { Heading, NamedLink, IconEmailSent, InlineTextButton, IconClose } from '../../components';
+import { Heading, NamedLink, IconEmailSent, InlineTextButton } from '../../components';
 
 import css from './AuthenticationPage.module.css';
 
@@ -10,7 +10,6 @@ const EmailVerificationInfo = props => {
   const {
     name,
     email,
-    closeLinkName = 'ProfileSettingsPage',
     onResendVerificationEmail,
     resendErrorMessage,
     sendVerificationEmailInProgress,
@@ -28,14 +27,10 @@ const EmailVerificationInfo = props => {
     </NamedLink>
   );
 
+  // Email verification is mandatory — there is no "Later" / close escape. The user
+  // continues by verifying via the emailed link (or can resend / fix the address below).
   return (
     <div className={css.content}>
-      <NamedLink className={css.verifyClose} name={closeLinkName}>
-        <span className={css.closeText}>
-          <FormattedMessage id="AuthenticationPage.verifyEmailClose" />
-        </span>
-        <IconClose rootClassName={css.closeIcon} />
-      </NamedLink>
       <IconEmailSent className={css.modalIcon} />
       <Heading as="h1" rootClassName={css.modalTitle}>
         <FormattedMessage id="AuthenticationPage.verifyEmailTitle" values={{ name }} />

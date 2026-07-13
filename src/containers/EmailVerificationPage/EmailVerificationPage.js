@@ -83,7 +83,10 @@ export const EmailVerificationPageComponent = props => {
   // If the verify API call is successfull and the user has verified email
   // We can redirect user forward from email verification page.
   if (isVerified && user.attributes.emailVerified && user.attributes.pendingEmail == null) {
-    return <NamedRedirect name="LandingPage" />;
+    // Drop the user straight into the platform rather than a generic page: models
+    // continue to profile creation ("About you"); everyone else lands on the homepage.
+    const isModel = user.attributes.profile?.publicData?.userType === 'model';
+    return <NamedRedirect name={isModel ? 'NewListingPage' : 'LandingPage'} />;
   }
 
   return (
