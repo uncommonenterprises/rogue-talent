@@ -1,24 +1,25 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-import PriorityLinks, { CreateListingMenuLink } from './PriorityLinks';
+import PriorityLinks, { CreateListingMenuLink, primaryActionLink } from './PriorityLinks';
 import LinksMenu from './LinksMenu';
 
 import css from './CustomLinksMenu.module.css';
 
-const createListingLinkConfigMaybe = (intl, showLink) =>
-  showLink
-    ? [
-        {
-          group: 'primary',
-          text: intl.formatMessage({ id: 'TopbarDesktop.createListing' }),
-          type: 'internal',
-          route: {
-            name: 'NewListingPage',
-          },
-          highlight: true,
-        },
-      ]
-    : [];
+const createListingLinkConfigMaybe = (intl, showLink, currentUser, currentUserHasListings) => {
+  if (!showLink) {
+    return [];
+  }
+  const { name, params, labelId } = primaryActionLink(currentUser, currentUserHasListings);
+  return [
+    {
+      group: 'primary',
+      text: intl.formatMessage({ id: labelId }),
+      type: 'internal',
+      route: { name, params },
+      highlight: true,
+    },
+  ];
+};
 
 /**
  * Group links to 2 groups:
@@ -109,13 +110,15 @@ const CustomLinksMenu = ({
   hasClientSideContentReady,
   intl,
   showCreateListingsLink,
+  currentUser,
+  currentUserHasListings,
 }) => {
   const containerRef = useRef(null);
   const observer = useRef(null);
   const [mounted, setMounted] = useState(false);
   const [moreLabelWidth, setMoreLabelWidth] = useState(0);
   const [links, setLinks] = useState([
-    ...createListingLinkConfigMaybe(intl, showCreateListingsLink),
+    ...createListingLinkConfigMaybe(intl, showCreateListingsLink, currentUser, currentUserHasListings),
     ...customLinks,
   ]);
 
@@ -190,9 +193,15 @@ const CustomLinksMenu = ({
 
   const { priorityLinks, menuLinks, containerWidth } = layoutData;
 
-  // If there are no custom links, just render createListing link.
+  // If there are no custom links, just render the single primary action link.
   if (customLinks?.length === 0 && showCreateListingsLink) {
-    return <CreateListingMenuLink customLinksMenuClass={css.createListingLinkOnly} />;
+    return (
+      <CreateListingMenuLink
+        customLinksMenuClass={css.createListingLinkOnly}
+        currentUser={currentUser}
+        currentUserHasListings={currentUserHasListings}
+      />
+    );
   }
 
   const styleMaybe = mounted ? { style: { width: `${containerWidth}px` } } : {};

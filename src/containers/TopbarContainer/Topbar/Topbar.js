@@ -375,6 +375,8 @@ const TopbarComponent = props => {
           initialSearchFormValues={initialSearchFormValues}
           intl={intl}
           isAuthenticated={isAuthenticated}
+          isProvider={isProvider}
+          isCustomer={isCustomer}
           notificationCount={notificationCount}
           onLogout={handleLogout}
           onSearchSubmit={handleSubmit}

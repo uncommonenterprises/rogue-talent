@@ -39,7 +39,7 @@ const LoginLink = () => {
   );
 };
 
-const InboxLink = ({ notificationCount, inboxTab }) => {
+const InboxLink = ({ notificationCount, inboxTab, inboxLabelId }) => {
   const notificationDot = notificationCount > 0 ? <div className={css.notificationDot} /> : null;
   return (
     <NamedLink
@@ -49,7 +49,7 @@ const InboxLink = ({ notificationCount, inboxTab }) => {
       params={{ tab: inboxTab }}
     >
       <span className={css.topbarLinkLabel}>
-        <FormattedMessage id="TopbarDesktop.inbox" />
+        <FormattedMessage id={inboxLabelId} />
         {notificationDot}
       </span>
     </NamedLink>
@@ -141,11 +141,14 @@ const TopbarDesktop = props => {
     config,
     customLinks,
     currentUser,
+    currentUserHasListings,
     currentPage,
     rootClassName,
     notificationCount = 0,
     intl,
     isAuthenticated,
+    isProvider,
+    isCustomer,
     onLogout,
     onSearchSubmit,
     initialSearchFormValues = {},
@@ -166,8 +169,20 @@ const TopbarDesktop = props => {
   const giveSpaceForSearch = customLinks == null || customLinks?.length === 0;
   const classes = classNames(rootClassName || css.root, className);
 
+  // Role-aware inbox label: providers (models) manage booking "Requests"; customers
+  // (clients) track "My bookings". Falls back to the neutral "Inbox".
+  const inboxLabelId = isProvider
+    ? 'TopbarDesktop.inboxRequests'
+    : isCustomer
+    ? 'TopbarDesktop.inboxBookings'
+    : 'TopbarDesktop.inbox';
+
   const inboxLinkMaybe = authenticatedOnClientSide ? (
-    <InboxLink notificationCount={notificationCount} inboxTab={inboxTab} />
+    <InboxLink
+      notificationCount={notificationCount}
+      inboxTab={inboxTab}
+      inboxLabelId={inboxLabelId}
+    />
   ) : null;
 
   const profileMenuMaybe = authenticatedOnClientSide ? (
@@ -219,6 +234,8 @@ const TopbarDesktop = props => {
         intl={intl}
         hasClientSideContentReady={authenticatedOnClientSide || !isAuthenticatedOrJustHydrated}
         showCreateListingsLink={showCreateListingsLink}
+        currentUser={currentUser}
+        currentUserHasListings={currentUserHasListings}
       />
 
       {inboxLinkMaybe}

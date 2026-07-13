@@ -8,18 +8,29 @@ import { ExternalLink, NamedLink } from '../../../../../components';
 
 import css from './PriorityLinks.module.css';
 
+// The topbar's primary provider action: a model who already has a profile links to it
+// ("My profile"); otherwise the link invites them to create one. Shared with CustomLinksMenu.
+export const primaryActionLink = (currentUser, currentUserHasListings) => {
+  const userId = currentUser?.id?.uuid;
+  return currentUserHasListings && userId
+    ? { name: 'ProfilePage', params: { id: userId }, labelId: 'TopbarDesktop.myProfile' }
+    : { name: 'NewListingPage', params: {}, labelId: 'TopbarDesktop.createListing' };
+};
+
 /**
- * Create component that shows only a single "Post a new listing" link.
+ * Create component that shows only a single primary link (create profile / my profile).
  *
- * @param {*} props contains customLinksMenuClass
+ * @param {*} props contains customLinksMenuClass, currentUser, currentUserHasListings
  * @returns div with only one link inside.
  */
 export const CreateListingMenuLink = props => {
+  const { customLinksMenuClass, currentUser, currentUserHasListings } = props;
+  const { name, params, labelId } = primaryActionLink(currentUser, currentUserHasListings);
   return (
-    <div className={props.customLinksMenuClass}>
-      <NamedLink name="NewListingPage" className={classNames(css.priorityLink, css.highlight)}>
+    <div className={customLinksMenuClass}>
+      <NamedLink name={name} params={params} className={classNames(css.priorityLink, css.highlight)}>
         <span className={css.priorityLinkLabel}>
-          <FormattedMessage id="TopbarDesktop.createListing" />
+          <FormattedMessage id={labelId} />
         </span>
       </NamedLink>
     </div>
