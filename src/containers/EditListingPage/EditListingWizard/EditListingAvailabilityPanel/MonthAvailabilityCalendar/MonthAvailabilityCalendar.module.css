@@ -1,0 +1,167 @@
+@import '../../../../../styles/customMediaQueries.css';
+
+.root {
+  max-width: 520px;
+  border: var(--border-hair) solid var(--border-hairline);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  background: var(--white);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-4);
+}
+.monthLabel {
+  font-family: var(--font-display);
+  font-weight: var(--weight-bold);
+  font-size: var(--text-lg);
+  color: var(--text-primary);
+}
+.navButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: var(--border-hair) solid var(--ink-200);
+  border-radius: var(--radius-md);
+  background: var(--white);
+  color: var(--ink-900);
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease-standard),
+    border-color var(--dur-fast) var(--ease-standard);
+}
+.navButton:hover:not(:disabled) {
+  background: var(--ink-50);
+  border-color: var(--ink-400);
+}
+.navButton:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: var(--space-1);
+  margin-bottom: var(--space-2);
+}
+.weekday {
+  text-align: center;
+  font-family: var(--font-sans);
+  font-weight: var(--weight-semibold);
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: var(--space-1);
+}
+
+/* Day cell */
+.day {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: var(--border-hair) solid transparent;
+  border-radius: var(--radius-md);
+  background: var(--white);
+  cursor: pointer;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  transition: background var(--dur-fast) var(--ease-standard),
+    border-color var(--dur-fast) var(--ease-standard), color var(--dur-fast) var(--ease-standard);
+}
+.dayNumber {
+  position: relative;
+  z-index: 1;
+}
+
+/* Available — the default state */
+.dayAvailable {
+  color: var(--text-primary);
+  border-color: var(--ink-200);
+}
+.dayAvailable:hover {
+  border-color: var(--accent-500);
+  background: var(--accent-50);
+}
+
+/* Blocked — ink fill (never red; red is danger only) */
+.dayBlocked {
+  color: var(--ink-500);
+  background: var(--ink-100);
+  border-color: var(--ink-100);
+}
+.dayBlocked .dayNumber {
+  text-decoration: line-through;
+}
+.dayBlocked:hover {
+  border-color: var(--ink-400);
+}
+.blockedMark {
+  display: none;
+}
+
+/* Past / beyond range — disabled */
+.dayPast {
+  color: var(--ink-300);
+  background: transparent;
+  border-color: transparent;
+  cursor: not-allowed;
+}
+
+/* Spillover days from the adjacent month */
+.dayOutside {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* Today accent */
+.dayToday {
+  box-shadow: inset 0 0 0 var(--border-bold) var(--accent-500);
+}
+
+.dayPending {
+  opacity: 0.5;
+}
+
+/* Legend */
+.legend {
+  display: flex;
+  gap: var(--space-5);
+  margin-top: var(--space-4);
+  padding-top: var(--space-4);
+  border-top: var(--border-hair) solid var(--border-subtle);
+}
+.legendItem {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+}
+.swatch {
+  width: 14px;
+  height: 14px;
+  border-radius: var(--radius-sm);
+  display: inline-block;
+}
+.swatchAvailable {
+  background: var(--white);
+  border: var(--border-hair) solid var(--ink-200);
+}
+.swatchBlocked {
+  background: var(--ink-100);
+  border: var(--border-hair) solid var(--ink-200);
+}
