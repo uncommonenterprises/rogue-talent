@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import classNames from 'classnames';
 
 // Import configs and util modules
@@ -97,6 +97,22 @@ const createAvailabilityPlan = values => ({
     type: 'availability-plan/time',
     timezone: values.timezone,
     entries: createEntriesFromSubmitValues(values),
+  },
+});
+
+// The "available by default" baseline: every weekday open, full day, one seat.
+// Models are bookable on every future date and only need to block dates they're
+// away/booked (via not-available exceptions). See docs/availability-calendar-spec.md.
+const createAllOpenPlan = timezone => ({
+  availabilityPlan: {
+    type: 'availability-plan/time',
+    timezone,
+    entries: WEEKDAYS.map(dayOfWeek => ({
+      dayOfWeek,
+      startTime: '00:00',
+      endTime: '00:00', // 00:00 -> 00:00 represents a full day in Sharetribe's plan
+      seats: 1,
+    })),
   },
 });
 
@@ -212,6 +228,21 @@ const EditListingAvailabilityPanel = props => {
   const initialPlanValues = valuesFromLastSubmit
     ? valuesFromLastSubmit
     : createInitialPlanValues(availabilityPlan);
+
+  // "Available by default": as soon as the model reaches this step, ensure a
+  // fully-open baseline plan exists so they are bookable on every date without
+  // configuring anything. They then only block dates they're away/booked.
+  // Guarded so it runs at most once per mount and never overwrites an existing plan.
+  const baselinePlanAttempted = useRef(false);
+  useEffect(() => {
+    if (!hasAvailabilityPlan && listing?.id && !baselinePlanAttempted.current) {
+      baselinePlanAttempted.current = true;
+      onSubmit(createAllOpenPlan(defaultTimeZone())).catch(() => {
+        // Allow a retry on a later render if the baseline save failed.
+        baselinePlanAttempted.current = false;
+      });
+    }
+  }, [hasAvailabilityPlan, listing, onSubmit]);
 
   const handlePlanSubmit = values => {
     setValuesFromLastSubmit(values);
