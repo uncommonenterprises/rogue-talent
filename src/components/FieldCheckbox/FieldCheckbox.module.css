@@ -14,7 +14,7 @@
   &:hover + label .box,
   &:focus + label .box,
   &:checked + label .box {
-    stroke: var(--marketplaceColor);
+    stroke: var(--accent-500);
   }
 
   /* successColor version */
@@ -34,7 +34,7 @@
   /* Display the "check" when checked */
   &:checked + label .checked {
     display: inline;
-    stroke: var(--marketplaceColor);
+    stroke: var(--accent-500);
     stroke-width: 1px;
   }
 
@@ -56,7 +56,7 @@
   &:focus + label .text,
   &:hover + label .text,
   &:checked + label .text {
-    color: var(--colorBlack);
+    color: var(--text-primary);
   }
 }
 
@@ -85,7 +85,7 @@
 
 .checked {
   display: none;
-  fill: var(--marketplaceColor);
+  fill: var(--accent-500);
 }
 .checkedSuccess {
   display: none;
@@ -100,14 +100,14 @@
 .boxDisabled,
 .boxSuccess,
 .box {
-  stroke: var(--colorGrey300);
+  stroke: var(--ink-300);
 }
 
 .text {
 }
 .textRoot {
   composes: marketplaceListingAttributeFontStyles from global;
-  color: var(--colorGrey700);
+  color: var(--text-secondary);
   padding: 0;
   margin-top: -1px;
   margin-bottom: 1px;

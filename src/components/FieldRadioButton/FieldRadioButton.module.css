@@ -21,7 +21,7 @@
   &:focus + label .notChecked,
   &:focus + label .required,
   &:checked + label .required {
-    stroke: var(--colorBlack);
+    stroke: var(--ink-900);
   }
 
   &:checked + label .notChecked {
@@ -32,7 +32,7 @@
   &:focus + label .text,
   &:hover + label .text,
   &:checked + label .text {
-    color: var(--colorBlack);
+    color: var(--text-primary);
   }
 
   /* Disabled radio-button label should look like disabled */
@@ -70,8 +70,8 @@
 }
 
 .checkedStyle {
-  stroke: var(--marketplaceColor);
-  fill: var(--marketplaceColor);
+  stroke: var(--accent-500);
+  fill: var(--accent-500);
 }
 
 .checked {
@@ -79,22 +79,22 @@
 }
 
 .notChecked {
-  stroke: var(--colorGrey300);
+  stroke: var(--ink-300);
   &:hover {
-    stroke: pink;
+    stroke: var(--ink-400);
   }
 }
 
 .required {
   stroke: var(--colorAttention);
   &:hover {
-    stroke: pink;
+    stroke: var(--ink-400);
   }
 }
 
 .text {
   composes: marketplaceListingAttributeFontStyles from global;
-  color: var(--colorGrey700);
+  color: var(--text-secondary);
   margin-top: -1px;
   margin-bottom: 1px;
   cursor: pointer;
