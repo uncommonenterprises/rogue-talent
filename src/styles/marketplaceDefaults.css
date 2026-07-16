@@ -442,8 +442,10 @@ legend {
   font-size: 14px;
   line-height: 18px;
 
+  /* Match label's bottom spacing so field help text sits the same distance under
+     group titles (legend) as under input/select labels. */
   margin-top: 0;
-  margin-bottom: 0;
+  margin-bottom: 6px;
 
   @media (--viewportMedium) {
     font-weight: var(--fontWeightSemiBold);
@@ -451,7 +453,7 @@ legend {
     margin-top: 0;
     margin-bottom: 0;
     padding-top: 3px;
-    padding-bottom: 5px;
+    padding-bottom: 12px;
   }
 }
 
