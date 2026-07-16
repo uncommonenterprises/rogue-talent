@@ -61,7 +61,7 @@ const FieldSelectComponent = props => {
       {/* Help text sits directly under the field label, above the input. */}
       <HelpText helpText={helpText} />
       <select {...selectProps}>{children}</select>
-      <ValidationError fieldMeta={meta} />
+      <ValidationError className={css.validationError} fieldMeta={meta} />
     </div>
   );
 };

@@ -1,4 +1,16 @@
 .root {
+  /* Anchor the absolutely-positioned validation error to this field. */
+  position: relative;
+}
+
+/* The validation error drops into the existing gap below the field instead of
+   pushing the fields below it down. Descendant selector overrides the default
+   ValidationError top margin so it stays clear of the next field. */
+.root .validationError {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 2px;
 }
 
 .selectError {

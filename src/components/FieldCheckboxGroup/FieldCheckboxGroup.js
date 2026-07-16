@@ -55,7 +55,7 @@ const FieldCheckboxRenderer = props => {
           );
         })}
       </ul>
-      <ValidationError fieldMeta={{ ...meta }} />
+      <ValidationError className={css.validationError} fieldMeta={{ ...meta }} />
     </Tag>
   );
 };
