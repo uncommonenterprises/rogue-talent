@@ -60,7 +60,11 @@ import EditListingWizardTab, {
   PHOTOS,
   STYLE,
 } from './EditListingWizardTab';
-import { isPricingListingField } from './rateFields';
+import {
+  isPricingListingField,
+  isAvailabilityListingField,
+  MIN_BOOKING_NOTICE_KEY,
+} from './rateFields';
 import css from './EditListingWizard.module.css';
 
 // This is the initial tab on editlisting wizard.
@@ -269,12 +273,13 @@ const tabCompleted = (tab, listing, config) => {
         transactionProcessAlias &&
         unitType &&
         // Validate all listing fields except the pricing-tab fields (rates + travel fee
-        // policy), which are collected on the "Your rates" tab.
+        // policy) and the availability-tab field (minimum booking notice), which are
+        // collected on "Your rates" and "Your availability" respectively.
         hasValidListingFieldsInExtendedData(
           publicData,
           privateData,
           config,
-          f => !isPricingListingField(f)
+          f => !isPricingListingField(f) && !isAvailabilityListingField(f)
         )
       );
     case PROFILE:
@@ -296,7 +301,9 @@ const tabCompleted = (tab, listing, config) => {
     case LOCATION:
       return !!(geolocation && publicData?.location?.address);
     case AVAILABILITY:
-      return !!availabilityPlan;
+      // "Your availability" also collects the required minimum-booking-notice field, so it's
+      // complete once the model has a plan (available by default) and a notice period set.
+      return !!(availabilityPlan && publicData?.[MIN_BOOKING_NOTICE_KEY]);
     case PHOTOS:
       return images && images.length > 0;
     case STYLE:

@@ -13,6 +13,7 @@ import { Button, H3, InlineTextButton, ListingLink, Modal } from '../../../../co
 // Import modules from this directory
 import EditListingAvailabilityExceptionForm from './EditListingAvailabilityExceptionForm';
 import MonthAvailabilityCalendar from './MonthAvailabilityCalendar/MonthAvailabilityCalendar';
+import { MIN_BOOKING_NOTICE_KEY } from '../rateFields';
 
 import css from './EditListingAvailabilityPanel.module.css';
 
@@ -108,6 +109,14 @@ const EditListingAvailabilityPanel = props => {
     listingAttributes?.availabilityPlan || createAllOpenPlan(defaultTimeZone()).availabilityPlan;
   const timeZone = availabilityPlan.timezone;
 
+  // Minimum booking notice: a required listing field that lives on this step (moved off
+  // "Your profile"). Rendered from the Console field config (so its title/options follow
+  // Console) and saved to publicData; the model must choose before continuing.
+  const minNoticeField = config.listing.listingFields?.find(f => f.key === MIN_BOOKING_NOTICE_KEY);
+  const minNoticeOptions = minNoticeField?.enumOptions || [];
+  const currentMinNotice = listingAttributes?.publicData?.[MIN_BOOKING_NOTICE_KEY] || '';
+  const saveMinNotice = value => onSubmit({ publicData: { [MIN_BOOKING_NOTICE_KEY]: value } });
+
   // "Available by default": as soon as the model reaches this step, ensure a
   // fully-open baseline plan exists so they are bookable on every date without
   // configuring anything. Guarded so it runs at most once and never overwrites
@@ -168,6 +177,35 @@ const EditListingAvailabilityPanel = props => {
         <FormattedMessage id="EditListingAvailabilityPanel.guidance" />
       </p>
 
+      {minNoticeField ? (
+        <section className={css.settings}>
+          <label className={css.settingLabel} htmlFor="minBookingNotice">
+            {minNoticeField.label || (
+              <FormattedMessage id="EditListingAvailabilityPanel.minNoticeFallbackLabel" />
+            )}
+          </label>
+          <select
+            id="minBookingNotice"
+            className={css.settingSelect}
+            value={currentMinNotice}
+            onChange={e => saveMinNotice(e.target.value)}
+            disabled={updateInProgress || !listing?.id}
+          >
+            <option value="" disabled>
+              {intl.formatMessage({ id: 'EditListingAvailabilityPanel.minNoticePlaceholder' })}
+            </option>
+            {minNoticeOptions.map(o => (
+              <option key={o.option} value={o.option}>
+                {o.label}
+              </option>
+            ))}
+          </select>
+          <p className={css.settingHint}>
+            <FormattedMessage id="EditListingAvailabilityPanel.minNoticeHint" />
+          </p>
+        </section>
+      ) : null}
+
       <MonthAvailabilityCalendar
         className={css.section}
         listingId={listing?.id}
@@ -203,7 +241,7 @@ const EditListingAvailabilityPanel = props => {
         <Button
           className={css.goToNextTabButton}
           onClick={onNextTab}
-          disabled={!hasAvailabilityPlan}
+          disabled={!hasAvailabilityPlan || (!!minNoticeField && !currentMinNotice)}
         >
           {submitButtonText}
         </Button>

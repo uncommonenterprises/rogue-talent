@@ -15,3 +15,12 @@ export const isRateListingField = fieldConfig => RATE_LISTING_FIELD_KEYS.include
 
 export const isPricingListingField = fieldConfig =>
   PRICING_LISTING_FIELD_KEYS.includes(fieldConfig?.key);
+
+// Listing custom-field keys that live on the Availability ("Your availability") tab rather
+// than on "Your profile" — same treatment as the pricing fields: excluded from the Details
+// form/submit/completion check, and rendered + saved on the Availability panel instead.
+export const MIN_BOOKING_NOTICE_KEY = 'min_booking_notice';
+export const AVAILABILITY_LISTING_FIELD_KEYS = [MIN_BOOKING_NOTICE_KEY];
+
+export const isAvailabilityListingField = fieldConfig =>
+  AVAILABILITY_LISTING_FIELD_KEYS.includes(fieldConfig?.key);

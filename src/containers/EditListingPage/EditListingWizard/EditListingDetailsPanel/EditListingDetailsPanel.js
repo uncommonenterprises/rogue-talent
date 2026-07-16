@@ -21,7 +21,7 @@ import { isBookingProcessAlias } from '../../../../transactions/transaction';
 import { H3, ListingLink } from '../../../../components';
 
 // Import modules from this directory
-import { isPricingListingField } from '../rateFields';
+import { isPricingListingField, isAvailabilityListingField } from '../rateFields';
 import ErrorMessage from './ErrorMessage';
 import EditListingDetailsForm from './EditListingDetailsForm';
 import css from './EditListingDetailsPanel.module.css';
@@ -315,10 +315,13 @@ const EditListingDetailsPanel = props => {
   const classes = classNames(rootClassName || css.root, className);
   const { publicData, state } = listing?.attributes || {};
   const listingTypes = config.listing.listingTypes;
-  // Pricing-tab fields (rates + travel fee policy) are collected on the "Your rates" tab, so
-  // they're excluded here (from rendering, initial values, and the submit pick). Everything
-  // else — the model attribute fields and the remaining offering fields — is on this step.
-  const listingFields = config.listing.listingFields.filter(f => !isPricingListingField(f));
+  // Pricing-tab fields (rates + travel fee policy) live on "Your rates"; availability-tab
+  // fields (minimum booking notice) live on "Your availability". Both are excluded here
+  // (from rendering, initial values, and the submit pick). Everything else — the model
+  // attribute fields and the remaining offering fields — is on this step.
+  const listingFields = config.listing.listingFields.filter(
+    f => !isPricingListingField(f) && !isAvailabilityListingField(f)
+  );
   const listingCategories = config.categoryConfiguration.categories;
   const categoryKey = config.categoryConfiguration.key;
 
