@@ -1,12 +1,19 @@
 @import '../../styles/customMediaQueries.css';
 
+/* Help text sits directly under the field label (above the input), in muted grey to
+   differentiate it from the label. Negative top margin pulls it up under the label's
+   own bottom spacing. */
 .root {
-  composes: textSmall from global;
-  color: var(--colorGrey600);
-  margin-top: 11px;
-  margin-bottom: 0;
+  font-family: var(--font-sans);
+  font-weight: var(--weight-regular);
+  font-size: var(--text-xs);
+  line-height: var(--leading-snug);
+  color: var(--text-muted);
+  margin-top: -2px;
+  margin-bottom: 10px;
 
   @media (--viewportMedium) {
-    margin-top: 16px;
+    margin-top: -8px;
+    margin-bottom: 10px;
   }
 }

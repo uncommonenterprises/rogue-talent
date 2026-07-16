@@ -35,6 +35,8 @@ const FieldCheckboxRenderer = props => {
   return (
     <Tag className={classes}>
       {label ? <legend>{label}</legend> : null}
+      {/* Help text sits directly under the group label, above the options. */}
+      <HelpText helpText={helpText} />
       <ul className={listClasses}>
         {options.map((option, index) => {
           const fieldId = `${id}.${option.key}`;
@@ -53,7 +55,6 @@ const FieldCheckboxRenderer = props => {
           );
         })}
       </ul>
-      <HelpText helpText={helpText} />
       <ValidationError fieldMeta={{ ...meta }} />
     </Tag>
   );

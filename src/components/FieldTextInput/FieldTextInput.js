@@ -87,8 +87,9 @@ const FieldTextInputComponent = props => {
           {label}
         </label>
       ) : null}
-      {isTextarea ? <ExpandingTextarea {...inputProps} /> : <input {...inputProps} />}
+      {/* Help text sits directly under the field label, above the input. */}
       <HelpText helpText={helpText} />
+      {isTextarea ? <ExpandingTextarea {...inputProps} /> : <input {...inputProps} />}
       {hideErrorMessage ? null : <ValidationError fieldMeta={fieldMeta} />}
     </div>
   );
