@@ -46,11 +46,13 @@ const Chevron = ({ direction }) => (
 // Start-of-day "today" in the plan time zone.
 const todayInZone = timeZone => getStartOf(new Date(), 'day', timeZone);
 
-// A date is blocked when a not-available (seats === 0) exception covers it.
-const findBlockingExceptions = (date, exceptions, timeZone) =>
+// The exceptions the model manages all carry the "override" seats value for the current
+// mode: 0 (a block) in available-by-default mode, 1 (an opening) in unavailable-by-default
+// mode. A day is "overridden" when such an exception covers it.
+const findOverrideExceptions = (date, exceptions, timeZone, overrideSeats) =>
   exceptions.filter(
     e =>
-      e?.attributes?.seats === 0 &&
+      e?.attributes?.seats === overrideSeats &&
       isInRange(date, e.attributes.start, e.attributes.end, 'day', timeZone)
   );
 
@@ -94,8 +96,18 @@ const MonthAvailabilityCalendar = props => {
     onDeleteException,
     firstDayOfWeek = 1,
     updateInProgress,
+    mode = 'available',
   } = props;
   const intl = useIntl();
+
+  // In available-by-default mode the model's exceptions are blocks (seats 0); in
+  // unavailable-by-default mode they are openings (seats 1). A day is bookable when it's
+  // in the default state (available mode) or has an opening override (unavailable mode).
+  const overrideSeats = mode === 'available' ? 0 : 1;
+  const isBookable = date => {
+    const overridden = findOverrideExceptions(date, exceptions, timeZone, overrideSeats).length > 0;
+    return mode === 'available' ? !overridden : overridden;
+  };
 
   const today = todayInZone(timeZone);
   const rangeEnd = endOfAvailabilityExceptionRange(timeZone, today);
@@ -146,18 +158,38 @@ const MonthAvailabilityCalendar = props => {
       return;
     }
     const key = monthIdString(date, timeZone) + '-' + date.getDate();
-    const blocking = findBlockingExceptions(date, exceptions, timeZone);
+    const dayStart = getStartOf(date, 'day', timeZone);
+    const nextDayStart = getStartOf(date, 'day', timeZone, 1, 'days');
+    const overrides = findOverrideExceptions(date, exceptions, timeZone, overrideSeats);
     setPendingKey(key);
     const done = () => setPendingKey(null);
 
-    if (blocking.length > 0) {
-      // Unblock: remove any exception(s) covering this day.
-      Promise.all(blocking.map(e => onDeleteException({ id: e.id }))).then(done, done);
+    if (overrides.length > 0) {
+      // Remove the override for just this day. If it belongs to a multi-day range, split
+      // the range: delete it and recreate the parts before and after this day (same seats),
+      // so tapping one day doesn't clear the whole range.
+      const ops = overrides.map(e => {
+        const { start: eStart, end: eEnd, seats } = e.attributes;
+        return onDeleteException({ id: e.id }).then(() => {
+          const recreate = [];
+          // eStart < dayStart -> keep the leading part [eStart, dayStart)
+          if (isDateSameOrAfter(dayStart, eStart) && !isSameDate(eStart, dayStart)) {
+            recreate.push(onAddException({ listingId, seats, start: eStart, end: dayStart }));
+          }
+          // nextDayStart < eEnd -> keep the trailing part [nextDayStart, eEnd)
+          if (isDateSameOrAfter(eEnd, nextDayStart) && !isSameDate(eEnd, nextDayStart)) {
+            recreate.push(onAddException({ listingId, seats, start: nextDayStart, end: eEnd }));
+          }
+          return Promise.all(recreate);
+        });
+      });
+      Promise.all(ops).then(done, done);
     } else {
-      // Block a single day: [startOfDay, startOfNextDay).
-      const start = getStartOf(date, 'day', timeZone);
-      const end = getStartOf(date, 'day', timeZone, 1, 'days');
-      onAddException({ listingId, seats: 0, start, end }).then(done, done);
+      // Add a single-day override [startOfDay, startOfNextDay).
+      onAddException({ listingId, seats: overrideSeats, start: dayStart, end: nextDayStart }).then(
+        done,
+        done
+      );
     }
   };
 
@@ -202,7 +234,7 @@ const MonthAvailabilityCalendar = props => {
           const isPast = !isDateSameOrAfter(date, today);
           const isBeyondRange = isDateSameOrAfter(date, rangeEnd);
           const isToday = isSameDate(date, today);
-          const blocked = findBlockingExceptions(date, exceptions, timeZone).length > 0;
+          const blocked = !isBookable(date);
           const key = monthIdString(date, timeZone) + '-' + date.getDate();
           const isPending = pendingKey === key;
           const disabled = isPast || isBeyondRange;

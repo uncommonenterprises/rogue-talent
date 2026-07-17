@@ -30,6 +30,19 @@
   color: var(--text-muted);
 }
 
+/* Mode-switch confirmation modal */
+.confirmModal {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+.confirmActions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+  margin-top: var(--space-2);
+}
+
 .root {
   flex-grow: 1;
   width: 100%;

@@ -24,9 +24,13 @@ const EDIT_AVAILABILITY_EXCEPTIONS_BUTTON = 'editAvailabilityExceptionsButton';
 const defaultTimeZone = () =>
   typeof window !== 'undefined' ? getDefaultTimeZoneOnBrowser() : 'Etc/UTC';
 
-// The "available by default" baseline: every weekday open, full day, one seat.
-// Models are bookable on every future date and only need to block dates they're
-// away/booked (via not-available exceptions). See docs/availability-calendar-spec.md.
+// Availability modes (stored in listing publicData.availabilityMode):
+// - 'available'  : available by default; the model blocks dates they're away (seats-0 exceptions)
+// - 'unavailable': unavailable by default; the model opens the dates they'll work (seats-1 exceptions)
+const MODE_AVAILABLE = 'available';
+const MODE_UNAVAILABLE = 'unavailable';
+
+// "Available by default" baseline: every weekday open, full day, one seat.
 const createAllOpenPlan = timezone => ({
   availabilityPlan: {
     type: 'availability-plan/time',
@@ -39,6 +43,19 @@ const createAllOpenPlan = timezone => ({
     })),
   },
 });
+
+// "Unavailable by default" baseline: an empty plan (no open days); the model opens
+// specific dates via seats-1 exceptions. See docs/availability-calendar-spec.md.
+const createAllClosedPlan = timezone => ({
+  availabilityPlan: {
+    type: 'availability-plan/time',
+    timezone,
+    entries: [],
+  },
+});
+
+const planForMode = (mode, timezone) =>
+  mode === MODE_UNAVAILABLE ? createAllClosedPlan(timezone) : createAllOpenPlan(timezone);
 
 //////////////////////////////////
 // EditListingAvailabilityPanel //
@@ -117,20 +134,41 @@ const EditListingAvailabilityPanel = props => {
   const currentMinNotice = listingAttributes?.publicData?.[MIN_BOOKING_NOTICE_KEY] || '';
   const saveMinNotice = value => onSubmit({ publicData: { [MIN_BOOKING_NOTICE_KEY]: value } });
 
-  // "Available by default": as soon as the model reaches this step, ensure a
-  // fully-open baseline plan exists so they are bookable on every date without
-  // configuring anything. Guarded so it runs at most once and never overwrites
-  // an existing plan.
+  // Availability mode (available-by-default vs unavailable-by-default). Switching modes
+  // reinterprets the whole calendar, so it is confirmed and clears existing exceptions.
+  const mode = listingAttributes?.publicData?.availabilityMode || MODE_AVAILABLE;
+  const [pendingMode, setPendingMode] = useState(null);
+  const requestModeSwitch = nextMode => {
+    if (nextMode !== mode) {
+      setPendingMode(nextMode);
+    }
+  };
+  const confirmModeSwitch = () => {
+    const nextMode = pendingMode;
+    setPendingMode(null);
+    // Clear every existing exception, then set the new baseline plan + mode flag.
+    const clears = allExceptions.map(e => onDeleteAvailabilityException({ id: e.id }));
+    Promise.all(clears)
+      .then(() =>
+        onSubmit({ ...planForMode(nextMode, timeZone), publicData: { availabilityMode: nextMode } })
+      )
+      .catch(() => {
+        // Leave the mode unchanged on failure.
+      });
+  };
+
+  // As soon as the model reaches this step, ensure a baseline plan exists for the current
+  // mode so they're not stuck. Guarded so it runs at most once and never overwrites a plan.
   const baselinePlanAttempted = useRef(false);
   useEffect(() => {
     if (!hasAvailabilityPlan && listing?.id && !baselinePlanAttempted.current) {
       baselinePlanAttempted.current = true;
-      onSubmit(createAllOpenPlan(defaultTimeZone())).catch(() => {
+      onSubmit(planForMode(mode, defaultTimeZone())).catch(() => {
         // Allow a retry on a later render if the baseline save failed.
         baselinePlanAttempted.current = false;
       });
     }
-  }, [hasAvailabilityPlan, listing, onSubmit]);
+  }, [hasAvailabilityPlan, listing, onSubmit, mode]);
 
   // Save handler for the multi-day range exception form.
   const saveException = values => {
@@ -174,8 +212,37 @@ const EditListingAvailabilityPanel = props => {
         <FormattedMessage id={panelHeadingProps.id} values={{ ...panelHeadingProps.values }} />
       </H3>
       <p className={css.guidance}>
-        <FormattedMessage id="EditListingAvailabilityPanel.guidance" />
+        <FormattedMessage
+          id={
+            mode === MODE_UNAVAILABLE
+              ? 'EditListingAvailabilityPanel.guidanceUnavailable'
+              : 'EditListingAvailabilityPanel.guidance'
+          }
+        />
       </p>
+
+      <section className={css.settings}>
+        <label className={css.settingLabel} htmlFor="availabilityMode">
+          <FormattedMessage id="EditListingAvailabilityPanel.modeLabel" />
+        </label>
+        <select
+          id="availabilityMode"
+          className={css.settingSelect}
+          value={mode}
+          onChange={e => requestModeSwitch(e.target.value)}
+          disabled={updateInProgress || !listing?.id}
+        >
+          <option value={MODE_AVAILABLE}>
+            {intl.formatMessage({ id: 'EditListingAvailabilityPanel.modeAvailable' })}
+          </option>
+          <option value={MODE_UNAVAILABLE}>
+            {intl.formatMessage({ id: 'EditListingAvailabilityPanel.modeUnavailable' })}
+          </option>
+        </select>
+        <p className={css.settingHint}>
+          <FormattedMessage id="EditListingAvailabilityPanel.modeHint" />
+        </p>
+      </section>
 
       {minNoticeField ? (
         <section className={css.settings}>
@@ -210,6 +277,7 @@ const EditListingAvailabilityPanel = props => {
         className={css.section}
         listingId={listing?.id}
         timeZone={timeZone}
+        mode={mode}
         exceptions={allExceptions}
         monthlyExceptionQueries={monthlyExceptionQueries}
         onFetchExceptions={onFetchExceptions}
@@ -270,6 +338,34 @@ const EditListingAvailabilityPanel = props => {
             updateInProgress={updateInProgress}
             useFullDays={useFullDays}
           />
+        </Modal>
+      ) : null}
+
+      {onManageDisableScrolling && pendingMode ? (
+        <Modal
+          id="ConfirmAvailabilityModeSwitch"
+          isOpen={!!pendingMode}
+          onClose={() => setPendingMode(null)}
+          onManageDisableScrolling={onManageDisableScrolling}
+          containerClassName={css.modalContainer}
+          usePortal
+        >
+          <div className={css.confirmModal}>
+            <H3 as="h2">
+              <FormattedMessage id="EditListingAvailabilityPanel.modeSwitchTitle" />
+            </H3>
+            <p>
+              <FormattedMessage id="EditListingAvailabilityPanel.modeSwitchBody" />
+            </p>
+            <div className={css.confirmActions}>
+              <Button onClick={confirmModeSwitch} inProgress={updateInProgress}>
+                <FormattedMessage id="EditListingAvailabilityPanel.modeSwitchConfirm" />
+              </Button>
+              <InlineTextButton onClick={() => setPendingMode(null)}>
+                <FormattedMessage id="EditListingAvailabilityPanel.modeSwitchCancel" />
+              </InlineTextButton>
+            </div>
+          </div>
         </Modal>
       ) : null}
     </main>
