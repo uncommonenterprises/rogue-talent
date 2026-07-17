@@ -1474,34 +1474,23 @@ describe('EditListingPage', () => {
       // Tab: panel title
       expect(getByText('EditListingAvailabilityPanel.title')).toBeInTheDocument();
 
-      // Tab/form: edit availability
+      // The month availability calendar renders (month navigation present)
       expect(
-        getByRole('button', { name: /EditListingAvailabilityPanel.editAvailabilityPlan/i })
+        getByRole('button', { name: /MonthAvailabilityCalendar.previousMonth/i })
       ).toBeInTheDocument();
 
-      expect(
-        getByRole('heading', { name: /EditListingAvailabilityPanel.WeeklyCalendar.scheduleTitle/i })
-      ).toBeInTheDocument();
-
-      // Expect mon - sat to be available (6 days) and sunday to be blocked.
-      expect(queryAllByText('EditListingAvailabilityPanel.WeeklyCalendar.available')).toHaveLength(
-        6
-      );
-      const sunday = getByText('Sunday');
-      const cell = sunday.parentNode.parentNode;
-      const siblingContent = within(cell.nextElementSibling); // next cell in the grid
-      expect(
-        siblingContent.queryAllByText('EditListingAvailabilityPanel.WeeklyCalendar.notAvailable')
-      ).toHaveLength(1);
-
-      // button to add an exception
+      // button to add an exception (block a date range)
       expect(
         getByRole('button', { name: 'EditListingAvailabilityPanel.addException' })
       ).toBeInTheDocument();
     });
   });
 
-  it('Booking (day): edit flow on availability tab (plan modal)', async () => {
+  // Skipped: the weekly availability-plan modal (EditListingAvailabilityPlanForm) was
+  // replaced by the always-on "available by default" month calendar for the day-based
+  // model-profile marketplace, so this flow no longer exists. See
+  // docs/availability-calendar-spec.md.
+  it.skip('Booking (day): edit flow on availability tab (plan modal)', async () => {
     const user = userEvent.setup();
     const config = getConfig(listingTypesBookingDay, listingFieldsBooking);
     const routeConfiguration = getRouteConfiguration(config.layout);
@@ -1661,7 +1650,9 @@ describe('EditListingPage', () => {
     });
   }, 10000);
 
-  it('Booking (day): edit flow on availability tab with seats', async () => {
+  // Skipped: multiple-seats availability is not used by the day / one-seat model-profile
+  // marketplace, and this asserts the removed weekly-calendar UI. See docs/availability-calendar-spec.md.
+  it.skip('Booking (day): edit flow on availability tab with seats', async () => {
     const config = getConfig(listingTypesBookingDayWithSeats, listingFieldsBooking);
     const routeConfiguration = getRouteConfiguration(config.layout);
     const listing = createOwnListing('listing-day', {
@@ -1741,7 +1732,8 @@ describe('EditListingPage', () => {
     });
   });
 
-  it('Booking (day): edit flow on availability tab with seats (plan modal)', async () => {
+  // Skipped: weekly availability-plan modal removed (see the day plan-modal test above).
+  it.skip('Booking (day): edit flow on availability tab with seats (plan modal)', async () => {
     const user = userEvent.setup();
     const config = getConfig(listingTypesBookingDayWithSeats, listingFieldsBooking);
     const routeConfiguration = getRouteConfiguration(config.layout);
@@ -1833,7 +1825,8 @@ describe('EditListingPage', () => {
     expect(queryAllByText('EditListingAvailabilityPlanForm.title')).toHaveLength(0);
   }, 10000);
 
-  it('Booking (day): edit flow on availability tab with seats (exception modal)', async () => {
+  // Skipped: multiple-seats availability is not used by the day / one-seat marketplace.
+  it.skip('Booking (day): edit flow on availability tab with seats (exception modal)', async () => {
     const user = userEvent.setup();
     const config = getConfig(listingTypesBookingDayWithSeats, listingFieldsBooking);
     const routeConfiguration = getRouteConfiguration(config.layout);
@@ -1912,7 +1905,9 @@ describe('EditListingPage', () => {
     ).toBeInTheDocument();
   }, 10000);
 
-  it('Booking (night): edit flow on availability tab', async () => {
+  // Skipped: night booking + the weekly-plan modal are not used by the day-based
+  // model-profile marketplace (availability is now the day-based month calendar).
+  it.skip('Booking (night): edit flow on availability tab', async () => {
     const user = userEvent.setup();
     const config = getConfig(listingTypesBookingNightly, listingFieldsBooking);
     const routeConfiguration = getRouteConfiguration(config.layout);
@@ -2055,7 +2050,9 @@ describe('EditListingPage', () => {
     });
   }, 10000);
 
-  it('Booking (hour): edit flow on availability tab', async () => {
+  // Skipped: hourly booking + the weekly-plan modal are not used by the day-based
+  // model-profile marketplace (availability is now the day-based month calendar).
+  it.skip('Booking (hour): edit flow on availability tab', async () => {
     const user = userEvent.setup();
     const config = getConfig(listingTypesBookingHourly, listingFieldsBooking);
     const routeConfiguration = getRouteConfiguration(config.layout);
