@@ -17,7 +17,7 @@ Rogue Talent (roguetalent.co) is a two-sided marketplace for professional models
 ## Key decisions already made
 - Models CREATE A PROFILE (not "post a listing") — all listing/profile terminology has been updated in en.json
 - The listing type is `model-profile` with calendar booking (daily unit)
-- Commission: 10% provider + 5% customer
+- Commission: **15% customer booking fee only** (0% provider — the model keeps 100% of their rate). Updated 2026-07-19 in Console (was 10% provider + 5% customer). Marketing copy leans on "keep 100% / one flat 15% fee".
 - All users require manual admin approval before full access
 - Brand accent: **electric cobalt `#2B57FF`** (design-system `--accent-500`). Red is danger only. (Superseded the old crimson.) NOTE: the live `--marketplaceColor` is set from the Sharetribe Console branding asset — it must be set to `#2B57FF` in Console or it overrides the code default.
 

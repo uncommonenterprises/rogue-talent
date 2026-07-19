@@ -20,14 +20,12 @@ form; we can deep-link a preselected type in L2 if wanted.)
 
 ---
 
-## ⚠️ Two things to reconcile before building
-1. **Commission copy vs config.** The design says *"the model keeps 100%… one flat 15% booking
-   fee"* (Clients page + Models page). Our marketplace is currently **10% provider + 5% customer**
-   (model keeps 90%). Either change the Console commission to **0% provider / 15% customer** to
-   match the copy, or soften the copy. **Decide this first** — it appears in multiple sections.
+## Notes
+1. **Commission — RESOLVED (2026-07-19).** The marketplace now charges a **15% customer booking
+   fee only** (0% provider; model keeps 100%), updated in Console. The design copy ("keep 100% /
+   one flat 15% fee") is therefore accurate — use it as written.
 2. **Placeholder stats.** "4,200+ models · 18k bookings · 40 cities · <2h response" and the
-   testimonial ("Mara Voss") are illustrative. Replace with real/aspirational figures, or we mark
-   the stats section as "coming soon" until real numbers exist.
+   testimonial ("Mara Voss") are placeholders — fine for now, edit before go-live.
 
 ---
 
