@@ -8,7 +8,7 @@ import { Page, LayoutSingleColumn, NamedLink } from '../../components';
 import FooterContainer from '../FooterContainer/FooterContainer';
 
 import MarketingNav from './MarketingNav';
-import css from './GeneralLandingPage.module.css';
+import css from './marketing.module.css';
 
 // A verified badge used on the featured-talent placeholder cards.
 const VerifiedTag = () => <span className={css.verified}>✓ Verified</span>;

@@ -22,6 +22,8 @@ const InboxPage = loadable(() => import(/* webpackChunkName: "InboxPage" */ '../
 const MakeOfferPage = loadable(() => import(/* webpackChunkName: "MakeOfferPage" */ '../containers/MakeOfferPage/MakeOfferPage'));
 const LandingPage = loadable(() => import(/* webpackChunkName: "LandingPage" */ '../containers/LandingPage/LandingPage'));
 const GeneralLandingPage = loadable(() => import(/* webpackChunkName: "GeneralLandingPage" */ '../containers/LandingPageMarketing/GeneralLandingPage'));
+const ModelsLandingPage = loadable(() => import(/* webpackChunkName: "ModelsLandingPage" */ '../containers/LandingPageMarketing/ModelsLandingPage'));
+const ClientsLandingPage = loadable(() => import(/* webpackChunkName: "ClientsLandingPage" */ '../containers/LandingPageMarketing/ClientsLandingPage'));
 const ListingPageCoverPhoto = loadable(() => import(/* webpackChunkName: "ListingPageCoverPhoto" */ /* webpackPrefetch: true */ '../containers/ListingPage/ListingPageCoverPhoto'));
 const ListingPageCarousel = loadable(() => import(/* webpackChunkName: "ListingPageCarousel" */ /* webpackPrefetch: true */ '../containers/ListingPage/ListingPageCarousel'));
 const ManageListingsPage = loadable(() => import(/* webpackChunkName: "ManageListingsPage" */ '../containers/ManageListingsPage/ManageListingsPage'));
@@ -83,6 +85,19 @@ const routeConfiguration = (layoutConfig, accessControlConfig) => {
       path: '/',
       name: 'LandingPage',
       component: GeneralLandingPage,
+      loadData: pageDataLoadingAPI.LandingPage.loadData,
+    },
+    {
+      // Hand-coded marketing pages — must precede the /p/:pageId CMSPage catch-all.
+      path: '/p/for-models',
+      name: 'ForModelsPage',
+      component: ModelsLandingPage,
+      loadData: pageDataLoadingAPI.LandingPage.loadData,
+    },
+    {
+      path: '/p/for-business',
+      name: 'ForBusinessPage',
+      component: ClientsLandingPage,
       loadData: pageDataLoadingAPI.LandingPage.loadData,
     },
     {

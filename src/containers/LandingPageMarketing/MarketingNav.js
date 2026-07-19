@@ -36,14 +36,10 @@ const MarketingNav = ({ page = 'general' }) => {
         <a href="/#how" className={css.link}>
           How it works
         </a>
-        <NamedLink name="CMSPage" params={{ pageId: 'for-models' }} className={linkClass(page === 'models')}>
+        <NamedLink name="ForModelsPage" className={linkClass(page === 'models')}>
           For models
         </NamedLink>
-        <NamedLink
-          name="CMSPage"
-          params={{ pageId: 'for-business' }}
-          className={linkClass(page === 'business')}
-        >
+        <NamedLink name="ForBusinessPage" className={linkClass(page === 'business')}>
           For business
         </NamedLink>
       </div>

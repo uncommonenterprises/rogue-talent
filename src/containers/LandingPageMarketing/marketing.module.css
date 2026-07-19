@@ -462,6 +462,165 @@
   margin: 16px 0 30px;
 }
 
+/* ---------- extra grids ---------- */
+.grid2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+/* ---------- value cards (models value props) ---------- */
+.valueCard {
+  border: var(--border-hair) solid var(--border-hairline);
+  border-radius: var(--radius-lg);
+  padding: 30px;
+}
+.valueGlyph {
+  font-family: var(--font-display);
+  font-weight: var(--weight-extrabold);
+  font-size: 42px;
+  letter-spacing: -0.03em;
+  color: var(--accent-500);
+}
+.valueTitle {
+  font-family: var(--font-display);
+  font-weight: var(--weight-bold);
+  font-size: 21px;
+  margin: 10px 0 8px;
+  color: var(--text-primary);
+}
+.valueText {
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+
+/* ---------- light trust cards (bordered, white) ---------- */
+.lightCard {
+  border: var(--border-hair) solid var(--border-hairline);
+  border-radius: var(--radius-lg);
+  padding: 30px;
+}
+.lightCardTitle {
+  font-family: var(--font-display);
+  font-weight: var(--weight-extrabold);
+  font-size: 23px;
+  letter-spacing: -0.02em;
+  color: var(--accent-500);
+}
+.lightCardText {
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  margin-top: 12px;
+}
+
+/* ---------- tags (models feature) ---------- */
+.tags {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+.tag {
+  font-family: var(--font-sans);
+  font-weight: var(--weight-semibold);
+  font-size: 12px;
+  background: var(--ink-100);
+  color: var(--ink-700);
+  padding: 6px 12px;
+  border-radius: var(--radius-pill);
+}
+.tagAccent {
+  background: var(--accent-50);
+  color: var(--accent-700);
+}
+
+/* portrait feature media */
+.featureMediaPortrait {
+  aspect-ratio: 4 / 5;
+}
+
+/* ---------- testimonial (dark) ---------- */
+.testimonial {
+  padding: 96px 24px;
+  background: var(--ink-950);
+}
+.quote {
+  font-family: var(--font-display);
+  font-weight: var(--weight-extrabold);
+  font-size: clamp(26px, 2.6vw, 36px);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--white);
+  max-width: 780px;
+}
+.attribution {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent-400);
+  margin-top: 24px;
+}
+
+/* ---------- available badge (clients carousel) ---------- */
+.availableBadge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-sans);
+  font-weight: var(--weight-bold);
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--status-success, #1e7f52);
+  padding: 3px 7px;
+  border-radius: var(--radius-sm);
+}
+.availableDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--status-success, #1e7f52);
+}
+
+/* ---------- trust bar (clients logos) ---------- */
+.trustBar {
+  padding: 44px 24px;
+  background: var(--surface-subtle, #f7f8f9);
+  border-bottom: var(--border-hair) solid var(--border-hairline);
+  text-align: center;
+}
+.trustBarText {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 22px;
+}
+.logoRow {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  align-items: center;
+  flex-wrap: wrap;
+  opacity: 0.5;
+}
+.logo {
+  width: 104px;
+  height: 26px;
+  background: var(--ink-300);
+  border-radius: var(--radius-sm);
+}
+
 /* ---------- responsive ---------- */
 @media (max-width: 1023px) {
   .grid4 {
@@ -486,6 +645,7 @@
   }
   .grid3,
   .grid4,
+  .grid2,
   .featureRow,
   .dualGrid {
     grid-template-columns: 1fr;
