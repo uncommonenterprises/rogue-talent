@@ -223,7 +223,7 @@ export const GeneralLandingPage = () => {
                 Search, book and pay verified models directly. Faster casting, one flat 15% booking
                 fee — no agency markup.
               </p>
-              <NamedLink name="SignupPage" className={css.btnPrimary}>
+              <NamedLink name="SignupPage" className={css.btnPathAccent}>
                 Join as business
               </NamedLink>
             </div>

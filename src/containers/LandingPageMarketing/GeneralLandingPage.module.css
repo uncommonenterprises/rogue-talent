@@ -21,6 +21,7 @@
 .btnPrimary,
 .btnGhostLight,
 .btnInk,
+.btnPathAccent,
 .btnOnAccent {
   display: inline-flex;
   align-items: center;
@@ -64,6 +65,18 @@
 }
 .btnInk:hover {
   background: var(--ink-800);
+  color: var(--white);
+  text-decoration: none;
+}
+/* Dual-path business button — same size as the ink one, cobalt fill. */
+.btnPathAccent {
+  font-size: 13px;
+  padding: 12px 20px;
+  background: var(--accent-500);
+  color: var(--white);
+}
+.btnPathAccent:hover {
+  background: var(--accent-600);
   color: var(--white);
   text-decoration: none;
 }
@@ -133,11 +146,11 @@
 }
 .heroIngress {
   font-family: var(--font-sans);
-  font-size: 18px;
+  font-size: 19px;
   line-height: 1.55;
   color: rgba(255, 255, 255, 0.78);
   margin: 22px 0 0;
-  max-width: 520px;
+  max-width: 540px;
 }
 .heroButtons {
   display: flex;
@@ -207,10 +220,11 @@
 }
 .sectionIngress {
   font-family: var(--font-sans);
-  font-size: 17px;
+  font-size: 18px;
+  line-height: 1.6;
   color: var(--text-secondary);
   margin: 14px 0 48px;
-  max-width: 600px;
+  max-width: 620px;
 }
 
 .grid3 {
@@ -240,7 +254,7 @@
 }
 .stepText {
   font-family: var(--font-sans);
-  font-size: 14px;
+  font-size: 16px;
   line-height: 1.6;
   color: var(--text-secondary);
 }
@@ -300,9 +314,9 @@
 }
 .talentMeta {
   font-family: var(--font-sans);
-  font-size: 12px;
+  font-size: 13px;
   color: var(--text-muted);
-  margin-top: 2px;
+  margin-top: 3px;
 }
 .talentPrice {
   font-family: var(--font-display);
@@ -345,7 +359,7 @@
 }
 .featureBody {
   font-family: var(--font-sans);
-  font-size: 15px;
+  font-size: 17px;
   line-height: 1.6;
   color: var(--text-secondary);
   margin: 0;
@@ -367,10 +381,11 @@
 }
 .sectionIngressLight {
   font-family: var(--font-sans);
-  font-size: 17px;
+  font-size: 18px;
+  line-height: 1.6;
   color: var(--ink-400);
   margin: 14px 0 48px;
-  max-width: 620px;
+  max-width: 640px;
 }
 .darkCard {
   border: var(--border-hair) solid #1f2127;
@@ -386,15 +401,15 @@
 }
 .darkCardText {
   font-family: var(--font-sans);
-  font-size: 14px;
+  font-size: 15px;
   line-height: 1.6;
   color: var(--ink-300);
-  margin-top: 10px;
+  margin-top: 12px;
 }
 
 /* ---------- 7. DUAL PATH ---------- */
 .dualPath {
-  padding: 24px 24px 88px;
+  padding: 88px 24px;
   background: var(--white);
 }
 .dualGrid {
@@ -420,10 +435,10 @@
 }
 .pathText {
   font-family: var(--font-sans);
-  font-size: 14px;
+  font-size: 16px;
   line-height: 1.6;
   color: var(--text-secondary);
-  margin: 10px 0 20px;
+  margin: 12px 0 24px;
 }
 
 /* ---------- 8. CLOSING ---------- */
@@ -442,9 +457,9 @@
 }
 .closingText {
   font-family: var(--font-sans);
-  font-size: 17px;
+  font-size: 18px;
   color: rgba(255, 255, 255, 0.82);
-  margin: 14px 0 28px;
+  margin: 16px 0 30px;
 }
 
 /* ---------- responsive ---------- */
