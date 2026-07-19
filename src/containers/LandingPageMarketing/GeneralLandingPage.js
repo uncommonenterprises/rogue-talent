@@ -21,7 +21,7 @@ const FEATURED = [
 ];
 
 const STATS = [
-  { stat: '4,200+', label: 'Verified models' },
+  { stat: '4,200', plus: true, label: 'Verified models' },
   { stat: '18k', label: 'Direct bookings' },
   { stat: '40', label: 'Cities' },
   { stat: '<2h', label: 'Avg. response' },
@@ -78,7 +78,7 @@ export const GeneralLandingPage = () => {
         {/* 1 — HERO */}
         <section className={css.hero}>
           <div className={css.heroOverlay} />
-          <div className={css.heroInner}>
+          <div className={`${css.inner} ${css.heroInner}`}>
             <div className={css.eyebrowLight}>The model, disrupted</div>
             <h1 className={css.heroTitle}>Models and brands, connected direct.</h1>
             <p className={css.heroIngress}>
@@ -98,127 +98,147 @@ export const GeneralLandingPage = () => {
 
         {/* 2 — STATS */}
         <section className={css.statBand}>
-          {STATS.map(s => (
-            <div key={s.label} className={css.statCell}>
-              <div className={css.statNumber}>{s.stat}</div>
-              <div className={css.statLabel}>{s.label}</div>
+          <div className={css.inner}>
+            <div className={css.statGrid}>
+              {STATS.map(s => (
+                <div key={s.label} className={css.statCell}>
+                  <div className={css.statNumber}>
+                    {s.stat}
+                    {s.plus ? <span className={css.statPlus}>+</span> : null}
+                  </div>
+                  <div className={css.statLabel}>{s.label}</div>
+                </div>
+              ))}
             </div>
-          ))}
+          </div>
         </section>
 
         {/* 3 — HOW IT WORKS */}
         <section id="how" className={css.section}>
-          <h2 className={css.sectionTitle}>How Rogue works</h2>
-          <p className={css.sectionIngress}>
-            Find talent, agree terms and pay — all in one place, with no agency in the middle.
-          </p>
-          <div className={css.grid3}>
-            {STEPS.map(step => (
-              <div key={step.n} className={css.step}>
-                <div className={css.stepNum}>{step.n}</div>
-                <div className={css.stepTitle}>{step.title}</div>
-                <div className={css.stepText}>{step.text}</div>
-              </div>
-            ))}
+          <div className={css.inner}>
+            <h2 className={css.sectionTitle}>How Rogue works</h2>
+            <p className={css.sectionIngress}>
+              Find talent, agree terms and pay — all in one place, with no agency in the middle.
+            </p>
+            <div className={css.grid3}>
+              {STEPS.map(step => (
+                <div key={step.n} className={css.step}>
+                  <div className={css.stepNum}>{step.n}</div>
+                  <div className={css.stepTitle}>{step.title}</div>
+                  <div className={css.stepText}>{step.text}</div>
+                </div>
+              ))}
+            </div>
           </div>
         </section>
 
         {/* 4 — FEATURED TALENT */}
         <section className={css.featured}>
-          <div className={css.featuredHead}>
-            <h2 className={css.sectionTitleTight}>Featured talent</h2>
-            <NamedLink name="SearchPage" className={css.viewAll}>
-              View all →
-            </NamedLink>
-          </div>
-          <div className={css.grid4}>
-            {FEATURED.map(t => (
-              <div key={t.name} className={css.talentCard}>
-                <div className={css.talentPhoto}>{t.verified ? <VerifiedTag /> : null}</div>
-                <div className={css.talentBody}>
-                  <div className={css.talentName}>{t.name}</div>
-                  <div className={css.talentMeta}>{t.meta}</div>
-                  <div className={css.talentPrice}>
-                    {t.price}
-                    <small> /day</small>
+          <div className={css.inner}>
+            <div className={css.featuredHead}>
+              <h2 className={css.sectionTitleTight}>Featured talent</h2>
+              <NamedLink name="SearchPage" className={css.viewAll}>
+                View all →
+              </NamedLink>
+            </div>
+            <div className={css.grid4}>
+              {FEATURED.map(t => (
+                <div key={t.name} className={css.talentCard}>
+                  <div className={css.talentPhoto}>{t.verified ? <VerifiedTag /> : null}</div>
+                  <div className={css.talentBody}>
+                    <div className={css.talentName}>{t.name}</div>
+                    <div className={css.talentMeta}>{t.meta}</div>
+                    <div className={css.talentPrice}>
+                      {t.price}
+                      <small> /day</small>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </section>
 
         {/* 5 — FEATURES (alternating) */}
         <section className={css.features}>
-          <div className={css.featureRow}>
-            <div className={css.featureText}>
-              <div className={css.eyebrow}>No agents. Ever.</div>
-              <h3 className={css.featureTitle}>Keep the relationship — and the fee.</h3>
-              <p className={css.featureBody}>
-                The work happens between the model and the business. Rogue just makes it safe, not
-                expensive.
-              </p>
+          <div className={`${css.inner} ${css.featuresInner}`}>
+            <div className={css.featureRow}>
+              <div className={css.featureText}>
+                <div className={css.eyebrow}>No agents. Ever.</div>
+                <h3 className={css.featureTitle}>Keep the relationship — and the fee.</h3>
+                <p className={css.featureBody}>
+                  The work happens between the model and the business. Rogue just makes it safe, not
+                  expensive.
+                </p>
+              </div>
+              <div className={css.featureMedia} />
             </div>
-            <div className={css.featureMedia} />
-          </div>
-          <div className={css.featureRow}>
-            <div className={css.featureMedia} />
-            <div className={css.featureText}>
-              <div className={css.eyebrow}>Verified both sides</div>
-              <h3 className={css.featureTitle}>Everyone is checked before they book.</h3>
-              <p className={css.featureBody}>
-                Models and businesses are verified, so every booking starts from trust.
-              </p>
+            <div className={css.featureRow}>
+              <div className={css.featureMedia} />
+              <div className={css.featureText}>
+                <div className={css.eyebrow}>Verified both sides</div>
+                <h3 className={css.featureTitle}>Everyone is checked before they book.</h3>
+                <p className={css.featureBody}>
+                  Models and businesses are verified, so every booking starts from trust.
+                </p>
+              </div>
             </div>
           </div>
         </section>
 
         {/* 6 — TRUST (dark) */}
         <section className={css.dark}>
-          <h2 className={css.sectionTitleLight}>Built-in protection, every booking</h2>
-          <p className={css.sectionIngressLight}>
-            The trust that agencies claimed to provide — now built into the platform, on both sides.
-          </p>
-          <div className={css.grid3}>
-            {TRUST.map(c => (
-              <div key={c.title} className={css.darkCard}>
-                <div className={css.darkCardTitle}>{c.title}</div>
-                <div className={css.darkCardText}>{c.text}</div>
-              </div>
-            ))}
+          <div className={css.inner}>
+            <h2 className={css.sectionTitleLight}>Built-in protection, every booking</h2>
+            <p className={css.sectionIngressLight}>
+              The trust that agencies claimed to provide — now built into the platform, on both
+              sides.
+            </p>
+            <div className={css.grid3}>
+              {TRUST.map(c => (
+                <div key={c.title} className={css.darkCard}>
+                  <div className={css.darkCardTitle}>{c.title}</div>
+                  <div className={css.darkCardText}>{c.text}</div>
+                </div>
+              ))}
+            </div>
           </div>
         </section>
 
         {/* 7 — DUAL PATH */}
         <section className={css.dualPath}>
-          <div className={css.pathCard}>
-            <div className={css.pathTitle}>I'm a model</div>
-            <p className={css.pathText}>
-              Build a profile, set your rates, get booked directly. Keep everything you earn.
-            </p>
-            <NamedLink name="SignupPage" className={css.btnInk}>
-              Join as talent
-            </NamedLink>
-          </div>
-          <div className={`${css.pathCard} ${css.pathCardAccent}`}>
-            <div className={css.pathTitle}>I'm a business</div>
-            <p className={css.pathText}>
-              Search, book and pay verified models directly. Faster casting, one flat 15% booking
-              fee — no agency markup.
-            </p>
-            <NamedLink name="SignupPage" className={css.btnPrimary}>
-              Join as business
-            </NamedLink>
+          <div className={`${css.inner} ${css.dualGrid}`}>
+            <div className={css.pathCard}>
+              <div className={css.pathTitle}>I'm a model</div>
+              <p className={css.pathText}>
+                Build a profile, set your rates, get booked directly. Keep everything you earn.
+              </p>
+              <NamedLink name="SignupPage" className={css.btnInk}>
+                Join as talent
+              </NamedLink>
+            </div>
+            <div className={`${css.pathCard} ${css.pathCardAccent}`}>
+              <div className={css.pathTitle}>I'm a business</div>
+              <p className={css.pathText}>
+                Search, book and pay verified models directly. Faster casting, one flat 15% booking
+                fee — no agency markup.
+              </p>
+              <NamedLink name="SignupPage" className={css.btnPrimary}>
+                Join as business
+              </NamedLink>
+            </div>
           </div>
         </section>
 
         {/* 8 — CLOSING CTA */}
         <section className={css.closing}>
-          <h2 className={css.closingTitle}>Ready to go rogue?</h2>
-          <p className={css.closingText}>Create your free account in minutes.</p>
-          <NamedLink name="SignupPage" className={css.btnOnAccent}>
-            Create your account
-          </NamedLink>
+          <div className={css.inner}>
+            <h2 className={css.closingTitle}>Ready to go rogue?</h2>
+            <p className={css.closingText}>Create your free account in minutes.</p>
+            <NamedLink name="SignupPage" className={css.btnOnAccent}>
+              Create your account
+            </NamedLink>
+          </div>
         </section>
       </LayoutSingleColumn>
     </Page>

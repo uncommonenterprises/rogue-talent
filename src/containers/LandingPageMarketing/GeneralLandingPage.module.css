@@ -6,20 +6,15 @@
 .root {
 }
 .main {
-  /* Full-bleed sections; each caps its own content width. */
   padding: 0;
 }
 
-/* Shared content-width cap: constrain each section's direct children to a column,
-   left-aligned text inside, centered block on wide screens. */
-.section > *,
-.featured > *,
-.features > *,
-.dark > * {
-  max-width: 1160px;
-  margin-left: auto;
-  margin-right: auto;
+/* Every section places its content inside .inner: one centered column so the title,
+   ingress and grid all share the same left edge (fixes the title/column misalignment). */
+.inner {
   width: 100%;
+  max-width: 1240px;
+  margin: 0 auto;
 }
 
 /* ---------- buttons ---------- */
@@ -105,10 +100,10 @@
 /* ---------- 1. HERO ---------- */
 .hero {
   position: relative;
-  min-height: 460px;
+  min-height: 520px;
   display: flex;
   align-items: center;
-  padding: 96px 24px;
+  padding: 112px 24px;
   background: var(--ink-950);
   background-image: repeating-linear-gradient(135deg, #15171c 0 22px, #1b1d23 22px 44px);
   overflow: hidden;
@@ -125,19 +120,16 @@
 }
 .heroInner {
   position: relative;
-  width: 100%;
-  max-width: 1160px;
-  margin: 0 auto;
 }
 .heroTitle {
   font-family: var(--font-display);
   font-weight: var(--weight-extrabold);
-  font-size: 56px;
-  line-height: 1;
+  font-size: clamp(46px, 4.8vw, 76px);
+  line-height: 0.98;
   letter-spacing: -0.035em;
   color: var(--white);
   margin: 0;
-  max-width: 680px;
+  max-width: 720px;
 }
 .heroIngress {
   font-family: var(--font-sans);
@@ -156,13 +148,19 @@
 
 /* ---------- 2. STATS ---------- */
 .statBand {
+  background: var(--ink-950);
+  padding: 0 24px;
+}
+.statGrid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  background: var(--ink-950);
 }
 .statCell {
-  padding: 40px 28px;
+  padding: 48px 32px;
   border-right: var(--border-hair) solid #1f2127;
+}
+.statCell:first-child {
+  padding-left: 0;
 }
 .statCell:last-child {
   border-right: none;
@@ -170,9 +168,12 @@
 .statNumber {
   font-family: var(--font-display);
   font-weight: var(--weight-extrabold);
-  font-size: 40px;
+  font-size: 52px;
   letter-spacing: -0.03em;
   color: var(--white);
+}
+.statPlus {
+  color: var(--accent-400);
 }
 .statLabel {
   font-family: var(--font-mono);
@@ -185,7 +186,7 @@
 
 /* ---------- generic light section ---------- */
 .section {
-  padding: 72px 24px;
+  padding: 88px 24px;
   background: var(--white);
 }
 .sectionTitle,
@@ -193,23 +194,23 @@
 .sectionTitleLight {
   font-family: var(--font-display);
   font-weight: var(--weight-extrabold);
-  letter-spacing: -0.02em;
+  letter-spacing: -0.025em;
   margin: 0;
 }
 .sectionTitle {
-  font-size: 34px;
+  font-size: 42px;
   color: var(--text-primary);
 }
 .sectionTitleTight {
-  font-size: 30px;
+  font-size: 36px;
   color: var(--text-primary);
 }
 .sectionIngress {
   font-family: var(--font-sans);
-  font-size: 16px;
+  font-size: 17px;
   color: var(--text-secondary);
-  margin: 12px 0 40px;
-  max-width: 560px;
+  margin: 14px 0 48px;
+  max-width: 600px;
 }
 
 .grid3 {
@@ -246,7 +247,7 @@
 
 /* ---------- 4. FEATURED ---------- */
 .featured {
-  padding: 64px 24px;
+  padding: 80px 24px;
   background: var(--surface-subtle, #f7f8f9);
 }
 .featuredHead {
@@ -319,25 +320,27 @@
 
 /* ---------- 5. FEATURES ---------- */
 .features {
-  padding: 72px 24px;
+  padding: 88px 24px;
   background: var(--white);
+}
+.featuresInner {
   display: flex;
   flex-direction: column;
-  gap: 48px;
+  gap: 56px;
 }
 .featureRow {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 40px;
+  gap: 48px;
   align-items: center;
 }
 .featureTitle {
   font-family: var(--font-display);
   font-weight: var(--weight-extrabold);
-  font-size: 30px;
+  font-size: 34px;
   letter-spacing: -0.025em;
   line-height: 1.05;
-  margin: 12px 0 10px;
+  margin: 12px 0 12px;
   color: var(--text-primary);
 }
 .featureBody {
@@ -355,29 +358,29 @@
 
 /* ---------- 6. TRUST (dark) ---------- */
 .dark {
-  padding: 72px 24px;
+  padding: 88px 24px;
   background: var(--ink-950);
 }
 .sectionTitleLight {
-  font-size: 34px;
+  font-size: 42px;
   color: var(--white);
 }
 .sectionIngressLight {
   font-family: var(--font-sans);
-  font-size: 16px;
+  font-size: 17px;
   color: var(--ink-400);
-  margin: 12px 0 40px;
-  max-width: 580px;
+  margin: 14px 0 48px;
+  max-width: 620px;
 }
 .darkCard {
   border: var(--border-hair) solid #1f2127;
   border-radius: var(--radius-lg);
-  padding: 28px;
+  padding: 30px;
 }
 .darkCardTitle {
   font-family: var(--font-display);
   font-weight: var(--weight-extrabold);
-  font-size: 22px;
+  font-size: 24px;
   letter-spacing: -0.02em;
   color: var(--accent-400);
 }
@@ -391,18 +394,18 @@
 
 /* ---------- 7. DUAL PATH ---------- */
 .dualPath {
-  padding: 56px 24px;
+  padding: 24px 24px 88px;
   background: var(--white);
+}
+.dualGrid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 20px;
-  max-width: 1208px;
-  margin: 0 auto;
 }
 .pathCard {
   border: var(--border-key) solid var(--ink-900);
   border-radius: var(--radius-lg);
-  padding: 32px;
+  padding: 36px;
 }
 .pathCardAccent {
   border-color: var(--accent-500);
@@ -411,7 +414,7 @@
 .pathTitle {
   font-family: var(--font-display);
   font-weight: var(--weight-extrabold);
-  font-size: 24px;
+  font-size: 26px;
   letter-spacing: -0.02em;
   color: var(--text-primary);
 }
@@ -425,14 +428,14 @@
 
 /* ---------- 8. CLOSING ---------- */
 .closing {
-  padding: 88px 24px;
+  padding: 100px 24px;
   background: var(--accent-500);
   text-align: center;
 }
 .closingTitle {
   font-family: var(--font-display);
   font-weight: var(--weight-extrabold);
-  font-size: 44px;
+  font-size: clamp(36px, 4vw, 56px);
   letter-spacing: -0.03em;
   color: var(--white);
   margin: 0;
@@ -452,28 +455,32 @@
 }
 @media (max-width: 767px) {
   .heroTitle {
-    font-size: 40px;
+    font-size: 38px;
   }
-  .statBand {
+  .statGrid {
     grid-template-columns: repeat(2, 1fr);
   }
   .statCell:nth-child(2) {
     border-right: none;
   }
+  .statCell {
+    padding: 32px 24px;
+  }
+  .statCell:nth-child(odd) {
+    padding-left: 0;
+  }
   .grid3,
   .grid4,
   .featureRow,
-  .dualPath {
+  .dualGrid {
     grid-template-columns: 1fr;
   }
   .featureRow .featureMedia {
     order: 2;
   }
   .sectionTitle,
+  .sectionTitleTight,
   .sectionTitleLight {
-    font-size: 28px;
-  }
-  .closingTitle {
-    font-size: 32px;
+    font-size: 30px;
   }
 }
