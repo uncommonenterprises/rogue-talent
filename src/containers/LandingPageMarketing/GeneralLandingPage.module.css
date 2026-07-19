@@ -1,0 +1,479 @@
+@import '../../styles/customMediaQueries.css';
+
+/* Hand-coded pixel-match landing page. Values mirror the Claude Design mockup;
+   colours come from the design system (= the mockup's hex). */
+
+.root {
+}
+.main {
+  /* Full-bleed sections; each caps its own content width. */
+  padding: 0;
+}
+
+/* Shared content-width cap: constrain each section's direct children to a column,
+   left-aligned text inside, centered block on wide screens. */
+.section > *,
+.featured > *,
+.features > *,
+.dark > * {
+  max-width: 1160px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+}
+
+/* ---------- buttons ---------- */
+.btnPrimary,
+.btnGhostLight,
+.btnInk,
+.btnOnAccent {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-sans);
+  font-weight: var(--weight-bold);
+  border-radius: var(--radius-lg);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background var(--dur-fast) var(--ease-standard),
+    border-color var(--dur-fast) var(--ease-standard);
+}
+.btnPrimary {
+  font-size: 15px;
+  padding: 15px 28px;
+  background: var(--accent-500);
+  color: var(--white);
+}
+.btnPrimary:hover {
+  background: var(--accent-600);
+  color: var(--white);
+  text-decoration: none;
+}
+.btnGhostLight {
+  font-size: 15px;
+  padding: 15px 28px;
+  background: transparent;
+  color: var(--white);
+  border: var(--border-key) solid rgba(255, 255, 255, 0.35);
+}
+.btnGhostLight:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--white);
+  text-decoration: none;
+}
+.btnInk {
+  font-size: 13px;
+  padding: 12px 20px;
+  background: var(--ink-900);
+  color: var(--white);
+}
+.btnInk:hover {
+  background: var(--ink-800);
+  color: var(--white);
+  text-decoration: none;
+}
+.btnOnAccent {
+  font-size: 15px;
+  padding: 16px 32px;
+  background: var(--white);
+  color: var(--accent-700);
+}
+.btnOnAccent:hover {
+  background: var(--ink-50);
+  color: var(--accent-700);
+  text-decoration: none;
+}
+
+/* ---------- eyebrows ---------- */
+.eyebrow,
+.eyebrowLight {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.eyebrow {
+  color: var(--accent-500);
+}
+.eyebrowLight {
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  color: var(--accent-400);
+  margin-bottom: 18px;
+}
+
+/* ---------- 1. HERO ---------- */
+.hero {
+  position: relative;
+  min-height: 460px;
+  display: flex;
+  align-items: center;
+  padding: 96px 24px;
+  background: var(--ink-950);
+  background-image: repeating-linear-gradient(135deg, #15171c 0 22px, #1b1d23 22px 44px);
+  overflow: hidden;
+}
+.heroOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(10, 10, 11, 0.86) 0%,
+    rgba(10, 10, 11, 0.45) 60%,
+    rgba(10, 10, 11, 0.2) 100%
+  );
+}
+.heroInner {
+  position: relative;
+  width: 100%;
+  max-width: 1160px;
+  margin: 0 auto;
+}
+.heroTitle {
+  font-family: var(--font-display);
+  font-weight: var(--weight-extrabold);
+  font-size: 56px;
+  line-height: 1;
+  letter-spacing: -0.035em;
+  color: var(--white);
+  margin: 0;
+  max-width: 680px;
+}
+.heroIngress {
+  font-family: var(--font-sans);
+  font-size: 18px;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.78);
+  margin: 22px 0 0;
+  max-width: 520px;
+}
+.heroButtons {
+  display: flex;
+  gap: 14px;
+  margin-top: 32px;
+  flex-wrap: wrap;
+}
+
+/* ---------- 2. STATS ---------- */
+.statBand {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  background: var(--ink-950);
+}
+.statCell {
+  padding: 40px 28px;
+  border-right: var(--border-hair) solid #1f2127;
+}
+.statCell:last-child {
+  border-right: none;
+}
+.statNumber {
+  font-family: var(--font-display);
+  font-weight: var(--weight-extrabold);
+  font-size: 40px;
+  letter-spacing: -0.03em;
+  color: var(--white);
+}
+.statLabel {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-400);
+  margin-top: 8px;
+}
+
+/* ---------- generic light section ---------- */
+.section {
+  padding: 72px 24px;
+  background: var(--white);
+}
+.sectionTitle,
+.sectionTitleTight,
+.sectionTitleLight {
+  font-family: var(--font-display);
+  font-weight: var(--weight-extrabold);
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+.sectionTitle {
+  font-size: 34px;
+  color: var(--text-primary);
+}
+.sectionTitleTight {
+  font-size: 30px;
+  color: var(--text-primary);
+}
+.sectionIngress {
+  font-family: var(--font-sans);
+  font-size: 16px;
+  color: var(--text-secondary);
+  margin: 12px 0 40px;
+  max-width: 560px;
+}
+
+.grid3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+}
+.grid4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+}
+
+/* how-it-works steps */
+.stepNum {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: var(--weight-medium);
+  color: var(--accent-500);
+}
+.stepTitle {
+  font-family: var(--font-display);
+  font-weight: var(--weight-bold);
+  font-size: 20px;
+  margin: 12px 0 8px;
+  color: var(--text-primary);
+}
+.stepText {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+
+/* ---------- 4. FEATURED ---------- */
+.featured {
+  padding: 64px 24px;
+  background: var(--surface-subtle, #f7f8f9);
+}
+.featuredHead {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 28px;
+}
+.viewAll {
+  font-family: var(--font-sans);
+  font-weight: var(--weight-bold);
+  font-size: 13px;
+  color: var(--accent-600);
+  text-decoration: none;
+}
+.talentCard {
+  background: var(--white);
+  border: var(--border-hair) solid var(--border-hairline);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+.talentPhoto {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  background: repeating-linear-gradient(135deg, #ecedef 0 10px, #f4f5f6 10px 20px);
+}
+.verified {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  font-family: var(--font-sans);
+  font-weight: var(--weight-bold);
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: var(--accent-50);
+  color: var(--accent-700);
+  padding: 3px 7px;
+  border-radius: var(--radius-sm);
+}
+.talentBody {
+  padding: 14px;
+}
+.talentName {
+  font-family: var(--font-display);
+  font-weight: var(--weight-extrabold);
+  font-size: 18px;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+}
+.talentMeta {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+.talentPrice {
+  font-family: var(--font-display);
+  font-weight: var(--weight-extrabold);
+  font-size: 16px;
+  margin-top: 10px;
+  color: var(--text-primary);
+}
+.talentPrice small {
+  font-family: var(--font-sans);
+  font-weight: var(--weight-regular);
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+/* ---------- 5. FEATURES ---------- */
+.features {
+  padding: 72px 24px;
+  background: var(--white);
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+}
+.featureRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: center;
+}
+.featureTitle {
+  font-family: var(--font-display);
+  font-weight: var(--weight-extrabold);
+  font-size: 30px;
+  letter-spacing: -0.025em;
+  line-height: 1.05;
+  margin: 12px 0 10px;
+  color: var(--text-primary);
+}
+.featureBody {
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  margin: 0;
+}
+.featureMedia {
+  aspect-ratio: 4 / 3;
+  border-radius: 10px;
+  background: repeating-linear-gradient(135deg, #eef0f3 0 14px, #f6f7f8 14px 28px);
+}
+
+/* ---------- 6. TRUST (dark) ---------- */
+.dark {
+  padding: 72px 24px;
+  background: var(--ink-950);
+}
+.sectionTitleLight {
+  font-size: 34px;
+  color: var(--white);
+}
+.sectionIngressLight {
+  font-family: var(--font-sans);
+  font-size: 16px;
+  color: var(--ink-400);
+  margin: 12px 0 40px;
+  max-width: 580px;
+}
+.darkCard {
+  border: var(--border-hair) solid #1f2127;
+  border-radius: var(--radius-lg);
+  padding: 28px;
+}
+.darkCardTitle {
+  font-family: var(--font-display);
+  font-weight: var(--weight-extrabold);
+  font-size: 22px;
+  letter-spacing: -0.02em;
+  color: var(--accent-400);
+}
+.darkCardText {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--ink-300);
+  margin-top: 10px;
+}
+
+/* ---------- 7. DUAL PATH ---------- */
+.dualPath {
+  padding: 56px 24px;
+  background: var(--white);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  max-width: 1208px;
+  margin: 0 auto;
+}
+.pathCard {
+  border: var(--border-key) solid var(--ink-900);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+}
+.pathCardAccent {
+  border-color: var(--accent-500);
+  background: var(--accent-50);
+}
+.pathTitle {
+  font-family: var(--font-display);
+  font-weight: var(--weight-extrabold);
+  font-size: 24px;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+.pathText {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  margin: 10px 0 20px;
+}
+
+/* ---------- 8. CLOSING ---------- */
+.closing {
+  padding: 88px 24px;
+  background: var(--accent-500);
+  text-align: center;
+}
+.closingTitle {
+  font-family: var(--font-display);
+  font-weight: var(--weight-extrabold);
+  font-size: 44px;
+  letter-spacing: -0.03em;
+  color: var(--white);
+  margin: 0;
+}
+.closingText {
+  font-family: var(--font-sans);
+  font-size: 17px;
+  color: rgba(255, 255, 255, 0.82);
+  margin: 14px 0 28px;
+}
+
+/* ---------- responsive ---------- */
+@media (max-width: 1023px) {
+  .grid4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 767px) {
+  .heroTitle {
+    font-size: 40px;
+  }
+  .statBand {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .statCell:nth-child(2) {
+    border-right: none;
+  }
+  .grid3,
+  .grid4,
+  .featureRow,
+  .dualPath {
+    grid-template-columns: 1fr;
+  }
+  .featureRow .featureMedia {
+    order: 2;
+  }
+  .sectionTitle,
+  .sectionTitleLight {
+    font-size: 28px;
+  }
+  .closingTitle {
+    font-size: 32px;
+  }
+}

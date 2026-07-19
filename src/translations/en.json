@@ -565,6 +565,8 @@
   "KeywordFilter.filterText": "Filter results by",
   "KeywordFilter.labelSelected": "\"{labelText}\"",
   "KeywordFilter.placeholder": "Enter a keyword…",
+  "GeneralLandingPage.schemaDescription": "Book professional models directly — no agents, no middlemen, no cut. The marketplace where models and the businesses that book them work together directly.",
+  "GeneralLandingPage.schemaTitle": "{marketplaceName} — Book models directly",
   "LandingPage.schemaDescription": "An online marketplace.",
   "LandingPage.schemaTitle": "{marketplaceName}",
   "LayoutSideNavigation.screenreader.accountNavigation": "Account settings navigation",
