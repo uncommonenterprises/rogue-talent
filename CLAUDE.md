@@ -146,3 +146,8 @@ git config core.hooksPath .githooks
 
 Bypass only for a genuine false positive: `git commit --no-verify`. Never disable the hook to
 push a real secret — put the value in `.env` / Railway instead.
+
+⚠️ `core.hooksPath` is **local git config** — it does NOT survive a fresh clone or a repo
+migration. Re-run the command above on every new clone/machine, and it is a required step in the
+public→private duplicate (`docs/repo-migration-checklist.md`, step 4). Verify with
+`git config core.hooksPath` (must print `.githooks`).
