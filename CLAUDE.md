@@ -7,8 +7,15 @@ Rogue Talent (roguetalent.co) is a two-sided marketplace for professional models
 - **Frontend/server:** This repo — Sharetribe Web Template (React + Express SSR)
 - **Marketplace backend:** Sharetribe Extend — https://console.sharetribe.com/o/ndstealth1/m/ndstealth1-test/
 - **Live dev URL:** https://rogue-talent-production.up.railway.app (Railway, auto-deploys from main)
+  - **⚠️ NAMING TRAP:** the URL says "production" but it points at the **test** marketplace (`ndstealth1-test`, `REACT_APP_ENV=development`). It is NOT a live/production environment. There is currently **no live environment at all**.
 - **Payments:** Stripe Connect (GBP)
-- **Maps:** Google Maps API key AIzaSyAukffGuSop5-olv_RSrcyAgBgMePdELqc
+- **Maps:** Google Maps (key in env as `REACT_APP_GOOGLE_MAPS_API_KEY`; restrict by HTTP referrer)
+
+## Environments & agent boundaries — non-negotiable
+- **Write ONLY to the test marketplace `ndstealth1-test`.** Never write to a live/production marketplace (none exists yet — keep this rule so it's already in force the day one does).
+- The Railway URL above is the **test** env despite its name (see the naming trap). "Never touch live" is currently vacuous because there is no live env — that is not a reason to relax the rule.
+- When a live environment is created: its credentials stay OUT of the dev environment, no browser automation is ever pointed at it, and any agent (incl. the future PM agent) tests the test env only.
+- This repo is **PUBLIC** — no secret values in any committed file (see Environment variables below).
 
 ## User types
 - **Model** (userType: `model`) — provider role. Posts their profile as a listing. Sets rates, availability, portfolio.
@@ -72,15 +79,18 @@ The canonical reference is **[`design-system/DESIGN_SYSTEM.md`](design-system/DE
 ## Phase 2 — done
 _(Phase 2 onboarding tasks complete — see "Phase 2 development" above.)_
 
-## Environment variables (set in Railway)
-```
-REACT_APP_SHARETRIBE_SDK_CLIENT_ID=5b1ca222-2626-4f0c-afd8-929af29de2b1
-SHARETRIBE_SDK_CLIENT_SECRET=882a986433265d752d6a9a2198f4c01dd27d7e90
-REACT_APP_MARKETPLACE_NAME=Rogue Talent
-REACT_APP_MARKETPLACE_ROOT_URL=https://rogue-talent-production.up.railway.app
-REACT_APP_GOOGLE_MAPS_API_KEY=AIzaSyAukffGuSop5-olv_RSrcyAgBgMePdELqc
-REACT_APP_ENV=development
-```
+## Environment variables
+**⚠️ This repo is PUBLIC — never paste secret values into any committed file (this one included).**
+Real values live ONLY in **Railway env vars** and a local **gitignored `.env`**. The full list of
+variable names is in `.env-template`; copy it to `.env` and fill in real values for local dev.
+
+- `SHARETRIBE_SDK_CLIENT_SECRET` — **secret** (server-side Marketplace API). Rotate immediately if it ever appears in a commit.
+- `REACT_APP_GOOGLE_MAPS_API_KEY` — sensitive; restrict by HTTP referrer in Google Cloud Console.
+- `REACT_APP_STRIPE_PUBLISHABLE_KEY` — publishable (safe in the client bundle by design).
+- `REACT_APP_SHARETRIBE_SDK_CLIENT_ID` — public (a `REACT_APP_*` var is embedded in the client bundle).
+- `REACT_APP_MARKETPLACE_NAME`, `REACT_APP_MARKETPLACE_ROOT_URL`, `REACT_APP_ENV=development` — non-secret.
+
+Marketplace: **`ndstealth1-test`** (the test environment — see the test-only rule below).
 
 ## Key files to know
 - `src/translations/en.json` — all user-facing strings
