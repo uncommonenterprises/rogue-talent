@@ -32,6 +32,10 @@ const UserFieldPhoneNumber = props => {
   }
 
   const isRequired = required === true;
+  // Flag the field as optional when it isn't required, matching the app-wide
+  // "(optional)" pattern used by getLabel for non-required custom fields.
+  const labelText = intl.formatMessage({ id: `${formName}.phoneNumberLabel` });
+  const label = isRequired ? labelText : `${labelText} (optional)`;
   const validateMaybe = isRequired
     ? {
         validate: validators.required(
@@ -48,9 +52,7 @@ const UserFieldPhoneNumber = props => {
       type="text"
       id={formId ? `${formId}.phoneNumber` : 'phoneNumber'}
       name="phoneNumber"
-      label={intl.formatMessage({
-        id: `${formName}.phoneNumberLabel`,
-      })}
+      label={label}
       placeholder={intl.formatMessage({
         id: `${formName}.phoneNumberPlaceholder`,
       })}
