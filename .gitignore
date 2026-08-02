@@ -24,3 +24,8 @@ docs/discovery-model-fields.md
 
 # Playwright MCP session artifacts (console logs, traces) from PM runs
 .playwright-mcp/
+
+# Generated PM review reading-view — derived from the proposals .md + screenshots,
+# ~5MB per run and regenerable via scripts/ops/build-review-html.js. The markdown
+# and screenshots are the record; the HTML is not committed.
+ux-reports/review/
