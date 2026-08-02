@@ -18,3 +18,6 @@ yarn-error.log
 # Local working artifacts (not for the repo)
 backups/
 docs/discovery-model-fields.md
+
+# Seeded test-user roster (contains a password) — never commit
+.test-accounts.json
