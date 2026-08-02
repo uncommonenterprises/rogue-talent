@@ -284,7 +284,7 @@
   "EditListingDetailsForm.titleRequired": "You need to add a title.",
   "EditListingDetailsForm.updateFailed": "Failed to update listing. Please try again.",
   "EditListingDetailsPanel.createListingTitle": "Your profile",
-  "EditListingDetailsPanel.guidance": "Write a short bio, then fill in your stats and details — your measurements, appearance, experience, and the categories you work in. These power search, so the right clients can find you.",
+  "EditListingDetailsPanel.guidance": "Fill in your stats and details — your measurements, appearance, experience, and the categories you work in. (You can add a written bio later in Profile settings.) These power search, so the right clients can find you.",
   "EditListingDetailsPanel.invalidListingTypeSetDescription": "This listing has a configuration that is no longer supported by {marketplaceName}, so you can't make changes to it. If you'd like to keep it available, please contact the {marketplaceName} team.",
   "EditListingDetailsPanel.invalidListingTypeSetTitle": "Outdated listing!",
   "EditListingDetailsPanel.noListingTypeSetDescription": "Configurations for possible transactions are missing some info. Please, contact support.",
