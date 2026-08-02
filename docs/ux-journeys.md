@@ -155,6 +155,15 @@ every CTA/link routes to the right place (search, signup, the other landing
 pages). Placeholder images/stats are known and not reported as bugs.
 **Score/watch:** brand voice and CTA clarity; do the two paths (model vs client)
 lead somewhere sensible. Lowest priority — cosmetic, not blocking.
+**Specific ask — the "keep 100%" positioning (Neil wants the agent's read
+before redesigning):** assess how prominently the core wedge — **model keeps
+100% vs agencies taking 20–30%** — is made. Today it sits in a value-prop *card*
+on the Models page, the General hero never states it, and the agency take is
+never quantified anywhere (only "no agency markup"/"no cut"). The agent should
+judge: (a) is the claim prominent enough, (b) does it belong in a **hero** rather
+than a card, and (c) should the agency figure (20–30%) be **quantified** to
+sharpen the contrast? Report as a proposal with a concrete rewrite/placement, not
+a vague note.
 
 ---
 

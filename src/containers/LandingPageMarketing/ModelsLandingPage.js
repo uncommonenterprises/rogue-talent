@@ -14,7 +14,7 @@ const VALUE = [
   {
     glyph: '100%',
     title: 'Keep your full rate',
-    text: 'No commission, ever. You keep 100% of your day rate — the business pays the platform fee.',
+    text: 'No commission. You keep 100% of your day rate — the business pays the platform fee.',
   },
   { glyph: 'You', title: 'Set your own rates', text: 'You decide your day rate and which work you take on.' },
   { glyph: '↗', title: 'Get discovered', text: 'Verified brands search Rogue for talent like you every day.' },
