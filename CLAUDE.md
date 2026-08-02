@@ -24,10 +24,21 @@ Claude Code implements approved items only. Full flow: `ux-reports/README.md`.
 
 - Implement a UX proposal ONLY if its `Status:` line reads exactly `APPROVED`. PENDING,
   DEFERRED, REJECTED and anything unrecognised mean do nothing.
-- NEVER write, edit or reformat a `Status:` or `Note:` line. Those belong to Neil alone. If you
-  think a status is wrong, say so — don't change it. (A PreToolUse hook,
-  `.claude/hooks/guard-approval-gate.sh`, blocks any agent — the PM subagent OR you — from
-  editing those lines. It is enforcement, not a reminder.)
+- **Who decides vs who types.** The decision is Neil's, always. You (Claude Code) MAY type a
+  `Status:` line into a proposal file, but ONLY as a faithful transcription of an explicit
+  instruction Neil gave **in the same conversation**. You may NEVER decide a status yourself,
+  NEVER infer one from context, and NEVER carry one over from a previous session without Neil
+  repeating it in the current conversation.
+- **Provenance is mandatory.** Every status you set must record its provenance on the `Note:`
+  line: the date and Neil's verbatim instruction. e.g.
+  `Note: APPROVED by Neil in chat 2026-08-02 — "approve 1 to 10".`
+- **Echo before you set.** Before applying, echo back the full list of what you are about to set
+  (ID → status) so Neil can catch a mis-transcription.
+- The **product-manager subagent** may NEVER set or change a `Status:`/`Note:` line — every
+  proposal it writes is `PENDING` with an empty `Note:`. This is enforced two ways: it has no
+  Edit tool (Write-only), and the PreToolUse hook `.claude/hooks/guard-approval-gate.sh` blocks
+  any Write that introduces a non-PENDING Status or a non-empty Note, and blocks the PM agent
+  from any Status/Note edit. The hook allows *your* transcription Edits.
 - NEVER implement a proposal that does not exist in a proposals file. No "while I was in there"
   changes.
 - One commit per proposal ID. Put the ID in the commit message

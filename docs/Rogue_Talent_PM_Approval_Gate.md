@@ -70,8 +70,15 @@ Add to `CLAUDE.md`:
 
 - Implement a UX proposal ONLY if its Status line reads exactly `APPROVED`.
   PENDING, DEFERRED, REJECTED and anything unrecognised mean do nothing.
-- NEVER write, edit or reformat a `Status:` or `Note:` line. Those belong
-  to Neil alone. If you think a status is wrong, say so — don't change it.
+- Who decides vs who types: the decision is Neil's, always. Claude Code MAY
+  type a `Status:` line, but ONLY as a faithful transcription of an explicit
+  instruction Neil gave in the SAME conversation — never decided, never
+  inferred, never carried over from a past session without him repeating it.
+- Provenance is mandatory: every status set records the date + Neil's verbatim
+  instruction on the `Note:` line, e.g.
+  `Note: APPROVED by Neil in chat 2026-08-02 — "approve 1 to 10".`
+- Echo before you set: list every ID → status you're about to write, so Neil
+  can catch a mis-transcription before it lands.
 - NEVER implement a proposal that does not exist in a proposals file.
   No "while I was in there" changes.
 - One commit per proposal ID. Put the ID in the commit message
@@ -86,6 +93,9 @@ Add to `CLAUDE.md`:
 
 - The product-manager agent writes to `ux-reports/**` and nowhere else.
 - It has no Edit tool and no git access. It cannot open a PR.
+- It may NEVER set or change a `Status:`/`Note:` line — every proposal it
+  writes is PENDING with an empty Note. Enforced by its tool restriction
+  (Write-only) AND the PreToolUse hook (below).
 - It tests `ndstealth1-test` / the Railway dev URL only. Never live.
 ```
 
@@ -148,20 +158,29 @@ Instructions are the first layer. Two cheap additions make it structural:
 
 **Tool restriction.** The `tools:` frontmatter above omits Edit and Bash, so the PM agent physically cannot modify source or run git. This is the single most important line in the file.
 
-**A PreToolUse hook.** In `.claude/settings.json`, block writes outside `ux-reports/` and block any edit that would touch a `Status:` line, for any agent:
+**A PreToolUse hook.** In `.claude/settings.json`, a hook on `Write|Edit|MultiEdit`
+enforces the who-decides/who-types split:
 
 ```json
 {
   "hooks": {
     "PreToolUse": [{
-      "matcher": "Write|Edit",
-      "hooks": [{ "type": "command", "command": ".claude/hooks/guard-approval-gate.sh" }]
+      "matcher": "Write|Edit|MultiEdit",
+      "hooks": [{ "type": "command", "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/guard-approval-gate.sh" }]
     }]
   }
 }
 ```
 
-The script exits non-zero — which blocks the call — if the target path is a proposals file and the diff touches a `Status:` or `Note:` line. Fifteen lines of bash, and it means a confused agent cannot approve its own work even if it decides the instruction doesn't apply.
+`.claude/hooks/guard-approval-gate.sh` blocks, for a proposal file under
+`ux-reports/`: (a) any **Write** that introduces a non-PENDING `Status:` or a
+non-empty `Note:` — the product-manager agent is Write-only, so this is its only
+possible route to an approval and it stays shut; and (b) the **product-manager
+agent** from any Status/Note edit (detected via its subagent identity). It
+**allows** the main Claude Code agent's targeted `Edit`/`MultiEdit` of Status/Note
+— that is the transcription path, and only the main agent has Edit. So a confused
+PM agent cannot approve its own work, while Neil-instructed approvals still land
+via the main agent (with a provenance Note).
 
 **Git as the audit trail.** Commit the proposals files. `git log ux-reports/` then shows exactly what was proposed, what you approved, when, and which commit implemented it — for free, with no extra tooling.
 
@@ -173,7 +192,7 @@ Three options, in order of how little friction they involve:
 
 **Edit the markdown.** Open the proposals file, change ten `PENDING`s, save, tell Claude Code to go. Fastest once you're used to it, and the file is the source of truth.
 
-**Approve in conversation.** Paste or point me at the report here, say "approve 1, 3 and 7, reject 4 — too invasive, defer the rest", and I'll set the statuses and notes for you. Useful when you're reviewing on your phone.
+**Approve in conversation.** Say "approve 1, 3 and 7, reject 4 — too invasive, defer the rest", and Claude Code transcribes those statuses into the markdown for you — each with a `Note:` recording the date and your verbatim instruction, and echoing the full ID→status list back first so you can catch a mis-transcription. The decision stays yours; Claude Code is only typing it. This is a first-class path now (not a phone-only fallback), because the hook lets the main agent set statuses while still barring the PM agent.
 
 **HTML digest.** Have the agent also render `ux-reports/review/<date>.html` with the screenshots inline, so you can read the case for each proposal properly before deciding. Approval still happens in the markdown — the HTML is a reading view, not a control surface.
 
