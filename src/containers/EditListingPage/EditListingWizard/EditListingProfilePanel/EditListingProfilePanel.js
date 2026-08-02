@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import classNames from 'classnames';
 
 // Import configs and util modules
-import { FormattedMessage } from '../../../../util/reactIntl';
+import { FormattedMessage, useIntl } from '../../../../util/reactIntl';
 
 // Import shared components
 import { H3 } from '../../../../components';
@@ -105,12 +105,19 @@ const EditListingProfilePanel = props => {
     panelUpdated,
     updateInProgress,
     errors,
+    updatePageTitle: UpdatePageTitle,
   } = props;
 
+  const intl = useIntl();
   const classes = classNames(rootClassName || css.root, className);
 
   return (
     <main className={classes}>
+      {UpdatePageTitle ? (
+        <UpdatePageTitle
+          panelHeading={intl.formatMessage({ id: 'EditListingProfilePanel.title' })}
+        />
+      ) : null}
       <H3 as="h1">
         <FormattedMessage id="EditListingProfilePanel.title" />
       </H3>
