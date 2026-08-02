@@ -61,24 +61,31 @@ const PROCESS_ALIAS = 'default-booking/release-1';
 const UNIT_TYPE = 'day';
 const CURRENCY = 'GBP';
 
-// Attribute publicData for the "finished" profile. Sharetribe stores unknown
-// keys harmlessly, but for these to drive filters/badges the keys + enum values
-// must match the Console `listingFields` asset. CONFIRM against Console before a
-// real run — half_day_rate/hourly_rate are the keys the app already uses
-// (src/.../rateFields.js); the rest are best-effort and marked to verify.
+// Attribute publicData for the "finished" profile. Keys + enum values are
+// CONFIRMED against the live Console `listingFields` asset (Asset Delivery API,
+// /listings/listing-fields.json, 2026-08-02). ALL 14 required public fields are
+// set so model 3 is genuinely complete — an omitted required field would show up
+// on the profile/filters as a seed gap, not a product bug.
 const FINISHED_PROFILE = {
   publicData: {
-    // TODO(confirm keys/enums vs Console listingFields asset):
-    gender: 'female',
-    height_cm: 178,
-    experience_level: 'professional',
-    hair_colour: 'brown',
-    eye_colour: 'green',
-    modelling_categories: ['fashion', 'editorial'],
+    gender: 'female', // enum: female|male|non-binary
+    height_cm: 178, // long (cm)
+    waist_cm: 61, // long (cm)
+    hips_cm: 89, // long (cm)
+    bust_chest_cm: 86, // long (cm)
+    shoe_size_uk: 6, // long (UK size)
+    hair_colour: 'brown', // enum: black|brown|blonde|red|auburn|grey-white|other
+    eye_colour: 'green', // enum: brown|blue|green|hazel|grey|other
+    ethnicity: ['white'], // multi-enum
+    experience_level: 'professional', // enum: new-face|some-experience|experienced|professional
+    modelling_categories: ['fashion', 'editorial'], // multi-enum
+    availability_radius: 'national', // enum: local|regional|national|international
+    travel_fee_policy: 'included', // enum: included|charged-separately
+    min_booking_notice: '48-hours', // enum: same-day|24-hours|48-hours|1-week|2-weeks
+    instagram_url: 'https://instagram.com/anais.petit.model', // optional shortText
     // rates: `long` fields stored as SUBUNITS (like price) — see rateFields.js
     half_day_rate: 9000, // £90.00
     hourly_rate: 3000, // £30.00
-    travel_fee_policy: 'within_city_included',
   },
   priceSubunits: 15000, // day rate £150.00 (native listing price)
   city: 'London, UK',
@@ -86,10 +93,15 @@ const FINISHED_PROFILE = {
   lng: -0.1278,
 };
 
-// Partial publicData for the "half-built" draft — a couple of fields, no rates,
-// not published.
+// Partial publicData for the "half-built" draft — a few valid fields, no rates,
+// left UNPUBLISHED. Intentionally missing most required fields: that incomplete
+// state is the point (a real model mid-onboarding), not a seed error.
 const HALFBUILT_PROFILE = {
-  publicData: { gender: 'male', modelling_categories: ['commercial'] },
+  publicData: {
+    gender: 'male', // enum
+    height_cm: 183, // long (cm)
+    modelling_categories: ['commercial'], // multi-enum
+  },
   city: 'Manchester, UK',
   lat: 53.4808,
   lng: -2.2426,
