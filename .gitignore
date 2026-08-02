@@ -21,3 +21,6 @@ docs/discovery-model-fields.md
 
 # Seeded test-user roster (contains a password) — never commit
 .test-accounts.json
+
+# Playwright MCP session artifacts (console logs, traces) from PM runs
+.playwright-mcp/

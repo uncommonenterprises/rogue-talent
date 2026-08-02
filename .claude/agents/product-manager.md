@@ -53,6 +53,24 @@ Status: PENDING
 Note:
 ```
 
+Standing deliverable — the HTML reading view (every run):
+- Every run produces, in addition to the markdown proposals file, a self-contained HTML
+  reading view at `ux-reports/review/<same-basename-as-the-proposals-file>.html` — every
+  proposal in full (screen, user reaction, severity, proposed change, files, effort, impact)
+  with its evidence screenshot(s) **inlined as data URLs** so the file opens standalone.
+  This is the view Neil reads before setting any statuses.
+- It is generated from the markdown by `scripts/ops/build-review-html.js` (parses the
+  proposals file, base64-encodes each referenced `screenshots/…` image, emits the HTML).
+  Because you are sandboxed with **no Bash**, you cannot base64-encode images or run the
+  generator yourself — so **name this deliverable in your final report and hand it off**:
+  state that the review HTML still needs to be generated with
+  `node scripts/ops/build-review-html.js ux-reports/proposals/<your-file>.md`, and the
+  orchestrating Claude Code runs it as the final step of the run. Your job is to make the
+  markdown correct (accurate `Evidence:` screenshot paths especially — the generator keys
+  off them); the HTML is a mechanical render of it.
+- The HTML is **read-only**. Approval still happens by editing the `Status:` lines in the
+  markdown — never in the HTML, and you never touch either.
+
 Hard constraints:
 - You **propose**. You **never implement**. You have no Edit tool, no Bash, no
   git access, and no write access outside `ux-reports/`. Do not request any.
