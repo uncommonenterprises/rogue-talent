@@ -18,6 +18,7 @@ Impact:    Highest single lever on completion — this is where a fully-complete
 ---
 Status: APPROVED
 Note: APPROVED by Neil in chat 2026-08-02 — "approve RT-01 through RT-10 and also RT-11 and RT-12".
+Implemented: held — merged submit/review/go-live (docs/submit-review-golive-flow.md); build after Neil signs off the spec.
 
 ## RT-20260802-02 — No "what happens next" after submit; profile silently stays a draft
 Journey:   Model onboarding
@@ -32,6 +33,7 @@ Effort:    M
 ---
 Status: APPROVED
 Note: APPROVED by Neil in chat 2026-08-02 — "approve RT-01 through RT-10 and also RT-11 and RT-12".
+Implemented: held — merged submit/review/go-live (docs/submit-review-golive-flow.md); build after Neil signs off the spec.
 
 ## RT-20260802-03 — "Your profile" step is a 14-field wall with no grouping
 Journey:   Model onboarding
@@ -46,6 +48,7 @@ Effort:    M
 ---
 Status: APPROVED
 Note: APPROVED by Neil in chat 2026-08-02 — "approve RT-01 through RT-10 and also RT-11 and RT-12".
+Implemented: 7a188c09f 2026-08-02
 
 ## RT-20260802-04 — Email-verification screen is a dead end with no way forward
 Journey:   Model onboarding
@@ -60,6 +63,7 @@ Effort:    S
 ---
 Status: APPROVED
 Note: APPROVED by Neil in chat 2026-08-02 — "approve RT-01 through RT-10 and also RT-11 and RT-12".
+Implemented: f23b8d3db 2026-08-02
 
 ## RT-20260802-05 — Model can create multiple orphan draft profiles ("You have 2 listings")
 Journey:   Model onboarding
@@ -74,6 +78,7 @@ Effort:    M
 ---
 Status: APPROVED
 Note: APPROVED by Neil in chat 2026-08-02 — "approve RT-01 through RT-10 and also RT-11 and RT-12".
+Implemented: pending — architectural (routing/data-fetch/redirect); approach needs sign-off before build (see chat).
 
 ## RT-20260802-06 — "Your profile" intro promises a bio field that isn't on the step
 Journey:   Model onboarding
@@ -88,6 +93,7 @@ Effort:    S
 ---
 Status: APPROVED
 Note: APPROVED by Neil in chat 2026-08-02 — "approve RT-01 through RT-10 and also RT-11 and RT-12".
+Implemented: c450c0e10 2026-08-02
 
 ## RT-20260802-07 — Signup password field has no requirements hint
 Journey:   Model onboarding
@@ -102,6 +108,7 @@ Effort:    S
 ---
 Status: APPROVED
 Note: APPROVED by Neil in chat 2026-08-02 — "approve RT-01 through RT-10 and also RT-11 and RT-12".
+Implemented: cb6fe05c1 2026-08-02
 
 ## RT-20260802-08 — New-user admin-approval gate is OFF (contradicts documented policy)
 Journey:   Model onboarding (config observation)
@@ -116,6 +123,7 @@ Effort:    S
 ---
 Status: APPROVED
 Note: APPROVED by Neil in chat 2026-08-02 — "approve RT-01 through RT-10 and also RT-11 and RT-12".
+Implemented: held — merged submit/review/go-live (docs/submit-review-golive-flow.md); build after Neil signs off the spec.
 
 ## RT-20260802-09 — Website & Instagram fields show the wrong placeholder "Write description…"
 Journey:   Model onboarding
@@ -130,6 +138,7 @@ Effort:    S
 ---
 Status: APPROVED
 Note: APPROVED by Neil in chat 2026-08-02 — "approve RT-01 through RT-10 and also RT-11 and RT-12".
+Implemented: n/a — Console-only: set placeholderMessage on the website & instagram listing fields.
 
 ## RT-20260802-10 — Signup "Phone number" field lacks an "(optional)" marker
 Journey:   Model onboarding
@@ -144,6 +153,7 @@ Effort:    S
 ---
 Status: APPROVED
 Note: APPROVED by Neil in chat 2026-08-02 — "approve RT-01 through RT-10 and also RT-11 and RT-12".
+Implemented: a3bbad35d 2026-08-02
 
 ## RT-20260802-11 — Body measurements are all required with no opt-out (hard completion blocker)
 Journey:   Model onboarding
@@ -158,6 +168,7 @@ Effort:    S (Console flag) + S (opt-out UI if added)
 ---
 Status: APPROVED
 Note: APPROVED by Neil in chat 2026-08-02 — "approve RT-01 through RT-10 and also RT-11 and RT-12".
+Implemented: n/a — Console-only: turn off required on bust_chest_cm / waist_cm / hips_cm.
 
 ## RT-20260802-12 — Browser tab title shows literal "{panelHeading}" on the About-you step
 Journey:   Model onboarding
@@ -172,3 +183,4 @@ Effort:    S
 ---
 Status: APPROVED
 Note: APPROVED by Neil in chat 2026-08-02 — "approve RT-01 through RT-10 and also RT-11 and RT-12".
+Implemented: 8d7c98275 2026-08-02
