@@ -113,23 +113,21 @@ expressed cleanly; fall back to B if not. Either way, the **refund base** (what 
 
 ## 7. OPEN commercial questions — Neil to answer before any build
 
-> ⚠️ **First, a contradiction to resolve.** These questions (and the FAQ wording)
-> reference a **provider commission** and a **5% customer fee**. But the current
-> documented model (CLAUDE.md, changed 2026-07-19) is **15% customer booking fee
-> only, 0% provider — the model keeps 100%**. The refund math depends entirely on
-> which model is real. **Q0: which commission model applies to cancellations — the
-> current 15%-customer-only model, or the older split you referenced?** Every
-> question below is answered differently depending on Q0.
+> ✅ **Q0 RESOLVED (Neil, 2026-08-02):** the commission model for cancellations is
+> the current one — **15% customer booking fee only, 0% provider commission, model
+> keeps 100% of their rate.** The questions below are framed against that model.
+> There is no provider commission and no "5% customer fee" — that was the pre-19-July
+> split and does not apply.
 
-1. **On a 50% charge, does Rogue Talent still take its commission, and on what
-   base?** (15% of the full booking value? 15% of the 50% actually charged? Or is
-   commission waived on cancellations?)
-2. **Does the model receive the full 50%, or 50% net of any provider commission?**
-   (Under the current 0%-provider model this is "full 50%" — but confirm, given Q0.)
-3. **Is the client's booking fee refunded — fully, proportionally, or not at all?**
-   (The question named a "5% customer fee"; under the current model it's the 15%
-   customer fee. Is the fee refunded in the >72h full-refund case? Kept as a
-   non-refundable service charge? Proportionally refunded in the 50% case?)
+1. **On a 50% charge, does Rogue Talent still take its 15% customer fee, and on
+   what base?** (15% of the full booking value? 15% of the 50% actually charged? Or
+   is the fee waived on cancellations?)
+2. **Does the model receive the full 50% of their rate?** (0% provider commission,
+   so no deduction on that side — confirm the model simply gets 50% of their day
+   rate, with nothing skimmed.)
+3. **Is the client's 15% customer booking fee refunded — fully, proportionally, or
+   not at all?** (Refunded in the >72h full-refund case? Kept as a non-refundable
+   service charge? Proportionally refunded in the 50% case?)
 4. **Boundary behaviour — exactly at 72h and at 24h.** Is `booking-start − 72h`
    inclusive of the better tier or the worse one (i.e. is *exactly* 72h a full
    refund or a 50% charge)? Same at 24h. Needs to be a strict rule, not "about".
