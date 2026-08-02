@@ -17,6 +17,33 @@ Rogue Talent (roguetalent.co) is a two-sided marketplace for professional models
 - When a live environment is created: its credentials stay OUT of the dev environment, no browser automation is ever pointed at it, and any agent (incl. the future PM agent) tests the test env only.
 - This repo is **PUBLIC** — no secret values in any committed file (see Environment variables below).
 
+## UX proposal approval gate — non-negotiable
+The `product-manager` subagent (`.claude/agents/product-manager.md`) walks journeys on the
+test site and writes numbered proposals to `ux-reports/proposals/`. It proposes; Neil decides;
+Claude Code implements approved items only. Full flow: `ux-reports/README.md`.
+
+- Implement a UX proposal ONLY if its `Status:` line reads exactly `APPROVED`. PENDING,
+  DEFERRED, REJECTED and anything unrecognised mean do nothing.
+- NEVER write, edit or reformat a `Status:` or `Note:` line. Those belong to Neil alone. If you
+  think a status is wrong, say so — don't change it. (A PreToolUse hook,
+  `.claude/hooks/guard-approval-gate.sh`, blocks any agent — the PM subagent OR you — from
+  editing those lines. It is enforcement, not a reminder.)
+- NEVER implement a proposal that does not exist in a proposals file. No "while I was in there"
+  changes.
+- One commit per proposal ID. Put the ID in the commit message
+  (`RT-20260804-03: add rationale to measurements block`) so any single approved change can be
+  reverted on its own.
+- After implementing, append `Implemented: <sha> <date>` below the `Note:` line and move the file
+  to `ux-reports/done/` once every item in it is resolved.
+- If an approved proposal is ambiguous, ask before interpreting. An approval covers the change as
+  written, not your extension of it.
+
+### PM agent boundaries
+- The `product-manager` agent writes to `ux-reports/**` and nowhere else. It has **no Edit tool,
+  no Bash, no git access** — it cannot touch `src/` or open a PR (enforced by its `tools:`
+  frontmatter, not just instruction).
+- It tests `ndstealth1-test` / the Railway dev URL only. Never live.
+
 ## User types
 - **Model** (userType: `model`) — provider role. Posts their profile as a listing. Sets rates, availability, portfolio.
 - **Client** (userType: `client`) — customer role. Searches and books models.
