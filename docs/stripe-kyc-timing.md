@@ -4,24 +4,44 @@
 proposal **RT-20260802-01** and what it would take to build. Do not implement without a
 separate go-ahead.
 
-**Decided:** 2026-08-02 (Neil). **Option chosen: 3 — move Stripe KYC out of profile
-onboarding and to the point of taking a first booking.**
+**Decided:** 2026-08-02 (Neil); **REVISED 2026-08-02 (Neil)** after verifying the booking
+payment flow. **Stripe KYC moves out of profile onboarding to immediately AFTER operator
+approval and BEFORE the profile goes live** — the "you're accepted, add your payout details
+to go live" step.
+
+> **Why revised (supersedes the earlier "at first booking" option).** Verifying
+> `default-booking` confirmed the crux: a client's card is **authorised at booking-request
+> time**, and creating that authorisation **requires the model's connected Stripe account to
+> already exist** (it's a destination charge; the app already blocks checkout otherwise). So
+> Stripe genuinely cannot wait until a booking arrives — a payout-less model would be
+> **searchable but unbookable**, and a client who tried to book would hit a dead end. Asking
+> for payout at go-live (right after we tell the model they're in) removes that dead end
+> entirely and asks for bank details at the most motivated moment.
 
 ---
 
 ## The decision
 
-A model must **not** be forced through Stripe Connect identity/bank verification just to
-submit their profile for review. Onboarding (create profile → submit → get reviewed →
-appear on the platform) happens with **no Stripe step**. Payout onboarding is deferred to
-the moment it actually matters for money changing hands — around the model's **first
-booking**.
+The onboarding sequence is now:
+
+```
+build profile → submit for review → operator approves → "you're in — add payout to go live"
+             → model completes Stripe → LIVE (searchable AND bookable)
+```
+
+- **Submit needs no Stripe.** Create profile → submit for review happens with no payout step
+  (this is still the RT-20260802-01 decouple: "Submit for review" must not open the payout
+  modal).
+- **Payout is required to go live, not to submit.** After we approve the model, they add
+  payout details as the final gate before publication. A model is never *searchable* until
+  payout is set, so a client never sees a model they cannot book.
+- **No searchable-but-unbookable window.** This is the key difference from the earlier plan.
 
 Rationale: today a fully-completed profile silently fails to go live because "Submit for
-review" opens a mandatory Stripe KYC/bank modal instead of submitting (RT-20260802-01).
-A model who has not been booked by anyone is being asked for bank details and ID up front,
-and if they defer, the profile just stays a draft. That is the single highest-drop-off
-point in onboarding.
+review" opens a mandatory Stripe KYC/bank modal instead of submitting (RT-20260802-01). We
+still remove that up-front wall — but instead of deferring payout to an ambiguous "first
+booking," we ask for it at the concrete, motivating moment the model has just been approved,
+and we make it the last thing between them and being live and bookable.
 
 ---
 
@@ -40,30 +60,39 @@ point in onboarding.
   (`src/translations/en.json:417-418`).
 - **Net effect:** submit ⇒ payout modal ⇒ (if abandoned) listing never leaves `draft`.
 
-## The constraint that shapes "at first booking"
+## The booking payment flow (verified against `default-booking` v1, 2026-08-02)
 
-"At the point of **accepting** a booking" is the intent, but the payment architecture means
-the real trigger is slightly earlier — **before a client can pay**, not at acceptance:
+Pulled and read the live process. The four facts that drive the timing:
 
-- In `default-booking` (`ext/transaction-processes/default-booking/process.edn`) the
-  customer's card is charged at **request** time:
-  `:transition/request-payment → :action/stripe-create-payment-intent`, then
-  `:transition/confirm-payment`. The provider's `:transition/accept` only
-  **captures** an already-authorised payment (`stripe-capture-payment-intent`); payout to
-  the model happens later still, at `:transition/complete → stripe-create-payout`.
-- Creating that PaymentIntent needs the **provider's connected Stripe account to already
-  exist** as the transfer destination. The template already enforces this on the client
-  side: a client cannot check out against a model with no payout account —
-  `CheckoutPage.providerStripeAccountMissingError` ("This listing is currently unavailable
-  because the listing author hasn't added their payout details yet")
-  (`src/translations/en.json:86`), and `CheckoutPage.destinationAccountNotCompleteStripeError`
-  (`:74`).
+1. **Request → provider accept/decline is already the stock shape.** `request-payment`
+   (customer) → `pending-payment`; `confirm-payment` (customer) → `preauthorized`; then the
+   provider's `accept` → `accepted`, or `decline` → `declined`. The provider gets a
+   `booking-new-request` notification on `confirm-payment`. No custom process needed for the
+   request/accept model itself.
+2. **The card is authorised (held), not charged, until acceptance.** `stripe-create-payment-intent`
+   (request) + `stripe-confirm-payment-intent` (confirm) put the payment in `preauthorized`
+   — a **manual-capture hold**. `accept` runs `stripe-capture-payment-intent` (the only point
+   money is actually taken). `decline`/`expire` run `calculate-full-refund` +
+   `stripe-refund-payment` (release the hold). Payout to the model is later still, at
+   `complete → stripe-create-payout`.
+3. **Creating the authorisation requires the model's connected Stripe account to already
+   exist** — it's a destination charge to the provider's account, so the account must be
+   present at request time. The app already enforces this: checkout against a payout-less
+   model is blocked by `CheckoutPage.providerStripeAccountMissingError` (en.json:86) and
+   `destinationAccountNotCompleteStripeError` (:74). **This is the crux — Stripe cannot wait
+   until acceptance.**
+4. **Provider response window:** `:transition/expire` fires at
+   `min( preauthorized + P6D, booking-start + P1D, booking-end )` — so **up to 6 days** by
+   default, capped tighter for near-term shoots. The ceiling is set by Stripe: an uncaptured
+   card authorisation is released after **~7 days**, so the window must stay under that. P6D
+   is the stock safety margin; a 48-hour target is comfortably inside it (see the merged
+   spec's response-window section).
 
-**Therefore:** a model can be reviewed, published, and discoverable with no Stripe account,
-but **cannot actually be booked** until they complete payout onboarding. The honest shape of
-"KYC at first booking" is: *profile is live and searchable without Stripe; Stripe is required
-to open/accept bookings.* You cannot literally let a client pay and only then ask the model
-to onboard — the payment would fail at request time.
+**Therefore:** a model must have Stripe connected **before any client can authorise a
+booking**. Deferring payout to "first booking" would leave a searchable-but-unbookable model
+and a client dead end. Asking for payout at **go-live, right after approval** is the earliest
+point that (a) isn't an up-front onboarding wall and (b) still guarantees every searchable
+model is bookable.
 
 ## What's already built (no work needed)
 
@@ -79,52 +108,47 @@ to onboard — the payment would fail at request time.
   (`LayoutWrapperAccountSettingsSideNav.paymentsTabTitle`, `en.json:581`) as a home for the
   deferred Stripe onboarding.
 
-## What it would take to build (deferred)
+## What it would take to build
 
-1. **Decouple publish from payout.** Make `model-profile` not require payout details at
-   publish so `handlePublishListing` submits regardless of `stripeConnected` — either by
-   changing the listing-type config that feeds `requirePayoutDetails`, or by editing
-   `handlePublishListing` to always call `onPublishListingDraft(id)` and surface payout as a
-   non-blocking follow-up. (This is the core of RT-20260802-01.)
-2. **Keep the booking-time gate as-is.** Leave the CheckoutPage / listing-page payout guards
-   in place — they already produce the "not bookable until payout is set" behaviour we want.
-   The model appears in search; the profile page shows the owner an "add payout details to
-   start accepting orders" prompt.
-3. **Prompt the model at the right moment.** Because payment is collected at request time,
-   the model must onboard **before** a client can complete a booking. Options, in rising
-   effort:
-   - **a. Persistent nudge (lowest effort):** dashboard/topbar banner + the existing
-     owner-listing warning: "Add payout details to start accepting bookings." The profile is
-     live; bookings are simply closed until payout is done. No new backend.
-   - **b. Interest signal (medium):** let a client register interest / "request to book" on a
-     not-yet-bookable model, which notifies the model to complete payout so the booking can
-     proceed. Needs a lightweight pre-payment intent/waitlist concept (not in stock
-     `default-booking`) plus a notification.
-   - **c. Full deferral (highest):** rework the money flow so a client can express a booking
-     without an immediate charge, then charge once the model onboards. This is a custom
-     transaction-process change and is almost certainly more than this is worth — flagged
-     only for completeness.
-   Recommended: **(a)** now, consider **(b)** later. (a) fully delivers the decision — no
-   Stripe during onboarding — with the smallest surface area.
-4. **Post-submit "what happens next" copy** (RT-20260802-02) so the model understands the
-   profile is in review and that payout comes later, before bookings open.
-5. **Files likely touched:** `EditListingWizard.js` (publish gate), the `model-profile`
-   listing-type config, `EditListingPage.js`, `src/translations/en.json` (payout-modal +
-   new banner/next-step keys), and possibly a dashboard banner component.
+1. **Decouple SUBMIT from payout (RT-01).** "Submit for review" must send the profile to
+   review (→ `pendingApproval`) **without** opening the payout modal — change the
+   `model-profile` config feeding `requirePayoutDetails`
+   (`src/util/configHelpers.js:1100`), or `handlePublishListing`
+   (`EditListingWizard.js:481-508`), so submit never gates on `stripeConnected`.
+2. **Add the payout gate at GO-LIVE, after approval.** New requirement: a listing becomes
+   `published`/searchable only when **both** (a) an operator has approved it and (b) the
+   model has completed Stripe payout. Sharetribe's native listing-approval **publishes
+   immediately on approve**, which would skip (b). Recommended mechanism:
+   - Operator approval is recorded as a **signal** (listing metadata `reviewApproved: true`
+     + the "you're in — add payout to go live" email), **not** an immediate publish.
+   - The model completes Stripe onboarding; the app then publishes the listing — a go-live
+     action **gated on `reviewApproved && payoutPresent`**.
+   > **DECISION FLAG:** confirm this mechanism vs. the alternative — native approve = publish,
+   > then hide payout-less models from search until Stripe is done. The recommended one keeps
+   > the listing genuinely unpublished until payout, which is cleaner but more custom.
+3. **Keep the CheckoutPage / listing payout guards as a backstop.** With the go-live gate,
+   they should never fire for a searchable model — but leave them as defense in depth so a
+   client can never pay into a payout-less model even if a listing slips through.
+4. **Post-approval "you're in — add payout to go live" screen** (this replaces the earlier
+   "persistent nudge for a live-but-unbookable model" — there is **no** live-but-unbookable
+   state now). Plus the post-submit "in review" copy (RT-02).
+5. **Files likely touched:** `EditListingWizard.js` (submit no longer gates on payout), the
+   go-live publish gate (`EditListingPage.js`/`EditListingWizard.js` + a payout check), the
+   approval → email → payout wiring (merged-spec Part E events), `src/translations/en.json`
+   (payout-modal + go-live + review keys).
 
 ## Interaction with other decisions
 
-- **Listing approval (RT-20260802-08):** with listing approval ON, the lifecycle becomes
-  *draft → submit → `pendingApproval` (operator review) → `published` (live, searchable) →
-  bookable once payout is set*. Two independent gates now sit between "done building" and
-  "earning": operator review, and payout-before-booking. Keep them conceptually separate in
-  the UX so a model always knows which one they're waiting on.
+- **Listing approval (RT-20260802-08):** with listing approval ON, the lifecycle is
+  *draft → submit → `pendingApproval` (operator review) → **approved (signal, not yet live)**
+  → **add payout** → `published` (live, searchable AND bookable)*. Payout is now a gate
+  **before** go-live, not after — so there is a single "not yet live" journey with two
+  sequential gates (review, then payout), and **no** searchable-but-unbookable window.
+- **Booking response window (48h):** see the merged spec — the request→accept model is stock,
+  but a 48-hour window with reminders needs a **custom `default-booking` version** (change
+  `:transition/expire` P6D → PT48H) plus reminder infra.
 
-## Open questions for whoever implements
+## Open question for whoever implements
 
-- Do we want a hard "bookings closed" state surfaced to clients (e.g. a badge on the card),
-  or just the silent unavailability at checkout? A visible "not taking bookings yet" is
-  kinder to clients but exposes that a model is unfinished.
-- Should completing payout be nudged by email as part of the approval emails (see
-  `docs/` notes on listing-approval emails), i.e. bundle "you're approved — add payout to
-  start taking bookings" into the approval message?
+- Confirm the go-live mechanism in step 2 (metadata-signal + payout-gated publish vs.
+  approve-then-hide). This is the one real design fork.
