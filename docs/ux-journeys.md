@@ -1,8 +1,11 @@
 # Rogue Talent — PM agent journey list
 
-**Approval: PENDING NEIL.** This list is approved the same way proposals are:
-the `product-manager` agent must not run **any** journey until Neil marks it
-approved. Claude Code will not trigger a PM run against an unapproved list.
+**Approval: APPROVED by Neil (chat, 2026-08-02).**
+**Authorised to run now: Journey 1 (Model onboarding) ONLY.** Journeys 2–7 are
+approved as a list but NOT yet authorised to run — Claude Code must not trigger a
+PM run on them until Neil explicitly opens them up (one or a few at a time). The
+plan is to see one run's proposals, and how long review takes, before opening the
+taps.
 
 Purpose: the ordered set of user journeys the PM agent walks on the
 `ndstealth1-test` marketplace (Railway dev URL), what account it uses, and what
@@ -10,8 +13,9 @@ Purpose: the ordered set of user journeys the PM agent walks on the
 rather than open-ended wandering.
 
 Priority reflects business risk: supply-side onboarding first (no models → no
-marketplace), then demand-side discovery and the booking money-path, then
-cross-cutting account flows, then marketing polish.
+marketplace), then demand-side discovery, then the booking money-path and its
+cancellation/refund tiers (where a bug costs real money), then cross-cutting
+account flows, then marketing polish.
 
 Test accounts come from `.test-accounts.json` (seeded by
 `scripts/ops/seed-test-users.js`). Screenshots → `ux-reports/screenshots/`.
@@ -77,7 +81,36 @@ Stripe **test** checkout → land on request-submitted / order state.
 date/price step trustworthy; any Stripe dead ends.
 **Out of scope:** real charges, payout settlement.
 
-## 4. Model booking inbox / respond to request
+## 4. Cancellation & refund (three tiers, money-risk)  ⚠️
+**Why:** this is the flow where a bug costs someone real money. Policy is three
+tiers by lead time before the booking:
+- **>72h before:** full refund to client (no charge to client).
+- **24–72h before:** 50% charged (client refunded 50%).
+- **<24h before:** full charge (no refund).
+
+Test **all three tiers as separate cases**, and each **from both sides** — the
+client cancelling and the model cancelling — because who cancels and when changes
+who is made whole. Six cases in total (3 tiers × 2 initiators).
+**Persona / accounts:** `rt-client-01` and the finished model (`rt-model-03`),
+using bookings created at controlled lead times so each tier is exercised.
+**Entry point:** an existing accepted/confirmed booking → cancel.
+**Walk (per case):** open the booking → initiate cancellation → read the stated
+refund/charge → confirm → verify the resulting transaction state and the amount
+actually refunded/charged in Stripe **test**, and what the *other* side sees.
+**Done looks like:**
+- The refund/charge shown before confirming matches the tier policy exactly
+  (100% / 50% / 0% refund by lead-time band), for both initiators.
+- The Stripe test refund/charge that actually posts matches what was shown — no
+  gap between the promise and the money.
+- Both client and model land in a clear, correct final state with a sensible
+  notification; no ambiguous "cancelled but who owes what" screens.
+- Boundary behaviour at exactly 72h and 24h is defined and not a coin-flip.
+**Score/watch:** does the user understand the financial consequence *before*
+confirming; is the boundary between tiers unambiguous; any mismatch between the
+quoted amount and the Stripe amount (report as a **blocker**).
+**Out of scope:** real charges; disputes/chargebacks; payout clawback mechanics.
+
+## 5. Model booking inbox / respond to request
 **Persona / account:** the seeded model that received the request from journey 3.
 **Entry point:** topbar → Requests / inbox.
 **Walk:** open the incoming request → review details → accept and decline paths.
@@ -86,7 +119,7 @@ and decline both work and produce a clear resulting state and notification.
 **Score/watch:** clarity of the decision, what the model knows about the client,
 reversibility/undo.
 
-## 5. Auth & account basics (cross-cutting)
+## 6. Auth & account basics (cross-cutting)
 **Persona / account:** any seeded account.
 **Walk:** login, logout, password reset request, edit Account Settings
 (profile fields, contact details), role-aware topbar (model vs client).
@@ -95,7 +128,7 @@ the role; no broken links or confusing back-nav.
 **Score/watch:** friction in returning-user flows; whether edits made here agree
 with the onboarding wizard.
 
-## 6. Marketing / landing pages (polish)
+## 7. Marketing / landing pages (polish)
 **Persona / account:** logged-out visitor.
 **Walk:** General `/`, Models `/p/for-models`, Clients `/p/for-business` — nav
 active states, CTAs, and every link's destination.
