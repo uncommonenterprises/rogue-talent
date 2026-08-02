@@ -106,3 +106,16 @@ Every push to `main` automatically deploys to Railway. Build takes ~5 minutes. C
 ## GitHub
 Repo: https://github.com/uncommonenterprises/rogue-talent
 Push directly to main for now (no PR review process yet).
+GitHub secret scanning + push protection are enabled on the repo.
+
+## Secret hygiene — local setup
+A committed pre-commit hook (`.githooks/pre-commit`) blocks any commit that introduces a
+credential-shaped string (Stripe/Twilio/GitHub/Google/Slack keys, PEM blocks, the Sharetribe
+client secret). It is version-controlled but git needs one command per clone to activate it:
+
+```
+git config core.hooksPath .githooks
+```
+
+Bypass only for a genuine false positive: `git commit --no-verify`. Never disable the hook to
+push a real secret — put the value in `.env` / Railway instead.
