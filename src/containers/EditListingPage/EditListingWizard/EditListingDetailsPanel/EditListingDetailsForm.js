@@ -244,36 +244,76 @@ const FieldSelectCategory = props => {
 };
 
 // Add collect data for listing fields (both publicData and privateData) based on configuration
+// Group the long "Your profile" field list into labelled sections to lower
+// perceived effort on the heaviest wizard step. Keys map to the Console
+// listing-field keys; any eligible field NOT listed here still renders (in a
+// trailing group), so adding/renaming a Console field never makes it disappear.
+const PROFILE_FIELD_SECTIONS = [
+  { id: 'Stats', keys: ['height_cm', 'waist_cm', 'hips_cm', 'bust_chest_cm', 'shoe_size_uk'] },
+  { id: 'Appearance', keys: ['gender', 'hair_colour', 'eye_colour', 'ethnicity'] },
+  { id: 'Work', keys: ['experience_level', 'modelling_categories', 'availability_radius'] },
+  { id: 'Links', keys: ['model_website_url', 'instagram_url'] },
+];
+
 const AddListingFields = props => {
   const { listingType, listingFieldsConfig, selectedCategories, formId, intl } = props;
   const targetCategoryIds = Object.values(selectedCategories);
 
-  const fields = listingFieldsConfig.reduce((pickedFields, fieldConfig) => {
-    const { key, schemaType, scope } = fieldConfig || {};
+  const isEligible = fieldConfig => {
+    const { schemaType, scope } = fieldConfig || {};
+    return (
+      EXTENDED_DATA_SCHEMA_TYPES.includes(schemaType) &&
+      ['public', 'private'].includes(scope) &&
+      isFieldForListingType(listingType, fieldConfig) &&
+      isFieldForCategory(targetCategoryIds, fieldConfig)
+    );
+  };
+
+  const renderField = fieldConfig => {
+    const { key, scope } = fieldConfig;
     const namespacedKey = scope === 'public' ? `pub_${key}` : `priv_${key}`;
+    return (
+      <CustomExtendedDataField
+        key={namespacedKey}
+        name={namespacedKey}
+        fieldConfig={fieldConfig}
+        defaultRequiredMessage={intl.formatMessage({
+          id: 'EditListingDetailsForm.defaultRequiredMessage',
+        })}
+        formId={formId}
+      />
+    );
+  };
 
-    const isKnownSchemaType = EXTENDED_DATA_SCHEMA_TYPES.includes(schemaType);
-    const isProviderScope = ['public', 'private'].includes(scope);
-    const isTargetListingType = isFieldForListingType(listingType, fieldConfig);
-    const isTargetCategory = isFieldForCategory(targetCategoryIds, fieldConfig);
+  const eligible = listingFieldsConfig.filter(isEligible);
+  const byKey = new Map(eligible.map(f => [f.key, f]));
+  const sectionedKeys = new Set();
 
-    return isKnownSchemaType && isProviderScope && isTargetListingType && isTargetCategory
-      ? [
-          ...pickedFields,
-          <CustomExtendedDataField
-            key={namespacedKey}
-            name={namespacedKey}
-            fieldConfig={fieldConfig}
-            defaultRequiredMessage={intl.formatMessage({
-              id: 'EditListingDetailsForm.defaultRequiredMessage',
-            })}
-            formId={formId}
-          />,
-        ]
-      : pickedFields;
-  }, []);
+  const sections = PROFILE_FIELD_SECTIONS.map(section => {
+    const sectionFields = section.keys.map(k => byKey.get(k)).filter(Boolean);
+    sectionFields.forEach(f => sectionedKeys.add(f.key));
+    if (!sectionFields.length) {
+      return null;
+    }
+    return (
+      <div key={section.id} className={css.fieldSection}>
+        <h3 className={css.sectionHeading}>
+          {intl.formatMessage({ id: `EditListingDetailsForm.section${section.id}` })}
+        </h3>
+        {sectionFields.map(renderField)}
+      </div>
+    );
+  }).filter(Boolean);
 
-  return <>{fields}</>;
+  // Fallback: eligible fields not covered by any section (config order preserved).
+  const remainder = eligible.filter(f => !sectionedKeys.has(f.key));
+
+  return (
+    <>
+      {sections}
+      {remainder.map(renderField)}
+    </>
+  );
 };
 
 // Return configuration for given listingType

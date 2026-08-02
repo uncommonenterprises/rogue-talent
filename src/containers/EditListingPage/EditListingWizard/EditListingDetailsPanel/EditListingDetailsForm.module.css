@@ -75,3 +75,15 @@
     margin-top: 100px;
   }
 }
+
+.fieldSection {
+  margin-bottom: 8px;
+}
+
+.sectionHeading {
+  font-weight: var(--fontWeightSemiBold, 600);
+  font-size: 15px;
+  line-height: 24px;
+  margin: 24px 0 8px 0;
+  color: var(--colorGrey700, #4a4a4a);
+}
