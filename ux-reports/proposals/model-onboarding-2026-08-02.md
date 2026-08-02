@@ -16,8 +16,8 @@ Touches:   src/containers/EditListingPage/EditListingWizard/EditListingWizard.js
 Effort:    L
 Impact:    Highest single lever on completion — this is where a fully-completed profile silently fails to submit; likely a large share of finished models never reach review.
 ---
-Status: PENDING
-Note:
+Status: APPROVED
+Note: APPROVED by Neil in chat 2026-08-02 — "approve RT-01 through RT-10 and also RT-11 and RT-12".
 
 ## RT-20260802-02 — No "what happens next" after submit; profile silently stays a draft
 Journey:   Model onboarding
@@ -30,8 +30,8 @@ Touches:   src/containers/EditListingPage/EditListingWizard/EditListingWizard.js
 Impact:    Reduces post-submit anxiety/abandonment and support pings; compounds the value of fixing 01.
 Effort:    M
 ---
-Status: PENDING
-Note:
+Status: APPROVED
+Note: APPROVED by Neil in chat 2026-08-02 — "approve RT-01 through RT-10 and also RT-11 and RT-12".
 
 ## RT-20260802-03 — "Your profile" step is a 14-field wall with no grouping
 Journey:   Model onboarding
@@ -44,8 +44,8 @@ Touches:   src/containers/EditListingPage/EditListingWizard/EditListingDetailsPa
 Impact:    High — this is the heaviest single step; grouping meaningfully cuts drop-off on the longest screen.
 Effort:    M
 ---
-Status: PENDING
-Note:
+Status: APPROVED
+Note: APPROVED by Neil in chat 2026-08-02 — "approve RT-01 through RT-10 and also RT-11 and RT-12".
 
 ## RT-20260802-04 — Email-verification screen is a dead end with no way forward
 Journey:   Model onboarding
@@ -58,8 +58,8 @@ Touches:   src/containers/AuthenticationPage/EmailVerificationInfo.js, src/trans
 Impact:    Med-high — first screen after signup; a perceived dead end here loses people before they ever see the wizard.
 Effort:    S
 ---
-Status: PENDING
-Note:
+Status: APPROVED
+Note: APPROVED by Neil in chat 2026-08-02 — "approve RT-01 through RT-10 and also RT-11 and RT-12".
 
 ## RT-20260802-05 — Model can create multiple orphan draft profiles ("You have 2 listings")
 Journey:   Model onboarding
@@ -72,8 +72,8 @@ Touches:   src/routing/routeConfiguration.js (/l/new handling), src/containers/E
 Impact:    Med — prevents a confusing split-brain state and abandoned half-drafts that look broken.
 Effort:    M
 ---
-Status: PENDING
-Note:
+Status: APPROVED
+Note: APPROVED by Neil in chat 2026-08-02 — "approve RT-01 through RT-10 and also RT-11 and RT-12".
 
 ## RT-20260802-06 — "Your profile" intro promises a bio field that isn't on the step
 Journey:   Model onboarding
@@ -86,8 +86,8 @@ Touches:   src/translations/en.json (EditListingDetailsPanel guidance/subtitle k
 Impact:    Med — removes a broken-feeling promise on the highest-effort step.
 Effort:    S
 ---
-Status: PENDING
-Note:
+Status: APPROVED
+Note: APPROVED by Neil in chat 2026-08-02 — "approve RT-01 through RT-10 and also RT-11 and RT-12".
 
 ## RT-20260802-07 — Signup password field has no requirements hint
 Journey:   Model onboarding
@@ -100,8 +100,8 @@ Touches:   src/containers/AuthenticationPage/SignupForm/SignupForm.js, src/trans
 Impact:    Med — small change, measurable reduction in signup submit errors.
 Effort:    S
 ---
-Status: PENDING
-Note:
+Status: APPROVED
+Note: APPROVED by Neil in chat 2026-08-02 — "approve RT-01 through RT-10 and also RT-11 and RT-12".
 
 ## RT-20260802-08 — New-user admin-approval gate is OFF (contradicts documented policy)
 Journey:   Model onboarding (config observation)
@@ -114,8 +114,8 @@ Touches:   Sharetribe Console (user-approval setting) OR /Users/neildobbins/rogu
 Impact:    Trust/safety and doc-accuracy; no direct completion-rate effect but material to the marketplace's vetting promise.
 Effort:    S
 ---
-Status: PENDING
-Note:
+Status: APPROVED
+Note: APPROVED by Neil in chat 2026-08-02 — "approve RT-01 through RT-10 and also RT-11 and RT-12".
 
 ## RT-20260802-09 — Website & Instagram fields show the wrong placeholder "Write description…"
 Journey:   Model onboarding
@@ -128,8 +128,8 @@ Touches:   Sharetribe Console listing-field config (website, instagram placehold
 Impact:    Low-med — removes a small confusion on two optional fields.
 Effort:    S
 ---
-Status: PENDING
-Note:
+Status: APPROVED
+Note: APPROVED by Neil in chat 2026-08-02 — "approve RT-01 through RT-10 and also RT-11 and RT-12".
 
 ## RT-20260802-10 — Signup "Phone number" field lacks an "(optional)" marker
 Journey:   Model onboarding
@@ -142,8 +142,8 @@ Touches:   Sharetribe Console user-field config (phoneNumber required flag/label
 Impact:    Low — minor clarity on the signup form.
 Effort:    S
 ---
-Status: PENDING
-Note:
+Status: APPROVED
+Note: APPROVED by Neil in chat 2026-08-02 — "approve RT-01 through RT-10 and also RT-11 and RT-12".
 
 ## RT-20260802-11 — Body measurements are all required with no opt-out (hard completion blocker)
 Journey:   Model onboarding
@@ -156,8 +156,8 @@ Touches:   Sharetribe Console listing-field required flags (bust_chest_cm, waist
 Impact:    High — removes an outright completion blocker for the "new face" segment the marketplace most wants to attract.
 Effort:    S (Console flag) + S (opt-out UI if added)
 ---
-Status: PENDING
-Note:
+Status: APPROVED
+Note: APPROVED by Neil in chat 2026-08-02 — "approve RT-01 through RT-10 and also RT-11 and RT-12".
 
 ## RT-20260802-12 — Browser tab title shows literal "{panelHeading}" on the About-you step
 Journey:   Model onboarding
@@ -170,5 +170,5 @@ Touches:   src/containers/EditListingPage/EditListingWizard/EditListingProfilePa
 Impact:    Low — cosmetic, but it's a code-through-the-UI glitch on the very first wizard screen.
 Effort:    S
 ---
-Status: PENDING
-Note:
+Status: APPROVED
+Note: APPROVED by Neil in chat 2026-08-02 — "approve RT-01 through RT-10 and also RT-11 and RT-12".
