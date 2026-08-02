@@ -460,6 +460,7 @@ export const AuthenticationPageComponent = props => {
             <EmailVerificationInfo
               name={user.attributes.profile.firstName}
               email={<span className={css.email}>{user.attributes.email}</span>}
+              isModel={isModel}
               closeLinkName={isModel ? 'NewListingPage' : 'ProfileSettingsPage'}
               onResendVerificationEmail={onResendVerificationEmail}
               resendErrorMessage={

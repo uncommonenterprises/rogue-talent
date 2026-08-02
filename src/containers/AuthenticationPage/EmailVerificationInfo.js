@@ -13,6 +13,8 @@ const EmailVerificationInfo = props => {
     onResendVerificationEmail,
     resendErrorMessage,
     sendVerificationEmailInProgress,
+    isModel,
+    closeLinkName,
   } = props;
 
   const resendEmailLink = (
@@ -27,8 +29,20 @@ const EmailVerificationInfo = props => {
     </NamedLink>
   );
 
-  // Email verification is mandatory — there is no "Later" / close escape. The user
-  // continues by verifying via the emailed link (or can resend / fix the address below).
+  // Verification is a soft nag: a model can start building their profile with an
+  // unverified email (they just can't go live). Offer that forward path so the
+  // screen isn't a dead end. Models only — the client flow is unchanged.
+  const verifyLaterMaybe =
+    isModel && closeLinkName ? (
+      <p className={css.modalHelperText}>
+        <NamedLink className={css.modalHelperLink} name={closeLinkName}>
+          <FormattedMessage id="AuthenticationPage.verifyLaterModelLink" />
+        </NamedLink>
+        <br />
+        <FormattedMessage id="AuthenticationPage.verifyLaterModelNote" />
+      </p>
+    ) : null;
+
   return (
     <div className={css.content}>
       <IconEmailSent className={css.modalIcon} />
@@ -38,6 +52,7 @@ const EmailVerificationInfo = props => {
       <p className={css.modalMessage}>
         <FormattedMessage id="AuthenticationPage.verifyEmailText" values={{ email }} />
       </p>
+      {verifyLaterMaybe}
       {resendErrorMessage}
 
       <div className={css.bottomWrapper}>
