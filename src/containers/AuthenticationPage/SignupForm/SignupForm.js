@@ -197,6 +197,12 @@ const SignupFormComponent = props => (
                 })}
                 validate={passwordValidators}
               />
+              <p className={css.passwordHint}>
+                <FormattedMessage
+                  id="SignupForm.passwordHint"
+                  values={{ minLength: validators.PASSWORD_MIN_LENGTH }}
+                />
+              </p>
 
               <UserFieldPhoneNumber
                 formName="SignupForm"

@@ -44,6 +44,13 @@
   composes: marketplaceModalPasswordMargins from global;
 }
 
+.passwordHint {
+  composes: textXSmall from global;
+  color: var(--colorGrey700, #4a4a4a);
+  margin-top: -12px;
+  margin-bottom: 24px;
+}
+
 .bottomWrapper {
   composes: marketplaceModalBottomWrapper from global;
 }

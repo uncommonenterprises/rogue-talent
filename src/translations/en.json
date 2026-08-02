@@ -1048,6 +1048,7 @@
   "SignupForm.lastNameLabel": "Last name",
   "SignupForm.lastNamePlaceholder": "Doe",
   "SignupForm.lastNameRequired": "You need to add a last name.",
+  "SignupForm.passwordHint": "Use at least {minLength} characters.",
   "SignupForm.passwordLabel": "Password",
   "SignupForm.passwordPlaceholder": "Enter your password…",
   "SignupForm.passwordRequired": "You need to add a password.",
