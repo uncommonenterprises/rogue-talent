@@ -82,6 +82,24 @@ date/price step trustworthy; any Stripe dead ends.
 **Out of scope:** real charges, payout settlement.
 
 ## 4. Cancellation & refund (three tiers, money-risk)  ⚠️
+
+> **Expected result as of 2026-08-02: FAIL — feature not built (ONE gap, not six
+> blockers).** The live `default-booking` process is stock v1. Its only cancel
+> transition is `:transition/cancel`, **operator-only** (`:actor.role/operator`),
+> and it always runs `:action/calculate-full-refund` → `:action/stripe-refund-
+> payment` → `:action/cancel-booking`. So today: neither client nor model can
+> cancel from the UI at all, there is **no partial (50%) refund**, and there is
+> **no time-of-cancellation logic** — the `P1D/P2D/P7D` periods in the process are
+> the booking-window and review-expiry timers, not refund tiers. The three-tier
+> policy lives only in the FAQ/terms.
+>
+> **Therefore: do NOT run this journey in routine PM runs until a custom
+> transaction process implements it.** If it is ever run before then, the agent
+> must file this as a **single** known gap — "cancellation/refund policy is not
+> implemented in the transaction process (stock default-booking, operator-only
+> full-refund cancel)" — and NOT one blocker per tier/side. Building the custom
+> process is a feature, tracked separately; this journey is its acceptance test.
+
 **Why:** this is the flow where a bug costs someone real money. Policy is three
 tiers by lead time before the booking:
 - **>72h before:** full refund to client (no charge to client).
