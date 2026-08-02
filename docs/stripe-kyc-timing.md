@@ -123,9 +123,10 @@ model is bookable.
      + the "you're in — add payout to go live" email), **not** an immediate publish.
    - The model completes Stripe onboarding; the app then publishes the listing — a go-live
      action **gated on `reviewApproved && payoutPresent`**.
-   > **DECISION FLAG:** confirm this mechanism vs. the alternative — native approve = publish,
-   > then hide payout-less models from search until Stripe is done. The recommended one keeps
-   > the listing genuinely unpublished until payout, which is cleaner but more custom.
+   > **DECIDED (Neil, 2026-08-02):** this mechanism — metadata signal + payout-gated publish.
+   > **NOT** approve-then-hide: publishing a listing and then filtering it out of search leaks
+   > through any query path that misses the filter, and makes "live" mean two different
+   > things. One source of truth is worth the extra custom work. Checkout guard stays a backstop.
 3. **Keep the CheckoutPage / listing payout guards as a backstop.** With the go-live gate,
    they should never fire for a searchable model — but leave them as defense in depth so a
    client can never pay into a payout-less model even if a listing slips through.
@@ -148,7 +149,7 @@ model is bookable.
   but a 48-hour window with reminders needs a **custom `default-booking` version** (change
   `:transition/expire` P6D → PT48H) plus reminder infra.
 
-## Open question for whoever implements
+## Resolved
 
-- Confirm the go-live mechanism in step 2 (metadata-signal + payout-gated publish vs.
-  approve-then-hide). This is the one real design fork.
+- Go-live mechanism (step 2): **metadata signal + payout-gated publish** — decided by Neil
+  2026-08-02 (one source of truth; no approve-then-hide). No open design forks remain.

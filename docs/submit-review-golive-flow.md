@@ -117,8 +117,8 @@ Full detail + verification in `docs/stripe-kyc-timing.md`. The shape:
 - **Build:** submit stops gating on payout (Part A); operator approval becomes a signal
   (metadata + email), not an instant publish; the model completes Stripe; the app then
   publishes, **gated on `reviewApproved && payoutPresent`**. Keep the CheckoutPage guard as a
-  backstop. (See `stripe-kyc-timing.md` "What it would take to build" — incl. the one open
-  DECISION FLAG on the publish mechanism.)
+  backstop. **DECIDED (Neil, 2026-08-02):** this mechanism, not approve-then-hide — one source
+  of truth for "live". (See `stripe-kyc-timing.md` "What it would take to build".)
 
 ## 5b. Part D2 — Booking = request → accept/decline, within 48 hours
 
@@ -136,26 +136,30 @@ and fast, unlike the agency round-trip. Verified against `default-booking` v1:
   and push a new `default-booking` version via flex-cli. 48h is well under Stripe's ~7-day
   authorisation-hold ceiling, so the hold never lapses first.
 
-**Target: resolve within 48 hours** (accept / decline / auto-release), with reminders. What
-each party sees:
+**Target: resolve within 48 hours — or before the shoot date, whichever is sooner** (accept /
+decline / auto-release), with reminders. What each party sees:
 
 | Moment | Client sees | Model sees |
 |---|---|---|
-| Request sent (`preauthorized`) | "Request sent — [Model] has 48 hours to respond. Your card is **authorised, not charged** — you're only charged if they accept." | "New booking request — [dates, amount]. Respond within 48h: **Accept** / **Decline**." |
+| Request sent (`preauthorized`) | "Request sent — [Model] has **48 hours (or until your shoot date, if that's sooner)** to respond. Your card is **authorised, not charged** — you're only charged if they accept." | "New booking request — [dates, amount]. Respond within **48h (or before the shoot, if sooner)**: **Accept** / **Decline**." |
 | Reminders (e.g. 24h, 40h left) | (optional) "Still waiting on [Model]." | "⏳ N hours left to respond to [Client]'s request." |
 | **Accept** | "Confirmed! Charged £X." (`booking-accepted-request`) | "You accepted — £X will pay out after the shoot." |
 | **Decline** | "[Model] can't take this one — **no charge**, your hold is released. Here are similar models." (`booking-declined-request`) | Request closed. |
 | **Expiry (no response in 48h)** | "[Model] didn't respond in time — **no charge**, hold released. Try another model." (`booking-expired-request`) | Missed request (feeds a future responsiveness signal). |
 
-- **Reminders** aren't a stock feature (notifications fire on transitions, not on a timer).
-  Build them via the **events API / a scheduled job** (query `preauthorized` transactions,
-  email at thresholds) — cleaner than adding reminder transitions. Flag as custom infra.
-- **Note for the client:** the hold ties up the authorised amount on their card for up to
-  48h. That's standard for auth-and-capture, but the copy should say "authorised, not
-  charged" so it's never a surprise.
-- **Why the claim is true:** the 48h `expire` guarantees the client is never left hanging —
-  worst case, the hold auto-releases at 48h with no charge. "Hear back in 48 hours, not next
-  week" holds because the *system* resolves it even if the model goes silent.
+- **Build the 48h window FIRST; reminders are a fast-follow (decided).** The `expire` is what
+  makes the claim true; reminders (24h + 40h) only lift accept rates. Do NOT let the custom,
+  events-based scheduled-job reminder infra block the process change — ship the window, add
+  reminders after.
+- **Reminders** aren't a stock feature (notifications fire on transitions, not on a timer):
+  an events API / scheduled job querying `preauthorized` transactions, emailing at 24h and 40h.
+- **Note for the client:** the hold ties up the authorised amount on their card until the
+  request resolves. Copy must say "authorised, not charged" so it's never a surprise.
+- **The public claim must be EXACTLY true.** Because `expire = min(preauthorized + 48h,
+  booking-start)`, a client requesting a shoot 12h out does **not** get 48 hours. Any
+  marketing or UI copy must read **"within 48 hours, or before the shoot date if sooner"** —
+  never a bare "48 hours". The `expire` still guarantees resolution (accept / decline /
+  auto-release, no charge) even if the model goes silent, so the claim holds.
 
 ## 6. Part E — The three emails
 
@@ -192,12 +196,14 @@ the originating IDs so they remain traceable:
    "you're in — add payout to go live" screen. (Confirm the DECISION FLAG mechanism first.)
 4. (Console + emails are operator/infra tasks, tracked here but done outside the repo.)
 
-**Separate workstream — the 48h booking window (Part D2).** Not part of the go-live change:
-it's a custom `default-booking` version (`:transition/expire` → 48h) pushed via flex-cli,
-plus reminder infra (events-based). Sequence it after go-live lands, since it needs live,
-bookable models to test against. This is also where the **cancellation/refund custom process**
-(`docs/cancellation-process-spec.md`) would land — both are transaction-process changes and
-should be designed together to avoid two competing custom versions.
+**Separate workstream — the 48h booking window (Part D2).** A custom `default-booking` version
+(`:transition/expire` → `min(preauthorized + 48h, booking-start)`) pushed via flex-cli.
+**Reminders (24h/40h) are a fast-follow, not a blocker** — ship the window first (the expire
+is what makes the claim true), add the events-based reminder job after. Sequence after go-live
+(needs live, bookable models to test). Design this **together with the cancellation/refund
+custom process** (`docs/cancellation-process-spec.md`) — **one** process version, not two.
+**Consequence:** the OPEN commercial questions in `cancellation-process-spec.md` now block the
+booking process work and move up the priority list.
 
 Part B's in-app UX needs no code (already built); it's the Console toggle plus the emails.
 
