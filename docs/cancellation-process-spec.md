@@ -1,10 +1,12 @@
 # Cancellation & refund — transaction-process spec (DRAFT)
 
-**Status: READY TO DESIGN.** The commercial decisions are RESOLVED (§7, Neil 2026-08-06) —
-the refund math is fully specified. Next step is the engineering design: **one** custom
-`default-booking` version carrying **both** the 48h request/accept window
-(`docs/submit-review-golive-flow.md` Part D2) **and** these cancellation tiers. Do not push a
-process version until that combined design is written and Neil okays it.
+**Status: BLOCKED on one decision.** Commercial refund math is RESOLVED (§7, Neil 2026-08-06),
+but validation (§5, 2026-08-06) found stock Sharetribe **cannot do the 50% partial refund** —
+it needs custom server-side Stripe work (Route 1), OR we drop to a stock-only **two-tier**
+policy. **Neil must pick that before the combined design is finalised.** Then: **one** custom
+`default-booking` version carrying both the 48h request/accept window
+(`docs/submit-review-golive-flow.md` Part D2) and the cancellation tiers. Do not push a process
+version until the design is written and Neil okays it.
 
 ---
 
@@ -81,27 +83,44 @@ Notes:
   whether the model faces a penalty/reliability consequence is an **open question**.
 - Operator keeps an override cancel from every state for support cases.
 
-## 5. The partial-refund action — the hard engineering bit
-Sharetribe's stock library gives `:action/calculate-full-refund` +
-`:action/stripe-refund-payment`. There is **no built-in "refund 50%"**. Two
-implementation routes — flag both to validate against the current Sharetribe action
-set before building:
+## 5. The partial-refund mechanism — VALIDATED: stock can't do it; the 50% tier needs custom Stripe
 
-- **Option A (recommended): tier encoded in state (above).** The 50% state's cancel
-  transition needs a partial-refund mechanism — most likely computing a refund
-  amount from the captured total and issuing it via `stripe-refund-payment`, or
-  restructuring line items so the retained 50% is a "cancellation fee" line item.
-  Exact action availability must be confirmed (this is the single biggest
-  engineering unknown).
-- **Option B: app-computed tier via a privileged transition.** One cancel
-  transition; the trusted server computes the tier from booking start + now and
-  sets refund/fee line items via `:action/privileged-set-line-items`. Simpler graph,
-  but the tier decision moves into our code and MUST be a **privileged/trusted**
-  transition so a user can't force the cheaper tier. Also weaker as an audit trail.
+**Validated 2026-08-06** against Sharetribe's action reference + payments docs + help centre:
+- The only refund action is `:action/stripe-refund-payment` = **full refund** of the captured
+  payment. `:action/calculate-full-refund` zeroes the whole transaction and takes **no
+  config**. **There is no partial/percentage refund action.**
+- Our flow **captures at provider accept**, so by the time anyone cancels a *confirmed*
+  booking the money is already captured — and a captured payment can only be **fully** refunded
+  by stock actions. Sharetribe docs, verbatim: *"Partial refunds are not currently supported by
+  the default Stripe integration."*
 
-Recommendation: **Option A** for enforceability, if a partial refund can be
-expressed cleanly; fall back to B if not. Either way, the **refund base** (what the
-50% is 50% *of*) is a commercial decision — see below.
+**⇒ The 50% tier cannot be built with stock actions alone.** The >72h (full refund) and <24h
+(no refund) tiers are trivial (`calculate-full-refund` + `stripe-refund-payment`, or just
+`cancel-booking`). The **24–72h 50% tier is the hard part** and forces one of:
+
+- **Route 1 — Custom server-side partial refund (recommended).** Stripe *itself* does partial
+  refunds (`refunds.create({ payment_intent, amount })`); only Sharetribe's stock *action*
+  doesn't. So the 50% cancel transition does **not** use `stripe-refund-payment`; instead our
+  own server (marketplace-event/webhook listener + Integration API) issues the partial refund
+  directly via Stripe, and `:action/privileged-set-line-items` rewrites the breakdown so
+  Sharetribe's books reconcile (client −£86.25, model +£75, RT +£11.25). The retained-portion
+  **payout to the model** must also be handled. **This is custom server code + Stripe API +
+  reconciliation — not just a flex-cli EDN push.**
+- **Route 2 — Full refund + separate re-charge.** Refund 100% (stock), then charge a *new*
+  PaymentIntent for the £86.25. Stock-only, but = **two charges on the client's statement** and
+  an **off-session charge that can hit SCA and fail** (client not present). Fragile for a
+  money-critical flow.
+- **Route 3 — Deferred capture.** Rejected: only works inside Stripe's ~7-day auth window and
+  still needs partial *capture* (also not in stock).
+
+**Recommendation: Route 1** — the clean, correct mechanism serious marketplaces use — but be
+clear-eyed that it upgrades this workstream from "push a custom process version" to "custom
+process **plus** a server-side partial-refund + payout-reconciliation component."
+
+> **NEW DECISION (Neil):** given the true cost of the 50% tier, do we (a) commit to Route 1's
+> custom Stripe work, or (b) drop to a **two-tier** policy for v1 — full refund before a cutoff,
+> no refund after — which needs **no** partial refund and is entirely stock? The three-tier
+> policy is a real build; two-tier ships far sooner.
 
 ## 6. Notifications & payout implications (engineering, but policy-adjacent)
 - New email templates per cancel path (customer-cancelled, provider-cancelled,
