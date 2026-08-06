@@ -1,12 +1,11 @@
 # Cancellation & refund — transaction-process spec (DRAFT)
 
-**Status: BLOCKED on one decision.** Commercial refund math is RESOLVED (§7, Neil 2026-08-06),
-but validation (§5, 2026-08-06) found stock Sharetribe **cannot do the 50% partial refund** —
-it needs custom server-side Stripe work (Route 1), OR we drop to a stock-only **two-tier**
-policy. **Neil must pick that before the combined design is finalised.** Then: **one** custom
-`default-booking` version carrying both the 48h request/accept window
-(`docs/submit-review-golive-flow.md` Part D2) and the cancellation tiers. Do not push a process
-version until the design is written and Neil okays it.
+**Status: v1 = TWO-TIER (Neil, 2026-08-06).** Full refund before a cutoff, no refund after —
+**stock-only**, no partial-refund work. The 50% middle tier is deferred to `docs/roadmap.md`
+(the resolved §7 math is kept for when it's built). One parameter still open: **the single
+cutoff** (see §4). Once picked → design the **one** custom `default-booking` version carrying
+both the 48h request/accept window (`docs/submit-review-golive-flow.md` Part D2) and this
+two-tier cancellation. Do not push a process version until the design is written and Neil okays it.
 
 ---
 
@@ -117,10 +116,11 @@ Notes:
 clear-eyed that it upgrades this workstream from "push a custom process version" to "custom
 process **plus** a server-side partial-refund + payout-reconciliation component."
 
-> **NEW DECISION (Neil):** given the true cost of the 50% tier, do we (a) commit to Route 1's
-> custom Stripe work, or (b) drop to a **two-tier** policy for v1 — full refund before a cutoff,
-> no refund after — which needs **no** partial refund and is entirely stock? The three-tier
-> policy is a real build; two-tier ships far sooner.
+> **DECIDED (Neil, 2026-08-06): option (b) — v1 ships a stock-only TWO-tier policy** (full
+> refund before the cutoff, no refund after). Route 1's custom partial-refund work is deferred
+> to `docs/roadmap.md` ("Cancellation policy — add the 50% tier"). So v1 uses only
+> `calculate-full-refund` + `stripe-refund-payment` (full-refund tier) and `cancel-booking`
+> (no-refund tier) — no custom Stripe component, no partial refund.
 
 ## 6. Notifications & payout implications (engineering, but policy-adjacent)
 - New email templates per cancel path (customer-cancelled, provider-cancelled,
@@ -149,6 +149,11 @@ process **plus** a server-side partial-refund + payout-reconciliation component.
 | **>72h — full refund** | £172.50 | £0 | £0 | £0 |
 | **24–72h — 50%** | £86.25 | £86.25 | £75 | £11.25 |
 | **<24h — full charge** | £0 | £172.50 | £150 | £22.50 |
+
+> **v1 SCOPE (Neil, 2026-08-06):** v1 ships only the **full-refund** and **no-refund** tiers
+> (two-tier — stock-only). The **24–72h 50% row is deferred** to `docs/roadmap.md`; its math
+> below is retained for when it's built. v1 collapses to a **single cutoff** (see §4) — full
+> refund before it, no refund after.
 
 - **The 50% tier (Q1/Q2/Q3/Q7):** model gets **50% of the rate** (£75), with nothing skimmed.
   RT's **fee scales to the amount actually charged** — 15% of £75 = £11.25 — so the customer
