@@ -2,10 +2,10 @@
 
 **Status: v1 = TWO-TIER (Neil, 2026-08-06).** Full refund before a cutoff, no refund after —
 **stock-only**, no partial-refund work. The 50% middle tier is deferred to `docs/roadmap.md`
-(the resolved §7 math is kept for when it's built). One parameter still open: **the single
-cutoff** (see §4). Once picked → design the **one** custom `default-booking` version carrying
-both the 48h request/accept window (`docs/submit-review-golive-flow.md` Part D2) and this
-two-tier cancellation. Do not push a process version until the design is written and Neil okays it.
+(the resolved §7 math is kept for when it's built). Cutoff = **48h before the shoot** (Neil, 2026-08-06). The **one** custom `default-booking`
+version carrying both the 48h request/accept window (`docs/submit-review-golive-flow.md`
+Part D2) and this two-tier cancellation is designed in `docs/booking-process-design.md`. Do not
+push a process version until Neil okays that design.
 
 ---
 
@@ -152,8 +152,11 @@ process **plus** a server-side partial-refund + payout-reconciliation component.
 
 > **v1 SCOPE (Neil, 2026-08-06):** v1 ships only the **full-refund** and **no-refund** tiers
 > (two-tier — stock-only). The **24–72h 50% row is deferred** to `docs/roadmap.md`; its math
-> below is retained for when it's built. v1 collapses to a **single cutoff** (see §4) — full
-> refund before it, no refund after.
+> below is retained for when it's built. **Cutoff = 48h before the shoot (Neil, 2026-08-06):
+> client cancels ≥48h before booking-start → full refund; <48h → no refund.** Boundary favours
+> the client (exactly 48h = full refund). NOTE: this two-tier rule applies to **customer**
+> cancellations; a **provider** cancellation is always a full refund to the client regardless
+> of timing (Q5). The concrete state machine is in `docs/booking-process-design.md`.
 
 - **The 50% tier (Q1/Q2/Q3/Q7):** model gets **50% of the rate** (£75), with nothing skimmed.
   RT's **fee scales to the amount actually charged** — 15% of £75 = £11.25 — so the customer
