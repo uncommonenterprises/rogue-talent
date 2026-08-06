@@ -1,9 +1,10 @@
 # Cancellation & refund — transaction-process spec (DRAFT)
 
-**Status: DRAFT SPEC. Do NOT build yet.** Several refund/commission rules are
-**commercial decisions Neil must make** (see "Open commercial questions"). Nothing
-here is decided; the engineering can't start until those are answered, because the
-money math is the spec, not an implementation detail.
+**Status: READY TO DESIGN.** The commercial decisions are RESOLVED (§7, Neil 2026-08-06) —
+the refund math is fully specified. Next step is the engineering design: **one** custom
+`default-booking` version carrying **both** the 48h request/accept window
+(`docs/submit-review-golive-flow.md` Part D2) **and** these cancellation tiers. Do not push a
+process version until that combined design is written and Neil okays it.
 
 ---
 
@@ -111,40 +112,43 @@ expressed cleanly; fall back to B if not. Either way, the **refund base** (what 
 
 ---
 
-## 7. OPEN commercial questions — Neil to answer before any build
+## 7. Commercial decisions — RESOLVED
 
-> ✅ **Q0 RESOLVED (Neil, 2026-08-02):** the commission model for cancellations is
-> the current one — **15% customer booking fee only, 0% provider commission, model
-> keeps 100% of their rate.** The questions below are framed against that model.
-> There is no provider commission and no "5% customer fee" — that was the pre-19-July
-> split and does not apply.
+> ✅ **Q0 RESOLVED (Neil, 2026-08-02):** commission model = **15% customer booking fee
+> only, 0% provider, model keeps 100% of their rate.**
+>
+> ✅ **Q1–Q8 RESOLVED (Neil, chat 2026-08-06)** — verbatim: *"the 50% tier = your
+> recommendation / Q4 - agree / Q5 - I agree with your proposal / Q6 - agree / Q8 - agree"*.
 
-1. **On a 50% charge, does Rogue Talent still take its 15% customer fee, and on
-   what base?** (15% of the full booking value? 15% of the 50% actually charged? Or
-   is the fee waived on cancellations?)
-2. **Does the model receive the full 50% of their rate?** (0% provider commission,
-   so no deduction on that side — confirm the model simply gets 50% of their day
-   rate, with nothing skimmed.)
-3. **Is the client's 15% customer booking fee refunded — fully, proportionally, or
-   not at all?** (Refunded in the >72h full-refund case? Kept as a non-refundable
-   service charge? Proportionally refunded in the 50% case?)
-4. **Boundary behaviour — exactly at 72h and at 24h.** Is `booking-start − 72h`
-   inclusive of the better tier or the worse one (i.e. is *exactly* 72h a full
-   refund or a 50% charge)? Same at 24h. Needs to be a strict rule, not "about".
-5. **Can a model cancel at all, and with what consequence?** Today neither side can.
-   If the model can cancel: does the client always get a full refund (assumed
-   above)? Does the model incur a penalty, a fee, or a reliability/ranking
-   consequence? Is there a threshold (e.g. N cancellations → suspension)?
-6. **Can the client cancel in the <24h window at all**, or only request an
-   operator-handled exception? (The table allows a no-refund self-cancel; confirm
-   that's desired vs forcing support contact.)
-7. **What is the refund "base"** in every tier — the model's rate only, or the rate
-   **plus** the customer fee? This determines the actual pounds refunded and must be
-   pinned down before the partial-refund action can be written.
-8. **Currency/rounding** on a 50% split (e.g. odd-penny amounts) — round in whose
-   favour?
+**Worked reference:** a 1-day booking at a £150 rate → client pays £150 + £22.50 (15% fee)
+= **£172.50**; model keeps **£150**; RT keeps **£22.50**.
 
-## 8. Engineering tasks (only after §7 is answered)
+**The three tiers (by lead time before booking start):**
+
+| Tier | Client refunded | Client net cost | Model receives | RT keeps |
+|---|---|---|---|---|
+| **>72h — full refund** | £172.50 | £0 | £0 | £0 |
+| **24–72h — 50%** | £86.25 | £86.25 | £75 | £11.25 |
+| **<24h — full charge** | £0 | £172.50 | £150 | £22.50 |
+
+- **The 50% tier (Q1/Q2/Q3/Q7):** model gets **50% of the rate** (£75), with nothing skimmed.
+  RT's **fee scales to the amount actually charged** — 15% of £75 = £11.25 — so the customer
+  fee is **refunded proportionally** (the client gets back half the fee). Refund base = the
+  rate, fee computed on the charged portion. (NOT the "fee non-refundable" alternative.)
+- **Boundaries (Q4):** favour the client. **≥72h = full refund; 24h up to <72h = 50%; <24h =
+  full charge.** Exactly 72h → full refund; exactly 24h → 50%.
+- **Model-initiated cancellation (Q5):** a model MAY cancel; the **client always gets a 100%
+  refund** (fee included) regardless of timing, and the model receives nothing. Each model
+  cancellation is **recorded as a reliability signal** (surfaced to ops; no automatic penalty
+  in v1; a suspension threshold is a later refinement).
+- **Client cancel in the <24h window (Q6):** allowed as a **self-serve, no-refund** cancel
+  (no forced support contact).
+- **Rounding (Q8):** round any split **in the client's favour** (refunds rounded up to the
+  nearest penny).
+
+This fully specifies the refund math for the partial-refund action — §8 engineering can proceed.
+
+## 8. Engineering tasks (§7 resolved — ready to design)
 - Validate the partial-refund mechanism against the current Sharetribe action set
   (Option A vs B).
 - Author the custom process (`cancellation-booking` or a new `default-booking`
