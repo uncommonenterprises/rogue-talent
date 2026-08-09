@@ -34,4 +34,18 @@ lever — vs. the v1 cliff from full refund to no refund at a single cutoff.
 
 ---
 
+## Payout release — automate when manual release stops scaling
+
+**Logged 2026-08-09 (Neil).** v1 pays out via **operator-release** (`operator-complete` on the
+daily working-day check), with a `P5D` auto-payout backstop — this is what lets us market "usually
+the next working day, always within five working days". **Manual release does not scale.** At some
+booking volume, releasing each payout by hand becomes the bottleneck, and the choice is either:
+- an **ops hire** (someone runs the daily release + dispute check), or
+- a **fixed auto-payout interval** (drop operator-release; accept "within N working days" as the
+  promise instead of "usually next working day").
+
+**Not now** — at launch volume manual release is fine and the wedge is worth the touch. Logged so
+the transition is a planned decision, not a surprise when volume climbs. Trigger to revisit: when
+daily payout releases become a material time cost or start slipping the "within five" backstop.
+
 ## (add future deferred features below)

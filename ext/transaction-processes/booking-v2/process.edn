@@ -149,7 +149,7 @@
   {:name :transition/auto-payout,
    :at
    {:fn/plus
-    [{:fn/timepoint [:time/booking-end]} {:fn/period ["P2D"]}]},
+    [{:fn/timepoint [:time/booking-end]} {:fn/period ["P5D"]}]},
    :actions [{:name :action/stripe-create-payout}],
    :from :state/completed,
    :to :state/delivered}
@@ -195,7 +195,7 @@
   {:name :transition/payout-cancelled-charged,
    :at
    {:fn/plus
-    [{:fn/timepoint [:time/booking-end]} {:fn/period ["P2D"]}]},
+    [{:fn/timepoint [:time/booking-end]} {:fn/period ["P5D"]}]},
    :actions [{:name :action/stripe-create-payout}],
    :from :state/cancelled-charged,
    :to :state/cancelled-charged-paid}

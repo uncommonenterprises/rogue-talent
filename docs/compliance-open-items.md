@@ -54,6 +54,31 @@ low-volume models, but you must still have the data to know); the treatment of *
 and whether **collection can wait until first payout** vs. must be at onboarding. Do **not** design
 the reporting submission — that's the accountant's.
 
+### Stripe `tax_reporting` preview access — request + fallback
+
+**Requesting preview access (Neil's action).** Stripe's Platform tax reporting for Connect is in
+preview. To request:
+- **Easiest:** message your Stripe account manager / Stripe Support from the Stripe Dashboard and
+  say: *"We operate a UK Connect platform (marketplace paying self-employed UK models) and need
+  UK DAC7 / MRDP seller reporting. Please enable the `connect_global_tax_reporting_beta_preview`
+  (Platform tax reporting for Connect) on our account, with the `tax_reporting` additional
+  verification for connected accounts."*
+- **Or the on-page request form** on the [Stripe doc](https://docs.stripe.com/connect/platform-tax-reporting?locale=en-GB)
+  ("Request early access"), which registers your email against preview
+  `connect_global_tax_reporting_beta_preview`.
+- Ask them to confirm: **UK coverage is production-ready on our timeline**, the collected data set
+  **satisfies UK MRDP**, and **who files** (Stripe generates the XML; confirm the submit-to-HMRC
+  step is ours).
+
+**Fallback if access ISN'T granted before launch (documented, DO NOT build unless needed).** We
+revert to the original plan: **we collect the DAC7 fields ourselves** at the go-live step — TIN
+(NI/UTR), residence address, tax residence, optional VAT — stored as **private/protected data**,
+gated so payout can't complete without a TIN on file; the accountant handles the actual HMRC
+submission from our data. This is the retrofit-hostile path (holds the NI number ourselves, larger
+GDPR surface, an ID-document/retention policy needed), which is exactly why Stripe-collects is
+preferred. Keep DOB-at-signup either way (age gate). Trigger to build the fallback: Stripe preview
+not granted ~4 weeks before target launch.
+
 ## 2. VAT on the 15% booking fee — the question for an accountant
 
 Do not decide — this is an accountant question and it **affects the headline "one flat 15% fee"
@@ -164,9 +189,15 @@ then set the timepoint to match — not the reverse.
   a `P5D` backstop** for anything ops didn't reach. Then the **model is paid the *next working day*
   after the shoot** in the normal case (the punchy wedge), with a safe guaranteed fallback. Cost:
   the operator releases each payout (fine at launch volume; automate later).
-- **Decision for Neil (not changed yet):** market **(a)** "paid the next working day" via
-  operator-release + `P5D` backstop (recommended — fastest, a bit more ops touch), or **(b)** a
-  fixed "within N days" via `P4D`/`P5D` auto (simpler, slower). Then I set the timepoint(s) to match.
+- **✅ DECIDED (Neil 2026-08-09): option (a).** Auto-payout backstop = **`P5D`** (set in the
+  booking-v2 EDN); **`operator-complete`** is the normal release path (operator releases on the
+  next working-day check).
+- **Canonical customer/model-facing line — use verbatim, everywhere:**
+  > **Usually the next working day, always within five working days.**
+  Neil's reasoning: both halves are true, it still beats every comparable, and it degrades
+  gracefully on his days off (he won't promise a guarantee he can personally miss). The **copy
+  audit must enforce this exact wording** on the pricing page and all model-facing pages, and flag
+  any "instant" / "24 hours" / bare "next working day" phrasing that over-promises.
 
 ## Priority order of these
 1. **DAC7 collection fields** — blocks the shape of model onboarding; retrofit-hostile. Get the

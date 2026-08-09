@@ -29,10 +29,13 @@ preauthorized → accept/decline). Three areas change:
 2. **Cancellation is rebuilt** from a single operator-only full-refund cancel into a two-tier
    customer cancel + always-full-refund provider cancel + operator override, using a time-gated
    state so the process itself enforces the tier.
-3. **Payout is split from shoot-completion, opening a dispute window.** `complete` no longer
-   pays out; it moves to `completed` at `booking-end`, and `auto-payout` fires 2 days later.
-   That gap is an operator dispute/no-show window (§3b) — the old design paid out at `complete`,
-   leaving no room to intervene.
+3. **Payout is split from shoot-completion; the operator normally releases it, with a P5D backstop.**
+   `complete` moves to `completed` at `booking-end` with **no payout**. The **operator releases
+   payout on their next working-day check** (`operator-complete`) once no dispute is open — so the
+   model is normally paid **the next working day**. `auto-payout` is a **`booking-end + P5D`
+   backstop** that fires only if the operator hasn't acted, so payout never stalls when Neil is
+   away. That `completed → paid` gap is also the dispute/no-show window (§3b). **Model promise
+   (Neil 2026-08-09): "usually the next working day, always within five working days."**
 
 **All actions used are stock** — `calculate-full-refund`, `stripe-refund-payment`,
 `cancel-booking`, `stripe-create-payout`, `update-protected-data`. **No partial refund, no
@@ -48,7 +51,7 @@ custom Stripe** (that's the deferred 50% tier — `docs/roadmap.md`).
 | **`cancelled`** | cancelled with the client **fully refunded** (customer ≥48h, any provider cancel, operator override). Terminal. |
 | **`cancelled-charged`** | customer cancelled **<48h** — no refund; the model is still owed payout. |
 | **`cancelled-charged-paid`** | model paid out after a no-refund cancel. Terminal. No reviews. |
-| **`completed`** | shoot date passed (`booking-end`); **payout pending** — the 2-day dispute window. |
+| **`completed`** | shoot date passed (`booking-end`); **payout pending**. Operator normally releases the next working day (`operator-complete`); **`P5D` auto-payout backstop**. Also the dispute window. |
 | **`disputed-hold`** | operator paused the payout to investigate a dispute/no-show. |
 | **`refunded-dispute`** | operator refunded the client on a dispute/no-show. Terminal. |
 | `delivered` → `reviewed-*` → `reviewed` | payout made; reviews. stock (now entered via `auto-payout`, not `complete`). |
@@ -67,28 +70,31 @@ custom Stripe** (that's the deferred 50% tier — `docs/roadmap.md`).
 | `operator-cancel-late` *(new)* | operator | accepted-late → cancelled | calculate-full-refund, stripe-refund-payment, cancel-booking |
 | `complete` *(changed — no payout)* | auto `booking-end` | accepted → completed | *(none)* |
 | `complete-late` *(new)* | auto `booking-end` | accepted-late → completed | *(none)* |
-| `auto-payout` *(new)* | auto `booking-end + P2D` | completed → delivered | stripe-create-payout |
-| `payout-cancelled-charged` *(new)* | auto `booking-end + P2D` | cancelled-charged → cancelled-charged-paid | stripe-create-payout |
+| `auto-payout` *(new)* | auto `booking-end + P5D` | completed → delivered | stripe-create-payout |
+| `payout-cancelled-charged` *(new)* | auto `booking-end + P5D` | cancelled-charged → cancelled-charged-paid | stripe-create-payout |
 
 Key points:
 - **Provider cancel is always a full refund to the client**, in both `accepted` and
   `accepted-late` (Q5). The model gets nothing; the transition captures a **reason** and routes
   it (§5).
 - **No-refund customer cancel keeps the captured money and still pays the model** — routed
-  through `cancelled-charged → cancelled-charged-paid`, payout at **`booking-end + P2D`**
+  through `cancelled-charged → cancelled-charged-paid`, payout at **`booking-end + P5D`**
   (kept deliberately, not immediate — Neil 2026-08-06: consistency + keeps the dispute window
   meaningful).
 - **Payout is now split from shoot-completion.** `complete` fires at `booking-end` into a new
-  `completed` state with **no payout**; `auto-payout` fires 2 days later. That 2-day gap is the
-  **real dispute window** (§3b) — the operator can act *before* the model is paid, which the old
-  "payout-at-complete" design didn't allow.
+  `completed` state with **no payout**. **The operator releases payout on the next working-day
+  check** (`operator-complete`) — the normal, fast path (the wedge). `auto-payout` at **`P5D`** is
+  only the **backstop** for bookings the operator didn't reach (e.g. days off), so payout never
+  stalls. That window is where the operator can act *before* the model is paid — the old
+  "payout-at-complete" design didn't allow it.
 - `accepted-late` gets its own `complete-late` because a Sharetribe transition has a single
   `:from`. Reviews are unchanged — they still run from `delivered` (now = post-payout).
 
 ## 3b. Dispute / no-show path (new — addition 1)
 
-The 2-day `completed → delivered` window is where the operator intervenes. From `completed`
-(before `auto-payout` fires):
+The `completed → delivered` window — operator normally releases the next working day
+(`operator-complete`), `P5D` auto-payout backstop — is where the operator intervenes. From
+`completed` (before `auto-payout` fires):
 
 | Transition | Actor | From → To | Actions |
 |---|---|---|---|
@@ -109,7 +115,7 @@ The 2-day `completed → delivered` window is where the operator intervenes. Fro
   clean **full-refund** or **full-payout**; partial is manual + flagged.
 - For symmetry, the operator also gets a full-refund override from `cancelled-charged` before
   its payout (`operator-cancel-charged` → refunded-dispute) so a disputed no-refund cancel is
-  also reachable. (Same P2D window.)
+  also reachable. (Same P5D window.)
 
 ## 4. Notifications (emails)
 
@@ -168,13 +174,17 @@ Pushing the process is ~⅓ of the work. Also needed:
    expressions valid). This is the first gate: it proves the design is buildable.
 2. **Automatic transition with a past `:at`** — the `enter-late` case for sub-48h bookings must
    fire immediately as assumed; also the split `complete`(booking-end) → `auto-payout`
-   (booking-end+P2D) timing. Behavioural, needs a live transaction to fully confirm.
+   (booking-end+P5D) timing. Behavioural, needs a live transaction to fully confirm.
 3. **Payout on the `cancelled-charged` and `disputed-hold → delivered` paths** — confirm
    `stripe-create-payout` pays the model correctly for a captured-but-cancelled / held booking.
    Behavioural.
 
-**Payout timing on a no-refund cancel: `booking-end + P2D`** (Neil 2026-08-06 — kept, not
-immediate: consistency + a meaningful dispute window now that §3b exists).
+**Payout timing (Neil 2026-08-09):** the **operator releases payout on their next working-day
+check** (`operator-complete`) — the marketed path. `auto-payout` / `payout-cancelled-charged` at
+**`booking-end + P5D`** are the **backstop** so payout never stalls when the operator is away. P5D
+is the smallest fixed interval that a weekday-only check can safely sit behind (survives a
+bank-holiday long weekend). **Public promise: "usually the next working day, always within five
+working days."** Copy on pricing + model-facing pages must match this exactly (copy audit).
 
 ## 8. Out of scope (here)
 - The 50% middle tier (`docs/roadmap.md`).
