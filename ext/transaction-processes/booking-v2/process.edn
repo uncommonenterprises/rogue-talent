@@ -1,0 +1,311 @@
+{:format :v3,
+ :transitions
+ [{:name :transition/inquire,
+   :actor :actor.role/customer,
+   :actions [{:name :action/update-protected-data}],
+   :to :state/inquiry}
+  {:name :transition/request-payment,
+   :actor :actor.role/customer,
+   :actions
+   [{:name :action/update-protected-data}
+    {:name :action/create-pending-booking, :config {:type :time}}
+    {:name :action/privileged-set-line-items}
+    {:name :action/stripe-create-payment-intent}],
+   :to :state/pending-payment,
+   :privileged? true}
+  {:name :transition/request-payment-after-inquiry,
+   :actor :actor.role/customer,
+   :actions
+   [{:name :action/update-protected-data}
+    {:name :action/create-pending-booking, :config {:type :time}}
+    {:name :action/privileged-set-line-items}
+    {:name :action/stripe-create-payment-intent}],
+   :from :state/inquiry,
+   :to :state/pending-payment,
+   :privileged? true}
+  {:name :transition/expire-payment,
+   :at
+   {:fn/plus
+    [{:fn/timepoint [:time/first-entered-state :state/pending-payment]}
+     {:fn/period ["PT15M"]}]},
+   :actions
+   [{:name :action/calculate-full-refund}
+    {:name :action/stripe-refund-payment}
+    {:name :action/decline-booking}],
+   :from :state/pending-payment,
+   :to :state/payment-expired}
+  {:name :transition/confirm-payment,
+   :actor :actor.role/customer,
+   :actions [{:name :action/stripe-confirm-payment-intent}],
+   :from :state/pending-payment,
+   :to :state/preauthorized}
+  {:name :transition/accept,
+   :actor :actor.role/provider,
+   :actions
+   [{:name :action/accept-booking}
+    {:name :action/stripe-capture-payment-intent}],
+   :from :state/preauthorized,
+   :to :state/accepted}
+  {:name :transition/operator-accept,
+   :actor :actor.role/operator,
+   :actions
+   [{:name :action/accept-booking}
+    {:name :action/stripe-capture-payment-intent}],
+   :from :state/preauthorized,
+   :to :state/accepted}
+  {:name :transition/decline,
+   :actor :actor.role/provider,
+   :actions
+   [{:name :action/calculate-full-refund}
+    {:name :action/stripe-refund-payment}
+    {:name :action/decline-booking}],
+   :from :state/preauthorized,
+   :to :state/declined}
+  {:name :transition/operator-decline,
+   :actor :actor.role/operator,
+   :actions
+   [{:name :action/calculate-full-refund}
+    {:name :action/stripe-refund-payment}
+    {:name :action/decline-booking}],
+   :from :state/preauthorized,
+   :to :state/declined}
+  {:name :transition/expire,
+   :at
+   {:fn/min
+    [{:fn/plus
+      [{:fn/timepoint [:time/first-entered-state :state/preauthorized]}
+       {:fn/period ["PT48H"]}]}
+     {:fn/timepoint [:time/booking-start]}]},
+   :actions
+   [{:name :action/calculate-full-refund}
+    {:name :action/stripe-refund-payment}
+    {:name :action/decline-booking}],
+   :from :state/preauthorized,
+   :to :state/expired}
+  {:name :transition/enter-late,
+   :at
+   {:fn/minus
+    [{:fn/timepoint [:time/booking-start]} {:fn/period ["PT48H"]}]},
+   :actions [],
+   :from :state/accepted,
+   :to :state/accepted-late}
+  {:name :transition/customer-cancel,
+   :actor :actor.role/customer,
+   :actions
+   [{:name :action/calculate-full-refund}
+    {:name :action/stripe-refund-payment}
+    {:name :action/cancel-booking}],
+   :from :state/accepted,
+   :to :state/cancelled}
+  {:name :transition/customer-cancel-late,
+   :actor :actor.role/customer,
+   :actions [{:name :action/cancel-booking}],
+   :from :state/accepted-late,
+   :to :state/cancelled-charged}
+  {:name :transition/provider-cancel,
+   :actor :actor.role/provider,
+   :actions
+   [{:name :action/update-protected-data}
+    {:name :action/calculate-full-refund}
+    {:name :action/stripe-refund-payment}
+    {:name :action/cancel-booking}],
+   :from :state/accepted,
+   :to :state/cancelled}
+  {:name :transition/provider-cancel-late,
+   :actor :actor.role/provider,
+   :actions
+   [{:name :action/update-protected-data}
+    {:name :action/calculate-full-refund}
+    {:name :action/stripe-refund-payment}
+    {:name :action/cancel-booking}],
+   :from :state/accepted-late,
+   :to :state/cancelled}
+  {:name :transition/operator-cancel,
+   :actor :actor.role/operator,
+   :actions
+   [{:name :action/calculate-full-refund}
+    {:name :action/stripe-refund-payment}
+    {:name :action/cancel-booking}],
+   :from :state/accepted,
+   :to :state/cancelled}
+  {:name :transition/operator-cancel-late,
+   :actor :actor.role/operator,
+   :actions
+   [{:name :action/calculate-full-refund}
+    {:name :action/stripe-refund-payment}
+    {:name :action/cancel-booking}],
+   :from :state/accepted-late,
+   :to :state/cancelled}
+  {:name :transition/complete,
+   :at {:fn/timepoint [:time/booking-end]},
+   :actions [],
+   :from :state/accepted,
+   :to :state/completed}
+  {:name :transition/complete-late,
+   :at {:fn/timepoint [:time/booking-end]},
+   :actions [],
+   :from :state/accepted-late,
+   :to :state/completed}
+  {:name :transition/auto-payout,
+   :at
+   {:fn/plus
+    [{:fn/timepoint [:time/booking-end]} {:fn/period ["P2D"]}]},
+   :actions [{:name :action/stripe-create-payout}],
+   :from :state/completed,
+   :to :state/delivered}
+  {:name :transition/operator-complete,
+   :actor :actor.role/operator,
+   :actions [{:name :action/stripe-create-payout}],
+   :from :state/completed,
+   :to :state/delivered}
+  {:name :transition/operator-dispute-refund,
+   :actor :actor.role/operator,
+   :actions
+   [{:name :action/calculate-full-refund}
+    {:name :action/stripe-refund-payment}
+    {:name :action/cancel-booking}],
+   :from :state/completed,
+   :to :state/refunded-dispute}
+  {:name :transition/operator-dispute-hold,
+   :actor :actor.role/operator,
+   :actions [],
+   :from :state/completed,
+   :to :state/disputed-hold}
+  {:name :transition/operator-hold-refund,
+   :actor :actor.role/operator,
+   :actions
+   [{:name :action/calculate-full-refund}
+    {:name :action/stripe-refund-payment}
+    {:name :action/cancel-booking}],
+   :from :state/disputed-hold,
+   :to :state/refunded-dispute}
+  {:name :transition/operator-hold-release,
+   :actor :actor.role/operator,
+   :actions [{:name :action/stripe-create-payout}],
+   :from :state/disputed-hold,
+   :to :state/delivered}
+  {:name :transition/operator-cancel-charged,
+   :actor :actor.role/operator,
+   :actions
+   [{:name :action/calculate-full-refund}
+    {:name :action/stripe-refund-payment}
+    {:name :action/cancel-booking}],
+   :from :state/cancelled-charged,
+   :to :state/refunded-dispute}
+  {:name :transition/payout-cancelled-charged,
+   :at
+   {:fn/plus
+    [{:fn/timepoint [:time/booking-end]} {:fn/period ["P2D"]}]},
+   :actions [{:name :action/stripe-create-payout}],
+   :from :state/cancelled-charged,
+   :to :state/cancelled-charged-paid}
+  {:name :transition/review-1-by-provider,
+   :actor :actor.role/provider,
+   :actions [{:name :action/post-review-by-provider}],
+   :from :state/delivered,
+   :to :state/reviewed-by-provider}
+  {:name :transition/review-2-by-provider,
+   :actor :actor.role/provider,
+   :actions
+   [{:name :action/post-review-by-provider}
+    {:name :action/publish-reviews}],
+   :from :state/reviewed-by-customer,
+   :to :state/reviewed}
+  {:name :transition/review-1-by-customer,
+   :actor :actor.role/customer,
+   :actions [{:name :action/post-review-by-customer}],
+   :from :state/delivered,
+   :to :state/reviewed-by-customer}
+  {:name :transition/review-2-by-customer,
+   :actor :actor.role/customer,
+   :actions
+   [{:name :action/post-review-by-customer}
+    {:name :action/publish-reviews}],
+   :from :state/reviewed-by-provider,
+   :to :state/reviewed}
+  {:name :transition/expire-review-period,
+   :at
+   {:fn/plus
+    [{:fn/timepoint [:time/booking-end]} {:fn/period ["P7D"]}]},
+   :actions [],
+   :from :state/delivered,
+   :to :state/reviewed}
+  {:name :transition/expire-provider-review-period,
+   :at
+   {:fn/plus
+    [{:fn/timepoint [:time/booking-end]} {:fn/period ["P7D"]}]},
+   :actions [{:name :action/publish-reviews}],
+   :from :state/reviewed-by-customer,
+   :to :state/reviewed}
+  {:name :transition/expire-customer-review-period,
+   :at
+   {:fn/plus
+    [{:fn/timepoint [:time/booking-end]} {:fn/period ["P7D"]}]},
+   :actions [{:name :action/publish-reviews}],
+   :from :state/reviewed-by-provider,
+   :to :state/reviewed}],
+ :notifications
+ [{:name :notification/booking-new-request,
+   :on :transition/confirm-payment,
+   :to :actor.role/provider,
+   :template :booking-new-request}
+  {:name :notification/booking-accepted-request,
+   :on :transition/accept,
+   :to :actor.role/customer,
+   :template :booking-accepted-request}
+  {:name :notification/booking-operator-accepted-request-to-customer,
+   :on :transition/operator-accept,
+   :to :actor.role/customer,
+   :template :booking-accepted-request}
+  {:name :notification/booking-operator-accepted-request-to-provider,
+   :on :transition/operator-accept,
+   :to :actor.role/provider,
+   :template :booking-operator-accepted-request}
+  {:name :notification/booking-declined-request,
+   :on :transition/decline,
+   :to :actor.role/customer,
+   :template :booking-declined-request}
+  {:name :notification/booking-operator-declined-request-to-customer,
+   :on :transition/operator-decline,
+   :to :actor.role/customer,
+   :template :booking-declined-request}
+  {:name :notification/booking-operator-declined-request-to-provider,
+   :on :transition/operator-decline,
+   :to :actor.role/provider,
+   :template :booking-operator-declined-request}
+  {:name :notification/booking-expired-request,
+   :on :transition/expire,
+   :to :actor.role/customer,
+   :template :booking-expired-request}
+  {:name :notification/booking-money-paid,
+   :on :transition/auto-payout,
+   :to :actor.role/provider,
+   :template :booking-money-paid}
+  {:name :notification/review-period-start-provider,
+   :on :transition/auto-payout,
+   :to :actor.role/provider,
+   :template :booking-review-by-provider-wanted}
+  {:name :notification/review-period-start-customer,
+   :on :transition/auto-payout,
+   :to :actor.role/customer,
+   :template :booking-review-by-customer-wanted}
+  {:name :notification/booking-money-paid-operator-complete,
+   :on :transition/operator-complete,
+   :to :actor.role/provider,
+   :template :booking-money-paid}
+  {:name :notification/review-by-provider-first,
+   :on :transition/review-1-by-provider,
+   :to :actor.role/customer,
+   :template :booking-review-by-other-party-unpublished}
+  {:name :notification/review-by-customer-first,
+   :on :transition/review-1-by-customer,
+   :to :actor.role/provider,
+   :template :booking-review-by-other-party-unpublished}
+  {:name :notification/review-by-provider-second,
+   :on :transition/review-2-by-provider,
+   :to :actor.role/customer,
+   :template :booking-review-by-other-party-published}
+  {:name :notification/review-by-customer-second,
+   :on :transition/review-2-by-customer,
+   :to :actor.role/provider,
+   :template :booking-review-by-other-party-published}]}
