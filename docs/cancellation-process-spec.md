@@ -20,6 +20,16 @@ push a process version until Neil okays that design.
 > **These two must match before go-live**, by either (a) building this process, or
 > (b) changing the FAQ/Terms to describe what the product actually does. This is a
 > pre-launch gate, tracked as a launch blocker — not a "nice to have".
+>
+> **⚠️ UPDATED 2026-08-06 — the mismatch persists even after v1 ships.** v1 is a
+> **two-tier** policy (full refund ≥48h before the shoot, no refund after); the
+> published FAQ/Terms still describe the **three-tier** policy (incl. the 24–72h 50%
+> band, now deferred to `docs/roadmap.md`). **Terms and product must match before
+> go-live** — in the UK, advertising a refund entitlement (the 50% band) the product
+> does not deliver is a **consumer-rights exposure** (CRA 2015 / CCRs), not just a
+> support-load issue. Action: rewrite the FAQ/Terms to the **two-tier** policy before
+> launch; restore the three-tier wording only when the roadmap 50% tier ships. Owner:
+> Neil (Console/legal copy). This is the top cancellation launch blocker.
 
 ---
 
