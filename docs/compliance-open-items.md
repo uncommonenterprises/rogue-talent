@@ -36,9 +36,16 @@ form **now**, even though the *reporting submission* is a later, accountant-led 
   entity's TIN. (The existing `company_name`/`vat_number` fields lean client-side; a model-as-entity
   path may be an edge case for v1 — flag.)
 
-**Add to onboarding now (the concrete ask):** residence address, TIN (NI/UTR), reliable DOB,
-confirmed legal name, tax-residence country, optional VAT number. Store as **private/protected data**
-(never public), ideally gated to appear at go-live alongside SAF-01 rather than cluttering signup.
+**✅ UPDATE 2026-08-09 — Stripe collects this, not us.** Verified that Stripe's **Platform tax
+reporting for Connect** (`tax_reporting` verification) covers the **UK/DAC7** and **collects +
+validates the TIN, legal name, address, DOB during Connect onboarding**, generates the UK report,
+and can block payout until a verified TIN is on file. **So we build no tax fields and store no
+NI/UTR** — a big GDPR win (see `onboarding-data-changes-design.md`). The **only** field we add to
+our own onboarding is **DOB at signup** (for the 18+ age gate — needed before the model reaches
+Stripe). Caveats: Stripe's product is in **preview** (request access); the **platform stays the
+responsible filer** (accountant confirms the submit-to-HMRC step). The field list below is what
+**Stripe** collects — kept for reference, not our build: residence address, TIN (NI/UTR), DOB,
+legal name, tax-residence, VAT.
 
 **⚠️ Flag for the accountant (do not guess):** the exact **verification standard** required (do we
 just collect, or must we validate the TIN?); **retention period** for the records; **de-minimis
@@ -135,6 +142,31 @@ weekday-only dispute check that never misses. **Confirm `P2D → P5D`** and I'll
   pages and flag it against these SLAs.
 
 ---
+
+### Payout timing — a model promise (wedge), not just an ops number (research 2026-08-09)
+
+Neil's right: this is a marketing wedge (agencies pay 30–90 days), so pick the number to market,
+then set the timepoint to match — not the reverse.
+
+- **Comparables:** Airbnb ~24h after check-in (but holds a new host's *first* payout 30 days);
+  Thumbtack 3–4 business days; Fiverr 7–14 days (7 for top sellers); Upwork 5 days fixed / 10 days
+  hourly; **modelling agencies 30–90 days.** ⇒ **"next working day after your shoot" is
+  best-in-class** here and a hard wedge.
+- **Can the process fire "next working day"?** **No** — Sharetribe `:at` supports fixed
+  periods/timepoints only (no business-day calculus). A pure auto-payout can only be a fixed
+  interval.
+- **Earliest *safe fixed* interval with a weekday-only ops check:** the window must clear the
+  longest non-working gap. `P2D` misses every weekend (Fri shoot → Sun payout). **`P4D`** is the
+  earliest comfortably safe for a normal weekend (Fri → Tue, after Monday's check); **`P5D`** is
+  needed to survive a bank-holiday long weekend. So fixed-auto ⇒ you market "within ~4–5 days".
+- **Better — decouple speed from the window (recommended):** have the **operator's daily check
+  RELEASE payout** for clean bookings (`operator-complete` from `completed`), with **auto-payout as
+  a `P5D` backstop** for anything ops didn't reach. Then the **model is paid the *next working day*
+  after the shoot** in the normal case (the punchy wedge), with a safe guaranteed fallback. Cost:
+  the operator releases each payout (fine at launch volume; automate later).
+- **Decision for Neil (not changed yet):** market **(a)** "paid the next working day" via
+  operator-release + `P5D` backstop (recommended — fastest, a bit more ops touch), or **(b)** a
+  fixed "within N days" via `P4D`/`P5D` auto (simpler, slower). Then I set the timepoint(s) to match.
 
 ## Priority order of these
 1. **DAC7 collection fields** — blocks the shape of model onboarding; retrofit-hostile. Get the

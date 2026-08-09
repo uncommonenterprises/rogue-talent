@@ -26,43 +26,52 @@ not as a Console free-text custom field — the existing `date_of_birth` user fi
 which can't enforce a real date or an age rule. Keep the storage key `date_of_birth`. This is the
 "make it a real date + required + validated" fix from the safety scope, done in code.
 
-## Go-live data step — NEW (after approval; with SAF-01 + payout)
-Shown once, when the approved model goes to make their profile live. Three grouped sections:
+## Go-live step — REVISED: Stripe collects the tax data, we build no tax fields
 
-**1. Verify your identity (SAF-01)** — ID provider flow (Stripe Identity / Onfido / Persona, TBD).
-Confirms 18+ a second time (belt & braces) and underpins the "verified" claim.
+**Verified 2026-08-09 (Stripe docs + Sharetribe DAC7 guide):** Stripe's **Platform tax reporting
+for Connect** covers the **UK** (and DAC7/MRDP). With the **`tax_reporting` additional
+verification** enabled on connected accounts, **Stripe collects, validates and verifies the
+seller's tax information — including the TIN (NI number / UTR), legal name, home address, DOB —
+during Connect onboarding**, generates the UK XML report, and produces seller statements. **We
+never collect or store the NI/UTR ourselves.** (Answers #2a.)
 
-**2. Your details for payment & tax (DAC7)** — collected once, stored as **private data**, never public:
-| Field | Notes |
-|---|---|
-| Legal name | prefilled from account; confirm it's their legal name (display name is separate) |
-| Home address | line 1, line 2, town/city, postcode, country — **new** (we only had city before) |
-| Country of tax residence | default United Kingdom |
-| **National Insurance number _or_ UTR** (TIN) | **new, sensitive** — the one field that's retrofit-hostile |
-| VAT number | optional; only if VAT-registered (`vat_number` field exists) |
+Stripe Connect onboarding **already** collects legal name, home address and DOB for KYC. So the
+old plan — our form asking for those, then handing to Stripe to ask again — was pure duplication.
+**Fix (answers #2b): don't build the tax fields at all.** The go-live step is just:
 
-**3. Payout (Stripe Connect)** — the existing payout onboarding, now positioned here as the last
-go-live gate (per `stripe-kyc-timing.md`).
+1. **Verify your identity (SAF-01)** — ID provider flow (Stripe Identity is the obvious fit;
+   Onfido / Persona alternatives). Confirms 18+ again and underpins the "verified" claim.
+2. **Connect payout + tax (Stripe, with `tax_reporting`)** — one Stripe Connect onboarding that
+   collects payout details **and** the DAC7 identity/tax data in a single pass. We **read back**
+   only what we need (name, address are on the Stripe account object); DOB/TIN stay with Stripe.
 
-## How heavy does it feel?
-- **Signup:** +1 field (DOB). Essentially unchanged.
-- **Go-live:** a genuine one-time compliance step — ID + ~5 data fields + payout. Heavier, but at
-  the right moment and only once. The DAC7 block is 5 fields, most prefilled or single-choice; the
-  only "friction" field is the NI/UTR number, which is unavoidable and legally required.
+That's it — no hand-built "payment & tax" form. **The go-live form got shorter and our GDPR
+surface shrank to ~nothing** (we hold no NI number, no TIN, no ID document). Stripe's enforcement
+option — block payouts until a verified TIN is on file — maps exactly onto our go-live payout gate.
 
-## Storage / sensitivity
-- DOB, address, TIN → **private/protected data** only. TIN (NI number) is especially sensitive —
-  encrypted at rest via Sharetribe's protected data; never rendered publicly or to clients.
-- ID documents themselves should be held by the **ID provider**, not us (store only the result) —
-  see `compliance-open-items.md` §3.
+## How heavy does it feel now?
+- **Signup:** +1 field (DOB). Unchanged in feel.
+- **Go-live:** ID verify + one Stripe Connect flow (which the model does once anyway to get paid).
+  **We add zero form fields of our own.** Nothing is asked twice.
 
-## Open (accountant, per compliance §1)
-Exact TIN verification standard, retention period, de-minimis exemption, non-UK model handling.
-These affect *validation/retention*, not *which fields to collect* — so they don't block adding the
-fields now. Reporting submission itself is out of scope (accountant-led).
+## Storage / sensitivity — now minimal
+- **DOB at signup** → our `protectedData.date_of_birth`, for the age gate only (needed *before*
+  the model ever reaches Stripe). Private, never public.
+- **TIN, tax address, tax DOB, ID documents** → held by **Stripe**, not us. We store none of the
+  highest-risk personal data. Big GDPR win.
+
+## Caveats to confirm (flag, not guess)
+- Stripe's platform tax reporting is in **preview / early access** — must request access; confirm
+  UK availability is production-ready on our timeline.
+- Stripe **generates** the UK report; the **platform remains the responsible filer** and liable
+  for accuracy — confirm the exact submit-to-HMRC step with the accountant (Stripe is a tool, not
+  a tax advisor — their own disclaimer).
+- Confirm the `tax_reporting` verification's data set fully satisfies UK MRDP for our seller
+  profile (individuals + the occasional model-as-company).
 
 ## Build order once approved
-1. Signup DOB field + 18+ validator (code, `SignupForm.js` + `en.json`).
-2. Go-live data step: the DAC7 fields (private data) + wire into the go-live gate (depends on the
-   RT-01/02/08 go-live build).
-3. SAF-01 ID provider integration (separate, provider decision needed).
+1. **Signup DOB field + 18+ validator** (code, `SignupForm.js` + `en.json`). Independent of Stripe
+   — build now (approved).
+2. **Enable Stripe `tax_reporting`** on connected accounts + request preview access (config/
+   integration, not a form) — wire into the go-live gate (depends on the RT-01/02/08 go-live build).
+3. **SAF-01 ID provider** (Stripe Identity likely — keeps it one vendor). Provider decision.
