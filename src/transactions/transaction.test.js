@@ -138,6 +138,13 @@ describe('transaction utils for default-booking', () => {
     by: TX_TRANSITION_ACTOR_SYSTEM,
     transition: transitions.COMPLETE,
   });
+  // booking-v2: payout is split from completion — `complete` → completed,
+  // then `auto-payout` → delivered (where reviews happen).
+  const transitionAutoPayout = createTxTransition({
+    createdAt: new Date(Date.UTC(2017, 10, 18, 8, 12)),
+    by: TX_TRANSITION_ACTOR_SYSTEM,
+    transition: transitions.AUTO_PAYOUT,
+  });
   const transitionReviewed = createTxTransition({
     createdAt: new Date(Date.UTC(2017, 10, 16, 8, 12)),
     by: TX_TRANSITION_ACTOR_SYSTEM,
@@ -184,6 +191,7 @@ describe('transaction utils for default-booking', () => {
       transitionConfirmPayment,
       transitionAccept,
       transitionComplete,
+      transitionAutoPayout,
       transitionReviewed,
     ],
   });

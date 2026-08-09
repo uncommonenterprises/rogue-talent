@@ -1,6 +1,14 @@
 /**
  * Transaction process graph for bookings:
- *   - default-booking
+ *   - default-booking (Rogue Talent booking-v2)
+ *
+ * booking-v2 adds, vs stock default-booking: a 48h provider accept window; a
+ * two-tier customer cancellation (full refund ≥48h before the shoot via
+ * `customer-cancel`, no refund <48h via `customer-cancel-late`), gated by the
+ * automatic `enter-late` transition; an always-full-refund provider cancel; and
+ * a dispute/no-show window — payout is split from completion (`complete` →
+ * `completed` with no payout, `auto-payout` fires later), with operator
+ * dispute transitions in between. See docs/booking-process-design.md.
  */
 
 /**
@@ -8,53 +16,61 @@
  *
  * These strings must sync with values defined in Marketplace API,
  * since transaction objects given by API contain info about last transitions.
- * All the actions in API side happen in transitions,
- * so we need to understand what those strings mean.
  */
 
 export const transitions = {
-  // When a customer makes a booking to a listing, a transaction is
-  // created with the initial request-payment transition.
-  // At this transition a PaymentIntent is created by Marketplace API.
-  // After this transition, the actual payment must be made on client-side directly to Stripe.
   REQUEST_PAYMENT: 'transition/request-payment',
 
-  // A customer can also initiate a transaction with an inquiry, and
-  // then transition that with a request.
   INQUIRE: 'transition/inquire',
   REQUEST_PAYMENT_AFTER_INQUIRY: 'transition/request-payment-after-inquiry',
 
-  // Stripe SDK might need to ask 3D security from customer, in a separate front-end step.
-  // Therefore we need to make another transition to Marketplace API,
-  // to tell that the payment is confirmed.
   CONFIRM_PAYMENT: 'transition/confirm-payment',
-
-  // If the payment is not confirmed in the time limit set in transaction process (by default 15min)
-  // the transaction will expire automatically.
   EXPIRE_PAYMENT: 'transition/expire-payment',
 
-  // When the provider accepts or declines a transaction from the
-  // SalePage, it is transitioned with the accept or decline transition.
+  // Provider accepts/declines the request (48h window). Operator can act on their behalf.
   ACCEPT: 'transition/accept',
   DECLINE: 'transition/decline',
-
-  // The operator can accept or decline the offer on behalf of the provider
   OPERATOR_ACCEPT: 'transition/operator-accept',
   OPERATOR_DECLINE: 'transition/operator-decline',
 
-  // The backend automatically expire the transaction.
+  // Auto-decline + full refund if the provider doesn't respond within the 48h accept window.
   EXPIRE: 'transition/expire',
 
-  // Admin can also cancel the transition.
-  CANCEL: 'transition/cancel',
+  // Automatic: at booking-start − 48h, a confirmed booking becomes non-refundable
+  // for a customer cancel.
+  ENTER_LATE: 'transition/enter-late',
 
-  // The backend will mark the transaction completed.
+  // Two-tier customer cancellation.
+  CUSTOMER_CANCEL: 'transition/customer-cancel', // ≥48h before shoot → full refund
+  CUSTOMER_CANCEL_LATE: 'transition/customer-cancel-late', // <48h → no refund (model still paid)
+
+  // Provider cancellation — always a full refund to the client, both tiers (captures a reason).
+  PROVIDER_CANCEL: 'transition/provider-cancel',
+  PROVIDER_CANCEL_LATE: 'transition/provider-cancel-late',
+
+  // Operator cancellation overrides (full refund).
+  OPERATOR_CANCEL: 'transition/operator-cancel',
+  OPERATOR_CANCEL_LATE: 'transition/operator-cancel-late',
+
+  // Shoot date passed → completed (NO payout yet). Opens the dispute window.
   COMPLETE: 'transition/complete',
-  OPERATOR_COMPLETE: 'transition/operator-complete',
+  COMPLETE_LATE: 'transition/complete-late',
 
-  // Reviews are given through transaction transitions. Review 1 can be
-  // by provider or customer, and review 2 will be the other party of
-  // the transaction.
+  // Payout fires 2 days after booking-end (the dispute window closes).
+  AUTO_PAYOUT: 'transition/auto-payout',
+  OPERATOR_COMPLETE: 'transition/operator-complete', // operator releases payout early
+
+  // Dispute / no-show path (operator, during the completed → delivered window).
+  OPERATOR_DISPUTE_REFUND: 'transition/operator-dispute-refund',
+  OPERATOR_DISPUTE_HOLD: 'transition/operator-dispute-hold',
+  OPERATOR_HOLD_REFUND: 'transition/operator-hold-refund',
+  OPERATOR_HOLD_RELEASE: 'transition/operator-hold-release',
+
+  // No-refund customer cancel: operator override (full refund) + the scheduled payout to the model.
+  OPERATOR_CANCEL_CHARGED: 'transition/operator-cancel-charged',
+  PAYOUT_CANCELLED_CHARGED: 'transition/payout-cancelled-charged',
+
+  // Reviews (bilateral, stock).
   REVIEW_1_BY_PROVIDER: 'transition/review-1-by-provider',
   REVIEW_2_BY_PROVIDER: 'transition/review-2-by-provider',
   REVIEW_1_BY_CUSTOMER: 'transition/review-1-by-customer',
@@ -65,13 +81,7 @@ export const transitions = {
 };
 
 /**
- * States
- *
- * These constants are only for making it clear how transitions work together.
- * You should not use these constants outside of this file.
- *
- * Note: these states are not in sync with states used transaction process definitions
- *       in Marketplace API. Only last transitions are passed along transaction object.
+ * States (local clarity only — not synced with API state names).
  */
 export const states = {
   INITIAL: 'initial',
@@ -80,34 +90,29 @@ export const states = {
   PAYMENT_EXPIRED: 'payment-expired',
   PREAUTHORIZED: 'preauthorized',
   DECLINED: 'declined',
-  ACCEPTED: 'accepted',
   EXPIRED: 'expired',
-  CANCELED: 'canceled',
-  DELIVERED: 'delivered',
+  ACCEPTED: 'accepted',
+  ACCEPTED_LATE: 'accepted-late',
+  CANCELED: 'canceled', // full-refund cancellation (customer ≥48h / any provider / operator)
+  CANCELLED_CHARGED: 'cancelled-charged', // customer <48h, no refund, model owed payout
+  CANCELLED_CHARGED_PAID: 'cancelled-charged-paid',
+  COMPLETED: 'completed', // shoot done, payout pending — dispute window
+  DISPUTED_HOLD: 'disputed-hold',
+  REFUNDED_DISPUTE: 'refunded-dispute',
+  DELIVERED: 'delivered', // payout made; reviewable
   REVIEWED: 'reviewed',
   REVIEWED_BY_CUSTOMER: 'reviewed-by-customer',
   REVIEWED_BY_PROVIDER: 'reviewed-by-provider',
 };
 
 /**
- * Description of transaction process graph
- *
- * You should keep this in sync with transaction process defined in Marketplace API
- *
- * Note: we don't use yet any state machine library,
- *       but this description format is following Xstate (FSM library)
- *       https://xstate.js.org/docs/
+ * Description of transaction process graph. Keep in sync with the pushed
+ * `default-booking` version (booking-v2) — see ext/transaction-processes/booking-v2.
  */
 export const graph = {
-  // id is defined only to support Xstate format.
-  // However if you have multiple transaction processes defined,
-  // it is best to keep them in sync with transaction process aliases.
-  id: 'default-booking/release-1',
-
-  // This 'initial' state is a starting point for new transaction
+  // NOTE: update the release number to match the pushed booking-v2 version alias.
+  id: 'default-booking/release-2',
   initial: states.INITIAL,
-
-  // States
   states: {
     [states.INITIAL]: {
       on: {
@@ -120,14 +125,12 @@ export const graph = {
         [transitions.REQUEST_PAYMENT_AFTER_INQUIRY]: states.PENDING_PAYMENT,
       },
     },
-
     [states.PENDING_PAYMENT]: {
       on: {
         [transitions.EXPIRE_PAYMENT]: states.PAYMENT_EXPIRED,
         [transitions.CONFIRM_PAYMENT]: states.PREAUTHORIZED,
       },
     },
-
     [states.PAYMENT_EXPIRED]: {},
     [states.PREAUTHORIZED]: {
       on: {
@@ -138,18 +141,53 @@ export const graph = {
         [transitions.OPERATOR_ACCEPT]: states.ACCEPTED,
       },
     },
-
     [states.DECLINED]: {},
     [states.EXPIRED]: {},
+
     [states.ACCEPTED]: {
       on: {
-        [transitions.CANCEL]: states.CANCELED,
-        [transitions.COMPLETE]: states.DELIVERED,
-        [transitions.OPERATOR_COMPLETE]: states.DELIVERED,
+        [transitions.ENTER_LATE]: states.ACCEPTED_LATE,
+        [transitions.CUSTOMER_CANCEL]: states.CANCELED,
+        [transitions.PROVIDER_CANCEL]: states.CANCELED,
+        [transitions.OPERATOR_CANCEL]: states.CANCELED,
+        [transitions.COMPLETE]: states.COMPLETED,
+      },
+    },
+    [states.ACCEPTED_LATE]: {
+      on: {
+        [transitions.CUSTOMER_CANCEL_LATE]: states.CANCELLED_CHARGED,
+        [transitions.PROVIDER_CANCEL_LATE]: states.CANCELED,
+        [transitions.OPERATOR_CANCEL_LATE]: states.CANCELED,
+        [transitions.COMPLETE_LATE]: states.COMPLETED,
       },
     },
 
     [states.CANCELED]: {},
+
+    [states.CANCELLED_CHARGED]: {
+      on: {
+        [transitions.OPERATOR_CANCEL_CHARGED]: states.REFUNDED_DISPUTE,
+        [transitions.PAYOUT_CANCELLED_CHARGED]: states.CANCELLED_CHARGED_PAID,
+      },
+    },
+    [states.CANCELLED_CHARGED_PAID]: {},
+
+    [states.COMPLETED]: {
+      on: {
+        [transitions.AUTO_PAYOUT]: states.DELIVERED,
+        [transitions.OPERATOR_COMPLETE]: states.DELIVERED,
+        [transitions.OPERATOR_DISPUTE_REFUND]: states.REFUNDED_DISPUTE,
+        [transitions.OPERATOR_DISPUTE_HOLD]: states.DISPUTED_HOLD,
+      },
+    },
+    [states.DISPUTED_HOLD]: {
+      on: {
+        [transitions.OPERATOR_HOLD_REFUND]: states.REFUNDED_DISPUTE,
+        [transitions.OPERATOR_HOLD_RELEASE]: states.DELIVERED,
+      },
+    },
+    [states.REFUNDED_DISPUTE]: {},
+
     [states.DELIVERED]: {
       on: {
         [transitions.EXPIRE_REVIEW_PERIOD]: states.REVIEWED,
@@ -157,7 +195,6 @@ export const graph = {
         [transitions.REVIEW_1_BY_PROVIDER]: states.REVIEWED_BY_PROVIDER,
       },
     },
-
     [states.REVIEWED_BY_CUSTOMER]: {
       on: {
         [transitions.REVIEW_2_BY_PROVIDER]: states.REVIEWED,
@@ -174,20 +211,30 @@ export const graph = {
   },
 };
 
-// Check if a transition is the kind that should be rendered
-// when showing transition history (e.g. ActivityFeed)
-// The first transition and most of the expiration transitions made by system are not relevant
+// Transitions worth showing in the activity feed.
 export const isRelevantPastTransition = transition => {
   return [
     transitions.ACCEPT,
     transitions.OPERATOR_ACCEPT,
-    transitions.CANCEL,
-    transitions.COMPLETE,
-    transitions.OPERATOR_COMPLETE,
     transitions.CONFIRM_PAYMENT,
     transitions.DECLINE,
     transitions.OPERATOR_DECLINE,
     transitions.EXPIRE,
+    transitions.CUSTOMER_CANCEL,
+    transitions.CUSTOMER_CANCEL_LATE,
+    transitions.PROVIDER_CANCEL,
+    transitions.PROVIDER_CANCEL_LATE,
+    transitions.OPERATOR_CANCEL,
+    transitions.OPERATOR_CANCEL_LATE,
+    transitions.COMPLETE,
+    transitions.COMPLETE_LATE,
+    transitions.AUTO_PAYOUT,
+    transitions.OPERATOR_COMPLETE,
+    transitions.OPERATOR_DISPUTE_REFUND,
+    transitions.OPERATOR_DISPUTE_HOLD,
+    transitions.OPERATOR_HOLD_REFUND,
+    transitions.OPERATOR_HOLD_RELEASE,
+    transitions.OPERATOR_CANCEL_CHARGED,
     transitions.REVIEW_1_BY_CUSTOMER,
     transitions.REVIEW_1_BY_PROVIDER,
     transitions.REVIEW_2_BY_CUSTOMER,
@@ -195,35 +242,30 @@ export const isRelevantPastTransition = transition => {
   ].includes(transition);
 };
 
-// Processes might be different on how reviews are handled.
-// Default processes use two-sided diamond shape, where either party can make the review first
 export const isCustomerReview = transition => {
   return [transitions.REVIEW_1_BY_CUSTOMER, transitions.REVIEW_2_BY_CUSTOMER].includes(transition);
 };
 
-// Processes might be different on how reviews are handled.
-// Default processes use two-sided diamond shape, where either party can make the review first
 export const isProviderReview = transition => {
   return [transitions.REVIEW_1_BY_PROVIDER, transitions.REVIEW_2_BY_PROVIDER].includes(transition);
 };
 
-// Check if the given transition is privileged.
-//
-// Privileged transitions need to be handled from a secure context,
-// i.e. the backend. This helper is used to check if the transition
-// should go through the local API endpoints, or if using JS SDK is
-// enough.
+// Privileged transitions must go through the trusted backend (line items set there).
 export const isPrivileged = transition => {
   return [transitions.REQUEST_PAYMENT, transitions.REQUEST_PAYMENT_AFTER_INQUIRY].includes(
     transition
   );
 };
 
-// Check when transaction is completed (booking over)
+// Booking is "over" (service delivered / paid out / reviewed).
 export const isCompleted = transition => {
   const txCompletedTransitions = [
     transitions.COMPLETE,
+    transitions.COMPLETE_LATE,
+    transitions.AUTO_PAYOUT,
     transitions.OPERATOR_COMPLETE,
+    transitions.OPERATOR_HOLD_RELEASE,
+    transitions.PAYOUT_CANCELLED_CHARGED,
     transitions.REVIEW_1_BY_CUSTOMER,
     transitions.REVIEW_1_BY_PROVIDER,
     transitions.REVIEW_2_BY_CUSTOMER,
@@ -235,14 +277,22 @@ export const isCompleted = transition => {
   return txCompletedTransitions.includes(transition);
 };
 
-// Check when transaction is refunded (booking did not happen)
-// In these transitions action/stripe-refund-payment is called
+// Transitions where action/stripe-refund-payment is called (client fully refunded).
+// NOTE: CUSTOMER_CANCEL_LATE is deliberately absent — the <48h cancel issues no refund.
 export const isRefunded = transition => {
   const txRefundedTransitions = [
     transitions.EXPIRE_PAYMENT,
     transitions.EXPIRE,
-    transitions.CANCEL,
     transitions.DECLINE,
+    transitions.OPERATOR_DECLINE,
+    transitions.CUSTOMER_CANCEL,
+    transitions.PROVIDER_CANCEL,
+    transitions.PROVIDER_CANCEL_LATE,
+    transitions.OPERATOR_CANCEL,
+    transitions.OPERATOR_CANCEL_LATE,
+    transitions.OPERATOR_DISPUTE_REFUND,
+    transitions.OPERATOR_HOLD_REFUND,
+    transitions.OPERATOR_CANCEL_CHARGED,
   ];
   return txRefundedTransitions.includes(transition);
 };
