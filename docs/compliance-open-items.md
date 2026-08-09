@@ -103,10 +103,36 @@ then make the copy/terms match (or change the mechanic):
 | **Triage a safety report fast (SAF-30 proposed 4h/12h)** | SAF-29/31: "credible report → immediate suspension" implies prompt human triage | **Undecided SLA** — this is the SAF-30 flag. A safety promise you can't keep is the worst kind. Decide the real number. |
 | **Help a model whose payout failed** | Stripe payouts can fail; nothing notices automatically in v1 | **Implied support SLA** — needs at least a monitoring habit. |
 
-**Recommendation:** the 2-day dispute window is the one with teeth — put a **standing daily check**
-in the ops routine so a no-show is never lost to an auto-payout, and set the profile-approval and
-safety-triage numbers to what a one-person op can *actually* sustain before the terms commit to
-anything. Under-promise.
+### DECIDED SLAs (Neil, 2026-08-09) — what a one-person op will hold
+
+| Promise | Committed SLA | Product support needed |
+|---|---|---|
+| **Dispute window** | **Standing daily ops check, every working day** | ⚠️ The 2-day (`P2D`) auto-payout is **UNSAFE for a weekday-only check** — see below. Widen to `P5D`. |
+| **Profile approval** | **1 working day** | ✅ Already matches — the submit→review copy says "usually within one working day". Keep it accurate. |
+| **Safety triage** | **Same working day, weekdays only** — NOT 4h, NOT 24/7 | Copy must state plainly this is **not a monitored emergency service**; anyone in immediate danger → **999**. |
+
+**Widening the dispute window (answer to "tell me what to widen it to"):** with `auto-payout` at
+`booking-end + P2D` and checks only on **working days**, a Friday-evening shoot pays out **Sunday**
+— before Monday's check. The window has to be at least as long as the **longest run of
+consecutive non-working days + 1**. A bank-holiday long weekend (Sat/Sun/Mon) after a Friday
+shoot-end pushes the next working-day check to **Tuesday**. So:
+- `P2D` → misses every weekend. Unsafe.
+- `P4D` → safe for a normal weekend, **not** a bank-holiday Monday.
+- **`P5D` → recommended.** Safe through a bank-holiday long weekend to the Tuesday check.
+
+**Cost of `P5D`:** the model waits ~5 days after the shoot for payout (vs 2). That's the price of a
+weekday-only dispute check that never misses. **Confirm `P2D → P5D`** and I'll change the
+`auto-payout` and `payout-cancelled-charged` timepoints in the booking-v2 process +
+`booking-process-design.md`.
+
+**Copy flags — anywhere the product/copy implies faster safety response than same-working-day:**
+- The catalogue **SAF-30** figure (4h business / 12h off-hours) is **overridden** — do not use it
+  anywhere.
+- The **safety reporting flow** copy, the **Safety page**, and the **SAF-17 shareable-summary**
+  copy must all carry the **"not a monitored emergency service — in immediate danger, call 999"**
+  line, and must not imply real-time monitoring.
+- The **copy audit** (queued) must catch any "we monitor / 24-7 / immediate" phrasing on public
+  pages and flag it against these SLAs.
 
 ---
 

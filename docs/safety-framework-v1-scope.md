@@ -45,15 +45,15 @@ volume the operator runs things by hand. No safety theatre.
 | SAF-15 | OUT | |
 | SAF-16 | OUT | |
 | SAF-17 | **IN — REVISED** | **Shareable shoot summary**, NOT stored emergency contacts and **no alerting**. One tap on a confirmed booking → complete summary (address, date, times, client's **verified legal name + registered company**) the model sends via **her own** apps. **We are not the channel; we never promise to contact anyone.** Day-before share prompt **bundled into the accept-window reminders fast-follow**. Copy must be precise: helps her tell someone where she'll be — **not monitoring, not an emergency service.** *Supersedes the catalogue SAF-17 (emergency contacts) and the share part of SAF-18.* |
-| SAF-18 | **⚠ FLAG — not separately decided** | The "24h pre-shoot + one-tap share" is folded into the revised SAF-17 day-before prompt; the *emergency-contacts* basis is removed. Treat SAF-18 as **subsumed/removed** (no separate build) — confirm. |
+| SAF-18 | **SUBSUMED into SAF-17** (Neil 2026-08-09) | No separate build. The day-before share prompt lives in the revised SAF-17 (bundled with the reminders fast-follow); the emergency-contacts basis is gone. |
 | SAF-19/20/21/23 | OUT | Entire real-time check-in service. |
 | SAF-22 | OUT | Panic button — **safety theatre** (a help alert nobody monitors = false confidence). |
 | SAF-24 | **IN** | Two-sided reviews, **simultaneous reveal** (native `publish-reviews`). |
-| SAF-25 | **⚠ FLAG — not decided** | Structured rating dimensions incl "Safety & respect". Small, complements SAF-24/29 — recommend deciding. Pending. |
+| SAF-25 | **IN** (Neil 2026-08-09) | Structured rating dimensions including a **"Safety & respect"** dimension on reviews. Complements SAF-24/29. |
 | SAF-26 | **IN — MODIFIED** | Not deletable by the reviewed party; **operator can remove/hide an unfair review**. **Finding (verified 2026-08-09):** Sharetribe **cannot delete/unpublish** a published review anywhere; the operator **can EDIT** it (Console → Manage → Reviews). ⇒ implement as **operator edit-to-neutralise**, **native Console, no Integration API**. Write the removal policy; **log every removal to SAF-35.** |
 | SAF-27/28 | OUT | Model-to-model private notes + pattern monitoring. |
 | SAF-29 | **IN** | Safety reporting flow, **separate** from disputes. |
-| SAF-30 | **⚠ FLAG — deferred to the ops-SLA decision** | Triage SLA (4h/12h) is a **commitment**, not built here — see `docs/compliance-open-items.md` "ops response times". |
+| SAF-30 | **DECIDED via ops SLA** (Neil 2026-08-09) | Triage = **same working day, weekdays only** — **NOT** 4h, **NOT** 24/7. Copy must state plainly this is **not a monitored emergency service** and direct anyone in immediate danger to **999**. See `docs/compliance-open-items.md` §4. |
 | SAF-31 | **IN** | Credible report → **immediate temporary suspension** (operator action). |
 | SAF-32 | **IN** | Tiered enforcement actions (manual to trigger — see SAF-33). |
 | SAF-33 | OUT | Automatic enforcement triggers — enforcement is **manual** in v1. |
@@ -82,10 +82,10 @@ DOB is **not currently collected at signup**: `date_of_birth` is a **private pro
 Belt-and-braces with SAF-01 at go-live. Flagged because a collected-but-unenforced field is
 exactly the miss you called out.
 
-### Three IDs needing a quick call
-**SAF-18** (subsume into 17? — recommended yes), **SAF-25** (add a "Safety & respect" rating
-dimension? — small, recommended), **SAF-30** (the triage SLA — decide with the ops-response-times
-question). None block the booking build.
+### The three previously-undecided IDs — now resolved (Neil 2026-08-09)
+**SAF-18** → subsumed into SAF-17 (no separate build). **SAF-25** → IN ("Safety & respect" rating
+dimension). **SAF-30** → same-working-day weekday triage, not 4h/24-7, with an explicit "not an
+emergency service, call 999" line (see compliance §4).
 
 ---
 
