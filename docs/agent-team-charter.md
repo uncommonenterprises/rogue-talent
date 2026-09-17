@@ -66,6 +66,24 @@ force: **only Neil sets an `APPROVED` status** on anything that reaches a sign-o
   `safety-framework-v1-scope.md`, `booking-process-design.md`, `compliance-open-items.md`,
   `roadmap.md`, `ux-journeys.md`. Read what's relevant; don't ask Neil to re-explain documented things.
 
+## How this maps to Agent Teams (mechanics — from the official docs)
+- **The PM is the LEAD, and the lead is the Claude Code session Neil talks to** — not a spawned
+  agent. There is no separate "PM agent" to message; Neil's session *is* the PM. `product-manager.md`
+  is therefore the **operating brief the lead follows** (CLAUDE.md points the lead to it), and the
+  **PM's model = the session's model** (set with `/model`, not the file's `model:` field).
+- **Only the lead can manage the team** — teammates cannot spawn their own teammates (no nested
+  teams). So all delegation flows through the PM/lead. The Developer, UX Tester and UX Designer are
+  **teammates the lead spawns by name**; each one's `model:` field *does* apply when spawned
+  (developer→opus, ux-tester→haiku, ux-designer→sonnet).
+- **One team per session; the lead is fixed** for the session's lifetime.
+- **No `/resume` or `/rewind` for teammates** — after restarting, the lead must respawn them.
+- **Kickoff:** no special command — start a session (it's the lead), tell it the goal and which
+  teammates you want in plain English; it spawns them and coordinates via a shared task list +
+  per-agent mailbox, and reports back.
+- **Desktop-app note:** the docs describe a terminal agent panel (arrow keys, tmux split panes);
+  in the desktop app, teammate spawning/coordination still works through the lead, but the
+  fine-grained "view/message one teammate" panel UX may differ — coordinate through the PM/lead.
+
 ## Decision log
 The PM maintains `docs/team-decision-log.md` — a running, dated record of decisions made (what,
 why, who decided, escalated y/n). One line per decision. This is how Neil audits the team without

@@ -6,5 +6,6 @@ whether it was **escalated** to Neil. This is how Neil audits the team without r
 | Date | Decision | Why | Decided by | Escalated? |
 |---|---|---|---|---|
 | 2026-09-17 | Agent team stood up (PM lead + Developer + UX Tester + UX Designer) | Run development under Neil's direction | Neil | — |
+| 2026-09-17 | Four briefs + charter approved as-is; models opus (PM/Dev), haiku (Tester), sonnet (Designer) | Stage 3 sign-off | Neil | — |
 
 <!-- PM: append new rows above this line, newest at the bottom of the table. -->
