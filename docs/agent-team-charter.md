@@ -84,6 +84,23 @@ force: **only Neil sets an `APPROVED` status** on anything that reaches a sign-o
   in the desktop app, teammate spawning/coordination still works through the lead, but the
   fine-grained "view/message one teammate" panel UX may differ — coordinate through the PM/lead.
 
+## Operating rhythm (how Neil and the team work — set 2026-09-17)
+- **Morning kickoff:** Neil starts a fresh session and gives the PM the day's goal (or "carry on").
+  A new session = a fresh team, so the PM respawns teammates as needed; **all state lives in git +
+  docs + this charter + the decision log + memory** so each day starts clean.
+- **Through the day:** the PM drives the team for **maximum launch progress, as fast as the work
+  allows** — keeping teammates busy on well-scoped, parallel tasks; teammate completions pull the
+  PM back to review and delegate the next piece. Progress happens while the session is open.
+- **Blockers never stall the team:** if something needs Neil's action/input, the PM parks it,
+  moves the team to other unblocked work, and records the blocker for the check-in.
+- **~3pm check-in:** the PM gives Neil a **consolidated status summary** + a **bulleted "what I
+  need from you"** list (decisions, sign-offs, manual jobs — each with the PM's recommendation).
+  Neil actions them quickly, then usually closes the session.
+- **End of day:** the PM leaves everything **committed, logged, and the next-day plan ready**, so
+  the following morning the team makes material progress from the first message.
+- Escalation categories unchanged (money/public-go-live/safety/legal/scope/destructive → Neil, with
+  a recommendation).
+
 ## Decision log
 The PM maintains `docs/team-decision-log.md` — a running, dated record of decisions made (what,
 why, who decided, escalated y/n). One line per decision. This is how Neil audits the team without
