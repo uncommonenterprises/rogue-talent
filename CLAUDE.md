@@ -17,10 +17,17 @@ Rogue Talent (roguetalent.co) is a two-sided marketplace for professional models
 - When a live environment is created: its credentials stay OUT of the dev environment, no browser automation is ever pointed at it, and any agent (incl. the future PM agent) tests the test env only.
 - This repo is **PUBLIC** — no secret values in any committed file (see Environment variables below).
 
+## Agent team
+An experimental four-agent team runs development under Neil's direction — see
+`docs/agent-team-charter.md`. Roles in `.claude/agents/`: **product-manager** (team lead, the only
+agent Neil talks to), **developer**, **ux-tester** (walks journeys, test-only), **ux-designer**.
+The PM decides day-to-day and escalates money/public-go-live/safety/legal/scope/destructive to Neil
+with a recommendation.
+
 ## UX proposal approval gate — non-negotiable
-The `product-manager` subagent (`.claude/agents/product-manager.md`) walks journeys on the
-test site and writes numbered proposals to `ux-reports/proposals/`. It proposes; Neil decides;
-Claude Code implements approved items only. Full flow: `ux-reports/README.md`.
+The `ux-tester` subagent (`.claude/agents/ux-tester.md`) walks journeys on the
+test site and writes numbered proposals to `ux-reports/proposals/`. It proposes; the PM triages;
+Neil signs off the escalation categories. Full flow: `ux-reports/README.md`.
 
 - Implement a UX proposal ONLY if its `Status:` line reads exactly `APPROVED`. PENDING,
   DEFERRED, REJECTED and anything unrecognised mean do nothing.
@@ -34,10 +41,10 @@ Claude Code implements approved items only. Full flow: `ux-reports/README.md`.
   `Note: APPROVED by Neil in chat 2026-08-02 — "approve 1 to 10".`
 - **Echo before you set.** Before applying, echo back the full list of what you are about to set
   (ID → status) so Neil can catch a mis-transcription.
-- The **product-manager subagent** may NEVER set or change a `Status:`/`Note:` line — every
+- The **ux-tester subagent** may NEVER set or change a `Status:`/`Note:` line — every
   proposal it writes is `PENDING` with an empty `Note:`. This is enforced two ways: it has no
   Edit tool (Write-only), and the PreToolUse hook `.claude/hooks/guard-approval-gate.sh` blocks
-  any Write that introduces a non-PENDING Status or a non-empty Note, and blocks the PM agent
+  any Write that introduces a non-PENDING Status or a non-empty Note, and blocks the tester agent
   from any Status/Note edit. The hook allows *your* transcription Edits.
 - NEVER implement a proposal that does not exist in a proposals file. No "while I was in there"
   changes.
@@ -49,8 +56,8 @@ Claude Code implements approved items only. Full flow: `ux-reports/README.md`.
 - If an approved proposal is ambiguous, ask before interpreting. An approval covers the change as
   written, not your extension of it.
 
-### PM agent boundaries
-- The `product-manager` agent writes to `ux-reports/**` and nowhere else. It has **no Edit tool,
+### UX-tester agent boundaries
+- The `ux-tester` agent writes to `ux-reports/**` and nowhere else. It has **no Edit tool,
   no Bash, no git access** — it cannot touch `src/` or open a PR (enforced by its `tools:`
   frontmatter, not just instruction).
 - It tests `ndstealth1-test` / the Railway dev URL only. Never live.
