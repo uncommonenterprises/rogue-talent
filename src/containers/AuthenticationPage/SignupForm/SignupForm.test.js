@@ -141,6 +141,10 @@ describe('SignupForm', () => {
     await user.type(screen.getByRole('textbox', { name: 'SignupForm.lastNameLabel' }), 'Dunphy');
     await user.type(screen.getByLabelText('SignupForm.passwordLabel'), 'secret-password');
     await user.type(screen.getByLabelText('Text Field'), 'Text value');
+    // Date of birth is a native date input (SAF-38 age gate); set a valid 18+ date.
+    fireEvent.change(screen.getByLabelText('SignupForm.dateOfBirthLabel'), {
+      target: { value: '2000-01-01' },
+    });
 
     // Test that sign up button is still disabled before clicking the checkbox
     expect(screen.getByRole('button', { name: 'SignupForm.signUp' })).toBeDisabled();

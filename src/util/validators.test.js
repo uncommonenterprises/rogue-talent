@@ -10,6 +10,7 @@ import {
   validBusinessURL,
   validHKID,
   requiredSelectTreeOption,
+  dateOfBirthAgeAtLeast,
 } from './validators';
 import { createSlug } from '../util/urlHelpers';
 
@@ -270,6 +271,49 @@ describe('validators', () => {
     });
     it('should allow string with valid HKID using brackets in check digit', () => {
       expect(validHKID('pass')('E327824(0)')).toBeUndefined();
+    });
+  });
+  describe('dateOfBirthAgeAtLeast()', () => {
+    const validate = dateOfBirthAgeAtLeast('invalid', 'tooYoung', 18);
+
+    const isoDaysAgo = years => {
+      const d = new Date();
+      d.setFullYear(d.getFullYear() - years);
+      const pad = n => String(n).padStart(2, '0');
+      return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+    };
+
+    it('leaves emptiness to the required validator (empty string)', () => {
+      expect(validate('')).toBeUndefined();
+    });
+    it('leaves emptiness to the required validator (undefined)', () => {
+      expect(validate(undefined)).toBeUndefined();
+    });
+    it('fails on a non-ISO / free-text value', () => {
+      expect(validate('01/01/2000')).toEqual('invalid');
+    });
+    it('fails on a calendar-impossible date', () => {
+      expect(validate('2000-02-31')).toEqual('invalid');
+    });
+    it('fails on a future date of birth', () => {
+      expect(validate(isoDaysAgo(-5))).toEqual('invalid');
+    });
+    it('fails when clearly under 18', () => {
+      expect(validate(isoDaysAgo(10))).toEqual('tooYoung');
+    });
+    it('fails the day before the 18th birthday', () => {
+      const d = new Date();
+      d.setFullYear(d.getFullYear() - 18);
+      d.setDate(d.getDate() + 1);
+      const pad = n => String(n).padStart(2, '0');
+      const iso = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+      expect(validate(iso)).toEqual('tooYoung');
+    });
+    it('passes for exactly 18 today', () => {
+      expect(validate(isoDaysAgo(18))).toBeUndefined();
+    });
+    it('passes for comfortably over 18', () => {
+      expect(validate(isoDaysAgo(30))).toBeUndefined();
     });
   });
 });

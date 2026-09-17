@@ -5,6 +5,7 @@ import classNames from 'classnames';
 
 import { FormattedMessage, useIntl } from '../../../util/reactIntl';
 import { propTypes } from '../../../util/types';
+import { stringifyDateToISO8601 } from '../../../util/dates';
 import * as validators from '../../../util/validators';
 import { getPropsForCustomUserFieldInputs } from '../../../util/userHelpers';
 
@@ -15,6 +16,9 @@ import UserFieldDisplayName from '../UserFieldDisplayName';
 import UserFieldPhoneNumber from '../UserFieldPhoneNumber';
 
 import css from './SignupForm.module.css';
+
+// SAF-38: Rogue Talent is 18+ only, no exceptions.
+const MIN_SIGNUP_AGE = 18;
 
 const getSoleUserTypeMaybe = userTypes =>
   Array.isArray(userTypes) && userTypes.length === 1 ? userTypes[0].userType : null;
@@ -49,6 +53,8 @@ const SignupFormComponent = props => (
         userTypes,
         userFields,
         values,
+        errors,
+        touched,
       } = formRenderProps;
 
       const { userType } = values || {};
@@ -99,6 +105,26 @@ const SignupFormComponent = props => (
         passwordMinLength,
         passwordMaxLength
       );
+
+      // date of birth (SAF-38 age gate) — stored to protectedData.date_of_birth
+      const dateOfBirthRequired = validators.required(
+        intl.formatMessage({
+          id: 'SignupForm.dateOfBirthRequired',
+        })
+      );
+      const dateOfBirthValid = validators.dateOfBirthAgeAtLeast(
+        intl.formatMessage({
+          id: 'SignupForm.dateOfBirthInvalid',
+        }),
+        intl.formatMessage({
+          id: 'SignupForm.dateOfBirthUnderage',
+        }),
+        MIN_SIGNUP_AGE
+      );
+      // Belt to the validator's brace: prevent picking a future date in the native picker.
+      const maxDateOfBirth = stringifyDateToISO8601(new Date());
+      // The under-18/invalid error replaces the hint once the field has been touched.
+      const showDateOfBirthError = !!(touched?.date_of_birth && errors?.date_of_birth);
 
       // Custom user fields. Since user types are not supported here,
       // only fields with no user type id limitation are selected.
@@ -210,6 +236,24 @@ const SignupFormComponent = props => (
                 userTypeConfig={userTypeConfig}
                 intl={intl}
               />
+
+              <FieldTextInput
+                className={css.dateOfBirth}
+                type="date"
+                id={formId ? `${formId}.date_of_birth` : 'date_of_birth'}
+                name="date_of_birth"
+                autoComplete="bday"
+                max={maxDateOfBirth}
+                label={intl.formatMessage({
+                  id: 'SignupForm.dateOfBirthLabel',
+                })}
+                validate={validators.composeValidators(dateOfBirthRequired, dateOfBirthValid)}
+              />
+              {showDateOfBirthError ? null : (
+                <p className={css.dateOfBirthHint}>
+                  <FormattedMessage id="SignupForm.dateOfBirthHint" />
+                </p>
+              )}
             </div>
           ) : null}
 

@@ -51,6 +51,21 @@
   margin-bottom: 24px;
 }
 
+.dateOfBirth {
+  margin-top: 24px;
+
+  @media (--viewportMedium) {
+    margin-top: 32px;
+  }
+}
+
+.dateOfBirthHint {
+  composes: textXSmall from global;
+  color: var(--text-muted, #71757e);
+  margin-top: 6px;
+  margin-bottom: 0;
+}
+
 .bottomWrapper {
   composes: marketplaceModalBottomWrapper from global;
 }

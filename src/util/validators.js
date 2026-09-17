@@ -181,6 +181,60 @@ export const ageAtLeast = (message, minYears) => value => {
   return message;
 };
 
+/**
+ * Validates a date-of-birth string from a native date input (ISO 8601 'YYYY-MM-DD')
+ * and enforces a minimum age in whole years.
+ *
+ * Returns `invalidMessage` for anything that isn't a real, non-future calendar date
+ * (e.g. autofill edge cases that bypass the native picker), `tooYoungMessage` when the
+ * entered date is younger than `minYears`, and VALID otherwise. Emptiness is intentionally
+ * left to the `required` validator so the two concerns compose cleanly.
+ *
+ * @param {string} invalidMessage - shown for an unparseable or future date
+ * @param {string} tooYoungMessage - shown when the age is below minYears
+ * @param {number} minYears - minimum age in whole years
+ * @returns {(value: string) => (string|undefined)} validator returning a message or VALID
+ */
+export const dateOfBirthAgeAtLeast = (invalidMessage, tooYoungMessage, minYears) => value => {
+  // Emptiness is handled by the `required` validator.
+  if (typeof value !== 'string' || value.trim().length === 0) {
+    return VALID;
+  }
+
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value.trim());
+  if (!match) {
+    return invalidMessage;
+  }
+
+  const yearNum = parseNum(match[1]);
+  const monthNum = parseNum(match[2]);
+  const dayNum = parseNum(match[3]);
+  if (yearNum === null || monthNum === null || dayNum === null) {
+    return invalidMessage;
+  }
+
+  const dob = new Date(yearNum, monthNum - 1, dayNum);
+  // Guard against non-existent dates that JS rolls over (e.g. 2021-02-31 -> March).
+  const isRealDate =
+    dob instanceof Date &&
+    !Number.isNaN(dob.getTime()) &&
+    dob.getFullYear() === yearNum &&
+    dob.getMonth() === monthNum - 1 &&
+    dob.getDate() === dayNum;
+  if (!isRealDate) {
+    return invalidMessage;
+  }
+
+  // A future date of birth is never valid.
+  const now = new Date();
+  if (dob.getTime() > now.getTime()) {
+    return invalidMessage;
+  }
+
+  const ageInYears = diffInTime(now, dob, 'years', true);
+  return ageInYears >= minYears ? VALID : tooYoungMessage;
+};
+
 export const validBusinessURL = message => value => {
   if (typeof value === 'undefined' || value === null) {
     return message;
