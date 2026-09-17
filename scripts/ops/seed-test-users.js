@@ -187,9 +187,19 @@ const integrationSdk = flexIntegrationSdk.createInstance({
   clientSecret: integrationClientSecret,
 });
 
-const dayPlan = () => ({
-  type: 'availability-plan/day',
-  entries: ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'].map(d => ({ dayOfWeek: d, seats: 1 })),
+// Match the plan the real app wizard produces (EditListingAvailabilityPanel
+// "available by default" baseline): availability-plan/TIME with a timezone and
+// full-day (00:00→00:00) entries. A day-type plan renders NO booking form on the
+// listing page, so seeded published models were unbookable — see Jane F. vs Anais.
+const timePlan = () => ({
+  type: 'availability-plan/time',
+  timezone: 'Europe/London',
+  entries: ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'].map(dayOfWeek => ({
+    dayOfWeek,
+    seats: 1,
+    startTime: '00:00',
+    endTime: '00:00',
+  })),
 });
 
 const isEmailTakenError = err => {
@@ -266,7 +276,7 @@ async function buildProfile(u, userId, profile, { publish }) {
     },
   };
   if (profile.priceSubunits) draftParams.price = new Money(profile.priceSubunits, CURRENCY);
-  if (publish) draftParams.availabilityPlan = dayPlan();
+  if (publish) draftParams.availabilityPlan = timePlan();
 
   const draft = await sdk.ownListings.createDraft(draftParams, { expand: true });
   const listingId = draft?.data?.data?.id?.uuid;
