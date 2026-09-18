@@ -20,4 +20,6 @@ whether it was **escalated** to Neil. This is how Neil audits the team without r
 
 | 2026-09-18 | ✅ END-TO-END MONEY PATH VERIFIED (test mode). Client rt-client-01 booked rt-model-03 (Anais) → Stripe test card → transaction 6aad6151 created on default-booking v1: lastTransition confirm-payment, payin £345 / payout £300 / fee £45 (15%). First real money movement. Client transaction rights were granted via Integration API (Neil ran the command; email-verification gate is the real mechanism). | Verify the booking money path | PM (Neil ran the grant) | No (test-mode verification) |
 
+| 2026-09-18 | Booking-v2 decisions (Neil, via decision cards): (1) SAFETY cancel reasons — INTERIM: do a plain cancel, store nothing client-visible, direct the model to a safety-report channel; build private operator-only routing before go-live (SAF-29/31/32). (2) APPROVE client disputes (new `transition/dispute`) — client can pause payout until ops resolves. (3) Payouts: KEEP FAST (operator-release + P5D backstop), NO minimum dispute hold (preserves 'usually the next working day'). | Booking-v2 safety/process/money design | Neil (accepted PM recommendations) | Yes (safety/money) |
+
 <!-- PM: append new rows above this line, newest at the bottom of the table. -->
