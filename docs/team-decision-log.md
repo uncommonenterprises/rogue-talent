@@ -18,4 +18,6 @@ whether it was **escalated** to Neil. This is how Neil audits the team without r
 
 | 2026-09-18 | Booking-v2 dispute UI (increment 3) built + PM-reviewed — local commit 744791f98, NOT pushed. Client dispute action (`completed`→`disputed-hold`) + state displays; scope correct (no in-app operator controls); tests 210/210. Required a NEW `transition/dispute` in the EDN (process change → needs Neil's approval). Design calls for Neil: client can unilaterally freeze payout; dispute window may be short. See docs/booking-v2-cancel-ui-review-2026-09-18.md. | Booking-v2 dispute increment | PM (Developer built; flagged for Neil) | Yes (process/money — pending Neil) |
 
+| 2026-09-18 | ✅ END-TO-END MONEY PATH VERIFIED (test mode). Client rt-client-01 booked rt-model-03 (Anais) → Stripe test card → transaction 6aad6151 created on default-booking v1: lastTransition confirm-payment, payin £345 / payout £300 / fee £45 (15%). First real money movement. Client transaction rights were granted via Integration API (Neil ran the command; email-verification gate is the real mechanism). | Verify the booking money path | PM (Neil ran the grant) | No (test-mode verification) |
+
 <!-- PM: append new rows above this line, newest at the bottom of the table. -->
