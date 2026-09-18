@@ -70,12 +70,16 @@ export const getListingCardTranslations = (listing, config, intl) => {
     ? intl.formatMessage({ id: 'ListingCard.perUnit' }, { unitType: publicData?.unitType })
     : '';
 
-  // Single formatted price line (amount + per-unit if applicable); used for both card aria and price block
-  const priceValue = <span className={css.priceValue}>{formattedPrice}</span>;
-  const pricePerUnit = isBookable ? <span className={css.perUnit}>{perUnitString}</span> : '';
+  // Single formatted price line (amount + per-unit if applicable). Built from PLAIN STRINGS so it
+  // is safe to use in the card's aria-label: an aria-label must be a string. Passing React elements
+  // as formatMessage values makes react-intl return an array of React nodes, which stringifies to
+  // "[object Object]" when set on a DOM attribute and causes SSR-hydration (recoverable) errors.
   const priceMessage =
     showPrice && formattedPrice != null
-      ? intl.formatMessage({ id: priceMessageId }, { priceValue, pricePerUnit })
+      ? intl.formatMessage(
+          { id: priceMessageId },
+          { priceValue: formattedPrice, pricePerUnit: perUnitString }
+        )
       : '';
 
   const cardAriaLabel =

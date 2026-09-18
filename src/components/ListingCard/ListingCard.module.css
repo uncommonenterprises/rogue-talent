@@ -142,13 +142,6 @@
   color: var(--text-inverse);
 }
 
-/* Price value / per-unit — still referenced by ListingCard.helpers' priceMessage. */
-.priceValue,
-.perUnit {
-  font-weight: var(--fontWeightSemiBold);
-  color: var(--marketplaceColor);
-}
-
 .longWord {
   word-break: break-word;
   hyphens: auto;
