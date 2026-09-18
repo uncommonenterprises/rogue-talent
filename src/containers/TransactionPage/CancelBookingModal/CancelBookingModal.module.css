@@ -1,0 +1,116 @@
+@import '../../../styles/customMediaQueries.css';
+
+.root {
+  composes: marketplaceModalBaseStyles from global;
+  padding-top: 70px;
+
+  @media (--viewportMedium) {
+    flex-basis: 567px;
+  }
+}
+
+.modalContent {
+  flex-grow: 1;
+}
+
+.modalTitle {
+  composes: marketplaceModalTitleStyles from global;
+}
+
+.modalMessage {
+  composes: marketplaceModalParagraphStyles from global;
+}
+
+.formRoot {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin-top: 24px;
+}
+
+/* Refund / charge reconciliation block */
+.preview {
+  border: var(--border-hairline, 1px solid #e6e6e6);
+  border-radius: var(--radius-lg, 8px);
+  padding: var(--space-4, 16px);
+  margin-bottom: var(--space-5, 24px);
+}
+
+.previewRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--space-4, 16px);
+  padding: var(--space-2, 8px) 0;
+}
+
+.previewRow + .previewRow {
+  border-top: var(--border-hairline, 1px solid #e6e6e6);
+}
+
+.previewLabel {
+  color: var(--text-secondary, var(--colorGrey700));
+  font-size: var(--text-sm, 14px);
+}
+
+.previewValue {
+  color: var(--text-primary, var(--colorGrey900));
+  font-weight: var(--weight-semibold, 600);
+  font-size: var(--text-sm, 14px);
+  text-align: right;
+}
+
+/* Provider reason picker */
+.reasonFieldset {
+  border: none;
+  padding: 0;
+  margin: 0 0 var(--space-4, 16px) 0;
+}
+
+.reasonLegend {
+  color: var(--text-primary, var(--colorGrey900));
+  font-weight: var(--weight-semibold, 600);
+  font-size: var(--text-base, 16px);
+  padding: 0;
+  margin-bottom: var(--space-3, 12px);
+}
+
+.reasonGroupHeading {
+  color: var(--text-secondary, var(--colorGrey700));
+  font-size: var(--text-sm, 14px);
+  font-weight: var(--weight-semibold, 600);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wide, 0.04em);
+  margin: var(--space-4, 16px) 0 var(--space-2, 8px) 0;
+}
+
+.reasonGroupNote {
+  color: var(--text-secondary, var(--colorGrey700));
+  font-size: var(--text-sm, 14px);
+  margin: 0 0 var(--space-2, 8px) 0;
+}
+
+.error {
+  color: var(--colorFail);
+  font-size: var(--text-sm, 14px);
+  margin: 0 0 var(--space-3, 12px) 0;
+}
+
+.actions {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: var(--space-3, 12px);
+  margin-top: var(--space-5, 24px);
+
+  @media (--viewportMedium) {
+    flex-direction: row;
+  }
+}
+
+.keepButton {
+  flex: 1;
+}
+
+.confirmButton {
+  flex: 1;
+}

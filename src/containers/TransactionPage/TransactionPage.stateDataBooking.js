@@ -26,6 +26,7 @@ export const getStateDataForBookingProcess = (txInfo, processInfo) => {
     isCustomer,
     actionButtonProps,
     leaveReviewProps,
+    cancelBookingProps,
   } = processInfo;
 
   return new ConditionalResolver([processState, transactionRole])
@@ -54,6 +55,29 @@ export const getStateDataForBookingProcess = (txInfo, processInfo) => {
         showActionButtons: true,
         primaryButtonProps: primary,
         secondaryButtonProps: secondary,
+      };
+    })
+    .cond([states.ACCEPTED, _], () => {
+      // Confirmed, ≥48h before the shoot. Either party may cancel; the modal shows
+      // a full refund to the client (two-tier policy, enforced by the process state).
+      return {
+        processName,
+        processState,
+        showDetailCardHeadings: true,
+        showActionButtons: true,
+        secondaryButtonProps: cancelBookingProps,
+      };
+    })
+    .cond([states.ACCEPTED_LATE, _], () => {
+      // Confirmed, <48h before the shoot. Customer cancel = no refund (model still
+      // paid); provider cancel = still a full refund to the client. The modal makes
+      // the money outcome explicit before confirming.
+      return {
+        processName,
+        processState,
+        showDetailCardHeadings: true,
+        showActionButtons: true,
+        secondaryButtonProps: cancelBookingProps,
       };
     })
     .cond([states.DELIVERED, _], () => {

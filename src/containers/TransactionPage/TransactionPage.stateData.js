@@ -97,6 +97,7 @@ export const getStateData = (params, process) => {
     sendReviewInProgress,
     sendReviewError,
     onOpenReviewModal,
+    onOpenCancelModal,
     //onOpenRequestChangesModal,
     //onOpenMakeCounterOfferModal,
     //onCheckoutRedirect,
@@ -135,6 +136,23 @@ export const getStateData = (params, process) => {
     actionButtonTranslationErrorId: 'TransactionPage.leaveReview.actionError',
   });
 
+  // Cancel button opens the CancelBookingModal (refund preview + provider reason
+  // picker), which fires the actual booking-v2 cancel transition. The modal shows
+  // its own error, so we don't surface transitionError on the opener button.
+  const getCancelBookingProps = onOpenCancelModal
+    ? getActionButtonPropsMaybe({
+        processName,
+        transitionName: 'cancelBooking',
+        transactionRole,
+        intl,
+        inProgress: false,
+        transitionError: null,
+        onAction: onOpenCancelModal,
+        actionButtonTranslationId: 'TransactionPage.cancelBooking.actionButton',
+        actionButtonTranslationErrorId: 'TransactionPage.cancelBooking.actionError',
+      })
+    : {};
+
   const processInfo = () => {
     const { getState, states, transitions } = process;
     const processState = getState(transaction);
@@ -146,6 +164,7 @@ export const getStateData = (params, process) => {
       isCustomer,
       actionButtonProps: getActionButtonProps,
       leaveReviewProps: getLeaveReviewProps,
+      cancelBookingProps: getCancelBookingProps,
     };
   };
 

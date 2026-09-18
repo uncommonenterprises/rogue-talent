@@ -65,6 +65,7 @@ import Offer from './Offer/Offer';
 import TransactionFields from './TransactionFields/TransactionFields.js';
 import ActivityFeed from './ActivityFeed/ActivityFeed';
 import DisputeModal from './DisputeModal/DisputeModal';
+import CancelBookingModal from './CancelBookingModal/CancelBookingModal';
 import ReviewModal from './ReviewModal/ReviewModal';
 import RequestChangesModal from './RequestChangesModal/RequestChangesModal';
 import MakeCounterOfferModal from './MakeCounterOfferModal/MakeCounterOfferModal';
@@ -301,6 +302,7 @@ const useUploadNavigationBlock = (isBlockNavigation, history, message) => {
 export const TransactionPageComponent = props => {
   const [isDisputeModalOpen, setDisputeModalOpen] = useState(false);
   const [disputeSubmitted, setDisputeSubmitted] = useState(false);
+  const [isCancelModalOpen, setCancelModalOpen] = useState(false);
   const [isReviewModalOpen, setReviewModalOpen] = useState(false);
   const [reviewSubmitted, setReviewSubmitted] = useState(false);
   const [isRequestChangesModalOpen, setRequestChangesModalOpen] = useState(false);
@@ -531,6 +533,54 @@ export const TransactionPageComponent = props => {
     setDisputeModalOpen(true);
   };
 
+  // Open cancel-booking modal
+  const onOpenCancelModal = () => {
+    setCancelModalOpen(true);
+  };
+
+  // Booking-v2 cancellation config. The two-tier refund policy is enforced by the
+  // process STATE (accepted = ≥48h → full refund; accepted-late = <48h → no refund),
+  // so we derive the transition + refund tier from the state, not from a client-side
+  // clock — the client-side state is authoritative for what the backend will do.
+  const bookingProcessState = process ? process.getState(transaction) : null;
+  const isCancellableBookingState =
+    process &&
+    [process.states?.ACCEPTED, process.states?.ACCEPTED_LATE].includes(bookingProcessState);
+  const isAcceptedLate = process && bookingProcessState === process.states?.ACCEPTED_LATE;
+
+  // Provider cancel is ALWAYS a full refund to the client, in both tiers, and requires
+  // a reason. Customer cancel is a full refund ≥48h (accepted) and no refund <48h
+  // (accepted-late).
+  const cancelTransition = process
+    ? isProviderRole
+      ? isAcceptedLate
+        ? process.transitions?.PROVIDER_CANCEL_LATE
+        : process.transitions?.PROVIDER_CANCEL
+      : isAcceptedLate
+      ? process.transitions?.CUSTOMER_CANCEL_LATE
+      : process.transitions?.CUSTOMER_CANCEL
+    : null;
+  const cancelRefundsClient = isProviderRole ? true : !isAcceptedLate;
+  const cancelRequiresReason = isProviderRole;
+  const cancelInProgress = transitionInProgress === cancelTransition;
+
+  // Submit a cancellation: fire the cancel transition. Provider reasons are captured
+  // in protectedData (reason + category) for off-process routing.
+  const onCancelBooking = values => {
+    const { cancelReason, cancelReasonCategory } = values || {};
+    const params =
+      cancelRequiresReason && cancelReason
+        ? { protectedData: { cancelReason, cancelReasonCategory } }
+        : {};
+    onTransition(transaction?.id, cancelTransition, params)
+      .then(() => {
+        setCancelModalOpen(false);
+      })
+      .catch(() => {
+        // Error is surfaced inside the modal via transitionError.
+      });
+  };
+
   const deletedListingTitle = intl.formatMessage({
     id: 'TransactionPage.deletedListing',
   });
@@ -708,6 +758,7 @@ export const TransactionPageComponent = props => {
           sendReviewError,
           onTransition,
           onOpenReviewModal,
+          onOpenCancelModal,
           onOpenRequestChangesModal,
           onOpenMakeCounterOfferModal,
           onCheckoutRedirect: handleSubmitOrderRequest,
@@ -1012,6 +1063,24 @@ export const TransactionPageComponent = props => {
             disputeSubmitted={disputeSubmitted}
             disputeInProgress={transitionInProgress === process.transitions.DISPUTE}
             disputeError={transitionError}
+          />
+        ) : null}
+        {isBookingProcess(processName) && isCancellableBookingState && cancelTransition ? (
+          <CancelBookingModal
+            id="CancelBookingModal"
+            isOpen={isCancelModalOpen}
+            focusElementId={`${actionButtonContainer}_${ACTION_BUTTON_2_ID}`}
+            onCloseModal={() => setCancelModalOpen(false)}
+            onManageDisableScrolling={onManageDisableScrolling}
+            onSubmitCancel={onCancelBooking}
+            transactionRole={transactionRole}
+            requiresReason={cancelRequiresReason}
+            refundsClient={cancelRefundsClient}
+            isLate={isAcceptedLate}
+            payinTotal={transaction?.attributes?.payinTotal}
+            payoutTotal={transaction?.attributes?.payoutTotal}
+            cancelInProgress={cancelInProgress}
+            cancelError={transitionError}
           />
         ) : null}
         {process?.transitions?.REQUEST_CHANGES ? (
