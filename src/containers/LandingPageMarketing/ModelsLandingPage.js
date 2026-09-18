@@ -35,7 +35,7 @@ const PROTECTED = [
   {
     title: 'Paid on time, always',
     text:
-      "Payment is secured in escrow before you arrive. You're paid the moment the client confirms the shoot is done.",
+      "Payment is secured in escrow before you arrive. You're paid after the shoot — usually the next working day, always within five working days.",
   },
   {
     title: 'Your image, your terms',

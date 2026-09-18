@@ -37,7 +37,7 @@ const TRUST = [
   {
     title: 'Escrow payments',
     text:
-      'The business pays upfront into escrow. Funds release to the model the moment the shoot is confirmed complete — no chasing invoices.',
+      'The business pays upfront into escrow. After the shoot, the model is paid — usually the next working day, always within five working days. No chasing invoices.',
   },
   {
     title: 'Clear contracts',

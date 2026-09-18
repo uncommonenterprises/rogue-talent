@@ -27,7 +27,7 @@ const PROTECT = [
   {
     title: 'Escrow payments',
     text:
-      'Pay upfront into escrow; funds release to the model only once you confirm the shoot is complete. A formal process covers any dispute.',
+      'Pay upfront into escrow; after the shoot, the model is paid — usually the next working day, always within five working days. A formal process covers any dispute.',
   },
   {
     title: 'Usage rights, locked in',
