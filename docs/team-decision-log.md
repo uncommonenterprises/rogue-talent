@@ -16,4 +16,6 @@ whether it was **escalated** to Neil. This is how Neil audits the team without r
 
 | 2026-09-18 | Booking-v2 cancellation UI (increment 2) built + PM-reviewed — local commit 30ec2122d, NOT pushed. Structure/refund-logic approved. BLOCKING safety issue: provider safety-cancel reasons are written to client-visible transaction `protectedData` and the copy promises private team review + no reliability impact, neither of which is built. Must fix before ship (rec: interim generic-cancel for safety reasons; build private routing at go-live, ties to SAF-29/31/32). See docs/booking-v2-cancel-ui-review-2026-09-18.md. | Safety review of booking-v2 build | PM (flagged for Neil) | Yes (safety — pending Neil) |
 
+| 2026-09-18 | Booking-v2 dispute UI (increment 3) built + PM-reviewed — local commit 744791f98, NOT pushed. Client dispute action (`completed`→`disputed-hold`) + state displays; scope correct (no in-app operator controls); tests 210/210. Required a NEW `transition/dispute` in the EDN (process change → needs Neil's approval). Design calls for Neil: client can unilaterally freeze payout; dispute window may be short. See docs/booking-v2-cancel-ui-review-2026-09-18.md. | Booking-v2 dispute increment | PM (Developer built; flagged for Neil) | Yes (process/money — pending Neil) |
+
 <!-- PM: append new rows above this line, newest at the bottom of the table. -->
