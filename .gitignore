@@ -29,3 +29,6 @@ docs/discovery-model-fields.md
 # ~5MB per run and regenerable via scripts/ops/build-review-html.js. The markdown
 # and screenshots are the record; the HTML is not committed.
 ux-reports/review/
+
+# UX test screenshots (evidence artifacts; regenerable, keep out of the public repo)
+ux-reports/screenshots/
