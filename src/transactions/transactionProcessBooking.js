@@ -60,6 +60,11 @@ export const transitions = {
   AUTO_PAYOUT: 'transition/auto-payout',
   OPERATOR_COMPLETE: 'transition/operator-complete', // operator releases payout early
 
+  // Customer raises a dispute during the completed → delivered window; freezes the
+  // pending payout (→ disputed-hold) and captures a reason in protectedData. The
+  // operator then resolves via the operator-hold-* transitions below.
+  DISPUTE: 'transition/dispute',
+
   // Dispute / no-show path (operator, during the completed → delivered window).
   OPERATOR_DISPUTE_REFUND: 'transition/operator-dispute-refund',
   OPERATOR_DISPUTE_HOLD: 'transition/operator-dispute-hold',
@@ -176,6 +181,7 @@ export const graph = {
       on: {
         [transitions.AUTO_PAYOUT]: states.DELIVERED,
         [transitions.OPERATOR_COMPLETE]: states.DELIVERED,
+        [transitions.DISPUTE]: states.DISPUTED_HOLD,
         [transitions.OPERATOR_DISPUTE_REFUND]: states.REFUNDED_DISPUTE,
         [transitions.OPERATOR_DISPUTE_HOLD]: states.DISPUTED_HOLD,
       },
@@ -230,6 +236,7 @@ export const isRelevantPastTransition = transition => {
     transitions.COMPLETE_LATE,
     transitions.AUTO_PAYOUT,
     transitions.OPERATOR_COMPLETE,
+    transitions.DISPUTE,
     transitions.OPERATOR_DISPUTE_REFUND,
     transitions.OPERATOR_DISPUTE_HOLD,
     transitions.OPERATOR_HOLD_REFUND,

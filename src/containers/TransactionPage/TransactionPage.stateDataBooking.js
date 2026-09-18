@@ -80,6 +80,36 @@ export const getStateDataForBookingProcess = (txInfo, processInfo) => {
         secondaryButtonProps: cancelBookingProps,
       };
     })
+    .cond([states.COMPLETED, CUSTOMER], () => {
+      // Shoot done; payout pending (dispute window before auto-payout / operator
+      // release). The customer can raise a dispute here — this freezes the payout
+      // (→ disputed-hold) and captures a reason for the operator to resolve.
+      return {
+        processName,
+        processState,
+        showDetailCardHeadings: true,
+        showExtraInfo: true,
+        showDispute: true,
+      };
+    })
+    .cond([states.COMPLETED, PROVIDER], () => {
+      return { processName, processState, showDetailCardHeadings: true, showExtraInfo: true };
+    })
+    .cond([states.DISPUTED_HOLD, _], () => {
+      // Operator is investigating (raised by either party). Payout is paused; no
+      // in-app party action — the operator resolves off-app (Console / Integration API).
+      return { processName, processState, showDetailCardHeadings: true, showExtraInfo: true };
+    })
+    .cond([states.REFUNDED_DISPUTE, _], () => {
+      return { processName, processState, showDetailCardHeadings: true, showExtraInfo: true };
+    })
+    .cond([states.CANCELLED_CHARGED, _], () => {
+      // Customer cancelled <48h: no refund, model still owed payout (scheduled).
+      return { processName, processState, showDetailCardHeadings: true, showExtraInfo: true };
+    })
+    .cond([states.CANCELLED_CHARGED_PAID, _], () => {
+      return { processName, processState, showDetailCardHeadings: true, showExtraInfo: true };
+    })
     .cond([states.DELIVERED, _], () => {
       return {
         processName,

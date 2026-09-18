@@ -9,6 +9,12 @@ Neil's go.
 `booking-v2-validation` on `ndstealth1-test` via `flex-cli process create` and it was
 accepted (34 transitions, 18 states, all `:at` expressions valid). Structural gate ✅.
 
+**Update (2026-09-18):** added a **customer-initiated `transition/dispute`**
+(`completed → disputed-hold`, `update-protected-data`) so a client can raise a dispute in
+the operator/payout window; the operator then resolves via the existing `operator-hold-*`
+transitions. This is a **new transition — the EDN must be re-validated and pushed** (needs
+Neil's go). The revised count is 35 transitions / 18 states.
+
 **Still needed before it's the real process:**
 - Email templates: the `templates/` dir + new dispute/cancel templates (the notifications
   here reference stock templates repointed to `auto-payout`, plus new ones to author).

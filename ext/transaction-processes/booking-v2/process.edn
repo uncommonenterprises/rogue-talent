@@ -158,6 +158,11 @@
    :actions [{:name :action/stripe-create-payout}],
    :from :state/completed,
    :to :state/delivered}
+  {:name :transition/dispute,
+   :actor :actor.role/customer,
+   :actions [{:name :action/update-protected-data}],
+   :from :state/completed,
+   :to :state/disputed-hold}
   {:name :transition/operator-dispute-refund,
    :actor :actor.role/operator,
    :actions
