@@ -1,82 +1,85 @@
-# Copy fixes — ready to paste (Console CMS) — 2026-09-18
+# Copy fixes — organized by WHERE each one is edited (2026-09-18)
 
-From the copy audit (`ux-reports/copy-audit-2026-09-18.md`). **Every page below is Console-hosted
-CMS (Content → Pages), so these are Neil's Console edits — not code.** Current wording is quoted;
-paste the replacement. Two-tier + fee semantics verified against `docs/booking-process-design.md`
-and `docs/cancellation-process-spec.md`.
+From the copy audit (`ux-reports/copy-audit-2026-09-18.md`). **Important:** the pages split into two
+groups — some are edited in **Sharetribe Console** (your job), some are **hand-coded in the app**
+(my/Developer job). Verified against the routing in `src/routing/routeConfiguration.js`.
 
-⚠️ **Legal-review flag:** the Terms of Service items are legal text. The plain-language drafts below
-match the decided v1 policy, but Terms should get a lawyer's eye before go-live
-(`docs/compliance-open-items.md` §3 already flags this). The FAQ/marketing drafts are safe to paste.
+- **Console pages** (render Content → Pages assets): `/terms-of-service`, `/p/faq`, `/p/safety`,
+  `/p/about`, `/privacy-policy`.
+- **Code pages** (hand-coded React components): `/` (home), `/p/for-business`, `/p/for-models`.
+
+⚠️ Terms of Service is legal text — the plain-language drafts below match the decided v1 policy, but
+have a lawyer review Terms before go-live (`docs/compliance-open-items.md` §3).
 
 ---
 
-## 1. Cancellation policy — LAUNCH-BLOCKER (Terms §5 + FAQ)
-Current copy describes a **three-tier** policy; v1 is **two-tier**. Fix both places identically.
+# PART 1 — YOUR Console edits
+In Sharetribe **Console → Content → Pages**, open the named page and find the block containing the
+quoted "current" text, then replace it. The live URL is given so you can see the page you're editing.
 
-**Terms of Service → §5 "Cancellations and refunds" — REPLACE the three-tier text with:**
+## 1a. Terms of Service  ·  Console page: **"Terms of service"**  ·  live: `/terms-of-service`
+**🔴 LAUNCH-BLOCKER — Cancellation section (currently three-tier).** Find the block that says
+*"…more than 72 hours before the shoot receive a full refund… 24–72 hours… 50%… less than 24 hours…
+charged in full"* and replace it with:
 > If you cancel a confirmed booking **48 hours or more before the shoot start time**, you receive a
 > **full refund** of everything you paid (the model's rate and the booking fee). If you cancel
 > **less than 48 hours before the shoot start time**, the booking is **non-refundable** and the
 > model is paid in full. If the **model** cancels a confirmed booking, you receive a **full refund**
 > regardless of timing.
 
-**FAQ → "Can I cancel a booking?" — REPLACE with:**
+**Fee section (currently the old model).** Find *"Rogue Talent charges a 10% platform fee to models
+and a 5% service fee to clients."* and replace with:
+> Rogue Talent charges the client a booking fee of **15% of the model's rate**. Models keep **100%**
+> of their rate; **no fee is charged to models**.
+
+## 1b. FAQ  ·  Console page: **"FAQ"**  ·  live: `/p/faq`
+**🔴 LAUNCH-BLOCKER — "Can I cancel a booking?"** Replace the three-tier answer with:
 > Yes. If you cancel **48 hours or more before the shoot**, you get a full refund. If you cancel
 > **less than 48 hours before the shoot**, the booking is non-refundable and the model is still
 > paid. If a model cancels, you're always fully refunded.
 
----
-
-## 2. Payout timing — HIGH (3 marketing spots)
-Canonical wording (use everywhere): **"usually the next working day, always within five working
-days."** Remove "the moment" / "only once you confirm" (implies instant).
-
-**HOME → "Escrow payments"** — replace *"Funds release to the model the moment the shoot is confirmed complete — no chasing invoices."* with:
-> Once the shoot is complete, the model is paid — usually the next working day, and always within
-> five working days. No chasing invoices.
-
-**FOR-BUSINESS → "Escrow payments"** — replace *"Pay upfront into escrow; funds release to the model only once you confirm the shoot is complete."* with:
-> You pay upfront; the model is paid after the shoot — usually the next working day, always within
-> five working days.
-
-**FOR-MODELS → "Paid on time, always"** — replace *"You're paid the moment the client confirms the shoot is done."* with:
-> You're paid after the shoot — usually the next working day, and always within five working days.
-
----
-
-## 3. Fee structure — HIGH (Terms §4 + FAQ) — STALE OLD MODEL
-Terms/FAQ still describe the **old** commission (10% model + 5% client). v1 = **15% customer
-booking fee only; model keeps 100%** (changed 2026-07-19). Update to match the marketing copy.
-
-**Terms of Service → §4 "Bookings and payments"** — replace *"Rogue Talent charges a 10% platform fee to models and a 5% service fee to clients."* with:
-> Rogue Talent charges the client a booking fee of **15% of the model's rate**. Models keep **100%**
-> of their rate; **no fee is charged to models**.
-
-**FAQ → "How much does it cost to use Rogue Talent?"** — replace the 10%+5% answer with:
+**"How much does it cost to use Rogue Talent?"** Replace the "10% + 5%" answer with:
 > Models keep **100%** of their day rate — Rogue Talent charges models nothing. Clients pay a single
 > **15% booking fee** on top of the model's rate. There are no sign-up fees, subscriptions, or
 > hidden charges for either side.
 
----
-
-## 4. "Verified" language — MEDIUM (Safety, FAQ, + marketing) + missing safety line
-v1 identity verification (SAF-01) is photo-ID, **not** a background check. Don't over-claim.
-
-**Add this clarifier to the Safety page's Identity Verification section AND the FAQ:**
+**Identity-verification question** — add this sentence to the answer:
 > Identity verification confirms who someone is using government-issued photo ID. **It is not a
 > background check or employment-vetting service.**
 
-**Also add to the Safety page (this line is required and the audit found it missing):**
+## 1c. Safety  ·  Console page: **"Safety"**  ·  live: `/p/safety`
+**Add the missing emergency line** (put it near the top / in the intro):
 > Rogue Talent is **not a monitored emergency service**. If you are in immediate danger, call **999**.
 
-**Marketing wording guidance (lower priority):** keep "identity-verified" (precise) rather than bare
-"verified"/"checked" where it could read as vetting. Not a launch-blocker; can be a tidy-up pass.
+**In the "Identity verification" section, add:**
+> Identity verification confirms who someone is using government-issued photo ID. It is not a
+> background check or employment-vetting service.
+
+## 1d. About  ·  Console page: **"About"**  ·  live: `/p/about`  ·  (LOW priority)
+Change *"Every model on Rogue Talent is identity-verified."* → keep, but ensure surrounding copy
+doesn't imply vetting/background checks. Optional tidy-up, not a blocker.
 
 ---
 
-## Suggested order for Neil
-1. **#1 cancellation** (launch-blocker, legal — do first; flag for lawyer).
-2. **#3 fee** (stale/contradictory — quick, high-value).
-3. **#2 payout timing** (quick, 3 spots).
-4. **#4 verified language + the 999 safety line** (the 999 line is worth doing now; the rest can be a tidy-up).
+# PART 2 — MY code edits (no action needed from you)
+These three pages are hand-coded React components, so I'll make the changes (or hand them to the
+Developer). Listed here only so you know they're covered. **Fee copy on these pages is already
+correct (15% / keep 100%) — no change needed there.** The fixes are payout wording + "verified"
+precision.
+
+| Page | Live URL | Component (my edit) | Fix |
+|---|---|---|---|
+| Home | `/` | `GeneralLandingPage.js` | "Funds release… the moment…" → *"usually the next working day, always within five working days"*; tighten "Verified models"/"everyone is checked" |
+| For business | `/p/for-business` | `ClientsLandingPage.js` | "funds release… only once you confirm…" → canonical payout line; "verified" precision |
+| For models | `/p/for-models` | `ModelsLandingPage.js` | "paid the moment the client confirms…" → canonical payout line; "verified" precision |
+
+Canonical payout wording to use everywhere: **"usually the next working day, always within five
+working days."**
+
+---
+
+## Summary
+- **You (Console):** Terms (cancellation + fee), FAQ (cancellation + fee + identity), Safety (999 +
+  identity clarifier), About (low-pri). The two 🔴 launch-blockers (cancellation) are both yours.
+- **Me (code):** Home, For business, For models — payout wording + "verified" precision. Say the
+  word and I'll start these now (small, low-risk text changes in the marketing components).
