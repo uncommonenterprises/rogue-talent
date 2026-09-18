@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import classNames from 'classnames';
 import { Form as FinalForm } from 'react-final-form';
 
@@ -13,14 +13,17 @@ import css from './CancelBookingModal.module.css';
 /**
  * Provider-cancel reason taxonomy (design doc §5).
  *
- * Two categories, two off-process routes:
- *  - `reliability` → increments the model's reliability counter.
- *  - `safety`      → routes to the ops safety queue, NEVER the reliability counter,
- *                    and may flag the client for review.
+ * Two categories, handled differently on submit:
+ *  - `reliability` → the reason + category ARE stored in transaction protectedData
+ *                    (not sensitive; used for off-process reliability routing later).
+ *  - `safety`      → the reason is NEVER stored. Sharetribe `protectedData` is readable
+ *                    by BOTH parties, so a safety reason ("the client made me feel unsafe")
+ *                    would be visible to the accused client. We do a plain cancel that
+ *                    persists nothing client-visible, then direct the model to report the
+ *                    concern through the safety-report channel. Proper private operator-only
+ *                    routing is a go-live backend piece and is NOT built yet.
  *
- * The client is fully refunded either way; only the internal routing differs.
- * The routing itself is handled off-process (events listener) — this picker only
- * captures + tags the reason so nothing is miscategorised or lost.
+ * The client is fully refunded either way; only what we persist / show next differs.
  */
 export const CANCEL_REASON_RELIABILITY = 'reliability';
 export const CANCEL_REASON_SAFETY = 'safety';
@@ -208,6 +211,31 @@ const CancelBookingForm = props => (
   />
 );
 
+// Shown after a SAFETY-reason cancellation. The cancellation has already gone through
+// (client fully refunded); nothing about the reason was stored. We tell the model that
+// and point them at the safety-report channel so a concern isn't silently dropped.
+const SafetyReportGuidance = props => {
+  const { onDone } = props;
+  return (
+    <>
+      <p className={css.modalTitle}>
+        <FormattedMessage id="CancelBookingModal.safetyReport.title" />
+      </p>
+      <p className={css.modalMessage}>
+        <FormattedMessage id="CancelBookingModal.safetyReport.message" />
+      </p>
+      <p className={css.reportChannel}>
+        <FormattedMessage id="CancelBookingModal.safetyReport.howTo" />
+      </p>
+      <div className={css.actions}>
+        <PrimaryButton type="button" className={css.confirmButton} onClick={onDone}>
+          <FormattedMessage id="CancelBookingModal.safetyReport.done" />
+        </PrimaryButton>
+      </div>
+    </>
+  );
+};
+
 /**
  * Cancellation modal for the booking-v2 process.
  *
@@ -221,7 +249,9 @@ const CancelBookingForm = props => (
  * @param {boolean} props.isOpen
  * @param {Function} props.onCloseModal
  * @param {Function} props.onManageDisableScrolling
- * @param {Function} props.onSubmitCancel called with { cancelReason, cancelReasonCategory }
+ * @param {Function} props.onSubmitCancel called with { cancelReason, cancelReasonCategory };
+ *   safety reasons are passed as null so nothing sensitive is persisted. Returns the
+ *   transition promise so the modal can show report guidance after a safety cancel.
  * @param {('customer'|'provider')} props.transactionRole
  * @param {boolean} props.requiresReason true for provider cancellations
  * @param {boolean} props.refundsClient whether the client is refunded (two-tier policy)
@@ -234,6 +264,9 @@ const CancelBookingForm = props => (
  */
 const CancelBookingModal = props => {
   const intl = useIntl();
+  // Once a safety-reason cancel succeeds we swap the form out for report guidance and
+  // keep the modal open (rather than closing it) so the model sees how to report.
+  const [showSafetyGuidance, setShowSafetyGuidance] = useState(false);
   const {
     className,
     rootClassName,
@@ -264,12 +297,37 @@ const CancelBookingModal = props => {
     ? 'CancelBookingModal.description.customerLate'
     : 'CancelBookingModal.description.customer';
 
+  const handleClose = () => {
+    setShowSafetyGuidance(false);
+    onCloseModal();
+  };
+
   const handleSubmit = values => {
-    const cancelReason = values?.cancelReason || null;
-    onSubmitCancel({
-      cancelReason: requiresReason ? cancelReason : null,
-      cancelReasonCategory: requiresReason ? categoryForReason(cancelReason) : null,
+    const cancelReason = requiresReason ? values?.cancelReason || null : null;
+    const category = cancelReason ? categoryForReason(cancelReason) : null;
+    const isSafety = category === CANCEL_REASON_SAFETY;
+
+    // Privacy: a safety reason is never persisted. protectedData is readable by BOTH
+    // parties, so we send NO cancelReason/cancelReasonCategory for safety cancels — the
+    // cancellation still proceeds identically (full refund to the client). Reliability
+    // reasons are not sensitive and are stored as before.
+    const result = onSubmitCancel({
+      cancelReason: isSafety ? null : cancelReason,
+      cancelReasonCategory: isSafety ? null : category,
     });
+
+    // onSubmitCancel returns the transition promise. On success: for a safety cancel,
+    // show the report guidance (stay open); otherwise close as before. On failure the
+    // error is surfaced in the form via cancelError, so leave the modal as-is.
+    Promise.resolve(result)
+      .then(() => {
+        if (isSafety) {
+          setShowSafetyGuidance(true);
+        } else {
+          handleClose();
+        }
+      })
+      .catch(() => {});
   };
 
   return (
@@ -278,31 +336,37 @@ const CancelBookingModal = props => {
       containerClassName={classes}
       contentClassName={css.modalContent}
       isOpen={isOpen}
-      onClose={onCloseModal}
+      onClose={handleClose}
       onManageDisableScrolling={onManageDisableScrolling}
       focusElementId={focusElementId}
       usePortal
       closeButtonMessage={intl.formatMessage({ id: 'CancelBookingModal.close' })}
     >
-      <p className={css.modalTitle}>
-        <FormattedMessage id={titleId} />
-      </p>
-      <p className={css.modalMessage}>
-        <FormattedMessage id={descriptionId} />
-      </p>
-      <CancelBookingForm
-        onSubmit={handleSubmit}
-        intl={intl}
-        formId={id}
-        requiresReason={requiresReason}
-        transactionRole={transactionRole}
-        refundsClient={refundsClient}
-        payinTotal={payinTotal}
-        payoutTotal={payoutTotal}
-        cancelInProgress={cancelInProgress}
-        cancelError={cancelError}
-        onCloseModal={onCloseModal}
-      />
+      {showSafetyGuidance ? (
+        <SafetyReportGuidance onDone={handleClose} />
+      ) : (
+        <>
+          <p className={css.modalTitle}>
+            <FormattedMessage id={titleId} />
+          </p>
+          <p className={css.modalMessage}>
+            <FormattedMessage id={descriptionId} />
+          </p>
+          <CancelBookingForm
+            onSubmit={handleSubmit}
+            intl={intl}
+            formId={id}
+            requiresReason={requiresReason}
+            transactionRole={transactionRole}
+            refundsClient={refundsClient}
+            payinTotal={payinTotal}
+            payoutTotal={payoutTotal}
+            cancelInProgress={cancelInProgress}
+            cancelError={cancelError}
+            onCloseModal={handleClose}
+          />
+        </>
+      )}
     </Modal>
   );
 };

@@ -90,6 +90,17 @@
   margin: 0 0 var(--space-2, 8px) 0;
 }
 
+.reportChannel {
+  color: var(--text-primary, var(--colorGrey900));
+  background-color: var(--surface-subtle, var(--colorGrey50));
+  border: var(--border-hairline, 1px solid var(--colorGrey100));
+  border-radius: var(--radius-md, 8px);
+  padding: var(--space-3, 12px) var(--space-4, 16px);
+  font-size: var(--text-sm, 14px);
+  line-height: var(--leading-normal, 1.5);
+  margin: var(--space-4, 16px) 0 0 0;
+}
+
 .error {
   color: var(--colorFail);
   font-size: var(--text-sm, 14px);

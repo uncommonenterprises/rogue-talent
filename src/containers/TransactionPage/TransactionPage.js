@@ -564,21 +564,18 @@ export const TransactionPageComponent = props => {
   const cancelRequiresReason = isProviderRole;
   const cancelInProgress = transitionInProgress === cancelTransition;
 
-  // Submit a cancellation: fire the cancel transition. Provider reasons are captured
-  // in protectedData (reason + category) for off-process routing.
+  // Submit a cancellation: fire the cancel transition. RELIABILITY reasons are captured
+  // in protectedData (reason + category) for off-process routing. SAFETY reasons are
+  // NEVER stored — the modal strips them (passes null) before calling this, because
+  // protectedData is readable by both parties. Returns the transition promise so the
+  // modal can close on success (or show safety-report guidance) / keep the error open.
   const onCancelBooking = values => {
     const { cancelReason, cancelReasonCategory } = values || {};
     const params =
       cancelRequiresReason && cancelReason
         ? { protectedData: { cancelReason, cancelReasonCategory } }
         : {};
-    onTransition(transaction?.id, cancelTransition, params)
-      .then(() => {
-        setCancelModalOpen(false);
-      })
-      .catch(() => {
-        // Error is surfaced inside the modal via transitionError.
-      });
+    return onTransition(transaction?.id, cancelTransition, params);
   };
 
   const deletedListingTitle = intl.formatMessage({
