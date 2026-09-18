@@ -22,4 +22,6 @@ whether it was **escalated** to Neil. This is how Neil audits the team without r
 
 | 2026-09-18 | Booking-v2 decisions (Neil, via decision cards): (1) SAFETY cancel reasons — INTERIM: do a plain cancel, store nothing client-visible, direct the model to a safety-report channel; build private operator-only routing before go-live (SAF-29/31/32). (2) APPROVE client disputes (new `transition/dispute`) — client can pause payout until ops resolves. (3) Payouts: KEEP FAST (operator-release + P5D backstop), NO minimum dispute hold (preserves 'usually the next working day'). | Booking-v2 safety/process/money design | Neil (accepted PM recommendations) | Yes (safety/money) |
 
+| 2026-09-18 | Safety-report channel = **safety@roguetalent.co** (Neil, decision card). Already the placeholder in the code (commit 7f381d127 safety-reason fix), so NO code change. Neil ACTION before go-live: create + monitor that inbox (copy promises 'a real person will read it'). Also flagged: SAF-29 proper safety-reporting flow still unbuilt — needed before booking-v2 goes live (until then a safety concern only reaches ops if the model emails). | Booking-v2 safety flow | Neil | Yes (safety) |
+
 <!-- PM: append new rows above this line, newest at the bottom of the table. -->
