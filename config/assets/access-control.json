@@ -1,0 +1,30 @@
+{
+  "listings": {
+    "requireApprovalToPublish": true,
+    "requireApprovalToPublishOptions": {
+      "callToAction": {
+        "type": "none"
+      }
+    }
+  },
+  "users": {
+    "requireApprovalToJoin": false,
+    "requirePermissionToPostListings": false,
+    "requirePermissionToInitiateTransactions": true,
+    "requirePermissionToInitiateTransactionsOptions": {
+      "callToAction": {
+        "type": "none"
+      }
+    },
+    "requirePermissionToPostListingsOptions": {
+      "callToAction": {
+        "type": "none"
+      }
+    },
+    "requireApprovalToJoinOptions": {
+      "callToAction": {
+        "type": "none"
+      }
+    }
+  }
+}

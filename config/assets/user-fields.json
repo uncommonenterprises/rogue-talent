@@ -1,0 +1,228 @@
+{
+  "userFields": [
+    {
+      "label": "Company/Agency name",
+      "key": "company_name",
+      "scope": "public",
+      "schemaType": "shortText",
+      "userTypeConfig": {
+        "limitToUserTypeIds": true,
+        "userTypeIds": [
+          "client"
+        ]
+      },
+      "saveConfig": {
+        "displayInSignUp": true,
+        "required": false
+      }
+    },
+    {
+      "label": "Website",
+      "key": "client_website_url",
+      "scope": "public",
+      "schemaType": "shortText",
+      "userTypeConfig": {
+        "limitToUserTypeIds": true,
+        "userTypeIds": [
+          "client"
+        ]
+      },
+      "saveConfig": {
+        "displayInSignUp": false,
+        "required": false
+      }
+    },
+    {
+      "label": "Date of birth",
+      "key": "date_of_birth",
+      "scope": "private",
+      "schemaType": "shortText",
+      "userTypeConfig": {
+        "limitToUserTypeIds": true,
+        "userTypeIds": [
+          "model"
+        ]
+      },
+      "helpText": "(DD/MM/YYYY)",
+      "saveConfig": {
+        "displayInSignUp": false,
+        "required": false
+      }
+    },
+    {
+      "label": "ID verified",
+      "key": "id_verified",
+      "scope": "metadata",
+      "schemaType": "enum",
+      "userTypeConfig": {
+        "limitToUserTypeIds": true,
+        "userTypeIds": [
+          "model"
+        ]
+      },
+      "enumOptions": [
+        {
+          "label": "Pending",
+          "option": "pending"
+        },
+        {
+          "label": "Verified",
+          "option": "verified"
+        },
+        {
+          "label": "Rejected",
+          "option": "rejected"
+        }
+      ],
+      "saveConfig": {
+        "displayInSignUp": false,
+        "required": false
+      }
+    },
+    {
+      "label": "Industry",
+      "key": "industry",
+      "scope": "public",
+      "schemaType": "enum",
+      "userTypeConfig": {
+        "limitToUserTypeIds": true,
+        "userTypeIds": [
+          "client"
+        ]
+      },
+      "saveConfig": {
+        "displayInSignUp": false,
+        "required": false
+      },
+      "enumOptions": [
+        {
+          "label": "Fashion brand",
+          "option": "fashion-brand"
+        },
+        {
+          "label": "E-commerce",
+          "option": "e-commerce"
+        },
+        {
+          "label": "Photography",
+          "option": "photography"
+        },
+        {
+          "label": "Advertising agency",
+          "option": "advertising-agency"
+        },
+        {
+          "label": "Events",
+          "option": "events"
+        },
+        {
+          "label": "Film/TV",
+          "option": "film-tv"
+        },
+        {
+          "label": "Other",
+          "option": "other"
+        }
+      ]
+    },
+    {
+      "label": "Typical project types",
+      "key": "typical_projects",
+      "scope": "public",
+      "schemaType": "multi-enum",
+      "userTypeConfig": {
+        "limitToUserTypeIds": true,
+        "userTypeIds": [
+          "client"
+        ]
+      },
+      "saveConfig": {
+        "displayInSignUp": false,
+        "required": false
+      },
+      "enumOptions": [
+        {
+          "label": "Lookbook",
+          "option": "lookbook"
+        },
+        {
+          "label": "Campaign",
+          "option": "campaign"
+        },
+        {
+          "label": "E-commerce",
+          "option": "e-commerce"
+        },
+        {
+          "label": "Editorial",
+          "option": "editorial"
+        },
+        {
+          "label": "Events",
+          "option": "events"
+        },
+        {
+          "label": "Social content",
+          "option": "social-content"
+        },
+        {
+          "label": "Catalogue",
+          "option": "catalogue"
+        },
+        {
+          "label": "TFP",
+          "option": "tfp"
+        }
+      ],
+      "showConfig": {
+        "unselectedOptions": false
+      }
+    },
+    {
+      "label": "VAT number",
+      "key": "vat_number",
+      "scope": "private",
+      "schemaType": "shortText",
+      "userTypeConfig": {
+        "limitToUserTypeIds": true,
+        "userTypeIds": [
+          "client"
+        ]
+      },
+      "saveConfig": {
+        "displayInSignUp": false,
+        "required": false
+      }
+    },
+    {
+      "label": "ID verified (client)",
+      "key": "id_verified_client",
+      "scope": "public",
+      "schemaType": "enum",
+      "userTypeConfig": {
+        "limitToUserTypeIds": true,
+        "userTypeIds": [
+          "client"
+        ]
+      },
+      "saveConfig": {
+        "displayInSignUp": false,
+        "required": false
+      },
+      "enumOptions": [
+        {
+          "label": "Pending",
+          "option": "pending"
+        },
+        {
+          "label": "Verified",
+          "option": "verified"
+        },
+        {
+          "label": "Rejected",
+          "option": "rejected"
+        }
+      ]
+    }
+  ]
+}

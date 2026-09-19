@@ -1,0 +1,35 @@
+{
+  "marketplaceColors": {
+    "mainColor": "#2b57ff",
+    "primaryButton": "#2b57ff",
+    "notificationPrimaryButton": "#2b57ff"
+  },
+  "logoSettings": {
+    "format": "image",
+    "height": 48
+  },
+  "logo": {
+    "_ref": {
+      "id": "ba08f349-3bb6-5def-bc71-b1dc25d55005",
+      "type": "imageAsset"
+    }
+  },
+  "favicon": {
+    "_ref": {
+      "id": "19275fd0-7840-57ec-95f6-dc776c239bcd",
+      "type": "imageAsset"
+    }
+  },
+  "loginBackgroundImage": {
+    "_ref": {
+      "id": "d89bae1f-f73e-5a91-96b4-4abf6f55b8c7",
+      "type": "imageAsset"
+    }
+  },
+  "socialSharingImage": {
+    "_ref": {
+      "id": "15156d89-2131-5c01-aaa1-ea8947fa5b3a",
+      "type": "imageAsset"
+    }
+  }
+}

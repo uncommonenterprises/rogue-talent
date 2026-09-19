@@ -1,0 +1,41 @@
+{
+  "mainSearch": {
+    "searchType": "location"
+  },
+  "listingTypeFilter": {
+    "enabled": false,
+    "schemaType": "listingType"
+  },
+  "categoryFilter": {
+    "enabled": true,
+    "schemaType": "category"
+  },
+  "dateRangeFilter": {
+    "enabled": true,
+    "schemaType": "dates",
+    "dateRangeMode": "day",
+    "availability": "time-full"
+  },
+  "priceFilter": {
+    "enabled": true,
+    "schemaType": "price",
+    "min": 0,
+    "max": 10000
+  },
+  "sorting": {
+    "defaultSortingOptions": {
+      "newest": true,
+      "oldest": true,
+      "lowestPrice": true,
+      "highestPrice": true,
+      "relevance": true
+    }
+  },
+  "keywordsFilter": {
+    "enabled": true
+  },
+  "seatsFilter": {
+    "enabled": false,
+    "schemaType": "seats"
+  }
+}

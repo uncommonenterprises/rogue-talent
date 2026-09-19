@@ -1,0 +1,55 @@
+{
+  "numberOfColumns": 2,
+  "socialMediaLinks": [
+    {
+      "link": {
+        "fieldType": "socialMediaLink",
+        "platform": "facebook",
+        "url": "https://www.facebook.com/Sharetribe/"
+      },
+      "blockType": "socialMediaLink"
+    },
+    {
+      "link": {
+        "fieldType": "socialMediaLink",
+        "platform": "twitter",
+        "url": "https://twitter.com/sharetribe"
+      },
+      "blockType": "socialMediaLink"
+    },
+    {
+      "link": {
+        "fieldType": "socialMediaLink",
+        "platform": "youtube",
+        "url": "https://www.youtube.com/@Sharetribe"
+      },
+      "blockType": "socialMediaLink"
+    }
+  ],
+  "blocks": [
+    {
+      "blockType": "footerBlock",
+      "text": {
+        "content": "- [About us](/p/about)\n- [Search listings](/s)\n- [Post a new listing](/l/new)",
+        "fieldType": "markdown"
+      },
+      "blockId": "general"
+    },
+    {
+      "blockType": "footerBlock",
+      "text": {
+        "content": "- [Terms of Service](/terms-of-service)\n- [Privacy Policy](/privacy-policy)",
+        "fieldType": "markdown"
+      },
+      "blockId": "terms-and-privacy"
+    }
+  ],
+  "slogan": {
+    "content": "In Console, go to Content → Footer to add your slogan here.",
+    "fieldType": "text"
+  },
+  "copyright": {
+    "content": "© 2026 Rogue Talent. All rights reserved.",
+    "fieldType": "text"
+  }
+}

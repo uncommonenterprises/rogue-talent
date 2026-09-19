@@ -1,0 +1,6 @@
+{
+  "listingMinimumPrice": {
+    "amount": 500,
+    "type": "subunit"
+  }
+}

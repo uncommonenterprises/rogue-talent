@@ -1,0 +1,12 @@
+{
+  "searchPage": {
+    "variantType": "grid"
+  },
+  "listingPage": {
+    "variantType": "carousel"
+  },
+  "listingImage": {
+    "variantType": "cropImage",
+    "aspectRatio": "4/3"
+  }
+}

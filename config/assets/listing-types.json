@@ -1,0 +1,143 @@
+{
+  "listingTypes": [
+    {
+      "availabilityType": "oneSeat",
+      "transactionFields": [
+        {
+          "label": "Shoot description",
+          "key": "shoot_description",
+          "schemaType": "text",
+          "showTo": "customer",
+          "saveConfig": {
+            "required": true
+          },
+          "numberConfig": {}
+        },
+        {
+          "label": "Shoot type",
+          "key": "shoot_type",
+          "schemaType": "enum",
+          "showTo": "customer",
+          "saveConfig": {
+            "required": true
+          },
+          "enumOptions": [
+            {
+              "label": "Fashion",
+              "option": "fashion"
+            },
+            {
+              "label": "Commercial",
+              "option": "commercial"
+            },
+            {
+              "label": "Editorial",
+              "option": "editorial"
+            },
+            {
+              "label": "E-commerce",
+              "option": "e-commerce"
+            },
+            {
+              "label": "Lookbook",
+              "option": "lookbook"
+            },
+            {
+              "label": "Fitness",
+              "option": "fitness"
+            },
+            {
+              "label": "Beauty",
+              "option": "beauty"
+            },
+            {
+              "label": "Lingerie",
+              "option": "lingerie"
+            },
+            {
+              "label": "Swimwear",
+              "option": "swimwear"
+            },
+            {
+              "label": "Events/Promo",
+              "option": "events-promo"
+            },
+            {
+              "label": "Social content",
+              "option": "social-content"
+            },
+            {
+              "label": "TFP",
+              "option": "tfp"
+            }
+          ]
+        },
+        {
+          "label": "Location type",
+          "key": "location_type",
+          "schemaType": "enum",
+          "showTo": "customer",
+          "saveConfig": {
+            "required": true
+          },
+          "enumOptions": [
+            {
+              "label": "Professional studio",
+              "option": "professional-studio"
+            },
+            {
+              "label": "Brand office/showroom",
+              "option": "brand-office-showroom"
+            },
+            {
+              "label": "Outdoor/public",
+              "option": "outdoor-public"
+            },
+            {
+              "label": "Private residence",
+              "option": "private-residence"
+            },
+            {
+              "label": "Other",
+              "option": "other"
+            }
+          ]
+        },
+        {
+          "label": "Shoot address",
+          "key": "shoot_address",
+          "schemaType": "shortText",
+          "showTo": "customer",
+          "saveConfig": {
+            "required": true
+          }
+        }
+      ],
+      "label": "Model Profile",
+      "id": "model-profile",
+      "priceVariations": {
+        "enabled": false
+      },
+      "messagingOptions": {
+        "fileAttachments": false
+      },
+      "unitType": "day",
+      "transactionProcess": {
+        "name": "default-booking",
+        "alias": "default-booking/release-1"
+      },
+      "defaultListingFields": {
+        "description": false,
+        "availability": true,
+        "payoutDetails": true,
+        "images": true,
+        "pickup": false,
+        "title": true,
+        "shipping": false,
+        "location": true,
+        "price": true,
+        "stock": false
+      }
+    }
+  ]
+}

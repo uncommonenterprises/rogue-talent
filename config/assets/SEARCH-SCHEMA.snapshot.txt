@@ -1,0 +1,17 @@
+
+Schema for   Scope   Key                   Type        Default value   Doc                                                                 
+listing      public  availability_radius   enum                        A listing field defined in Console. Can not be edited with the CLI. 
+listing      public  ethnicity             multi-enum                  A listing field defined in Console. Can not be edited with the CLI. 
+listing      public  experience_level      enum                        A listing field defined in Console. Can not be edited with the CLI. 
+listing      public  eye_colour            enum                        A listing field defined in Console. Can not be edited with the CLI. 
+listing      public  gender                enum                        A listing field defined in Console. Can not be edited with the CLI. 
+listing      public  hair_colour           enum                        A listing field defined in Console. Can not be edited with the CLI. 
+listing      public  half_day_rate         long                        A listing field defined in Console. Can not be edited with the CLI. 
+listing      public  height_cm             long                        A listing field defined in Console. Can not be edited with the CLI. 
+listing      public  hourly_rate           long                        A listing field defined in Console. Can not be edited with the CLI. 
+listing      public  listingType           enum                        A listing field defined in Console. Can not be edited with the CLI. 
+listing      public  min_booking_notice    enum                        A listing field defined in Console. Can not be edited with the CLI. 
+listing      public  modelling_categories  multi-enum                  A listing field defined in Console. Can not be edited with the CLI. 
+listing      public  travel_fee_policy     enum                        A listing field defined in Console. Can not be edited with the CLI. 
+userProfile  public  userType              enum                        A listing field defined in Console. Can not be edited with the CLI. 
+

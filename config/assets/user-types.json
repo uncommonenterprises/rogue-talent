@@ -1,0 +1,70 @@
+{
+  "userTypes": [
+    {
+      "label": "Model",
+      "id": "model",
+      "roles": {
+        "provider": true,
+        "customer": false
+      },
+      "accountLinksVisibility": {
+        "postListings": true,
+        "payoutDetails": true,
+        "paymentMethods": false
+      },
+      "defaultUserFields": {
+        "email": true,
+        "payoutDetails": true,
+        "profileImage": true,
+        "paymentMethods": true,
+        "password": true,
+        "displayName": false,
+        "firstName": true,
+        "bio": true,
+        "lastName": true,
+        "phoneNumber": true
+      },
+      "phoneNumberSettings": {
+        "displayInSignUp": true,
+        "required": false
+      },
+      "displayNameSettings": {
+        "displayInSignUp": true,
+        "required": true
+      }
+    },
+    {
+      "label": "Client",
+      "id": "client",
+      "roles": {
+        "provider": false,
+        "customer": true
+      },
+      "accountLinksVisibility": {
+        "postListings": false,
+        "payoutDetails": false,
+        "paymentMethods": true
+      },
+      "defaultUserFields": {
+        "email": true,
+        "payoutDetails": true,
+        "profileImage": true,
+        "paymentMethods": true,
+        "password": true,
+        "displayName": false,
+        "firstName": true,
+        "bio": true,
+        "lastName": true,
+        "phoneNumber": true
+      },
+      "phoneNumberSettings": {
+        "displayInSignUp": true,
+        "required": true
+      },
+      "displayNameSettings": {
+        "displayInSignUp": true,
+        "required": true
+      }
+    }
+  ]
+}
