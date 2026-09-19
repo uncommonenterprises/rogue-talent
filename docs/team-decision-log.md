@@ -28,4 +28,6 @@ whether it was **escalated** to Neil. This is how Neil audits the team without r
 
 | 2026-09-19 | ✅ booking-v2 LIVE on test — Neil pushed version 2 of default-booking + updated the `release-1` alias to point at it (flex-cli). `process list` confirms release-1 → v2 (0 tx yet); old v1 retains the 2 prior test tx. Cancellation/dispute system now active for new model-profile bookings. Behavioural verification pending Playwright reconnect. | Activate booking-v2 (money/process) | Neil ran the flex-cli push+alias (PM-guided) | Yes (money/process) |
 
+| 2026-09-19 | Booking-v2 notification emails BUILT (commit 863853d16, pushed to git; NOT yet flex-cli-pushed) — 23 party-facing notifications (16→39) + 8 templates for cancels/disputes/backstop; PM-reviewed, v1 copy defaults accepted. NOTE: repo EDN now = intended NEXT process version; LIVE is version 2 (no cancel/dispute emails) until a future flex-cli push. KEY before-go-live item: operator-alert-on-dispute CANNOT be a process notification (Sharetribe `:to` = customer/provider only) → needs an events-listener/webhook (backend) so a dispute reaches ops (safety@). | Booking-v2 notifications | PM accepted copy; operator-listener flagged for Neil | Yes (before-go-live safety build) |
+
 <!-- PM: append new rows above this line, newest at the bottom of the table. -->
