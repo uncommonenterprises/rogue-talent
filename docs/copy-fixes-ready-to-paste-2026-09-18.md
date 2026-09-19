@@ -83,3 +83,38 @@ working days."**
   identity clarifier), About (low-pri). The two 🔴 launch-blockers (cancellation) are both yours.
 - **Me (code):** Home, For business, For models — payout wording + "verified" precision. Say the
   word and I'll start these now (small, low-risk text changes in the marketing components).
+
+---
+
+# ROUND 2 — remaining copy issues found in verification (2026-09-19, Day 1)
+The Round 1 fixes landed (cancellation 2-tier on Terms+FAQ ✅, "How much does it cost?" fee ✅,
+identity clarifier ✅, the 999 safety line ✅). But PM verification of the live pages found three
+issues the original audit missed or the edits left behind. All are **Console → Content → Pages**
+edits (yours).
+
+## R2-1. FAQ "How do payments work?" — STILL the old 10%+5% model (HIGH — contradicts 15%-only)
+Console page **"FAQ"** (`/p/faq`). The audit only caught "How much does it cost?"; this second
+answer still describes the old split. Current:
+> "…the full amount (model's rate plus the 5% service fee) is collected and held in escrow. Once the
+> shoot is marked as complete, the model's earnings (minus the 10% platform fee) are released…"
+Replace with:
+> Payments are processed securely through Stripe. When a client books a model, the full amount — the
+> model's rate plus a 15% booking fee — is collected and held securely until the shoot is complete.
+> The model then receives **100% of their rate** (Rogue Talent charges the model nothing), usually
+> the next working day and always within five working days.
+
+## R2-2. Terms §4 — leftover "(less the platform fee)" contradicts "no fee to models" (MEDIUM)
+Console page **"Terms of service"** (`/terms-of-service`), §4. The correct 15%/keep-100% sentence was
+added, but the same paragraph still says:
+> "Upon completion of the booking, the model's earnings **(less the platform fee)** are released."
+Remove the parenthetical so it's consistent — e.g.:
+> Upon completion of the booking, the model's earnings are released to the model.
+
+## R2-3. Wrong email domain (.com → .co) on Safety + FAQ (MEDIUM — addresses bounce)
+- Safety page (`/p/safety`): `safety@roguetalent.com` → **`safety@roguetalent.co`** (the monitored inbox you created).
+- FAQ (`/p/faq`, "What if something goes wrong"): `support@roguetalent.com` → a real `.co` inbox — **confirm which** (e.g. `support@roguetalent.co` if it exists, else route to `safety@roguetalent.co` / `hi@roguetalent.co`).
+
+## R2-4 (LOW, optional). Payout wording on FAQ/Terms
+Both describe payout as "released once the shoot is complete" rather than the canonical "usually the
+next working day, always within five working days." R2-1 already fixes the FAQ instance; optionally
+align the Terms §4 wording too.
