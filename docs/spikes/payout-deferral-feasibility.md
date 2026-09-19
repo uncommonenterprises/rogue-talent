@@ -9,7 +9,28 @@ ever holding client money ourselves?
 
 ---
 
-## TL;DR verdict — FEASIBLE, WITH CAVEATS
+## ✅ EMPIRICAL RESULT (2026-09-19, Day 1) — the make-or-break test PASSED
+
+The Q3 unknown is now **resolved by live test on `ndstealth1-test`**, not just docs:
+- A test model (Marcus B., `rt-model-02`) completed **Stripe identity only** (test DOB 01/01/1901),
+  **no bank added**. Confirmed via the `stripe_account/fetch` response: `charges_enabled: true`,
+  `capabilities.card_payments/transfers: active`, `verification.status: verified`,
+  **`payouts_enabled: false`**, `external_accounts: 0`, `requirements.currently_due: ["external_account"]`
+  (bank is the ONLY thing outstanding).
+- As a client (Priya), booked him 26–27 Sept and paid with test card 4242…: the real
+  (non-speculative) `initiate-privileged` → **`stripe-create-payment-intent` SUCCEEDED**, the card was
+  authorised, and the transaction persisted → `/order/6aaec560…`, "Your booking request was
+  successful!", state pending model acceptance. Fee split correct (£600 model / £90 = 15% / £690 payin).
+- **Conclusion:** Sharetribe's help-doc claim ("payout details required to process charges") is **false
+  for the current engine**. A client CAN book and pay a model who has done identity but has no bank.
+  The deferred-payout variant is **confirmed feasible end-to-end.** Funds accrue in the model's own
+  Stripe balance (pending payout) until they add a bank — exactly the "funds waiting" incentive model,
+  with no money-transmitter exposure for Rogue Talent.
+- Caveats 2 (90-day refund backstop) and 3 (lawyer + human dev review) still stand.
+
+---
+
+## TL;DR verdict — FEASIBLE, WITH CAVEATS  *(now upgraded to CONFIRMED FEASIBLE — see result above)*
 
 On the **Stripe** side the variant is real and clean: for a UK (GBP) Custom connected account, the
 bank account (`external_account`) gates **only the `payouts` capability** — it does **not** gate
