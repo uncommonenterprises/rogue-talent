@@ -3,9 +3,28 @@
 // Main configuration here is the extended data config //
 /////////////////////////////////////////////////////////
 
-// Note: The listingFields come from listingFields asset nowadays by default.
-//       To use this built-in configuration, you need to change the overwrite from configHelper.js
-//       (E.g. use mergeDefaultTypesAndFieldsForDebugging func)
+// CONFIG-AS-CODE (Option A) — CODE IS THE SOURCE OF TRUTH.
+//
+// These listing types + fields are the authoritative definition of the
+// Rogue Talent listing model. They were ported from the TEST marketplace
+// no-code Console export (config/assets/listing-types.json +
+// config/assets/listing-fields.json, 2026-09-19) so the same config ships
+// to any environment on deploy.
+//
+// mergeListingConfig() in src/util/configHelpers.js now prefers this code
+// config over the hosted (Console) assets whenever it is non-empty (in every
+// environment, not just dev). Console listing-type/field edits therefore have
+// NO effect once code defines them. See docs/config-as-code-status.md for the
+// backend implications (search-index management + the hasMandatoryConfigs gate).
+//
+// Shape note: entries here are in the app's INTERNAL config shape (post
+// "restructure"), NOT the raw Console asset shape. Key differences vs the
+// exported JSON: use `transactionType: { process, alias, unitType }` (not
+// `transactionProcess` + top-level `unitType`); use `saveConfig.isRequired`
+// (not `saveConfig.required`); labels live inside showConfig/saveConfig/
+// filterConfig. Transaction fields on a listing type are the exception — they
+// ARE restructured by validListingTypes, so they keep the asset shape
+// (`showTo`, `saveConfig.required`).
 
 /**
  * Configuration options for listing fields (custom extended data fields):
@@ -52,167 +71,471 @@
  *   - isRequired (optional):         Is the field required for providers to fill
  *   - requiredMessage (optional):    Message for those fields, which are mandatory.
  */
+
+// All model-attribute fields are limited to the single model-profile listing type.
+const MODEL_PROFILE_ONLY = {
+  limitToListingTypeIds: true,
+  listingTypeIds: ['model-profile'],
+};
+
 export const listingFields = [
-  // {
-  //   "scope": "public",
-  //   "label": "Gears",
-  //   "key": "gears",
-  //   "schemaType": "long",
-  //   "numberConfig": {
-  //     "minimum": 1,
-  //     "maximum": 24
-  //   },
-  //   "filterConfig": {
-  //     "indexForSearch": true,
-  //     "group": "primary",
-  //     "label": "Gears"
-  //   }
-  // }
-  // {
-  //   key: 'bikeType',
-  //   scope: 'public',
-  //   schemaType: 'enum',
-  //   enumOptions: [
-  //     { option: 'city-bikes', label: 'City bikes' },
-  //     { option: 'electric-bikes', label: 'Electric bikes' },
-  //     { option: 'mountain-bikes', label: 'Mountain bikes' },
-  //     { option: 'childrens-bikes', label: "Children's bikes" },
-  //   ],
-  //   categoryConfig: {
-  //     limitToCategoryIds: true,
-  //     categoryIds: ['cats'],
-  //   },
-  //   filterConfig: {
-  //     showFilter: true,
-  //     filterType: 'SelectMultipleFilter', //'SelectSingleFilter',
-  //     label: 'Bike type',
-  //     group: 'primary',
-  //   },
-  //   showConfig: {
-  //     label: 'Bike type',
-  //     isDetail: true,
-  //   },
-  //   saveConfig: {
-  //     label: 'Bike type',
-  //     placeholderMessage: 'Select an option…',
-  //     isRequired: true,
-  //     requiredMessage: 'You need to select a bike type.',
-  //   },
-  // },
-  // {
-  //   key: 'tire',
-  //   scope: 'public',
-  //   schemaType: 'enum',
-  //   enumOptions: [
-  //     { option: '29', label: '29' },
-  //     { option: '28', label: '28' },
-  //     { option: '27', label: '27' },
-  //     { option: '26', label: '26' },
-  //     { option: '24', label: '24' },
-  //     { option: '20', label: '20' },
-  //     { option: '18', label: '18' },
-  //   ],
-  //   filterConfig: {
-  //     showFilter: true,
-  //     label: 'Tire size',
-  //     group: 'secondary',
-  //   },
-  //   showConfig: {
-  //     label: 'Tire size',
-  //     isDetail: true,
-  //   },
-  //   saveConfig: {
-  //     label: 'Tire size',
-  //     placeholderMessage: 'Select an option…',
-  //     isRequired: true,
-  //     requiredMessage: 'You need to select a tire size.',
-  //   },
-  // },
-  // {
-  //   key: 'brand',
-  //   scope: 'public',
-  //   schemaType: 'enum',
-  //   enumOptions: [
-  //     { option: 'cube', label: 'Cube' },
-  //     { option: 'diamant', label: 'Diamant' },
-  //     { option: 'ghost', label: 'GHOST' },
-  //     { option: 'giant', label: 'Giant' },
-  //     { option: 'kalkhoff', label: 'Kalkhoff' },
-  //     { option: 'kona', label: 'Kona' },
-  //     { option: 'otler', label: 'Otler' },
-  //     { option: 'vermont', label: 'Vermont' },
-  //   ],
-  //   filterConfig: {
-  //     showFilter: true,
-  //     label: 'Brand',
-  //     group: 'secondary',
-  //   },
-  //   showConfig: {
-  //     label: 'Brand',
-  //     isDetail: true,
-  //   },
-  //   saveConfig: {
-  //     label: 'Brand',
-  //     placeholderMessage: 'Select an option…',
-  //     isRequired: true,
-  //     requiredMessage: 'You need to select a brand.',
-  //   },
-  // },
-  // {
-  //   key: 'accessories',
-  //   scope: 'public',
-  //   schemaType: 'multi-enum',
-  //   enumOptions: [
-  //     { option: 'bell', label: 'Bell' },
-  //     { option: 'lights', label: 'Lights' },
-  //     { option: 'lock', label: 'Lock' },
-  //     { option: 'mudguard', label: 'Mudguard' },
-  //   ],
-  //   filterConfig: {
-  //     showFilter: true,
-  //     label: 'Accessories',
-  //     searchMode: 'has_all',
-  //     group: 'secondary',
-  //   },
-  //   showConfig: {
-  //     label: 'Accessories',
-  //   },
-  //   saveConfig: {
-  //     label: 'Accessories',
-  //     placeholderMessage: 'Select an option…',
-  //     isRequired: false,
-  //   },
-  // },
-  // // An example of how to use transaction type specific custom fields and private data.
-  // {
-  //   key: 'note',
-  //   scope: 'public',
-  //   schemaType: 'text',
-  //   listingTypeConfig: {
-  //     limitToListingTypeIds: true,
-  //     listingTypeIds: ['product-selling'],
-  //   },
-  //   showConfig: {
-  //     label: 'Extra notes',
-  //   },
-  //   saveConfig: {
-  //     label: 'Extra notes',
-  //     placeholderMessage: 'Some public extra note about this bike...',
-  //   },
-  // },
-  // {
-  //   key: 'privatenote',
-  //   scope: 'private',
-  //   schemaType: 'text',
-  //   listingTypeConfig: {
-  //     limitToListingTypeIds: true,
-  //     listingTypeIds: ['daily-booking'],
-  //   },
-  //   saveConfig: {
-  //     label: 'Private notes',
-  //     placeholderMessage: 'Some private note about this bike...',
-  //   },
-  // },
+  {
+    key: 'gender',
+    scope: 'public',
+    schemaType: 'enum',
+    listingTypeConfig: MODEL_PROFILE_ONLY,
+    enumOptions: [
+      { option: 'female', label: 'Female' },
+      { option: 'male', label: 'Male' },
+      { option: 'non-binary', label: 'Non-binary' },
+    ],
+    filterConfig: {
+      indexForSearch: true,
+      showFilter: true,
+      group: 'primary',
+      label: 'Gender',
+    },
+    showConfig: {
+      label: 'Gender',
+    },
+    saveConfig: {
+      label: 'Gender',
+      isRequired: true,
+    },
+  },
+  {
+    key: 'height_cm',
+    scope: 'public',
+    schemaType: 'long',
+    listingTypeConfig: MODEL_PROFILE_ONLY,
+    numberConfig: {
+      minimum: 100,
+      maximum: 250,
+    },
+    helpText: 'Your height in centimetres, measured without shoes.',
+    filterConfig: {
+      indexForSearch: true,
+      showFilter: true,
+      group: 'primary',
+      label: 'Height (cm)',
+    },
+    showConfig: {
+      label: 'Height (cm)',
+    },
+    saveConfig: {
+      label: 'Height (cm)',
+      isRequired: true,
+    },
+  },
+  {
+    key: 'waist_cm',
+    scope: 'public',
+    schemaType: 'long',
+    listingTypeConfig: MODEL_PROFILE_ONLY,
+    numberConfig: {
+      minimum: 40,
+      maximum: 200,
+    },
+    helpText: 'Your natural waistline in centimetres.',
+    filterConfig: {
+      indexForSearch: false,
+      label: 'Waist (cm)',
+    },
+    showConfig: {
+      label: 'Waist (cm)',
+    },
+    saveConfig: {
+      label: 'Waist (cm)',
+      isRequired: true,
+    },
+  },
+  {
+    key: 'hips_cm',
+    scope: 'public',
+    schemaType: 'long',
+    listingTypeConfig: MODEL_PROFILE_ONLY,
+    numberConfig: {
+      minimum: 50,
+      maximum: 200,
+    },
+    helpText: 'The fullest part of your hips in centimetres.',
+    filterConfig: {
+      indexForSearch: false,
+      label: 'Hips (cm)',
+    },
+    showConfig: {
+      label: 'Hips (cm)',
+    },
+    saveConfig: {
+      label: 'Hips (cm)',
+      isRequired: true,
+    },
+  },
+  {
+    key: 'bust_chest_cm',
+    scope: 'public',
+    schemaType: 'long',
+    listingTypeConfig: MODEL_PROFILE_ONLY,
+    numberConfig: {
+      minimum: 50,
+      maximum: 200,
+    },
+    helpText: 'Around the fullest part of your bust/chest in centimetres.',
+    filterConfig: {
+      indexForSearch: false,
+      showFilter: false,
+      label: 'Bust/Chest (cm)',
+    },
+    showConfig: {
+      label: 'Bust/Chest (cm)',
+    },
+    saveConfig: {
+      label: 'Bust/Chest (cm)',
+      isRequired: true,
+    },
+  },
+  {
+    key: 'shoe_size_uk',
+    scope: 'public',
+    schemaType: 'long',
+    listingTypeConfig: MODEL_PROFILE_ONLY,
+    numberConfig: {
+      minimum: 1,
+      maximum: 20,
+    },
+    helpText: 'Your UK shoe size.',
+    filterConfig: {
+      indexForSearch: false,
+      label: 'Shoe size (UK)',
+    },
+    showConfig: {
+      label: 'Shoe size (UK)',
+    },
+    saveConfig: {
+      label: 'Shoe size (UK)',
+      isRequired: true,
+    },
+  },
+  {
+    key: 'hair_colour',
+    scope: 'public',
+    schemaType: 'enum',
+    listingTypeConfig: MODEL_PROFILE_ONLY,
+    helpText: 'Your current hair colour — pick "Other" if it changes often.',
+    enumOptions: [
+      { option: 'black', label: 'Black' },
+      { option: 'brown', label: 'Brown' },
+      { option: 'blonde', label: 'Blonde' },
+      { option: 'red', label: 'Red' },
+      { option: 'auburn', label: 'Auburn' },
+      { option: 'grey-white', label: 'Grey/White' },
+      { option: 'other', label: 'Other' },
+    ],
+    filterConfig: {
+      indexForSearch: true,
+      showFilter: true,
+      group: 'primary',
+      label: 'Hair colour',
+    },
+    showConfig: {
+      label: 'Hair colour',
+    },
+    saveConfig: {
+      label: 'Hair colour',
+      isRequired: true,
+    },
+  },
+  {
+    key: 'eye_colour',
+    scope: 'public',
+    schemaType: 'enum',
+    listingTypeConfig: MODEL_PROFILE_ONLY,
+    helpText: 'Your natural eye colour.',
+    enumOptions: [
+      { option: 'brown', label: 'Brown' },
+      { option: 'blue', label: 'Blue' },
+      { option: 'green', label: 'Green' },
+      { option: 'hazel', label: 'Hazel' },
+      { option: 'grey', label: 'Grey' },
+      { option: 'other', label: 'Other' },
+    ],
+    filterConfig: {
+      indexForSearch: true,
+      showFilter: true,
+      group: 'primary',
+      label: 'Eye colour',
+    },
+    showConfig: {
+      label: 'Eye colour',
+    },
+    saveConfig: {
+      label: 'Eye colour',
+      isRequired: true,
+    },
+  },
+  {
+    key: 'ethnicity',
+    scope: 'public',
+    schemaType: 'multi-enum',
+    listingTypeConfig: MODEL_PROFILE_ONLY,
+    helpText: 'Helps clients cast for specific briefs. Select all that apply.',
+    enumOptions: [
+      { option: 'asian', label: 'Asian' },
+      { option: 'black', label: 'Black' },
+      { option: 'hispanic-latino', label: 'Hispanic/Latino' },
+      { option: 'middle-eastern', label: 'Middle Eastern' },
+      { option: 'mixed', label: 'Mixed' },
+      { option: 'white', label: 'White' },
+      { option: 'other', label: 'Other' },
+    ],
+    filterConfig: {
+      indexForSearch: true,
+      showFilter: true,
+      group: 'primary',
+      label: 'Ethnicity',
+    },
+    showConfig: {
+      label: 'Ethnicity',
+      unselectedOptions: false,
+    },
+    saveConfig: {
+      label: 'Ethnicity',
+      isRequired: true,
+    },
+  },
+  {
+    key: 'experience_level',
+    scope: 'public',
+    schemaType: 'enum',
+    listingTypeConfig: MODEL_PROFILE_ONLY,
+    helpText: 'Be honest — clients book at every level, and new faces are in demand.',
+    enumOptions: [
+      { option: 'new-face', label: 'New Face (just starting out — building your first portfolio)' },
+      {
+        option: 'some-experience',
+        label: 'Some experience (a handful of shoots or jobs so far)',
+      },
+      {
+        option: 'experienced',
+        label: 'Experienced (regular bookings and a strong, varied portfolio)',
+      },
+      {
+        option: 'professional',
+        label: 'Professional (full-time model with extensive credits and experience)',
+      },
+    ],
+    filterConfig: {
+      indexForSearch: true,
+      showFilter: true,
+      group: 'primary',
+      label: 'Experience level',
+    },
+    showConfig: {
+      label: 'Experience level',
+    },
+    saveConfig: {
+      label: 'Experience level',
+      isRequired: true,
+    },
+  },
+  {
+    key: 'modelling_categories',
+    scope: 'public',
+    schemaType: 'multi-enum',
+    listingTypeConfig: MODEL_PROFILE_ONLY,
+    categoryConfig: {
+      limitToCategoryIds: false,
+    },
+    helpText: 'The types of work you do and want to be booked for. Select all that apply.',
+    enumOptions: [
+      { option: 'fashion', label: 'Fashion' },
+      { option: 'commercial', label: 'Commercial' },
+      { option: 'editorial', label: 'Editorial' },
+      { option: 'fitness', label: 'Fitness' },
+      { option: 'lifestyle', label: 'Lifestyle' },
+      { option: 'beauty', label: 'Beauty' },
+      { option: 'lingerie', label: 'Lingerie' },
+      { option: 'swimwear', label: 'Swimwear' },
+      { option: 'plus-size', label: 'Plus-size' },
+      { option: 'petite', label: 'Petite' },
+      { option: 'parts', label: 'Parts (hands/feet)' },
+      { option: 'hair', label: 'Hair' },
+      { option: 'promotional-events', label: 'Promotional/Events' },
+    ],
+    filterConfig: {
+      indexForSearch: true,
+      showFilter: true,
+      group: 'primary',
+      label: 'Modelling categories',
+    },
+    showConfig: {
+      label: 'Modelling categories',
+      unselectedOptions: false,
+    },
+    saveConfig: {
+      label: 'Modelling categories',
+      isRequired: true,
+    },
+  },
+  {
+    key: 'availability_radius',
+    scope: 'public',
+    schemaType: 'enum',
+    listingTypeConfig: MODEL_PROFILE_ONLY,
+    helpText: "How far you'll travel from your base city for a booking.",
+    enumOptions: [
+      { option: 'local', label: 'Local only (25 mi)' },
+      { option: 'regional', label: 'Regional (50 mi)' },
+      { option: 'national', label: 'National' },
+      { option: 'international', label: 'International' },
+    ],
+    filterConfig: {
+      indexForSearch: true,
+      showFilter: true,
+      group: 'primary',
+      label: 'Availability radius',
+    },
+    showConfig: {
+      label: 'Availability radius',
+    },
+    saveConfig: {
+      label: 'Availability radius',
+      isRequired: true,
+    },
+  },
+  {
+    key: 'model_website_url',
+    scope: 'public',
+    schemaType: 'shortText',
+    listingTypeConfig: MODEL_PROFILE_ONLY,
+    helpText: 'A link to your portfolio site or comp card.',
+    filterConfig: {
+      indexForSearch: false,
+      label: 'Website',
+    },
+    showConfig: {
+      label: 'Website',
+    },
+    saveConfig: {
+      label: 'Website',
+      isRequired: false,
+    },
+  },
+  {
+    key: 'instagram_url',
+    scope: 'public',
+    schemaType: 'shortText',
+    listingTypeConfig: MODEL_PROFILE_ONLY,
+    helpText: 'Your handle, so clients can see more of your work.',
+    filterConfig: {
+      indexForSearch: false,
+      label: 'Instagram Handle',
+    },
+    showConfig: {
+      label: 'Instagram Handle',
+    },
+    saveConfig: {
+      label: 'Instagram Handle',
+      isRequired: false,
+    },
+  },
+  {
+    key: 'half_day_rate',
+    scope: 'public',
+    schemaType: 'long',
+    listingTypeConfig: MODEL_PROFILE_ONLY,
+    numberConfig: {
+      minimum: 0,
+      maximum: 10000,
+    },
+    filterConfig: {
+      indexForSearch: true,
+      showFilter: true,
+      group: 'primary',
+      label: 'Half-day rate (if offered) ',
+    },
+    showConfig: {
+      label: 'Half-day rate (if offered) ',
+    },
+    saveConfig: {
+      label: 'Half-day rate (if offered) ',
+      isRequired: false,
+    },
+  },
+  {
+    key: 'hourly_rate',
+    scope: 'public',
+    schemaType: 'long',
+    listingTypeConfig: MODEL_PROFILE_ONLY,
+    numberConfig: {
+      minimum: 0,
+      maximum: 5000,
+    },
+    filterConfig: {
+      indexForSearch: true,
+      showFilter: true,
+      group: 'primary',
+      label: 'Hourly rate (if offered) ',
+    },
+    showConfig: {
+      label: 'Hourly rate (if offered) ',
+    },
+    saveConfig: {
+      label: 'Hourly rate (if offered) ',
+      isRequired: false,
+    },
+  },
+  {
+    key: 'travel_fee_policy',
+    scope: 'public',
+    schemaType: 'enum',
+    listingTypeConfig: MODEL_PROFILE_ONLY,
+    helpText: 'Whether travel costs are included in your rate or charged separately.',
+    enumOptions: [
+      { option: 'included', label: 'Included in rate' },
+      { option: 'charged-separately', label: 'Charged' },
+    ],
+    filterConfig: {
+      indexForSearch: true,
+      showFilter: true,
+      group: 'secondary',
+      label: 'Travel costs',
+    },
+    showConfig: {
+      label: 'Travel costs',
+    },
+    saveConfig: {
+      label: 'Travel costs',
+      isRequired: true,
+    },
+  },
+  {
+    key: 'min_booking_notice',
+    scope: 'public',
+    schemaType: 'enum',
+    listingTypeConfig: MODEL_PROFILE_ONLY,
+    helpText: 'The least notice you need before a shoot.',
+    enumOptions: [
+      { option: 'same-day', label: 'Same day' },
+      { option: '24-hours', label: '24 hours' },
+      { option: '48-hours', label: '48 hours' },
+      { option: '1-week', label: '1 week' },
+      { option: '2-weeks', label: '2 weeks' },
+    ],
+    filterConfig: {
+      indexForSearch: true,
+      showFilter: true,
+      group: 'secondary',
+      label: 'Minimum booking notice',
+    },
+    showConfig: {
+      label: 'Minimum booking notice',
+    },
+    saveConfig: {
+      label: 'Minimum booking notice',
+      isRequired: true,
+    },
+  },
 ];
 
 ///////////////////////////////////////////////////////////////////////
@@ -221,11 +544,8 @@ export const listingFields = [
 
 // A presets of supported listing configurations
 //
-// Note 1: The listingTypes come from listingTypes asset nowadays by default.
-//         To use this built-in configuration, you need to change the overwrite from configHelper.js
-//         (E.g. use mergeDefaultTypesAndFieldsForDebugging func)
-// Note 2: transaction type is part of listing type. It defines what transaction process and units
-//         are used when transaction is created against a specific listing.
+// Note: transaction type is part of listing type. It defines what transaction process and units
+//       are used when transaction is created against a specific listing.
 
 /**
  * Configuration options for listing experience:
@@ -283,144 +603,95 @@ export const listingFields = [
  */
 
 export const listingTypes = [
-  // // Here are some examples of listingTypes
-  // // TODO: SearchPage does not work well if both booking and product selling are used at the same time
-  // {
-  //   listingType: 'daily-booking',
-  //   label: 'Daily booking',
-  //   transactionType: {
-  //     process: 'default-booking',
-  //     alias: 'default-booking/release-1',
-  //     unitType: 'day',
-  //   },
-  //   availabilityType: 'oneSeat',
-  //   defaultListingFields: {
-  //     location: true,
-  //     payoutDetails: true,
-  //   },
-  //   transactionFields: [
-  //     {
-  //       showTo: 'customer',
-  //       label: 'Extra requests for the hosts',
-  //       key: 'requests',
-  //       schemaType: 'text',
-  //     },
-  //     {
-  //       showTo: 'customer',
-  //       label: 'Are you traveling with minors?',
-  //       key: 'minors',
-  //       schemaType: 'boolean',
-  //     },
-  //     {
-  //       showTo: 'customer',
-  //       numberConfig: {
-  //         minimum: 1,
-  //         maximum: 10,
-  //       },
-  //       label: 'How many people are staying at the venue',
-  //       key: 'peopleStaying',
-  //       schemaType: 'long',
-  //       saveConfig: {
-  //         required: true,
-  //       },
-  //     },
-  //     {
-  //       showTo: 'customer',
-  //       enumOptions: [
-  //         {
-  //           label: 'Morning cleanup (10am-12am)',
-  //           option: 'morning',
-  //         },
-  //         {
-  //           label: 'Afternoon cleanup (2pm-4pm)',
-  //           option: 'afternoon',
-  //         },
-  //       ],
-  //       label: 'Schedule preference',
-  //       key: 'schedulePreference',
-  //       schemaType: 'enum',
-  //     },
-  //     {
-  //       showTo: 'customer',
-  //       enumOptions: [
-  //         {
-  //           label: 'Vegetarian',
-  //           option: 'vegetarian',
-  //         },
-  //         {
-  //           label: 'Vegan',
-  //           option: 'vegan',
-  //         },
-  //         {
-  //           label: 'Gluten free',
-  //           option: 'glutenFree',
-  //         },
-  //         {
-  //           label: 'No caffeine',
-  //           option: 'decaf',
-  //         },
-  //         {
-  //           label: 'Nut free',
-  //           option: 'nutFree',
-  //         },
-  //         {
-  //           label: 'Dairy free',
-  //           option: 'dairyFree',
-  //         },
-  //       ],
-  //       label: 'Dietary preferences',
-  //       key: 'dietaryPreferences',
-  //       schemaType: 'multi-enum',
-  //     },
-  //   ],
-  //   messagingOptions	{ fileAttachments: false }
-  // },
-  // {
-  //   listingType: 'nightly-booking',
-  //   label: 'Nightly booking',
-  //   transactionType: {
-  //     process: 'default-booking',
-  //     alias: 'default-booking/release-1',
-  //     unitType: 'night',
-  //   },
-  // },
-  // {
-  //   listingType: 'hourly-booking',
-  //   label: 'Hourly booking',
-  //   transactionType: {
-  //     process: 'default-booking',
-  //     alias: 'default-booking/release-1',
-  //     unitType: 'hour',
-  //   },
-  // },
-  // {
-  //   listingType: 'product-selling',
-  //   label: 'Sell bicycles',
-  //   transactionType: {
-  //     process: 'default-purchase',
-  //     alias: 'default-purchase/release-1',
-  //     unitType: 'item',
-  //   },
-  //   stockType: 'multipleItems',
-  //   defaultListingFields: {
-  //     shipping: true,
-  //     pickup: true,
-  //     payoutDetails: true,
-  //   },
-  // },
-  // {
-  //   listingType: 'inquiry',
-  //   label: 'Inquiry',
-  //   transactionType: {
-  //     process: 'default-inquiry',
-  //     alias: 'default-inquiry/release-1',
-  //     unitType: 'inquiry',
-  //   },
-  //   defaultListingFields: {
-  //     price: false,
-  //     location: true,
-  //   },
-  // },
+  {
+    listingType: 'model-profile',
+    label: 'Model Profile',
+    transactionType: {
+      process: 'default-booking',
+      alias: 'default-booking/release-1',
+      unitType: 'day',
+    },
+    availabilityType: 'oneSeat',
+    priceVariations: {
+      enabled: false,
+    },
+    messagingOptions: {
+      fileAttachments: false,
+    },
+    defaultListingFields: {
+      description: false,
+      availability: true,
+      payoutDetails: true,
+      images: true,
+      pickup: false,
+      title: true,
+      shipping: false,
+      location: true,
+      price: true,
+      stock: false,
+    },
+    // Transaction fields keep the Console asset shape (showTo, saveConfig.required);
+    // validListingTypes restructures them before validation.
+    transactionFields: [
+      {
+        key: 'shoot_description',
+        label: 'Shoot description',
+        schemaType: 'text',
+        showTo: 'customer',
+        saveConfig: {
+          required: true,
+        },
+      },
+      {
+        key: 'shoot_type',
+        label: 'Shoot type',
+        schemaType: 'enum',
+        showTo: 'customer',
+        saveConfig: {
+          required: true,
+        },
+        enumOptions: [
+          { option: 'fashion', label: 'Fashion' },
+          { option: 'commercial', label: 'Commercial' },
+          { option: 'editorial', label: 'Editorial' },
+          { option: 'e-commerce', label: 'E-commerce' },
+          { option: 'lookbook', label: 'Lookbook' },
+          { option: 'fitness', label: 'Fitness' },
+          { option: 'beauty', label: 'Beauty' },
+          { option: 'lingerie', label: 'Lingerie' },
+          { option: 'swimwear', label: 'Swimwear' },
+          { option: 'events-promo', label: 'Events/Promo' },
+          { option: 'social-content', label: 'Social content' },
+          { option: 'tfp', label: 'TFP' },
+        ],
+      },
+      {
+        key: 'location_type',
+        label: 'Location type',
+        schemaType: 'enum',
+        showTo: 'customer',
+        saveConfig: {
+          required: true,
+        },
+        enumOptions: [
+          { option: 'professional-studio', label: 'Professional studio' },
+          { option: 'brand-office-showroom', label: 'Brand office/showroom' },
+          { option: 'outdoor-public', label: 'Outdoor/public' },
+          { option: 'private-residence', label: 'Private residence' },
+          { option: 'other', label: 'Other' },
+        ],
+      },
+      {
+        key: 'shoot_address',
+        label: 'Shoot address',
+        schemaType: 'shortText',
+        showTo: 'customer',
+        saveConfig: {
+          required: true,
+        },
+      },
+    ],
+  },
 ];
 
 // SearchPage can enforce listing query to only those listings with valid listingType
