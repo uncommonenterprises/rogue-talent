@@ -20,9 +20,12 @@ currently **pending approval**.
 - Go to **Account → Payout details** (or click the "Add payout details" prompt on his listing).
 - Start Stripe onboarding: **Individual**, country **United Kingdom (GBP)**.
 - Complete the **identity** steps with Stripe **test** values:
-  - Name: anything. DOB: use **01 / 01 / 1901** (Stripe test DOB that auto-verifies identity).
-  - Address: any UK address. Phone: any. Email: prefilled is fine.
-  - If asked for an ID/verification doc in test mode, use Stripe's **"use test document"** option.
+  - **DOB MUST be exactly `01 / 01 / 1901`** — this is Stripe's magic test DOB that forces identity
+    to verify. **Any real DOB returns `verification_failed_keyed_identity` and charges never enable**
+    (learned the hard way 2026-09-19: DOB 1990 → charges_enabled stayed false).
+  - Name: anything. Address: any UK address. Phone: any. Email: prefilled is fine.
+  - If, after a failed attempt, Stripe now asks for an ID **document**, use its
+    **"use test document / successfully verified"** option — or just re-key DOB `01/01/1901`.
 - **At the bank-account / "external account" step:**
   - If Stripe offers **"Skip"** / **"Do this later"** → take it.
   - If it *forces* a sort code + account number to continue → **stop there and just close the tab.**
