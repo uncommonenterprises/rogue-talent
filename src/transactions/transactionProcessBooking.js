@@ -115,8 +115,9 @@ export const states = {
  * `default-booking` version (booking-v2) — see ext/transaction-processes/booking-v2.
  */
 export const graph = {
-  // NOTE: update the release number to match the pushed booking-v2 version alias.
-  id: 'default-booking/release-2',
+  // Descriptive only (runtime resolves via the listing's stored alias, not this).
+  // booking-v2 ships by updating the existing default-booking/release-1 alias.
+  id: 'default-booking/release-1',
   initial: states.INITIAL,
   states: {
     [states.INITIAL]: {
