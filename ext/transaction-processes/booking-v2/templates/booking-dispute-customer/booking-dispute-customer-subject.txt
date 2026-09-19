@@ -1,0 +1,1 @@
+{{set-translations (asset "content/email-texts.json")}}{{t "BookingDisputeCustomer.Subject" "We've received your report" }}

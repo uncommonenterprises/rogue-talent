@@ -313,4 +313,106 @@
   {:name :notification/review-by-customer-second,
    :on :transition/review-2-by-customer,
    :to :actor.role/provider,
-   :template :booking-review-by-other-party-published}]}
+   :template :booking-review-by-other-party-published}
+  ;; --- Cancellations (both parties; no reason ever referenced) ---
+  ;; Full-refund cancels: client fully refunded, provider not paid.
+  {:name :notification/customer-cancel-to-customer,
+   :on :transition/customer-cancel,
+   :to :actor.role/customer,
+   :template :booking-cancelled-customer}
+  {:name :notification/customer-cancel-to-provider,
+   :on :transition/customer-cancel,
+   :to :actor.role/provider,
+   :template :booking-cancelled-provider}
+  ;; No-refund cancel (customer cancelled <48h): client charged, provider still paid.
+  {:name :notification/customer-cancel-late-to-customer,
+   :on :transition/customer-cancel-late,
+   :to :actor.role/customer,
+   :template :booking-cancelled-charged-customer}
+  {:name :notification/customer-cancel-late-to-provider,
+   :on :transition/customer-cancel-late,
+   :to :actor.role/provider,
+   :template :booking-cancelled-charged-provider}
+  {:name :notification/provider-cancel-to-customer,
+   :on :transition/provider-cancel,
+   :to :actor.role/customer,
+   :template :booking-cancelled-customer}
+  {:name :notification/provider-cancel-to-provider,
+   :on :transition/provider-cancel,
+   :to :actor.role/provider,
+   :template :booking-cancelled-provider}
+  {:name :notification/provider-cancel-late-to-customer,
+   :on :transition/provider-cancel-late,
+   :to :actor.role/customer,
+   :template :booking-cancelled-customer}
+  {:name :notification/provider-cancel-late-to-provider,
+   :on :transition/provider-cancel-late,
+   :to :actor.role/provider,
+   :template :booking-cancelled-provider}
+  {:name :notification/operator-cancel-to-customer,
+   :on :transition/operator-cancel,
+   :to :actor.role/customer,
+   :template :booking-cancelled-customer}
+  {:name :notification/operator-cancel-to-provider,
+   :on :transition/operator-cancel,
+   :to :actor.role/provider,
+   :template :booking-cancelled-provider}
+  {:name :notification/operator-cancel-late-to-customer,
+   :on :transition/operator-cancel-late,
+   :to :actor.role/customer,
+   :template :booking-cancelled-customer}
+  {:name :notification/operator-cancel-late-to-provider,
+   :on :transition/operator-cancel-late,
+   :to :actor.role/provider,
+   :template :booking-cancelled-provider}
+  ;; Operator refunds a no-refund cancel (reverses the charge): client refunded, provider not paid.
+  {:name :notification/operator-cancel-charged-to-customer,
+   :on :transition/operator-cancel-charged,
+   :to :actor.role/customer,
+   :template :booking-refunded-dispute-customer}
+  {:name :notification/operator-cancel-charged-to-provider,
+   :on :transition/operator-cancel-charged,
+   :to :actor.role/provider,
+   :template :booking-refunded-dispute-provider}
+  ;; --- Dispute raised by the customer (payout paused) ---
+  {:name :notification/dispute-to-customer,
+   :on :transition/dispute,
+   :to :actor.role/customer,
+   :template :booking-dispute-customer}
+  {:name :notification/dispute-to-provider,
+   :on :transition/dispute,
+   :to :actor.role/provider,
+   :template :booking-dispute-provider}
+  ;; Operator pauses payout to investigate.
+  {:name :notification/operator-dispute-hold-to-provider,
+   :on :transition/operator-dispute-hold,
+   :to :actor.role/provider,
+   :template :booking-dispute-provider}
+  ;; --- Dispute resolutions ---
+  ;; Refund the client (from completed or from hold): client refunded, provider not paid.
+  {:name :notification/operator-dispute-refund-to-customer,
+   :on :transition/operator-dispute-refund,
+   :to :actor.role/customer,
+   :template :booking-refunded-dispute-customer}
+  {:name :notification/operator-dispute-refund-to-provider,
+   :on :transition/operator-dispute-refund,
+   :to :actor.role/provider,
+   :template :booking-refunded-dispute-provider}
+  {:name :notification/operator-hold-refund-to-customer,
+   :on :transition/operator-hold-refund,
+   :to :actor.role/customer,
+   :template :booking-refunded-dispute-customer}
+  {:name :notification/operator-hold-refund-to-provider,
+   :on :transition/operator-hold-refund,
+   :to :actor.role/provider,
+   :template :booking-refunded-dispute-provider}
+  ;; Release the held payout: provider paid (reuses the money-paid breakdown template).
+  {:name :notification/operator-hold-release-to-provider,
+   :on :transition/operator-hold-release,
+   :to :actor.role/provider,
+   :template :booking-money-paid}
+  ;; --- Backstop payout after a no-refund cancel: provider paid ---
+  {:name :notification/payout-cancelled-charged-to-provider,
+   :on :transition/payout-cancelled-charged,
+   :to :actor.role/provider,
+   :template :booking-money-paid}]}
