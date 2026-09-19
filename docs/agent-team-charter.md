@@ -104,6 +104,10 @@ force: **only Neil sets an `APPROVED` status** on anything that reaches a sign-o
   the following morning the team makes material progress from the first message.
 - Escalation categories unchanged (money/public-go-live/safety/legal/scope/destructive → Neil, with
   a recommendation).
+- **Always present decisions as cards (Neil's standing preference, 2026-09-19):** every decision
+  needing Neil's input goes to him via the AskUserQuestion selector — options + a clear
+  recommendation (recommended first) so he answers with a click. Never bury decisions in prose;
+  batch ≤4 per call, follow-up calls for more.
 - **Availability (refined 2026-09-19): assume Neil is NOT available until ~3pm each day.** Work
   autonomously all day; keep a running "for Neil" queue of everything needing his input/action (with
   the exact command/decision ready) for the 3pm check-in — don't wait on him or ask mid-morning. If

@@ -46,4 +46,6 @@ whether it was **escalated** to Neil. This is how Neil audits the team without r
 
 | 2026-09-19 (Day 1) | Payment-DECLINE handling verified (decline card 4000…0002): clear 'Your card has been declined' error, stays on checkout, form preserved, retry enabled, NO transaction created. Correct. (Also confirmed the shared required-asterisk fix now shows on the checkout custom fields — app-wide, as intended.) | Payment edge-case verification | PM | No |
 
+| 2026-09-19 (Day 1) | Decisions (Neil, decision cards): (1) BUILD RT-01/02/08 now — decouple submit from Stripe, Stripe at go-live (unblocks model onboarding). (2) Config-as-code OPTION A (code-authoritative port; careful merge-precedence, test-verified). (3) UX Tester model → SONNET (Haiku produced 4 phantoms even after brief-tightening). (4) ACTIVATE cancel/dispute emails (guided flex-cli push). ALSO: Neil's standing preference — ALWAYS present decisions via AskUserQuestion cards. | Batch-1 decisions | Neil (cards) | Yes (money/go-live: RT-01/02/08; process: config, emails) |
+
 <!-- PM: append new rows above this line, newest at the bottom of the table. -->
