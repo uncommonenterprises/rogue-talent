@@ -443,6 +443,13 @@ export const loadData = (params, search, config) => (dispatch, getState, sdk) =>
         'publicData.transactionProcessAlias',
         'publicData.unitType',
         'publicData.cardStyle',
+        // rt-talent result card meta: location eyebrow, meta line (gender · height · experience),
+        // and category tags (getTalentCardData reads these off publicData).
+        'publicData.location',
+        'publicData.gender',
+        'publicData.height_cm',
+        'publicData.experience_level',
+        'publicData.modelling_categories',
         // These help rendering of 'purchase' listings,
         // when transitioning from search page to listing page
         'publicData.pickupEnabled',
