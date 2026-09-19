@@ -129,9 +129,13 @@ export const getTalentCardData = (listing, config, intl) => {
     ? enumLabel(findListingField(config, 'gender'), publicData.gender)
     : null;
   const height = typeof publicData?.height_cm === 'number' ? `${publicData.height_cm}cm` : null;
-  const experience = publicData?.experience_level
+  // Card meta wants the short label. The experience_level enum labels carry a
+  // "(longer description)" suffix that's fine on the listing detail page but too long
+  // for a compact card line — strip it here (card-only).
+  const experienceFull = publicData?.experience_level
     ? enumLabel(findListingField(config, 'experience_level'), publicData.experience_level)
     : null;
+  const experience = experienceFull ? experienceFull.replace(/\s*\(.*\)\s*$/, '') : null;
   const metaParts = [gender, height, experience].filter(Boolean);
 
   const catField = findListingField(config, 'modelling_categories');
