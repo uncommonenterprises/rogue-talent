@@ -255,33 +255,67 @@ const PROFILE_FIELD_SECTIONS = [
   { id: 'Links', keys: ['model_website_url', 'instagram_url'] },
 ];
 
+// Namespaced form-field key for a listing field (matches the CustomExtendedDataField names).
+const namespacedFieldKey = fieldConfig => {
+  const { key, scope } = fieldConfig;
+  return scope === 'public' ? `pub_${key}` : `priv_${key}`;
+};
+
+// Whether a listing field should render on this step for the given listing type + categories.
+// Extracted to module scope so the "Still needed" checklist and the rendered fields share the
+// exact same eligibility rule (they can't drift apart).
+const isEligibleListingField = (fieldConfig, listingType, targetCategoryIds) => {
+  const { schemaType, scope } = fieldConfig || {};
+  return (
+    EXTENDED_DATA_SCHEMA_TYPES.includes(schemaType) &&
+    ['public', 'private'].includes(scope) &&
+    isFieldForListingType(listingType, fieldConfig) &&
+    isFieldForCategory(targetCategoryIds, fieldConfig)
+  );
+};
+
+// Scroll to (and focus) a field from the "Still needed" checklist. Each rendered field is
+// wrapped in an anchor `<div id="field-<namespacedKey>">`, so this works uniformly for every
+// schema type (text/select/checkbox group) without each Field component forwarding an id.
+const scrollToField = namespacedKey => {
+  if (typeof document === 'undefined') {
+    return;
+  }
+  const anchor = document.getElementById(`field-${namespacedKey}`);
+  if (!anchor) {
+    return;
+  }
+  const prefersReducedMotion =
+    typeof window !== 'undefined' &&
+    typeof window.matchMedia === 'function' &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  anchor.scrollIntoView({ behavior: prefersReducedMotion ? 'auto' : 'smooth', block: 'center' });
+  const focusable = anchor.querySelector('input, select, textarea');
+  if (focusable) {
+    focusable.focus({ preventScroll: true });
+  }
+};
+
 const AddListingFields = props => {
   const { listingType, listingFieldsConfig, selectedCategories, formId, intl } = props;
   const targetCategoryIds = Object.values(selectedCategories);
 
-  const isEligible = fieldConfig => {
-    const { schemaType, scope } = fieldConfig || {};
-    return (
-      EXTENDED_DATA_SCHEMA_TYPES.includes(schemaType) &&
-      ['public', 'private'].includes(scope) &&
-      isFieldForListingType(listingType, fieldConfig) &&
-      isFieldForCategory(targetCategoryIds, fieldConfig)
-    );
-  };
+  const isEligible = fieldConfig =>
+    isEligibleListingField(fieldConfig, listingType, targetCategoryIds);
 
   const renderField = fieldConfig => {
-    const { key, scope } = fieldConfig;
-    const namespacedKey = scope === 'public' ? `pub_${key}` : `priv_${key}`;
+    const namespacedKey = namespacedFieldKey(fieldConfig);
     return (
-      <CustomExtendedDataField
-        key={namespacedKey}
-        name={namespacedKey}
-        fieldConfig={fieldConfig}
-        defaultRequiredMessage={intl.formatMessage({
-          id: 'EditListingDetailsForm.defaultRequiredMessage',
-        })}
-        formId={formId}
-      />
+      <div key={namespacedKey} id={`field-${namespacedKey}`} className={css.fieldAnchor}>
+        <CustomExtendedDataField
+          name={namespacedKey}
+          fieldConfig={fieldConfig}
+          defaultRequiredMessage={intl.formatMessage({
+            id: 'EditListingDetailsForm.defaultRequiredMessage',
+          })}
+          formId={formId}
+        />
+      </div>
     );
   };
 
@@ -363,6 +397,7 @@ const EditListingDetailsForm = props => (
         handleSubmit,
         onListingTypeChange,
         invalid,
+        errors,
         pristine,
         marketplaceCurrency,
         marketplaceName,
@@ -434,6 +469,22 @@ const EditListingDetailsForm = props => (
         submitInProgress ||
         !hasMandatoryListingTypeData ||
         !isCompatibleCurrency;
+
+      // Surface *why* the disabled "Next" button is stuck: a live list of the required
+      // listing fields that are still incomplete. Read off the same field validators the
+      // fields themselves use (Final Form `errors`), filtered to the required, on-this-step
+      // eligible fields — so this list and the wizard's tab-completion gate can't diverge.
+      const targetCategoryIds = Object.values(pickSelectedCategories(values));
+      const incompleteRequiredFields = showListingFields
+        ? listingFieldsConfig
+            .filter(f => isEligibleListingField(f, listingType, targetCategoryIds))
+            .filter(f => !!f?.saveConfig?.isRequired)
+            .map(f => ({
+              key: namespacedFieldKey(f),
+              label: f?.saveConfig?.label || f?.label,
+            }))
+            .filter(f => !!errors?.[f.key])
+        : [];
 
       return (
         <Form className={classes} onSubmit={handleSubmit}>
@@ -515,6 +566,33 @@ const EditListingDetailsForm = props => (
               />
             </p>
           )}
+
+          {incompleteRequiredFields.length > 0 ? (
+            pristine ? (
+              <p className={css.stillNeededHelp}>
+                <FormattedMessage id="EditListingDetailsForm.stillNeededHelp" />
+              </p>
+            ) : (
+              <div className={css.stillNeeded}>
+                <p className={css.stillNeededEyebrow}>
+                  <FormattedMessage id="EditListingDetailsForm.stillNeededEyebrow" />
+                </p>
+                <ul className={css.stillNeededList}>
+                  {incompleteRequiredFields.map(field => (
+                    <li key={field.key} className={css.stillNeededListItem}>
+                      <button
+                        type="button"
+                        className={css.stillNeededItem}
+                        onClick={() => scrollToField(field.key)}
+                      >
+                        {field.label}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )
+          ) : null}
 
           <Button
             className={css.submitButton}

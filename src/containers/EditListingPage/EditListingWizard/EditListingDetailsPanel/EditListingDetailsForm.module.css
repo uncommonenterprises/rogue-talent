@@ -80,10 +80,85 @@
   margin-bottom: 8px;
 }
 
+/* Design-system eyebrow treatment — aligned with the "Still needed" eyebrow so section
+   labels and the checklist label read as one consistent label language on the page. */
 .sectionHeading {
-  font-weight: var(--fontWeightSemiBold, 600);
-  font-size: 15px;
-  line-height: 24px;
-  margin: 24px 0 8px 0;
-  color: var(--colorGrey700, #4a4a4a);
+  font-family: var(--font-sans);
+  font-weight: var(--weight-bold);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin: var(--space-6) 0 var(--space-2) 0;
+}
+
+/* Scroll-to target for the "Still needed" checklist; the margin keeps the focused field
+   clear of the top of the viewport when jumped to. */
+.fieldAnchor {
+  scroll-margin-top: 24px;
+}
+
+/* State 1 — pristine form: a single muted caption under the fields. */
+.stillNeededHelp {
+  margin: 24px 0 0 0;
+  font-size: var(--text-xs);
+  line-height: 18px;
+  color: var(--text-muted);
+}
+
+/* State 2 — in progress: live list of the required fields still incomplete. */
+.stillNeeded {
+  margin-top: 24px;
+}
+
+.stillNeededEyebrow {
+  margin: 0 0 8px 0;
+  font-family: var(--font-sans);
+  font-weight: var(--weight-bold);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.stillNeededList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.stillNeededListItem {
+  margin: 0;
+  padding: 0;
+}
+
+/* rt-tag--outline as a real interactive control (informational, not an error state — no red). */
+.stillNeededItem {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-sans);
+  font-weight: var(--weight-semibold);
+  font-size: 14px;
+  color: var(--ink-700);
+  background: transparent;
+  border: var(--border-hair) solid var(--ink-200);
+  border-radius: var(--radius-pill);
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: border-color var(--dur-fast) var(--ease-standard),
+    color var(--dur-fast) var(--ease-standard);
+}
+
+.stillNeededItem:hover {
+  border-color: var(--ink-400);
+  color: var(--text-primary);
+}
+
+.stillNeededItem:focus-visible {
+  outline: none;
+  border-color: var(--accent-500);
+  box-shadow: 0 0 0 3px var(--accent-100);
 }

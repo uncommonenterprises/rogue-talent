@@ -113,8 +113,8 @@ describe('EditListingDetailsForm', () => {
     await user.type(screen.getByRole('textbox', { name: title }), 'My Listing');
     await user.type(screen.getByRole('textbox', { name: description }), 'Lorem ipsum');
 
-    // Fill custom listing field
-    await user.selectOptions(screen.getByLabelText('Clothing'), 'kids');
+    // Fill custom listing field (optional fields render with an "(optional)" label suffix)
+    await user.selectOptions(screen.getByLabelText('Clothing (optional)'), 'kids');
 
     // Test that save button is enabled
     expect(screen.getByRole('button', { name: saveActionMsg })).toBeEnabled();
