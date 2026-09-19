@@ -1345,41 +1345,37 @@ const validateCategoryConfig = hostedConfig => {
 // Merge listing configs //
 ///////////////////////////
 
-// Merge 2 arrays and pick only unique objects according to "key" property
-// Note: This solution prefers objects from the second array
-//       I.e. default configs override hosted asset configs if they have the same key.
-const union = (arr1, arr2, key) => {
-  const all = [...arr1, ...arr2];
-  const map = new Map(all.map(obj => [obj[key], obj]));
-  return [...map.values()];
-};
+// CONFIG-AS-CODE (Option A): the code-defined listing types/fields in
+// src/config/configListing.js are the SOURCE OF TRUTH when they are defined,
+// in EVERY environment (dev, test and any future live). Hosted (Console) assets
+// are used only as a fallback when the code config is empty — this preserves the
+// upstream Sharetribe template behaviour for un-ported marketplaces.
+//
+// Precedence is "replace, not union": when code defines listing types/fields the
+// hosted definitions are ignored entirely (not merged key-by-key). This makes
+// code unambiguously authoritative and removes drift between the two sources.
+// Backend implications (search-index management + the hasMandatoryConfigs gate)
+// are documented in docs/config-as-code-status.md.
+//
+// NOTE: this replaces the upstream template's `mergeDefaultTypesAndFieldsForDebugging`
+// dev-only union toggle, which never took effect in a production build.
+const codeConfigIsAuthoritative = codeConfig => Array.isArray(codeConfig) && codeConfig.length > 0;
 
-// For debugging, it becomes sometimes important to be able to merge and overwrite with local values
-// Note: We don't want to expose this to production by default.
-//       If you customization relies on multiple listing types or custom listing fields, you need to change this.
-const mergeDefaultTypesAndFieldsForDebugging = isDebugging => {
-  const isDev = process.env.NODE_ENV === 'development';
-  return isDebugging && isDev;
-};
-
-// Note: by default, listing types and fields are only merged if explicitly set for debugging
 const mergeListingConfig = (hostedConfig, defaultConfigs, categoriesInUse) => {
   // Listing configuration is splitted to several assets in Console
   const hostedListingTypes = restructureListingTypes(hostedConfig.listingTypes?.listingTypes);
   const hostedListingFields = restructureListingFields(hostedConfig.listingFields?.listingFields);
 
-  // The default values for local debugging
+  // Code-defined config (src/config/configListing.js)
   const { listingTypes: defaultListingTypes, listingFields: defaultListingFields, ...rest } =
     defaultConfigs.listing || {};
 
-  // When debugging, include default configs by passing 'true' here.
-  // Otherwise, use listing types and fields from hosted assets.
-  const shouldMerge = mergeDefaultTypesAndFieldsForDebugging(false);
-  const listingTypes = shouldMerge
-    ? union(hostedListingTypes, defaultListingTypes, 'listingType')
+  // Code config wins when present; otherwise fall back to hosted (Console) assets.
+  const listingTypes = codeConfigIsAuthoritative(defaultListingTypes)
+    ? defaultListingTypes
     : hostedListingTypes;
-  const listingFields = shouldMerge
-    ? union(hostedListingFields, defaultListingFields, 'key')
+  const listingFields = codeConfigIsAuthoritative(defaultListingFields)
+    ? defaultListingFields
     : hostedListingFields;
 
   const listingTypesInUse = listingTypes.map(lt => `${lt.listingType}`);
@@ -1396,16 +1392,16 @@ const mergeUserConfig = (hostedConfig, defaultConfigs) => {
   const hostedUserTypes = restructureUserTypes(hostedConfig?.userTypes?.userTypes);
   const hostedUserFields = restructureUserFields(hostedConfig?.userFields?.userFields);
 
+  // Code-defined config (src/config/configUser.js)
   const { userFields: defaultUserFields, userTypes: defaultUserTypes } = defaultConfigs.user;
 
-  // When debugging, include default configs by passing 'true' here.
-  // Otherwise, use user fields from hosted assets.
-  const shouldMerge = mergeDefaultTypesAndFieldsForDebugging(false);
-  const userTypes = shouldMerge
-    ? union(hostedUserTypes, defaultUserTypes, 'userType')
+  // Config-as-code (Option A): code config wins when present; otherwise fall back
+  // to hosted (Console) assets. See mergeListingConfig above for the rationale.
+  const userTypes = codeConfigIsAuthoritative(defaultUserTypes)
+    ? defaultUserTypes
     : hostedUserTypes;
-  const userFields = shouldMerge
-    ? union(hostedUserFields, defaultUserFields, 'key')
+  const userFields = codeConfigIsAuthoritative(defaultUserFields)
+    ? defaultUserFields
     : hostedUserFields;
 
   // To include user type validation (if you have user types in your default configuration),

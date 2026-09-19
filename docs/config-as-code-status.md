@@ -97,9 +97,14 @@ transactional email provider. Budget 1–2 days + verification.
    fields), the search index for those keys becomes our responsibility via `flex-cli search set`
    per env. If we stay **Option B** (Console fields), Console handles indexing but per env, by hand.
    The two strategies therefore diverge on search too — pick one and be consistent.
-3. **Merge precedence.** In `mergeListingConfig`/`mergeUserConfig`, even with the debug toggle on,
-   the merge is `union(hosted, default, key)` — **hosted (Console) wins** on key collisions. So
-   Option A isn't just flipping a boolean; to make code truly authoritative you must ensure the
+3. **Merge precedence.** _(RESOLVED — see §6.)_ In `mergeListingConfig`/`mergeUserConfig`, even with
+   the debug toggle on, the merge is `union(hosted, default, key)`. **Correction to the original
+   claim:** `union` builds a `Map` from `[...hosted, ...default]`, and later entries win, so the
+   *default (code)* config actually overrode hosted on collisions — not the other way round. The
+   real blocker was elsewhere: `mergeDefaultTypesAndFieldsForDebugging` is gated on
+   `NODE_ENV === 'development'`, so on the Railway/production build the union never ran at all and
+   only hosted assets were used. So Option A wasn't just flipping a boolean; to make code truly
+   authoritative you must ensure the
    live Console does **not** also define the same keys (or invert the precedence). Flag for the
    PM: this is a real code change that needs testing on the test env before it's trusted for live.
 4. **Process-tree drift (minor, noted not fixed).** The live-vs-git process names differ from the
@@ -124,6 +129,77 @@ transactional email provider. Budget 1–2 days + verification.
 3. **Reconcile the process tree** (§4.4) with a `process pull` pass so `ext/` is the true source.
 4. Keep `scripts/export-config-assets.js` as a **drift check** — re-run and `git diff` before any
    live build to confirm test config hasn't changed underneath us.
+
+---
+
+## 6. Option A IMPLEMENTED — code is now the source of truth (2026-09-19)
+
+Neil approved **Option A**. The no-code config assets have been ported into the app's code config
+and the merge now makes code authoritative in every environment. This is a code change only — **no
+marketplace writes were made.**
+
+### What was ported (into the app's INTERNAL config shape, not the raw asset shape)
+- `src/config/configListing.js` — the `model-profile` **listing type** (day booking,
+  `default-booking/release-1`, `oneSeat`, its 4 customer transaction fields) + all **18 listing
+  fields** (the 16 model attributes plus the `half_day_rate` / `hourly_rate` currency fields).
+  Sourced from `config/assets/listing-types.json` + `config/assets/listing-fields.json`.
+- `src/config/configUser.js` — the `model` and `client` **user types** (roles, default fields,
+  sign-up settings) + all **8 user fields** (`company_name`, `client_website_url`, `date_of_birth`,
+  `id_verified`, `industry`, `typical_projects`, `vat_number`, `id_verified_client`). Sourced from
+  `config/assets/user-types.json` + `config/assets/user-fields.json`.
+
+### How merge precedence was handled (the load-bearing part)
+`src/util/configHelpers.js` — `mergeListingConfig` / `mergeUserConfig`:
+- **Replace, not union.** When the code config array is non-empty it is used verbatim and the hosted
+  (Console) asset is **ignored entirely** (`codeConfigIsAuthoritative(codeArray) ? code : hosted`).
+  This makes code unambiguously authoritative and removes drift — there is no key-by-key merge that
+  could silently pull in a stray Console key.
+- **Safe fallback.** If the code array is empty, the hosted asset is used (unchanged upstream
+  behaviour). Reverting the port therefore reverts cleanly to Console-driven config.
+- The dev-only `mergeDefaultTypesAndFieldsForDebugging` union toggle (and the `union` helper) were
+  removed — they never took effect in a production build (see the §4.3 correction) and are
+  superseded by this.
+
+### Verification (test env reasoning + automated test)
+- `CI=true node scripts/build.js` passes (warnings-as-errors).
+- `src/util/configAsCode.verify.test.js` (new regression test) drives the real `mergeConfig` with a
+  deliberately-different mock hosted asset and asserts: code listing type + all 18 fields + 4
+  transaction fields resolve; required flags and `indexForSearch` survive validation; both user
+  types + all 8 user fields resolve with correct user-type limiting; user fields are not
+  force-required; and the empty-code fallback still yields the hosted config. All pass.
+- Correctness on the **test marketplace**: the field *keys/scopes are unchanged*, so the
+  marketplace's existing search index (`pub_gender`, etc.) and all stored listing/user data keep
+  working — code authority is purely an app-side rendering/validation choice, not a backend write.
+
+### REQUIRED backend/Console steps — do NOT skip these
+1. **Leave the Console field/type definitions in place on the TEST marketplace.** Even though the
+   app now ignores them, Console **auto-manages the search index** for its own no-code fields. If
+   someone deletes the Console listing fields "because code owns them now", the search index for
+   those keys is dropped and `/s` filters silently break. Also `hasMandatoryConfigs` (below) would
+   fail. Treat the Console definitions as the index-provider, not the source of truth.
+2. **`hasMandatoryConfigs` still reads HOSTED assets, by design (not changed here).** The
+   maintenance-screen gate checks `branding.logo`, `listingTypes`, `listingFields`,
+   `transactionSize` from the **hosted** config, not the code config. On test this is satisfied by
+   Console. For a **future LIVE build**, the live Console must still provide at minimum:
+   branding (logo), a transaction-size (minimum price), and *some* listing-types/listing-fields
+   assets — otherwise the app shows "configuration missing" even though code defines everything.
+   Relaxing this gate to accept code config is a possible follow-up but was left out to keep this
+   change tight and avoid touching the maintenance-mode safety net.
+3. **Search index on a LIVE env (§4.2).** Because the fields are now code-defined, a live
+   marketplace built from Git will NOT get Console's auto-indexing. Run `flex-cli search set` per
+   indexed public key on the live env. The indexed keys are: `gender`, `height_cm`, `hair_colour`,
+   `eye_colour`, `ethnicity` (multi-enum), `experience_level`, `modelling_categories` (multi-enum),
+   `availability_radius`, `half_day_rate` (long), `hourly_rate` (long), `travel_fee_policy`,
+   `min_booking_notice` (all `public`). Verify against `SEARCH-SCHEMA.snapshot.txt`.
+
+### Risk / review flags for the PM
+- **Correctness-critical, not yet observed live.** The build + unit test pass and the reasoning is
+  sound, but this has not been rendered on the deployed test env (this agent does not push). Before
+  trusting it: deploy to Railway/test and eyeball the Create-your-profile wizard, a model listing
+  page, `/s` filters, and the client sign-up form — they should be identical to today.
+- **`model-profile` uses the `default-booking/release-1` alias** (booking-v2). That matches the live
+  test marketplace today. If the process alias ever changes, the code listing type must change too.
+- No payment/transaction-process changes were made.
 
 ---
 
