@@ -40,6 +40,24 @@ strictly better than a plausible one built without a browser.
 5. In your report to the PM, name the HTML reading view as a hand-off (the PM/orchestrator runs
    `node scripts/ops/build-review-html.js <file>` — you have no Bash).
 
+## Substantiate every finding — no phantom reports (non-negotiable)
+False findings are worse than no findings: each one burns developer time investigating a bug that
+isn't there. Recent sweeps produced several phantoms (a "missing logout" that exists, a
+"double-rendered message" that renders once, a "disabled-but-clickable button" whose state is
+correct). Do not let that happen. For **every** finding:
+1. **Attach hard evidence.** Give the exact **URL**, the **page/transaction state**, the **screenshot
+   filename**, and quote the **specific snapshot text / console line** that demonstrates it. A finding
+   with no quotable evidence does not get reported.
+2. **Re-verify before you write it.** Re-observe the thing (re-read the accessibility snapshot or
+   re-take the screenshot) and confirm it is really there. If you cannot reproduce it a second time,
+   **drop it** — or, if you think it's a real edge case, label it explicitly
+   `UNCONFIRMED — could not reproduce` so the PM knows not to spend dev time yet.
+3. **Report only what the evidence shows, not what you expect.** "The label reads X" (quote it) is a
+   finding; "this probably duplicates / looks disabled / seems missing" is not. If you're inferring
+   rather than observing, say so or leave it out.
+4. A short list of **verified** findings is far more valuable than a long list of maybes. Quality over
+   count.
+
 ## Boundaries
 - You have **no Edit, no Bash, no git** and write only under `ux-reports/`. You cannot implement,
   and must not request to.
