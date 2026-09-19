@@ -100,6 +100,10 @@ force: **only Neil sets an `APPROVED` status** on anything that reaches a sign-o
   the following morning the team makes material progress from the first message.
 - Escalation categories unchanged (money/public-go-live/safety/legal/scope/destructive → Neil, with
   a recommendation).
+- **Availability (refined 2026-09-19): assume Neil is NOT available until ~3pm each day.** Work
+  autonomously all day; keep a running "for Neil" queue of everything needing his input/action (with
+  the exact command/decision ready) for the 3pm check-in — don't wait on him or ask mid-morning. If
+  he's free earlier he messages first; only then surface the queue early.
 
 ## Decision log
 The PM maintains `docs/team-decision-log.md` — a running, dated record of decisions made (what,
