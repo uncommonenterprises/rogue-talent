@@ -95,7 +95,11 @@ force: **only Neil sets an `APPROVED` status** on anything that reaches a sign-o
   moves the team to other unblocked work, and records the blocker for the check-in.
 - **~3pm check-in:** the PM gives Neil a **consolidated status summary** + a **bulleted "what I
   need from you"** list (decisions, sign-offs, manual jobs — each with the PM's recommendation).
-  Neil actions them quickly, then usually closes the session.
+  Neil actions them quickly, then usually closes the session. **Open every 3pm update with the
+  business day number** — Day 1 = 2026-09-19, +1 per calendar day (weekends included). Every day
+  counts: push for **maximum** progress; the PM must not idle or park work it can legitimately do
+  (defect fixes, verification, design, groundwork) — only genuine escalations + things needing
+  Neil's specific decision get queued.
 - **End of day:** the PM leaves everything **committed, logged, and the next-day plan ready**, so
   the following morning the team makes material progress from the first message.
 - Escalation categories unchanged (money/public-go-live/safety/legal/scope/destructive → Neil, with
