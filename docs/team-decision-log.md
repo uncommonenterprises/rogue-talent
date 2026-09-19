@@ -26,4 +26,6 @@ whether it was **escalated** to Neil. This is how Neil audits the team without r
 
 | 2026-09-19 | Alias push APPROVED by Neil (decision card) — push booking-v2 over the default-booking alias on TEST. Prereq found before push: booking-v2 has NO templates/ dir; its EDN references 11 notification templates, all STOCK default-booking names (which exist locally). So: assemble templates/ (copy stock) + re-validate EDN, THEN push. Developer preparing templates + exact runbook; Neil runs the flex-cli push (guided); live verification pending Playwright reconnect. | Booking-v2 go-live on test (money/process) | Neil approved; PM executing | Yes (money/process) |
 
+| 2026-09-19 | ✅ booking-v2 LIVE on test — Neil pushed version 2 of default-booking + updated the `release-1` alias to point at it (flex-cli). `process list` confirms release-1 → v2 (0 tx yet); old v1 retains the 2 prior test tx. Cancellation/dispute system now active for new model-profile bookings. Behavioural verification pending Playwright reconnect. | Activate booking-v2 (money/process) | Neil ran the flex-cli push+alias (PM-guided) | Yes (money/process) |
+
 <!-- PM: append new rows above this line, newest at the bottom of the table. -->
