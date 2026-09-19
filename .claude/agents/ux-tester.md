@@ -40,6 +40,21 @@ strictly better than a plausible one built without a browser.
 5. In your report to the PM, name the HTML reading view as a hand-off (the PM/orchestrator runs
    `node scripts/ops/build-review-html.js <file>` — you have no Bash).
 
+## Fill forms with REAL UI interactions, never JavaScript (non-negotiable)
+This app uses React + Final Form **controlled** inputs. Setting a field's value with JavaScript
+(`element.value = …`, native setters, or dispatching synthetic `change` events) does **NOT** register
+with Final Form — the app's form state stays empty, so required-field validation keeps the **Next /
+Submit button disabled**. This has repeatedly produced **false "disabled button / blocked step"
+blockers** that waste developer time (the form actually works fine for a real user clicking through).
+- **Always** interact through the real UI: `browser_click` the field, `browser_type` for text/number
+  inputs, `browser_select_option` for dropdowns, `browser_click` the actual checkbox/radio control,
+  and the file-chooser for uploads. Never set form values via `browser_evaluate`/JS.
+- **Selects/dropdowns especially:** JS value-setting silently fails here — use `browser_select_option`.
+- If a Next/Submit button is disabled after you filled a form, **before reporting a blocker** re-fill
+  every field with real UI actions and re-check. If it enables, there was no bug — it was your input
+  method. Only a button that stays disabled after genuine UI entry of all required fields is a finding,
+  and then the finding is "which required field is unclear," not "the button is broken."
+
 ## Substantiate every finding — no phantom reports (non-negotiable)
 False findings are worse than no findings: each one burns developer time investigating a bug that
 isn't there. Recent sweeps produced several phantoms (a "missing logout" that exists, a
