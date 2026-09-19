@@ -24,4 +24,6 @@ whether it was **escalated** to Neil. This is how Neil audits the team without r
 
 | 2026-09-18 | Safety-report channel = **safety@roguetalent.co** (Neil, decision card). Already the placeholder in the code (commit 7f381d127 safety-reason fix), so NO code change. Neil ACTION before go-live: create + monitor that inbox (copy promises 'a real person will read it'). Also flagged: SAF-29 proper safety-reporting flow still unbuilt — needed before booking-v2 goes live (until then a safety concern only reaches ops if the model emails). | Booking-v2 safety flow | Neil | Yes (safety) |
 
+| 2026-09-19 | Alias push APPROVED by Neil (decision card) — push booking-v2 over the default-booking alias on TEST. Prereq found before push: booking-v2 has NO templates/ dir; its EDN references 11 notification templates, all STOCK default-booking names (which exist locally). So: assemble templates/ (copy stock) + re-validate EDN, THEN push. Developer preparing templates + exact runbook; Neil runs the flex-cli push (guided); live verification pending Playwright reconnect. | Booking-v2 go-live on test (money/process) | Neil approved; PM executing | Yes (money/process) |
+
 <!-- PM: append new rows above this line, newest at the bottom of the table. -->
