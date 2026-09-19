@@ -44,4 +44,6 @@ whether it was **escalated** to Neil. This is how Neil audits the team without r
 
 | 2026-09-19 (Day 1) | Onboarding required-field feedback SHIPPED + verified live (cobalt required-asterisks, optional kept, 'Still needed' checklist, 0 errors; commit 76c3e1c15) + card-meta short-label verified. Search filters VERIFIED: logic works across types (experience enum → 1; price range £100–200 → 1, £400–600 → 2) via URL params. Caveat: filter checkbox-CLICK UI couldn't be driven reliably via automation (inconsistent toggling — likely an artifact, stock FieldCheckboxGroup, logic works) → recommend a 30-sec human click-test to be 100%. | Verification (Day 1 max-progress) | PM | No |
 
+| 2026-09-19 (Day 1) | Payment-DECLINE handling verified (decline card 4000…0002): clear 'Your card has been declined' error, stays on checkout, form preserved, retry enabled, NO transaction created. Correct. (Also confirmed the shared required-asterisk fix now shows on the checkout custom fields — app-wide, as intended.) | Payment edge-case verification | PM | No |
+
 <!-- PM: append new rows above this line, newest at the bottom of the table. -->
