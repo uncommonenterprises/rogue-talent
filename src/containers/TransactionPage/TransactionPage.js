@@ -1062,7 +1062,14 @@ export const TransactionPageComponent = props => {
             disputeError={transitionError}
           />
         ) : null}
-        {isBookingProcess(processName) && isCancellableBookingState && cancelTransition ? (
+        {/* Keep the modal mounted while it is open (`isCancelModalOpen`) even after the
+            booking leaves a cancellable state. A successful cancel moves the tx to
+            `canceled`, which would otherwise flip `isCancellableBookingState` to false and
+            unmount the modal — destroying its internal state before it can swap in the
+            safety report-guidance view. `onCloseModal` handles the actual close. */}
+        {isBookingProcess(processName) &&
+        (isCancellableBookingState || isCancelModalOpen) &&
+        cancelTransition ? (
           <CancelBookingModal
             id="CancelBookingModal"
             isOpen={isCancelModalOpen}

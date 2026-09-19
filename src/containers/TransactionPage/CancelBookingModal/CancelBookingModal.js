@@ -319,8 +319,19 @@ const CancelBookingModal = props => {
     // onSubmitCancel returns the transition promise. On success: for a safety cancel,
     // show the report guidance (stay open); otherwise close as before. On failure the
     // error is surfaced in the form via cancelError, so leave the modal as-is.
+    //
+    // onSubmitCancel dispatches a createAsyncThunk, whose promise RESOLVES even when the
+    // transition is rejected (it resolves to a rejected action rather than throwing). So
+    // we must inspect the resolved action: only treat `requestStatus !== 'rejected'` as
+    // success — otherwise we'd wrongly close (hiding the error) or, worse, show the model
+    // "your booking was cancelled, go report it" guidance after a cancel that never went
+    // through.
     Promise.resolve(result)
-      .then(() => {
+      .then(res => {
+        const failed = res?.meta?.requestStatus === 'rejected';
+        if (failed) {
+          return;
+        }
         if (isSafety) {
           setShowSafetyGuidance(true);
         } else {
