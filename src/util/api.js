@@ -151,3 +151,12 @@ export const createUserWithIdp = body => {
 export const deleteUserAccount = body => {
   return post('/api/delete-account', body);
 };
+
+// SAF-29: submit an in-app safety concern report. This is SEPARATE from the
+// booking dispute flow. The report is captured server-side so the operator can
+// triage it the same working day.
+//
+// See `server/api/safety-report.js` for the accepted body and capture behaviour.
+export const submitSafetyReport = body => {
+  return post('/api/safety-report', body);
+};
