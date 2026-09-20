@@ -19,6 +19,7 @@ import BookingLocationMaybe from './BookingLocationMaybe';
 import FeedSection from './FeedSection';
 import DiminishedActionButtonMaybe from './DiminishedActionButtonMaybe';
 import PanelHeading from './PanelHeading';
+import SafetyAdvisoryMaybe from './SafetyAdvisoryMaybe';
 import ShootSummaryShare from './ShootSummaryShare';
 
 import css from './TransactionPanel.module.css';
@@ -129,7 +130,8 @@ export class TransactionPanelComponent extends Component {
       hasViewingRights,
       transactionFieldsComponent,
       sendMessageForm,
-      // SAF-17: shareable shoot summary (model side)
+      // SAF-11 / SAF-17: private-residence advisory + shareable shoot summary (model side)
+      showResidenceAdvisory,
       showShootSummary,
       booking,
       timeZone,
@@ -240,6 +242,10 @@ export class TransactionPanelComponent extends Component {
             {requestQuote}
             {offer}
             {transactionFieldsComponent}
+
+            {/* SAF-11: private-residence safety advisory for the model (advisory,
+                non-blocking, not shown to the client). */}
+            <SafetyAdvisoryMaybe show={showResidenceAdvisory} />
 
             {!isInquiryProcess ? (
               <div className={css.orderDetails}>

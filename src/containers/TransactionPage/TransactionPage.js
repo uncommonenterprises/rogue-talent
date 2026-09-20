@@ -815,8 +815,21 @@ export const TransactionPageComponent = props => {
     process?.hasPassedState(process?.states?.ACCEPTED, transaction) &&
     foundListingTypeConfig?.defaultListingFields.location;
 
-  // SAF-17: shareable shoot summary shows to the model on a confirmed, pre-shoot
-  // booking. Driven by the SAF-10 shoot details on the order protectedData.
+  // SAF-11 / SAF-17: model-side safety UI, driven by the SAF-10 shoot details on
+  // the order protectedData and the booking process state.
+  const locationType = transaction?.attributes?.protectedData?.location_type;
+  const isResidenceShoot = locationType === 'private-residence';
+  // SAF-11: advisory shows to the model from the request through the confirmed booking.
+  const showResidenceAdvisory =
+    isProviderRole &&
+    isResidenceShoot &&
+    !!process &&
+    [
+      process.states?.PREAUTHORIZED,
+      process.states?.ACCEPTED,
+      process.states?.ACCEPTED_LATE,
+    ].includes(bookingProcessState);
+  // SAF-17: shareable shoot summary shows to the model on a confirmed, pre-shoot booking.
   const showShootSummary = isProviderRole && !!isCancellableBookingState;
   // Human-readable shoot-type label for the summary (protectedData stores the value).
   const shootTypeValue = transaction?.attributes?.protectedData?.shoot_type;
@@ -878,6 +891,7 @@ export const TransactionPageComponent = props => {
       showBookingLocation={showBookingLocation}
       hasViewingRights={hasViewingRights}
       showListingImage={showListingImage}
+      showResidenceAdvisory={showResidenceAdvisory}
       showShootSummary={showShootSummary}
       booking={booking}
       timeZone={timeZone}

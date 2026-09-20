@@ -532,6 +532,49 @@
   color: var(--text-primary, var(--colorGrey700));
 }
 
+/* SAF-11: private-residence safety advisory (model side). Calm, hairline-bordered
+   surface — advisory, not a danger alert. */
+.safetyAdvisory {
+  margin: 24px 24px 0 24px;
+  padding: 20px;
+  border: 1px solid var(--border-hairline, var(--colorGrey100));
+  border-radius: var(--radius-lg, 8px);
+  background-color: var(--surface-muted, var(--colorGrey50));
+
+  @media (--viewportLarge) {
+    margin: 24px 0 0 0;
+  }
+}
+
+.safetyAdvisoryHeading {
+  margin: 0 0 8px 0;
+  color: var(--text-primary, var(--colorGrey700));
+}
+
+.safetyAdvisoryIntro {
+  margin: 0 0 12px 0;
+  font-size: 15px;
+  color: var(--text-secondary, var(--colorGrey500));
+}
+
+.safetyAdvisoryList {
+  margin: 0 0 12px 0;
+  padding-left: 20px;
+}
+
+.safetyAdvisoryList li {
+  margin-bottom: 8px;
+  font-size: 15px;
+  color: var(--text-primary, var(--colorGrey700));
+}
+
+.safetyAdvisoryEmergency {
+  margin: 0;
+  font-size: 14px;
+  font-weight: var(--weight-semibold, 600);
+  color: var(--text-primary, var(--colorGrey700));
+}
+
 /* SAF-17: shareable shoot summary (model side, confirmed booking). */
 .shootSummary {
   order: 2;
