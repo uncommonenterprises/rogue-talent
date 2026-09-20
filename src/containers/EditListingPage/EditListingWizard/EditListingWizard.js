@@ -11,6 +11,7 @@ import {
   displayDeliveryShipping,
   displayLocation,
   displayPrice,
+  requirePayoutDetails,
   requireListingImage,
 } from '../../../util/configHelpers';
 import {
@@ -478,19 +479,35 @@ class EditListingWizard extends Component {
   }
 
   handlePublishListing(id) {
-    const { onPublishListingDraft } = this.props;
+    const { onPublishListingDraft, currentUser, stripeAccount, listing, config } = this.props;
+    const processName = listing?.attributes?.publicData?.transactionProcessAlias.split('/')[0];
+    const isInquiryProcess = processName === INQUIRY_PROCESS_NAME;
 
-    // RT-01 (docs/submit-review-golive-flow.md, Part A): "Submit for review" is decoupled from
-    // Stripe payout onboarding. A model must be able to submit a completed profile for review
-    // (→ pendingApproval, when Listing approval is ON in Console) WITHOUT setting up Stripe.
-    // Payout is a separate go-live gate handled after operator approval (Part D), never a submit
-    // gate. We therefore publish the draft unconditionally here — the payout modal is no longer
-    // opened on submit.
-    //
-    // Safety: the client-side checkout guard (CheckoutPage.providerStripeAccountMissingError)
-    // stays in place as the backstop, so a client can never pay into a model with no connected
-    // Stripe account even if a payout-less profile becomes visible.
-    onPublishListingDraft(id);
+    const listingTypeConfig = getListingTypeConfig(listing, this.state.selectedListingType, config);
+    // Through hosted configs (listingTypeConfig.defaultListingFields?.payoutDetails),
+    // it's possible to publish listing without payout details set by provider.
+    // Customers can't purchase these listings - but it gives operator opportunity to discuss with providers who fail to do so.
+    const isPayoutDetailsRequired = requirePayoutDetails(listingTypeConfig);
+
+    const stripeConnected = !!currentUser?.stripeAccount?.id;
+    const stripeAccountData = stripeConnected ? getStripeAccountData(stripeAccount) : null;
+    const stripeRequirementsMissing =
+      stripeAccount &&
+      (hasRequirements(stripeAccountData, 'past_due') ||
+        hasRequirements(stripeAccountData, 'currently_due'));
+
+    if (
+      isInquiryProcess ||
+      !isPayoutDetailsRequired ||
+      (stripeConnected && !stripeRequirementsMissing)
+    ) {
+      onPublishListingDraft(id);
+    } else {
+      this.setState({
+        draftId: id,
+        showPayoutDetails: true,
+      });
+    }
   }
 
   handlePayoutModalClose() {
