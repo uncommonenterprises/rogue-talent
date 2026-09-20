@@ -61,7 +61,7 @@ Impact:    Blocks this exact seeded test persona from the entire money path;
            admin approval), the page currently offers zero recovery path.
 ---
 Status: APPROVED
-Note: APPROVED by Neil via decision-card 2026-09-20 — "Approve all defects" + "Approve all three [polish]". (Dead-end CTA / 'verify your email' nudge approved as polish; granting rt-client-02 transaction rights = Neil's test-data action.)
+Note: APPROVED by Neil via decision-card 2026-09-20 — "Approve all defects" + "Approve all three [polish]". (Dead-end CTA / 'verify your email' nudge approved as polish; granting rt-client-02 transaction rights = Neil's test-data action.) Implemented: 1c38357c1 2026-09-20 (deploy-verify pending) — NoAccessPage(initiate-transactions) now shows a verify-your-email hint + Account settings link.
 
 ## RT-20260920-08 — Stripe card element's ZIP field only accepts digits, so a UK client cannot enter their real postcode
 Journey:   booking-request
@@ -136,7 +136,7 @@ Impact:    Reduces a plausible source of checkout hesitation/abandonment at
            the exact moment a client is about to enter card details.
 ---
 Status: APPROVED
-Note: APPROVED by Neil via decision-card 2026-09-20 — "Approve all defects" + "Approve all three [polish]".
+Note: APPROVED by Neil via decision-card 2026-09-20 — "Approve all defects" + "Approve all three [polish]". DISPOSITION 2026-09-20: NOT a bug (Developer-confirmed) — Sharetribe inclusive end-date; 27→28 = 2 full days = correct pricing. Clarification note added near date picker. Implemented: dd63b7d77 2026-09-20 (deploy-verify pending).
 
 ## RT-20260920-10 — Booking-fee footnote is generic boilerplate; misses the chance to state the model keeps 100%
 Journey:   booking-request
@@ -159,7 +159,7 @@ Effort:    XS
 Impact:    Free brand-reinforcement copy change at a high-attention moment.
 ---
 Status: APPROVED
-Note: APPROVED by Neil via decision-card 2026-09-20 — "Approve all defects" + "Approve all three [polish]".
+Note: APPROVED by Neil via decision-card 2026-09-20 — "Approve all defects" + "Approve all three [polish]". Implemented: 1ad5c2321 2026-09-20 (deploy-verify pending) — OrderBreakdown fee note now states model keeps 100%.
 
 ## RT-20260920-11 — Client's own successful-booking page is titled "Sale details" in the browser tab
 Journey:   booking-request
@@ -186,4 +186,4 @@ Impact:    Negligible on its own; bundled here since it's free once someone's
            in that file for other reasons.
 ---
 Status: APPROVED
-Note: APPROVED by Neil via decision-card 2026-09-20 — "Approve all defects" + "Approve all three [polish]".
+Note: APPROVED by Neil via decision-card 2026-09-20 — "Approve all defects" + "Approve all three [polish]". Implemented: 0778e70dd 2026-09-20 (deploy-verify pending) — customer order view uses client-facing browser title.

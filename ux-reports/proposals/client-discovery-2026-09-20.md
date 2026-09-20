@@ -126,7 +126,7 @@ Impact:    First impression of marketplace scale/quality; currently promises
            inventory that isn't there.
 ---
 Status: APPROVED
-Note: APPROVED by Neil via decision-card 2026-09-20 — "Approve all defects" + "Approve all three [polish]".
+Note: APPROVED by Neil via decision-card 2026-09-20 — "Approve all defects" + "Approve all three [polish]". Implemented: fbd4d66bd 2026-09-20 (deploy-verify pending) — new GeneralLandingPage.duck queries published model-profile listings, renders via ListingCard, hides if empty.
 
 ## RT-20260920-04 — Footer shows unset Sharetribe boilerplate and links to Sharetribe's own social accounts, not Rogue Talent's
 Journey:   client-discovery (cross-cutting — same footer on every page)
@@ -177,7 +177,7 @@ Impact:    Small but free consistency fix while already touching footer
            content (RT-20260920-04).
 ---
 Status: APPROVED
-Note: APPROVED by Neil via decision-card 2026-09-20 — "Approve all defects" + "Approve all three [polish]".
+Note: APPROVED by Neil via decision-card 2026-09-20 — "Approve all defects" + "Approve all three [polish]". DISPOSITION 2026-09-20: not a code change — the footer nav ('Post a new listing' + /l/new) is Console-driven (content asset footer.json), no code string. → Neil's Console task, bundle with RT-04.
 
 ## RT-20260920-06 — React "recoverable-error" hydration errors on listing pages when signed in as a client
 Journey:   client-discovery
@@ -205,4 +205,4 @@ Impact:    Currently cosmetic/console-only; flagged so it doesn't become a
            visible bug later.
 ---
 Status: APPROVED
-Note: APPROVED by Neil via decision-card 2026-09-20 — "Approve all defects" + "Approve all three [polish]".
+Note: APPROVED by Neil via decision-card 2026-09-20 — "Approve all defects" + "Approve all three [polish]". DISPOSITION 2026-09-20: DIAGNOSED (Developer), real fix DEFERRED (not forced). Root cause = systemic SSR renders logged-out (server/dataLoader.js never fetches currentUser) while client hydrates authed (src/index.js) → recoverable-error, non-user-visible (onRecoverableError installed). Listing authed components already mounted-guarded. Real fix = add a mounted-guard to the one unguarded currentUser branch — needs the expanded componentStack from a tester re-run to pin it; do NOT change the index.js bootstrap (core, near payments). Awaiting a scoped follow-up.
