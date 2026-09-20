@@ -1,6 +1,7 @@
 const sharetribeSdk = require('sharetribe-flex-sdk');
 const { transactionLineItems } = require('../api-util/lineItems');
 const { isIntentionToMakeOffer } = require('../api-util/negotiation');
+const { enforceResidenceBoundary } = require('../api-util/residenceBoundary');
 const {
   getSdk,
   getTrustedSdk,
@@ -72,7 +73,12 @@ module.exports = (req, res) => {
       );
       metadataMaybe = getMetadata(orderData, transitionName);
 
-      return getTrustedSdk(req);
+      // SAF-14: silently block a private-residence booking against a model who has opted
+      // out of residence shoots. Throws a generic booking-unavailable error (the model's
+      // boundary is never revealed). Runs for both speculative and real initiate calls.
+      return enforceResidenceBoundary({ listing, orderData, bodyParams }).then(() =>
+        getTrustedSdk(req)
+      );
     })
     .then(trustedSdk => {
       const { params } = bodyParams;

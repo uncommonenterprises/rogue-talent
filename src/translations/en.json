@@ -95,6 +95,7 @@
   "CancelBookingModal.title.customer": "Cancel this booking?",
   "CancelBookingModal.title.provider": "Cancel this booking?",
   "CheckoutPage.bookingTimeNotAvailableMessage": "Unfortunately, the requested time has just been booked.",
+  "CheckoutPage.bookingUnavailableMessage": "This booking isn't available. Please try different dates, a different location, or another model.",
   "CheckoutPage.chargeDisabledMessage": "The transaction can't move forward because the provider's payout information is incomplete. Please contact support.",
   "CheckoutPage.correctQuantityInformationMissing": "The order data is missing correct quantity information",
   "CheckoutPage.default-booking.orderBreakdown": "Booking breakdown",

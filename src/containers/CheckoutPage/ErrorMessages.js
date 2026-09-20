@@ -2,6 +2,7 @@ import React from 'react';
 
 import { FormattedMessage } from '../../util/reactIntl';
 import {
+  isBookingUnavailableError,
   isTransactionInitiateAmountTooLowError,
   isTransactionInitiateMissingStripeAccountError,
   isTransactionInitiateBookingTimeNotAvailableError,
@@ -36,6 +37,9 @@ export const getErrorMessages = (
   // We want to show one error at a time for the real transition
   if (listingNotFound) {
     listingNotFoundErrorMessage = <FormattedMessage id="CheckoutPage.listingNotFoundError" />;
+  } else if (isBookingUnavailableError(initiateOrderError)) {
+    // SAF-14: generic, reason-free "not available" message. Never reveals the boundary.
+    initiateOrderErrorMessage = <FormattedMessage id="CheckoutPage.bookingUnavailableMessage" />;
   } else if (isAmountTooLowError) {
     initiateOrderErrorMessage = <FormattedMessage id="CheckoutPage.initiateOrderAmountTooLow" />;
   } else if (isTransactionInitiateBookingTimeNotAvailableError(initiateOrderError)) {
@@ -89,6 +93,9 @@ export const getErrorMessages = (
     speculateErrorMessage = (
       <FormattedMessage id="CheckoutPage.providerStripeAccountMissingError" />
     );
+  } else if (isBookingUnavailableError(speculateTransactionError)) {
+    // SAF-14: generic, reason-free "not available" message. Never reveals the boundary.
+    speculateErrorMessage = <FormattedMessage id="CheckoutPage.bookingUnavailableMessage" />;
   } else if (isTransactionInitiateBookingTimeNotAvailableError(speculateTransactionError)) {
     speculateErrorMessage = <FormattedMessage id="CheckoutPage.bookingTimeNotAvailableMessage" />;
   } else if (isTransactionInitiateListingInsufficientStockError(speculateTransactionError)) {

@@ -139,6 +139,13 @@ export const isTransactionInitiateBookingTimeNotAvailableError = error =>
   hasErrorWithCode(error, ERROR_CODE_TRANSACTION_BOOKING_TIME_NOT_AVAILABLE);
 
 /**
+ * SAF-14: Check if a booking was blocked by the server-side residence boundary filter.
+ * The server returns a deliberately generic code so the reason (a model's boundary) is
+ * never revealed to the client. See server/api-util/residenceBoundary.js.
+ */
+export const isBookingUnavailableError = error => hasErrorWithCode(error, 'booking-not-available');
+
+/**
  * Check if the given API error (from `sdk.transaction.initiate()` or
  * `sdk.transaction.initiateSpeculative()`) is due to insufficient stock.
  */
