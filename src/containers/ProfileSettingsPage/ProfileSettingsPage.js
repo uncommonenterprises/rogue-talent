@@ -88,7 +88,7 @@ export const ProfileSettingsPageComponent = props => {
   const publicUserFields = userFields.filter(uf => uf.scope === 'public');
 
   const handleSubmit = (values, userType) => {
-    const { firstName, lastName, displayName, bio: rawBio, ...rest } = values;
+    const { firstName, lastName, displayName, bio: rawBio, noPrivateResidence, ...rest } = values;
 
     const displayNameMaybe = displayName
       ? { displayName: displayName.trim() }
@@ -96,6 +96,19 @@ export const ProfileSettingsPageComponent = props => {
 
     // Ensure that the optional bio is a string
     const bio = rawBio || '';
+
+    // SAF-13: model private-residence boundary. Persisted to the model's USER privateData
+    // so it is never readable by clients; SAF-14 enforces it silently server-side.
+    const privateDataMaybe =
+      userType === 'model'
+        ? {
+            privateData: {
+              safety_boundaries: {
+                no_private_residence: noPrivateResidence === true,
+              },
+            },
+          }
+        : {};
 
     const profile = {
       firstName: firstName.trim(),
@@ -105,6 +118,7 @@ export const ProfileSettingsPageComponent = props => {
       publicData: {
         ...pickUserFieldsData(rest, 'public', userType, userFields),
       },
+      ...privateDataMaybe,
     };
     const uploadedImage = props.image;
 
@@ -118,7 +132,7 @@ export const ProfileSettingsPageComponent = props => {
   };
 
   const user = ensureCurrentUser(currentUser);
-  const { firstName, lastName, displayName, bio, publicData } = user?.attributes.profile;
+  const { firstName, lastName, displayName, bio, publicData, privateData } = user?.attributes.profile;
   // I.e. the status is active, not pending-approval or banned
   const isUnauthorizedUser = currentUser && !isUserAuthorized(currentUser);
 
@@ -140,6 +154,9 @@ export const ProfileSettingsPageComponent = props => {
         ...displayNameMaybe,
         bio,
         profileImage: user.profileImage,
+        // SAF-13: reflect the model's saved private-residence boundary (privateData is
+        // readable by its owner, i.e. the current user).
+        noPrivateResidence: privateData?.safety_boundaries?.no_private_residence === true,
         ...initialValuesForUserFields(publicData, 'public', userType, userFields),
       }}
       profileImage={profileImage}
