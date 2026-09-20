@@ -1,5 +1,15 @@
 # Submit → Review → Go-live — the model profile lifecycle
 
+> **⚠️ SUPERSEDED IN PART (2026-09-20, Day 2 — Neil decision).** For LAUNCH we are NOT decoupling
+> Stripe from go-live. Models must complete **Stripe identity + bank (payouts)** before a profile is
+> discoverable/bookable — the gate sits at **Submit for review** (stock behaviour). **RT-01
+> (submit-decoupled-from-Stripe) was REVERTED** (commit 645f88a41). Drafts remain freely editable
+> without Stripe. RT-02 (post-submit copy) and RT-08 (listing approval) still apply. The
+> deferred-payout model this spec's "Part D / Part A" contemplated is **parked as a post-launch
+> optimisation** (feasibility proven — see `docs/spikes/payout-deferral-feasibility.md` +
+> `onboarding-split-ux.md`; decision in `docs/team-decision-log.md`). Read the rest of this doc with
+> that override in mind.
+
 **Status:** SPEC for review. Merges proposals **RT-20260802-01** (submit decoupled from
 Stripe), **RT-20260802-02** (post-submit confirmation), and **RT-20260802-08** (listing
 approval on). These are **one piece of work**, not three — implement as a single coherent
