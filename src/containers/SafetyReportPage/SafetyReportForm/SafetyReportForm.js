@@ -33,19 +33,25 @@ const CATEGORY_OPTIONS = [
 const SafetyReportForm = props => {
   const intl = useIntl();
 
+  // Pull our own props out before spreading onto FinalForm. Passing `submitError`
+  // (and other custom props) INTO FinalForm collides with final-form's own
+  // read-only `submitError` getter on the render props → SSR crash
+  // ("Cannot set property submitError which has only a getter"). So we read these
+  // from the closure and spread only the remaining (FinalForm-relevant) props.
+  const {
+    className,
+    formId,
+    inProgress = false,
+    submitError,
+    relatedContext,
+    ...restProps
+  } = props;
+
   return (
     <FinalForm
-      {...props}
+      {...restProps}
       render={fieldRenderProps => {
-        const {
-          className,
-          formId,
-          handleSubmit,
-          inProgress = false,
-          submitError,
-          relatedContext,
-          invalid,
-        } = fieldRenderProps;
+        const { handleSubmit, invalid } = fieldRenderProps;
 
         const categoryLabel = intl.formatMessage({ id: 'SafetyReportForm.categoryLabel' });
         const categoryPlaceholder = intl.formatMessage({
