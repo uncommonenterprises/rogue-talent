@@ -512,3 +512,22 @@
     margin-top: 16px;
   }
 }
+
+/* SAF-29: discreet safety-concern entry point in the transaction feed column. */
+.safetyReportLink {
+  margin: 24px 24px 0 24px;
+
+  @media (--viewportLarge) {
+    margin: 24px 0 0 0;
+  }
+}
+
+.safetyReportLinkText {
+  font-size: 14px;
+  color: var(--text-secondary, var(--colorGrey500));
+  text-decoration: underline;
+}
+
+.safetyReportLinkText:hover {
+  color: var(--text-primary, var(--colorGrey700));
+}

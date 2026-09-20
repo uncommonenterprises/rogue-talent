@@ -1,0 +1,18 @@
+/* SAF-29: always-available safety-reporting link appended beneath the hosted footer. */
+.safetyRow {
+  display: flex;
+  justify-content: center;
+  padding: 16px 24px;
+  border-top: var(--border-hairline, 1px solid var(--colorGrey100));
+  background-color: var(--surface-subtle, var(--colorGrey50));
+}
+
+.safetyLink {
+  font-size: 14px;
+  color: var(--text-secondary, var(--colorGrey500));
+  text-decoration: underline;
+}
+
+.safetyLink:hover {
+  color: var(--text-primary, var(--colorGrey700));
+}

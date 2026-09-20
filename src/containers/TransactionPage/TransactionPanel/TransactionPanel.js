@@ -101,6 +101,7 @@ export class TransactionPanelComponent extends Component {
       rootClassName,
       className,
       currentUser,
+      transactionId,
       transactionRole,
       listing,
       customer,
@@ -177,6 +178,13 @@ export class TransactionPanelComponent extends Component {
     const priceVariantName = protectedData?.priceVariantName;
 
     const classes = classNames(rootClassName || css.root, className);
+
+    // SAF-29: prefill the safety report with this booking + the counterparty.
+    const safetyReportSearch = `?${new URLSearchParams({
+      tx: transactionId?.uuid || '',
+      role: transactionRole,
+      party: otherUserDisplayNameString || '',
+    }).toString()}`;
 
     return (
       <div className={classes}>
@@ -276,6 +284,19 @@ export class TransactionPanelComponent extends Component {
                 <FormattedMessage id="TransactionPanel.sendingMessageNotAllowed" />
               </div>
             )}
+
+            {/* SAF-29: discreet safety-concern entry point (separate from the
+                dispute flow). Available to both parties on any booking. Prefills
+                the related booking + counterparty for the report. */}
+            <div className={css.safetyReportLink}>
+              <NamedLink
+                className={css.safetyReportLinkText}
+                name="SafetyReportPage"
+                to={{ search: safetyReportSearch }}
+              >
+                <FormattedMessage id="TransactionPanel.reportSafetyConcern" />
+              </NamedLink>
+            </div>
 
             {stateData.showActionButtons ? (
               <>

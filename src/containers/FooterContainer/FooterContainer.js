@@ -2,6 +2,11 @@ import React from 'react';
 import { useConfiguration } from '../../context/configurationContext';
 import loadable from '@loadable/component';
 
+import { FormattedMessage } from '../../util/reactIntl';
+import { NamedLink } from '../../components';
+
+import css from './FooterContainer.module.css';
+
 const SectionBuilder = loadable(
   () => import(/* webpackChunkName: "SectionBuilder" */ '../PageBuilder/PageBuilder'),
   {
@@ -9,12 +14,23 @@ const SectionBuilder = loadable(
   }
 );
 
+// SAF-29: an always-available "Report a safety concern" link. The main footer is
+// hosted (Console) content, so this discreet repo-controlled row is appended
+// beneath it to guarantee the reporting route is reachable from every page.
+const SafetyReportRow = () => (
+  <div className={css.safetyRow}>
+    <NamedLink name="SafetyReportPage" className={css.safetyLink}>
+      <FormattedMessage id="Footer.reportSafetyConcern" />
+    </NamedLink>
+  </div>
+);
+
 const FooterComponent = () => {
   const { footer = {}, topbar } = useConfiguration();
 
   // If footer asset is not set, let's not render Footer at all.
   if (Object.keys(footer).length === 0) {
-    return null;
+    return <SafetyReportRow />;
   }
 
   // The footer asset does not specify sectionId or sectionType. However, the SectionBuilder
@@ -27,7 +43,12 @@ const FooterComponent = () => {
     linkLogoToExternalSite: topbar?.logoLink,
   };
 
-  return <SectionBuilder sections={[footerSection]} />;
+  return (
+    <>
+      <SectionBuilder sections={[footerSection]} />
+      <SafetyReportRow />
+    </>
+  );
 };
 
 // NOTE: if you want to add dynamic data to FooterComponent,
