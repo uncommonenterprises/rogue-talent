@@ -809,7 +809,7 @@
   "OrderBreakdown.bookingStart": "Booking start",
   "OrderBreakdown.bookingWithDSTInEffect": "Daylight saving time",
   "OrderBreakdown.commission": "{role, select, customer {{marketplaceName} fee *} provider {{marketplaceName} fee *} other {}}",
-  "OrderBreakdown.commissionFeeNote": "* The fee helps us run this platform and provide the best possible service to you!",
+  "OrderBreakdown.commissionFeeNote": "* This 15% booking fee is what funds Rogue Talent — the model keeps 100% of their rate, with no cut taken from their side.",
   "OrderBreakdown.pickupFee": "Pickup",
   "OrderBreakdown.providerTotalDefault": "You'll earn",
   "OrderBreakdown.providerTotalReceived": "You earned",
