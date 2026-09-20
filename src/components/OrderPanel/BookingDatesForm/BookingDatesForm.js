@@ -16,6 +16,7 @@ import {
   monthIdString,
   parseDateFromISO8601,
   stringifyDateToISO8601,
+  daysBetween,
 } from '../../../util/dates';
 import { LINE_ITEM_DAY, propTypes } from '../../../util/types';
 import { timeSlotsPerDate } from '../../../util/generators';
@@ -795,6 +796,15 @@ export const BookingDatesForm = props => {
                 });
               }}
             />
+
+            {isDaily && startDate && endDate ? (
+              <p className={css.inclusiveDateInfo}>
+                <FormattedMessage
+                  id="BookingDatesForm.inclusiveDateInfo"
+                  values={{ dayCount: daysBetween(startDate, endDate) }}
+                />
+              </p>
+            ) : null}
 
             {seatsEnabled ? (
               <FieldSelect

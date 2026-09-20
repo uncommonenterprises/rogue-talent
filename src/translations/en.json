@@ -41,6 +41,7 @@
   "BookingDateRangeFilter.labelSelectedPopup": "{dates}",
   "BookingDatesForm.bookingEndTitle": "End date",
   "BookingDatesForm.bookingStartTitle": "Start date",
+  "BookingDatesForm.inclusiveDateInfo": "Your end date is included, so you're booking {dayCount, plural, one {# full day} other {# full days}} at the day rate.",
   "BookingDatesForm.priceBreakdownTitle": "Booking breakdown",
   "BookingDatesForm.requestToBook": "Request to book",
   "BookingDatesForm.requiredDate": "Select an available date",

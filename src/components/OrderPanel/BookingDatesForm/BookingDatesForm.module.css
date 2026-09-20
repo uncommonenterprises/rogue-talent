@@ -41,6 +41,16 @@
   }
 }
 
+.inclusiveDateInfo {
+  composes: marketplaceTinyFontStyles from global;
+  color: var(--colorGrey700);
+  margin: 6px 24px 0 24px;
+
+  @media (--viewportMedium) {
+    margin: 8px 0 0 0;
+  }
+}
+
 .error {
   color: var(--colorFail);
   margin: 0 24px;
