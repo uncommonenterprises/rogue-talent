@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { useConfiguration } from '../../context/configurationContext';
 import { useRouteConfiguration } from '../../context/routeConfigurationContext';
 import appSettings from '../../config/settings';
-import { useIntl } from '../../util/reactIntl';
+import { FormattedMessage, useIntl } from '../../util/reactIntl';
 import {
   NO_ACCESS_PAGE_INITIATE_TRANSACTIONS,
   NO_ACCESS_PAGE_POST_LISTINGS,
@@ -184,6 +184,20 @@ export const NoAccessPageComponent = props => {
               userId={currentUser?.id?.uuid}
               userEmail={currentUser?.attributes?.email}
             />
+            {isInitiateTransactionsPage ? (
+              <p className={css.helperText}>
+                <FormattedMessage
+                  id="NoAccessPage.initiateTransactions.verifyEmailHint"
+                  values={{
+                    accountSettingsLink: (
+                      <NamedLink name="ContactDetailsPage" className={css.helperLink}>
+                        <FormattedMessage id="NoAccessPage.initiateTransactions.accountSettingsLink" />
+                      </NamedLink>
+                    ),
+                  }}
+                />
+              </p>
+            ) : null}
           </div>
         </ResponsiveBackgroundImageContainer>
       </LayoutSingleColumn>
