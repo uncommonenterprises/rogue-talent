@@ -15,8 +15,19 @@ flows get a **human dev review before real users** (charter) — flagged per ite
 - **SAF-04/05** Client business/presence checks, **SAF-31/32/34/35/36/39** enforcement/log/dashboard —
   MANUAL/policy at launch volume (operator via Console + spreadsheet). No build; needs written policy.
 
-## To build (sequenced by value × buildability)
-1. **SAF-29 — Safety reporting flow (LAUNCH-CRITICAL).** A "Report a safety concern" entry point
+## Built Day 2 (2026-09-20) ✅
+- **SAF-29 — Safety reporting flow — DONE + deploy-verified live.** `/report-concern` + transaction
+  entry point + footer link; form with mandatory 999/not-monitored copy; server capture (logging +
+  reporter privateData). Caught+fixed an SSR crash before it stuck. **Gap:** email alert to safety@ needs
+  the email provider (long-lead item) → wire `sendMail` in `server/api/safety-report.js` after.
+- **SAF-13/14 — Boundary toggle + silent filter — DONE (merged, build+SSR pass).** Model-only toggle in
+  ProfileSettings → `privateData.safety_boundaries.no_private_residence`; server-side silent block in
+  `initiate-privileged` (generic "not available", boundary never revealed). **Gap:** enforcement needs
+  `SHARETRIBE_INTEGRATION_CLIENT_ID/SECRET` in the Railway server env (else fail-open) → queue for Neil.
+- Both are safety-critical → **human dev review before real users** (still required).
+
+## Still to build (sequenced) — now non-colliding since SAF-29's TransactionPage changes are merged
+1. **SAF-29 — Safety reporting flow (LAUNCH-CRITICAL).** ✅ DONE (see above). A "Report a safety concern" entry point
    (from a booking/transaction + a general help route), separate from disputes → captured where the
    operator sees it same-working-day. Copy states plainly: *not a monitored emergency service — call
    999*. Design decision needed: where the report lands (server route → email safety@roguetalent.co,
