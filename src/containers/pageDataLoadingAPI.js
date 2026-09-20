@@ -8,6 +8,7 @@ import { loadData as CMSPageLoader } from './CMSPage/CMSPage.duck';
 import { loadData as ContactDetailsPageLoader } from './ContactDetailsPage/ContactDetailsPage.duck';
 import { loadData as EditListingPageLoader } from './EditListingPage/EditListingPage.duck';
 import { loadData as EmailVerificationPageLoader } from './EmailVerificationPage/EmailVerificationPage.duck';
+import { loadData as GeneralLandingPageLoader } from './LandingPageMarketing/GeneralLandingPage.duck';
 import { loadData as InboxPageLoader } from './InboxPage/InboxPage.duck';
 import { loadData as ListingPageLoader } from './ListingPage/ListingPage.duck';
 import { loadData as MakeOfferPageLoader } from './MakeOfferPage/MakeOfferPage.duck';
@@ -46,6 +47,9 @@ const getPageDataLoadingAPI = () => {
     },
     EmailVerificationPage: {
       loadData: EmailVerificationPageLoader,
+    },
+    GeneralLandingPage: {
+      loadData: GeneralLandingPageLoader,
     },
     InboxPage: {
       loadData: InboxPageLoader,

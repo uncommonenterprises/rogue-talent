@@ -81,11 +81,12 @@ const routeConfiguration = (layoutConfig, accessControlConfig) => {
   return [
     {
       // The general homepage is hand-coded (pixel-match) rather than the PageBuilder
-      // landing-page asset. loadData is kept so shared assets (footer etc.) still load.
+      // landing-page asset. Its loadData queries real published model-profile
+      // listings for the "Featured talent" section.
       path: '/',
       name: 'LandingPage',
       component: GeneralLandingPage,
-      loadData: pageDataLoadingAPI.LandingPage.loadData,
+      loadData: pageDataLoadingAPI.GeneralLandingPage.loadData,
     },
     {
       // Hand-coded marketing pages — must precede the /p/:pageId CMSPage catch-all.

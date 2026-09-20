@@ -1,24 +1,15 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
 import { useConfiguration } from '../../context/configurationContext';
 import { useIntl } from '../../util/reactIntl';
 import { isScrollingDisabled } from '../../ducks/ui.duck';
-import { Page, LayoutSingleColumn, NamedLink } from '../../components';
+import { makeGetListingsByIdSelector } from '../../ducks/marketplaceData.duck';
+import { Page, LayoutSingleColumn, NamedLink, ListingCard } from '../../components';
 import FooterContainer from '../FooterContainer/FooterContainer';
 
 import MarketingNav from './MarketingNav';
 import css from './marketing.module.css';
-
-// A verified badge used on the featured-talent placeholder cards.
-const VerifiedTag = () => <span className={css.verified}>✓ Verified</span>;
-
-const FEATURED = [
-  { name: 'Mara Voss', meta: 'London · Editorial', price: '£1,200', verified: true },
-  { name: 'Jonah Reid', meta: 'Manchester · Commercial', price: '£850' },
-  { name: 'Aïcha Ndiaye', meta: 'Paris · Couture', price: '€1,600', verified: true },
-  { name: 'Lena Kaur', meta: 'Berlin · Runway', price: '€1,100' },
-];
 
 const STATS = [
   { stat: '4,200', plus: true, label: 'Verified models' },
@@ -60,6 +51,14 @@ export const GeneralLandingPage = () => {
   const intl = useIntl();
   const scrollingDisabled = useSelector(isScrollingDisabled);
   const marketplaceName = config.marketplaceName;
+
+  // Real, published model-profile listings for the "Featured talent" strip
+  // (fetched in GeneralLandingPage.duck loadData).
+  const getListingsById = useMemo(makeGetListingsByIdSelector, []);
+  const featuredTalentIds = useSelector(
+    state => state.GeneralLandingPage?.featuredTalentIds || []
+  );
+  const featuredListings = useSelector(state => getListingsById(state, featuredTalentIds));
 
   const title = intl.formatMessage(
     { id: 'GeneralLandingPage.schemaTitle' },
@@ -132,32 +131,24 @@ export const GeneralLandingPage = () => {
           </div>
         </section>
 
-        {/* 4 — FEATURED TALENT */}
-        <section className={css.featured}>
-          <div className={css.inner}>
-            <div className={css.featuredHead}>
-              <h2 className={css.sectionTitleTight}>Featured talent</h2>
-              <NamedLink name="SearchPage" className={css.viewAll}>
-                View all →
-              </NamedLink>
+        {/* 4 — FEATURED TALENT — real, published model-profile listings */}
+        {featuredListings.length > 0 ? (
+          <section className={css.featured}>
+            <div className={css.inner}>
+              <div className={css.featuredHead}>
+                <h2 className={css.sectionTitleTight}>Featured talent</h2>
+                <NamedLink name="SearchPage" className={css.viewAll}>
+                  View all →
+                </NamedLink>
+              </div>
+              <div className={css.grid4}>
+                {featuredListings.map(l => (
+                  <ListingCard key={l.id.uuid} listing={l} intl={intl} />
+                ))}
+              </div>
             </div>
-            <div className={css.grid4}>
-              {FEATURED.map(t => (
-                <div key={t.name} className={css.talentCard}>
-                  <div className={css.talentPhoto}>{t.verified ? <VerifiedTag /> : null}</div>
-                  <div className={css.talentBody}>
-                    <div className={css.talentName}>{t.name}</div>
-                    <div className={css.talentMeta}>{t.meta}</div>
-                    <div className={css.talentPrice}>
-                      {t.price}
-                      <small> /day</small>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
+          </section>
+        ) : null}
 
         {/* 5 — FEATURES (alternating) */}
         <section className={css.features}>
