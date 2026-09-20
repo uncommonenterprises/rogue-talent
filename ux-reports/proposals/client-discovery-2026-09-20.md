@@ -59,7 +59,7 @@ Impact:    This is the primary way a client is meant to narrow 4+ models by
            inert, discovery degrades to "read every card."
 ---
 Status: APPROVED
-Note: APPROVED by Neil via decision-card 2026-09-20 — "Approve all defects" + "Approve all three [polish]". Implemented: 5ea803139 2026-09-20 (deploy-verify pending).
+Note: APPROVED by Neil via decision-card 2026-09-20 — "Approve all defects" + "Approve all three [polish]". Implemented: 5ea803139 2026-09-20. DEPLOY-VERIFIED live 2026-09-20 — clicking Female → ?pub_gender=female, 4→3 results; Modelling categories → ?pub_modelling_categories=has_all:fashion, 4→3. Fix generalises (shared code path).
 
 ## RT-20260920-02 — Anais P., the platform's verified/fully-set-up example model, has zero portfolio photos
 Journey:   client-discovery
