@@ -19,6 +19,7 @@ import BookingLocationMaybe from './BookingLocationMaybe';
 import FeedSection from './FeedSection';
 import DiminishedActionButtonMaybe from './DiminishedActionButtonMaybe';
 import PanelHeading from './PanelHeading';
+import ShootSummaryShare from './ShootSummaryShare';
 
 import css from './TransactionPanel.module.css';
 
@@ -128,6 +129,12 @@ export class TransactionPanelComponent extends Component {
       hasViewingRights,
       transactionFieldsComponent,
       sendMessageForm,
+      // SAF-17: shareable shoot summary (model side)
+      showShootSummary,
+      booking,
+      timeZone,
+      lineItemUnitType,
+      shootTypeLabel,
     } = this.props;
 
     const hasTransitions = transitions.length > 0;
@@ -155,6 +162,13 @@ export class TransactionPanelComponent extends Component {
       customer,
       intl
     );
+
+    // SAF-17: client details for the shareable shoot summary. On the provider
+    // side, otherUserDisplayNameString is the client's name; company is the
+    // client's public company/agency field (VAT is private and not exposed).
+    const clientName = otherUserDisplayNameString;
+    const clientCompany = customer?.attributes?.profile?.publicData?.company_name;
+    const shootAddress = protectedData?.shoot_address;
 
     const deletedListingTitle = intl.formatMessage({
       id: 'TransactionPanel.deletedListingTitle',
@@ -268,6 +282,19 @@ export class TransactionPanelComponent extends Component {
                   className={css.deliveryInfoSection}
                   listing={listing}
                   showBookingLocation={showBookingLocation}
+                />
+                {/* SAF-17: one-tap shareable shoot summary for the model on a
+                    confirmed booking. Shares from her own apps; we never contact
+                    anyone or monitor the shoot. */}
+                <ShootSummaryShare
+                  show={showShootSummary}
+                  booking={booking}
+                  timeZone={timeZone}
+                  lineItemUnitType={lineItemUnitType}
+                  shootAddress={shootAddress}
+                  shootType={shootTypeLabel}
+                  clientName={clientName}
+                  clientCompany={clientCompany}
                 />
               </div>
             ) : null}

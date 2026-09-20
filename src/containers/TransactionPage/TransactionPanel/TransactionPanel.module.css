@@ -531,3 +531,48 @@
 .safetyReportLinkText:hover {
   color: var(--text-primary, var(--colorGrey700));
 }
+
+/* SAF-17: shareable shoot summary (model side, confirmed booking). */
+.shootSummary {
+  order: 2;
+  margin-top: 24px;
+  padding: 20px;
+  border: 1px solid var(--border-hairline, var(--colorGrey100));
+  border-radius: var(--radius-lg, 8px);
+  background-color: var(--surface-muted, var(--colorGrey50));
+}
+
+.shootSummaryHeading {
+  margin: 0 0 8px 0;
+  color: var(--text-primary, var(--colorGrey700));
+}
+
+.shootSummaryIntro {
+  margin: 0 0 12px 0;
+  font-size: 15px;
+  color: var(--text-secondary, var(--colorGrey500));
+}
+
+.shootSummaryPreview {
+  margin: 0 0 16px 0;
+  padding: 12px 14px;
+  border: 1px solid var(--border-hairline, var(--colorGrey100));
+  border-radius: var(--radius-md, 4px);
+  background-color: var(--surface-default, var(--colorWhite));
+  font-family: var(--font-sans, inherit);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-primary, var(--colorGrey700));
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.shootSummaryButton {
+  min-height: 48px;
+}
+
+.shootSummaryStatus {
+  margin: 12px 0 0 0;
+  font-size: 14px;
+  color: var(--text-secondary, var(--colorGrey500));
+}

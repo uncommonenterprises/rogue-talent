@@ -815,6 +815,17 @@ export const TransactionPageComponent = props => {
     process?.hasPassedState(process?.states?.ACCEPTED, transaction) &&
     foundListingTypeConfig?.defaultListingFields.location;
 
+  // SAF-17: shareable shoot summary shows to the model on a confirmed, pre-shoot
+  // booking. Driven by the SAF-10 shoot details on the order protectedData.
+  const showShootSummary = isProviderRole && !!isCancellableBookingState;
+  // Human-readable shoot-type label for the summary (protectedData stores the value).
+  const shootTypeValue = transaction?.attributes?.protectedData?.shoot_type;
+  const shootTypeField = foundListingTypeConfig?.transactionFields?.find(
+    f => f.key === 'shoot_type'
+  );
+  const shootTypeLabel =
+    shootTypeField?.enumOptions?.find(o => o.option === shootTypeValue)?.label || shootTypeValue;
+
   const isNegotiationProcess = processName === NEGOTIATION_PROCESS_NAME;
   const isRegularNegotiation =
     isNegotiationProcess && transaction?.attributes?.protectedData?.unitType === OFFER;
@@ -867,6 +878,11 @@ export const TransactionPageComponent = props => {
       showBookingLocation={showBookingLocation}
       hasViewingRights={hasViewingRights}
       showListingImage={showListingImage}
+      showShootSummary={showShootSummary}
+      booking={booking}
+      timeZone={timeZone}
+      lineItemUnitType={lineItemUnitType}
+      shootTypeLabel={shootTypeLabel}
       sendMessageForm={
         showSendMessageForm ? (
           <SendMessageForm
