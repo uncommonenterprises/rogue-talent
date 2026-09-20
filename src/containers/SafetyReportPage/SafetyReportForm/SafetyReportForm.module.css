@@ -1,0 +1,51 @@
+.root {
+  display: flex;
+  flex-direction: column;
+}
+
+.field {
+  margin-bottom: 24px;
+}
+
+.relatedContext {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px 14px;
+  margin-bottom: 24px;
+  border: var(--border-hairline, 1px solid var(--colorGrey100));
+  border-radius: var(--radius-lg, 8px);
+  background-color: var(--surface-subtle, var(--colorGrey50));
+}
+
+.relatedContextLabel {
+  font-size: 13px;
+  color: var(--text-secondary, var(--colorGrey500));
+}
+
+.relatedContextValue {
+  font-weight: var(--weight-semibold, 600);
+  color: var(--text-primary, var(--colorGrey700));
+}
+
+.contactRow {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.contactField {
+  flex: 1;
+}
+
+.error {
+  color: var(--colorFail);
+  margin: 0 0 18px 0;
+}
+
+@media (--viewportMedium) {
+  .contactRow {
+    flex-direction: row;
+  }
+}

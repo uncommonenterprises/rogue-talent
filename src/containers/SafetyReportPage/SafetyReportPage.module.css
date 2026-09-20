@@ -1,0 +1,76 @@
+.layoutWrapperMain {
+  display: flex;
+  flex-direction: column;
+}
+
+.content {
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 32px 24px 64px 24px;
+}
+
+.title {
+  margin: 0 0 24px 0;
+}
+
+.emergencyNotice {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  margin-bottom: 28px;
+  border: 1px solid var(--colorFail);
+  border-radius: var(--radius-lg, 8px);
+  background-color: var(--colorFailLight, #fff0f0);
+}
+
+.emergencyIcon {
+  flex-shrink: 0;
+  fill: var(--colorFail);
+  stroke: var(--colorFail);
+  margin-top: 2px;
+}
+
+.emergencyText {
+  margin: 0;
+  color: var(--text-primary, var(--colorGrey700));
+  font-weight: var(--weight-medium, 500);
+}
+
+.intro {
+  margin: 0 0 12px 0;
+  color: var(--text-primary, var(--colorGrey700));
+}
+
+.slaNote {
+  margin: 0 0 28px 0;
+  color: var(--text-secondary, var(--colorGrey500));
+}
+
+.form {
+  margin-top: 8px;
+}
+
+.successPanel {
+  padding: 24px;
+  border: var(--border-hairline, 1px solid var(--colorGrey100));
+  border-radius: var(--radius-lg, 8px);
+  background-color: var(--surface-subtle, var(--colorGrey50));
+}
+
+.successTitle {
+  margin: 0 0 12px 0;
+}
+
+.paragraph {
+  margin: 0 0 12px 0;
+  color: var(--text-primary, var(--colorGrey700));
+}
+
+.backLink {
+  display: inline-block;
+  margin-top: 8px;
+  font-weight: var(--weight-semibold, 600);
+  color: var(--marketplaceColor);
+}
