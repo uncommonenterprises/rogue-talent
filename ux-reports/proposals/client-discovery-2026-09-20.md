@@ -126,7 +126,7 @@ Impact:    First impression of marketplace scale/quality; currently promises
            inventory that isn't there.
 ---
 Status: APPROVED
-Note: APPROVED by Neil via decision-card 2026-09-20 — "Approve all defects" + "Approve all three [polish]". Implemented: fbd4d66bd 2026-09-20 (deploy-verify pending) — new GeneralLandingPage.duck queries published model-profile listings, renders via ListingCard, hides if empty.
+Note: APPROVED by Neil via decision-card 2026-09-20 — "Approve all defects" + "Approve all three [polish]". Implemented: fbd4d66bd 2026-09-20 → DEPLOY-VERIFIED live 2026-09-20 — new GeneralLandingPage.duck queries published model-profile listings, renders via ListingCard, hides if empty.
 
 ## RT-20260920-04 — Footer shows unset Sharetribe boilerplate and links to Sharetribe's own social accounts, not Rogue Talent's
 Journey:   client-discovery (cross-cutting — same footer on every page)
