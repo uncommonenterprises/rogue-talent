@@ -1024,7 +1024,7 @@ export const TransactionPageComponent = props => {
   return (
     <Page
       title={intl.formatMessage(
-        { id: 'TransactionPage.schemaTitle' },
+        { id: isCustomerRole ? 'TransactionPage.schemaTitleOrder' : 'TransactionPage.schemaTitle' },
         { title: listingTitle, h1: pageHeading }
       )}
       scrollingDisabled={scrollingDisabled}
