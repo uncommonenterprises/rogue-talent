@@ -79,9 +79,16 @@ export const omitLimitedListingFieldParams = (searchParams, filterConfigs) => {
     );
     const currentCategories = Object.values(validNestedCategoryParamNames);
     const isForCategory = isFieldForCategory(currentCategories, foundConfig);
-    const currentListingType = listingTypePathParam
+    const selectedListingType = listingTypePathParam
       ? [listingTypePathParam]
       : Object.values(validListingTypeParamNames);
+    // When no listing type is selected in the search, fall back to ALL of the marketplace's
+    // listing types — mirrors the fallback in pickListingFieldFilters. Otherwise listing-type-
+    // limited filters (how the model-profile attribute filters are configured) get their param
+    // stripped here the instant a user clicks them, because a single-listing-type marketplace has
+    // no listing-type selector, so nothing is ever "selected" to satisfy the limit.
+    const currentListingType =
+      selectedListingType.length > 0 ? selectedListingType : activeListingTypes || [];
     const isForListingType = isFieldForListingType(currentListingType, foundConfig);
     const searchParamMaybe =
       !foundConfig || (foundConfig && isForCategory && isForListingType)

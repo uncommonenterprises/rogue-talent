@@ -196,9 +196,20 @@ describe('SearchPage.helpers', () => {
       const validParam = omitLimitedListingFieldParams(params, filterConfigs);
       expect(validParam).toEqual({ pub_generalParam: 'one', other_param: 'somevalue' });
     });
-    it('returns filtered parameters if listing type limit affects', () => {
+    it('keeps a listing-type-limited param when no type is selected but the limit is an active type', () => {
+      // With no listing type selected, currentListingType falls back to all active listing types.
+      // pub_rider is limited to 'sell-bicycles', which is an active type, so it is kept — otherwise
+      // listing-type-limited filters would be un-appliable on a marketplace with no type selector.
       const params = { pub_rider: 'women', other_param: 'somevalue' };
       const validParam = omitLimitedListingFieldParams(params, filterConfigs);
+      expect(validParam).toEqual({ pub_rider: 'women', other_param: 'somevalue' });
+    });
+    it('drops a listing-type-limited param when the limit is not an active type', () => {
+      const params = { pub_rider: 'women', other_param: 'somevalue' };
+      const validParam = omitLimitedListingFieldParams(params, {
+        ...filterConfigs,
+        activeListingTypes: ['rent-bicycles-daily'],
+      });
       expect(validParam).toEqual({ other_param: 'somevalue' });
     });
     it('returns filtered parameters if category limit affects', () => {
