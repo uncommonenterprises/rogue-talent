@@ -17,6 +17,7 @@ const initiatePrivileged = require('./api/initiate-privileged');
 const transitionPrivileged = require('./api/transition-privileged');
 const deleteAccount = require('./api/delete-account');
 const safetyReport = require('./api/safety-report');
+const createIdentitySession = require('./api/create-identity-session');
 
 const createUserWithIdp = require('./api/auth/createUserWithIdp');
 
@@ -60,6 +61,11 @@ router.post('/delete-account', deleteAccount);
 
 // SAF-29: in-app safety concern report (separate from the booking dispute flow).
 router.post('/safety-report', safetyReport);
+
+// SAF-03: create a Stripe Identity VerificationSession for the logged-in client.
+// (The paired webhook — /api/stripe-identity-webhook — is mounted at the app level
+// in server/index.js because it needs a raw request body for signature verification.)
+router.post('/create-identity-session', createIdentitySession);
 
 // Create user with identity provider (e.g. Facebook or Google)
 // This endpoint is called to create a new user after user has confirmed
