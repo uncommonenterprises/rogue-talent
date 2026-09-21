@@ -36,6 +36,7 @@ const passport = require('passport');
 
 const auth = require('./auth');
 const apiRouter = require('./apiRouter');
+const stripeIdentityWebhook = require('./api/stripe-identity-webhook');
 const wellKnownRouter = require('./wellKnownRouter');
 const webmanifestResourceRoute = require('./resources/webmanifest');
 const robotsTxtRoute = require('./resources/robotsTxt');
@@ -106,6 +107,12 @@ app.use(
     },
   })
 );
+
+// SAF-03: Stripe Identity webhook. Mounted HERE — at the app level, ahead of the
+// JSON/transit body parsers — because Stripe signature verification needs the raw,
+// unparsed request body. express.raw() delivers req.body as a Buffer to the handler.
+// This is registered before the CSP JSON parser (below) and before app.use('/api').
+app.post('/api/stripe-identity-webhook', express.raw({ type: '*/*' }), stripeIdentityWebhook);
 
 if (cspEnabled) {
   app.use(generateCSPNonce);

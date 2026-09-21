@@ -2,6 +2,7 @@ const sharetribeSdk = require('sharetribe-flex-sdk');
 const { transactionLineItems } = require('../api-util/lineItems');
 const { isIntentionToMakeOffer } = require('../api-util/negotiation');
 const { enforceResidenceBoundary } = require('../api-util/residenceBoundary');
+const { enforceClientIdentityVerification } = require('../api-util/clientIdentityGate');
 const {
   getSdk,
   getTrustedSdk,
@@ -73,12 +74,18 @@ module.exports = (req, res) => {
       );
       metadataMaybe = getMetadata(orderData, transitionName);
 
-      // SAF-14: silently block a private-residence booking against a model who has opted
-      // out of residence shoots. Throws a generic booking-unavailable error (the model's
-      // boundary is never revealed). Runs for both speculative and real initiate calls.
-      return enforceResidenceBoundary({ listing, orderData, bodyParams }).then(() =>
-        getTrustedSdk(req)
-      );
+      // Booking gates — all run BEFORE getTrustedSdk, and coexist with Sharetribe's
+      // own native email-verification / initiateTransactions permission gate (enforced
+      // during the trusted initiate itself):
+      //   1. SAF-14: silently block a private-residence booking against a model who has
+      //      opted out of residence shoots. Generic error; boundary never revealed.
+      //      Runs for both speculative and real initiate calls.
+      //   2. SAF-03: block a real booking by a CLIENT who is not identity-verified
+      //      (Stripe Identity). Speculative previews are allowed; the gate only engages
+      //      when the feature is configured (fails OPEN otherwise — see clientIdentityGate).
+      return enforceResidenceBoundary({ listing, orderData, bodyParams })
+        .then(() => enforceClientIdentityVerification({ sdk, isSpeculative }))
+        .then(() => getTrustedSdk(req));
     })
     .then(trustedSdk => {
       const { params } = bodyParams;
