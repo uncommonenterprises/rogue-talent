@@ -121,6 +121,50 @@
   border-bottom-color: var(--colorGrey300);
 }
 
+/* Image-usage-rights clickwrap (contracts v1) */
+.licenceAgreement {
+  margin-bottom: 36px;
+
+  @media (--viewportMedium) {
+    margin-bottom: 40px;
+  }
+}
+
+.licenceTerms {
+  margin-bottom: 16px;
+  padding: 12px 14px;
+  border: 1px solid var(--colorGrey100);
+  border-radius: var(--borderRadiusMedium);
+}
+
+.licenceTermsSummary {
+  composes: h5 from global;
+
+  color: var(--colorGrey700);
+  cursor: pointer;
+  margin: 0;
+}
+
+.licenceDraftNotice {
+  composes: marketplaceTinyFontStyles from global;
+
+  color: var(--colorFail);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin: 12px 0 6px 0;
+}
+
+.licenceTermsBody {
+  composes: h5 from global;
+
+  color: var(--colorGrey600);
+  margin: 0;
+}
+
+.licenceCheckbox {
+  display: block;
+}
+
 .submitContainer {
   margin-top: auto;
 
