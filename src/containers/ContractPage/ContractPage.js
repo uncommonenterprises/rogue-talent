@@ -6,10 +6,14 @@ import { useParams } from 'react-router-dom';
 import { FormattedMessage, useIntl } from '../../util/reactIntl';
 import { useConfiguration } from '../../context/configurationContext';
 import { ensureCurrentUser, userDisplayNameAsString } from '../../util/data';
-import { formatMoney } from '../../util/currency';
 import { isScrollingDisabled } from '../../ducks/ui.duck';
 import { getMarketplaceEntities } from '../../ducks/marketplaceData.duck';
-import { getUsageLicenceRows, CONTRACT_VERSION } from '../../util/contracts';
+import {
+  CONTRACT_VERSION,
+  CONTRACT_SUMMARY_POINT_IDS,
+  CONTRACT_CLAUSE_IDS,
+  getContractScheduleRows,
+} from '../../util/contracts';
 
 // Shared components
 import { Heading, Page, LayoutSingleColumn, NamedLink, PrimaryButton } from '../../components';
@@ -20,9 +24,9 @@ import FooterContainer from '../FooterContainer/FooterContainer';
 
 import css from './ContractPage.module.css';
 
-// Shoot-detail transaction field keys (already captured today), rendered on the
-// contract in a dedicated section.
-const SHOOT_DETAIL_KEYS = ['shoot_type', 'location_type', 'shoot_address', 'shoot_description'];
+// Supplementary shoot-detail transaction field keys (captured at checkout),
+// rendered as context beneath the Schedule. Guarded for legacy transactions.
+const SHOOT_DETAIL_KEYS = ['shoot_type', 'location_type', 'shoot_description'];
 
 // Resolve rows for a set of customer-role transaction field keys from
 // protectedData, using the listing type config for labels + enum option labels.
@@ -54,20 +58,22 @@ const DefinitionRow = ({ label, value }) =>
   ) : null;
 
 /**
- * Contracts v1 — print-optimised contract for a single booking.
+ * Contracts (v1) — print-optimised standard contract for a single booking.
  *
- * A deterministic rendering of data already frozen on the transaction (parties,
- * engagement, shoot details, image-usage licence, acceptance record). Both
- * parties can reach it from the TransactionPage; "Download PDF" uses the browser
- * print dialog (no PDF library, no new dependency). SSR-safe.
+ * Renders the ONE standard Rogue Talent Content Licence & Model Release that
+ * applies to every booking (Neil, 2026-09-21): the plain-English summary + the
+ * numbered clauses (from en.json / docs/legal/rogue-talent-content-licence-DRAFT.md),
+ * plus the per-booking Schedule auto-filled from the transaction (parties, shoot
+ * dates, location, booking reference, fee). There is NO per-booking usage
+ * selection. Both parties can reach it from the TransactionPage; "Download PDF"
+ * uses the browser print dialog (no PDF library, no new dependency). SSR-safe.
  *
- * ⚠️ LEGAL: the licence body wording is placeholder "DRAFT — pending legal
- * review". A lawyer must supply the real licence/release text and confirm
- * clickwrap sufficiency before real users are onboarded.
+ * ⚠️ LEGAL: the contract body wording is DRAFT — pending legal review. A UK
+ * solicitor must finalise it before real users are onboarded.
  *
  * Identity gap: contracts want legal party names, but today we only hold the
  * model's display name and the client's account/company name (ties to SAF-03
- * legal-name capture). Named accordingly + flagged below.
+ * legal-name capture). Named accordingly + flagged in the footnote.
  *
  * @component
  * @returns {JSX.Element}
@@ -91,7 +97,6 @@ export const ContractPageComponent = () => {
   const customer = transaction?.customer;
   const provider = transaction?.provider;
   const listing = transaction?.listing;
-  const booking = transaction?.booking;
   const protectedData = transaction?.attributes?.protectedData || {};
 
   // Access gate: only the two parties may view the contract (the API already
@@ -108,23 +113,13 @@ export const ContractPageComponent = () => {
       lt => lt.listingType === listing?.attributes?.publicData?.listingType
     )?.transactionFields || [];
 
-  // Parties (see legal-name gap note).
+  // Party names (see legal-name gap note).
   const modelName = userDisplayNameAsString(provider, '');
   const clientName = userDisplayNameAsString(customer, '');
-  const clientCompany = customer?.attributes?.profile?.publicData?.company_name;
 
-  // Engagement.
-  const listingTitle = listing?.attributes?.title;
-  const bookingStart = formatDateMaybe(intl, booking?.attributes?.displayStart);
-  const bookingEnd = formatDateMaybe(intl, booking?.attributes?.displayEnd);
-  const dayRate = listing?.attributes?.price ? formatMoney(intl, listing.attributes.price) : null;
-  const total = transaction?.attributes?.payinTotal
-    ? formatMoney(intl, transaction.attributes.payinTotal)
-    : null;
-
-  // Field sections.
+  // Per-booking Schedule (auto-filled) + supplementary shoot details.
+  const scheduleRows = getContractScheduleRows({ transaction, intl });
   const shootRows = resolveRows(SHOOT_DETAIL_KEYS, protectedData, transactionFieldConfigs);
-  const usageRows = getUsageLicenceRows(protectedData, transactionFieldConfigs);
 
   // Acceptance record. Client acceptance is the clickwrap at checkout (≈ tx
   // creation / request-payment). Model acceptance is the timestamped Accept
@@ -176,17 +171,13 @@ export const ContractPageComponent = () => {
                   >
                     <FormattedMessage id="ContractPage.backToBooking" />
                   </NamedLink>
-                  <PrimaryButton
-                    type="button"
-                    className={css.printButton}
-                    onClick={handlePrint}
-                  >
+                  <PrimaryButton type="button" className={css.printButton} onClick={handlePrint}>
                     <FormattedMessage id="ContractPage.downloadPdf" />
                   </PrimaryButton>
                 </div>
 
                 <Heading as="h1" rootClassName={css.contractTitle}>
-                  <FormattedMessage id="ContractPage.contractTitle" />
+                  <FormattedMessage id="Contract.title" />
                 </Heading>
                 <p className={css.draftNotice}>
                   <FormattedMessage id="ContractPage.draftNotice" />
@@ -197,95 +188,73 @@ export const ContractPageComponent = () => {
                     values={{ id: params.id, version: licenceVersion }}
                   />
                 </p>
+                <p className={css.intro}>
+                  <FormattedMessage id="Contract.formationIntro" />
+                </p>
               </header>
 
-              {/* Parties */}
+              {/* Plain-English summary */}
               <section className={css.section}>
                 <Heading as="h2" rootClassName={css.sectionHeading}>
-                  <FormattedMessage id="ContractPage.partiesHeading" />
+                  <FormattedMessage id="Contract.summaryHeading" />
                 </Heading>
-                <dl className={css.definitions}>
-                  <DefinitionRow
-                    label={intl.formatMessage({ id: 'ContractPage.partyClient' })}
-                    value={clientCompany ? `${clientName} (${clientCompany})` : clientName}
-                  />
-                  <DefinitionRow
-                    label={intl.formatMessage({ id: 'ContractPage.partyModel' })}
-                    value={modelName}
-                  />
-                </dl>
-                <p className={css.footnote}>
-                  <FormattedMessage id="ContractPage.legalNameNote" />
+                <p className={css.summaryNote}>
+                  <FormattedMessage id="Contract.summaryNote" />
                 </p>
+                <ul className={css.summaryList}>
+                  {CONTRACT_SUMMARY_POINT_IDS.map(id => (
+                    <li key={id} className={css.summaryItem}>
+                      <FormattedMessage id={id} />
+                    </li>
+                  ))}
+                </ul>
               </section>
 
-              {/* Engagement */}
+              {/* Schedule (auto-filled per booking) */}
               <section className={css.section}>
                 <Heading as="h2" rootClassName={css.sectionHeading}>
-                  <FormattedMessage id="ContractPage.engagementHeading" />
+                  <FormattedMessage id="Contract.scheduleHeading" />
                 </Heading>
-                <dl className={css.definitions}>
-                  <DefinitionRow
-                    label={intl.formatMessage({ id: 'ContractPage.profile' })}
-                    value={listingTitle}
-                  />
-                  <DefinitionRow
-                    label={intl.formatMessage({ id: 'ContractPage.bookingDates' })}
-                    value={
-                      bookingStart && bookingEnd
-                        ? intl.formatMessage(
-                            { id: 'ContractPage.dateRange' },
-                            { start: bookingStart, end: bookingEnd }
-                          )
-                        : bookingStart
-                    }
-                  />
-                  <DefinitionRow
-                    label={intl.formatMessage({ id: 'ContractPage.dayRate' })}
-                    value={dayRate}
-                  />
-                  <DefinitionRow
-                    label={intl.formatMessage({ id: 'ContractPage.total' })}
-                    value={total}
-                  />
-                </dl>
-              </section>
-
-              {/* Shoot details */}
-              {shootRows.length > 0 ? (
-                <section className={css.section}>
-                  <Heading as="h2" rootClassName={css.sectionHeading}>
-                    <FormattedMessage id="ContractPage.shootHeading" />
-                  </Heading>
+                {scheduleRows.length > 0 ? (
                   <dl className={css.definitions}>
-                    {shootRows.map(r => (
-                      <DefinitionRow key={r.key} label={r.label} value={r.value} />
-                    ))}
-                  </dl>
-                </section>
-              ) : null}
-
-              {/* Image usage licence */}
-              <section className={css.section}>
-                <Heading as="h2" rootClassName={css.sectionHeading}>
-                  <FormattedMessage id="ContractPage.licenceHeading" />
-                </Heading>
-                {usageRows.length > 0 ? (
-                  <dl className={css.definitions}>
-                    {usageRows.map(r => (
+                    {scheduleRows.map(r => (
                       <DefinitionRow key={r.key} label={r.label} value={r.value} />
                     ))}
                   </dl>
                 ) : (
                   <p className={css.paragraph}>
-                    <FormattedMessage id="ContractPage.licenceMissing" />
+                    <FormattedMessage id="Contract.scheduleMissing" />
                   </p>
                 )}
-                {/* DRAFT — pending legal review. Placeholder grant-of-licence
-                    wording; the lawyer supplies the real text. */}
-                <p className={css.licenceBodyDraft}>
-                  <FormattedMessage id="ContractPage.licenceBodyDraft" />
+                {shootRows.length > 0 ? (
+                  <dl className={css.definitions}>
+                    {shootRows.map(r => (
+                      <DefinitionRow key={r.key} label={r.label} value={r.value} />
+                    ))}
+                  </dl>
+                ) : null}
+                <p className={css.footnote}>
+                  <FormattedMessage id="ContractPage.legalNameNote" />
                 </p>
+              </section>
+
+              {/* Agreement — the numbered, binding clauses */}
+              <section className={css.section}>
+                <Heading as="h2" rootClassName={css.sectionHeading}>
+                  <FormattedMessage id="Contract.agreementHeading" />
+                </Heading>
+                <ol className={css.clauseList}>
+                  {CONTRACT_CLAUSE_IDS.map(clause => (
+                    <li key={clause.heading} className={css.clause}>
+                      <span className={css.clauseHeading}>
+                        <FormattedMessage id={clause.heading} />
+                      </span>{' '}
+                      <span className={css.clauseBody}>
+                        <FormattedMessage id={clause.body} />
+                      </span>
+                    </li>
+                  ))}
+                </ol>
               </section>
 
               {/* Acceptance record */}
@@ -319,15 +288,9 @@ export const ContractPageComponent = () => {
                 </dl>
               </section>
 
-              {/* Boilerplate placeholder */}
-              <section className={css.section}>
-                <Heading as="h2" rootClassName={css.sectionHeading}>
-                  <FormattedMessage id="ContractPage.termsHeading" />
-                </Heading>
-                <p className={css.licenceBodyDraft}>
-                  <FormattedMessage id="ContractPage.termsBodyDraft" />
-                </p>
-              </section>
+              <p className={css.footnote}>
+                <FormattedMessage id="Contract.solicitorFootnote" />
+              </p>
             </article>
           ) : null}
         </div>
