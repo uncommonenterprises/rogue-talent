@@ -32,7 +32,7 @@ const PROTECT = [
   {
     title: 'Usage rights, locked in',
     text:
-      'Standardised contracts let you set image usage — duration, channels, territory, sublicensing — agreed and e-signed before the shoot.',
+      'One standard content licence and model release on every booking — broad, worldwide image usage for the long term, agreed by both sides before the shoot. No per-shoot usage haggling.',
   },
   {
     title: 'Reviewed talent',
@@ -160,7 +160,8 @@ export const ClientsLandingPage = () => {
                 <div className={css.eyebrow}>Verified &amp; protected</div>
                 <h3 className={css.featureTitle}>Every model checked. Every contract handled.</h3>
                 <p className={css.featureBody}>
-                  Verified profiles, e-signed releases and secure payment — all inside Rogue.
+                  Verified profiles, a standard licence and release agreed in-platform, and secure
+                  payment — all inside Rogue.
                 </p>
               </div>
             </div>

@@ -33,7 +33,7 @@ const TRUST = [
   {
     title: 'Clear contracts',
     text:
-      'Every booking generates a contract with configurable image usage rights — duration, channels, territory — agreed by both sides before the shoot.',
+      'Every booking comes with one standard content licence and model release — broad, long-term image usage agreed by both sides before the shoot. No per-shoot usage negotiation.',
   },
   {
     title: 'Two-way reviews',
