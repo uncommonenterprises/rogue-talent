@@ -20,6 +20,7 @@ import { requireListingImage } from '../../util/configHelpers';
 import { getCurrentUserTypeRoles, hasPermissionToViewData } from '../../util/userHelpers.js';
 import { userDisplayNameAsString } from '../../util/data';
 import { isMobileSafari } from '../../util/userAgent';
+import { isUsageRightsFieldKey } from '../../util/contracts';
 
 import {
   INQUIRY_PROCESS_NAME,
@@ -63,6 +64,7 @@ import ActionButtons, {
 import RequestQuote from './RequestQuote/RequestQuote';
 import Offer from './Offer/Offer';
 import TransactionFields from './TransactionFields/TransactionFields.js';
+import UsageLicenceSection from './UsageLicence/UsageLicenceSection';
 import ActivityFeed from './ActivityFeed/ActivityFeed';
 import DisputeModal from './DisputeModal/DisputeModal';
 import CancelBookingModal from './CancelBookingModal/CancelBookingModal';
@@ -853,11 +855,33 @@ export const TransactionPageComponent = props => {
       ? window.matchMedia(`(max-width: ${MAX_MOBILE_SCREEN_WIDTH}px)`)?.matches
       : true;
 
+  // Contracts v1 — the image-usage-rights fields are surfaced in the dedicated
+  // "Image usage licence" block below, so exclude them from the generic
+  // transaction-fields list to avoid showing them twice.
+  const displayTransactionFieldConfigs = (foundListingTypeConfig?.transactionFields || []).filter(
+    f => !isUsageRightsFieldKey(f.key)
+  );
+
+  // The model's Accept transition is the recorded provider agreement to the
+  // licence. Show the "accepting agrees the usage terms" statement while the
+  // model is still being asked to accept (preauthorized state).
+  const showLicenceAcceptStatement =
+    isProviderRole && !!process && bookingProcessState === process.states?.PREAUTHORIZED;
+
+  const usageLicence = (
+    <UsageLicenceSection
+      protectedData={transaction?.attributes?.protectedData}
+      transactionFieldConfigs={foundListingTypeConfig?.transactionFields}
+      transactionId={transaction?.id?.uuid}
+      showAcceptStatement={showLicenceAcceptStatement}
+    />
+  );
+
   const customTransactionFieldProps = (role = 'customer', isOfferOrRequest = false) => ({
     protectedData: transaction?.attributes.protectedData,
     intl,
     role,
-    transactionFieldConfigs: foundListingTypeConfig?.transactionFields,
+    transactionFieldConfigs: displayTransactionFieldConfigs,
     isCustomerBanned,
     isProviderBanned,
     isOfferOrRequest,
@@ -897,6 +921,7 @@ export const TransactionPageComponent = props => {
       timeZone={timeZone}
       lineItemUnitType={lineItemUnitType}
       shootTypeLabel={shootTypeLabel}
+      usageLicence={usageLicence}
       sendMessageForm={
         showSendMessageForm ? (
           <SendMessageForm

@@ -1,0 +1,69 @@
+.root {
+  margin-bottom: 36px;
+  padding: 20px;
+  border: 1px solid var(--colorGrey100);
+  border-radius: var(--borderRadiusMedium);
+
+  @media (--viewportMedium) {
+    margin-bottom: 40px;
+  }
+}
+
+.heading {
+  margin: 0 0 4px 0;
+}
+
+.draftNotice {
+  composes: marketplaceTinyFontStyles from global;
+
+  color: var(--colorFail);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin: 0 0 16px 0;
+}
+
+.terms {
+  margin: 0;
+}
+
+.termRow {
+  display: flex;
+  flex-direction: column;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--colorGrey50);
+
+  @media (--viewportMedium) {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+}
+
+.termRow:last-child {
+  border-bottom: none;
+}
+
+.termLabel {
+  composes: h5 from global;
+
+  color: var(--colorGrey600);
+  margin: 0;
+}
+
+.termValue {
+  composes: h4 from global;
+
+  color: var(--colorGrey700);
+  margin: 0;
+}
+
+.acceptStatement {
+  composes: h5 from global;
+
+  color: var(--colorGrey700);
+  margin: 16px 0 0 0;
+}
+
+.contractLink {
+  display: inline-block;
+  margin-top: 16px;
+}
