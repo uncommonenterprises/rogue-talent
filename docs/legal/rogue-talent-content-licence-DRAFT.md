@@ -15,10 +15,13 @@ accepts these terms at checkout** and the **Model accepts the booking** — both
   any commercial or marketing purpose, on any media, worldwide, forever.** No usage period, no
   re-licensing fees, no coming back to re-clear.
 - **The booking fee is the whole cost.** There is no separate or future "usage fee".
-- **You can edit, crop and adapt the content, and let your own clients/partners use it** for the same purposes.
+- **You can edit, crop and adapt the content freely**, and use your own agency/printer/platform to put it out **on your behalf**.
+- **The content is yours to use, but not to sell on.** You can't transfer, re-sell or hand the images
+  to another company for *their* use — the licence is for *you*, the booker.
 - **A few common-sense limits protect the Model** — you can't use the content unlawfully, in a
   defamatory or pornographic way, or to falsely imply the Model endorses certain sensitive things.
-- **The Model just does the shoot and gets paid** — no ongoing rights to manage, no expiry to track.
+- **The Model just does the shoot and gets paid** — no ongoing rights to manage, no expiry to track —
+  though they can still show the images in their own portfolio.
 
 ---
 
@@ -32,11 +35,18 @@ created during the booked shoot. "**Client**" and "**Model**" are the parties na
 "**Platform**" means Rogue Talent.
 
 **2. Licence granted.** The Model grants the Client a **worldwide, perpetual, irrevocable,
-non-exclusive, royalty-free, sub-licensable licence** to use, reproduce, edit, adapt, crop, distribute,
-publish and display the Content for any lawful **commercial, advertising, marketing, editorial and
-internal purpose, across all media now known or later devised** (including websites, social media, paid
-/ performance media, print, broadcast, out-of-home and packaging). The Client may permit its group
-companies, clients and production partners to use the Content for the same purposes.
+non-exclusive, royalty-free licence** to use, reproduce, edit, adapt, crop, distribute, publish and
+display the Content for any lawful **commercial, advertising, marketing, editorial and internal
+purpose, across all media now known or later devised** (including websites, social media, paid /
+performance media, print, broadcast, out-of-home and packaging).
+
+**2A. For the Client only — no transfer or re-sale (model protection).** This licence is granted to the
+**Client named in the Schedule for the Client's own use** only. The Client may **not sell, transfer,
+assign, or sub-license the Content** to any third party for that third party's own use. The Client
+**may** allow its own service providers (e.g. its agency, printer, hosting or media platform) to handle
+the Content **on the Client's behalf, solely for the Client's own permitted use** — this is not a
+transfer or re-sale. The Model may continue to use the Content in their own portfolio/self-promotion.
+*(Solicitor to word the "on the Client's behalf" carve-out precisely.)*
 
 **3. Consideration — one fee, no usage charges.** The booking fee stated in the Schedule is the Model's
 **full and only** payment for the shoot **and** this licence. **No further, recurring or usage-based
@@ -62,10 +72,14 @@ any brands, products, sets or third-party materials appearing in the shoot.
 
 **8. No exclusivity.** Nothing here restricts the Model from working with anyone else.
 
-**9. Platform's role.** Rogue Talent **facilitates** the booking and payment and provides this standard
-agreement; the licence is **between the Client and the Model**. Rogue Talent is not a party to the
-creative work. *(Solicitor: confirm this sits correctly with the agent/principal position — see
-`docs/compliance-open-items.md` §2.)*
+**9. Platform's role (kept deliberately light).** This booking is made and paid for through the Rogue
+Talent platform. Rogue Talent **facilitates** the booking and payment only; **this licence is between
+the Client and the Model, and Rogue Talent is not a party to it.** Rogue Talent's own role,
+obligations and responsibilities (payments, holding funds, disputes, approvals, safety) are governed by
+the separate **Rogue Talent Terms of Service** that each user agrees to — not by this licence.
+*(Solicitor: confirm this licence-vs-ToS split, that keeping Rogue's responsibilities OUT of the
+licence appropriately limits its liability, and that it sits correctly with the agent/principal
+position — `docs/compliance-open-items.md` §2.)*
 
 **10. Liability.** Each party's liability under this agreement is limited to the booking fee, save for
 liability that cannot be excluded by law. *(Placeholder — solicitor to set the proper liability wording.)*
@@ -82,6 +96,12 @@ accepts by accepting the booking. Rogue Talent records the date, parties and agr
    "consent not to assert" is needed instead.
 2. **The protections list (cl. 5)** — is it the right minimum set; anything to add/remove for a
    perpetual broad licence to be fair + defensible?
+2A. **The no-transfer/no-re-sale + "on the Client's behalf" carve-out (cl. 2A)** — word it so the
+   Model is protected from their image being sold on or independently exploited by third parties, while
+   the Client's own service providers (agency/printer/platform) can still deliver the Client's own
+   permitted use. Where exactly is the line?
+2B. **Licence vs Terms of Service split (cl. 9)** — confirm Rogue Talent's responsibilities belong in
+   the separate ToS (not this licence) and that this limits Rogue's liability appropriately.
 3. **Clickwrap sufficiency** — is recorded click-acceptance (Client at checkout, Model at booking
    acceptance) sufficient to form this as a binding contract for v1, or is more needed?
 4. **Agent vs principal (cl. 9)** — align with the VAT/commercial position (compliance-open-items §2).
