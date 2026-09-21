@@ -7,6 +7,7 @@ import {
   isValidCurrencyForTransactionProcess,
   pickTransactionFieldsData,
 } from '../../util/fieldHelpers.js';
+import { CONTRACT_VERSION } from '../../util/contracts';
 import { propTypes } from '../../util/types';
 import { ensureTransaction } from '../../util/data';
 import { createSlug } from '../../util/urlHelpers';
@@ -268,8 +269,21 @@ const handleSubmit = (values, process, props, stripe, submitting, setSubmitting)
   const { card, message, paymentMethod: selectedPaymentMethod, formValues } = values;
   const { saveAfterOnetimePayment: saveAfterOnetimePaymentRaw } = formValues;
 
+  // Contracts v1 — clickwrap acceptance of the image-usage licence. The checkbox
+  // is a required Final Form field (see StripePaymentForm), so it is always
+  // ticked on a real submit; we still guard. This freezes an explicit customer
+  // acceptance flag + the contract template version onto the tx protectedData via
+  // the existing request-payment step (no EDN change). The authoritative
+  // timestamp is the transaction's own request-payment transition.
+  const licenceAgreed =
+    Array.isArray(formValues.licenceAgreement) && formValues.licenceAgreement.length > 0;
+  const licenceProtectedData = licenceAgreed
+    ? { licenceAgreedByCustomer: true, licenceAgreementVersion: CONTRACT_VERSION }
+    : {};
+
   const transactionFieldsProtectedData = {
     ...pickTransactionFieldsData(formValues, 'protected', true, transactionFieldConfigs),
+    ...licenceProtectedData,
   };
 
   const saveAfterOnetimePayment =

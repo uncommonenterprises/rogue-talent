@@ -13,6 +13,7 @@ import { propTypes } from '../../../util/types';
 import { ensurePaymentMethodCard } from '../../../util/data';
 import { getPropsForCustomTransactionFieldInputs } from '../../../util/fieldHelpers';
 import { STRIPE_JS_LOADED_EVENT } from '../../../util/includeScripts';
+import * as validators from '../../../util/validators';
 
 import {
   Heading,
@@ -702,6 +703,36 @@ class StripePaymentForm extends Component {
               label={initialMessageLabel}
               placeholder={messagePlaceholder}
               className={css.message}
+            />
+          </div>
+        ) : null}
+        {isBooking ? (
+          <div className={css.licenceAgreement}>
+            <Heading as="h3" rootClassName={css.heading}>
+              <FormattedMessage id="StripePaymentForm.licenceHeading" />
+            </Heading>
+            {/* DRAFT — pending legal review. Placeholder licence summary; the
+                lawyer supplies the real grant-of-licence wording. */}
+            <details className={css.licenceTerms}>
+              <summary className={css.licenceTermsSummary}>
+                <FormattedMessage id="StripePaymentForm.licencePreviewToggle" />
+              </summary>
+              <p className={css.licenceDraftNotice}>
+                <FormattedMessage id="StripePaymentForm.licenceDraftNotice" />
+              </p>
+              <p className={css.licenceTermsBody}>
+                <FormattedMessage id="StripePaymentForm.licenceTermsBody" />
+              </p>
+            </details>
+            <FieldCheckbox
+              className={css.licenceCheckbox}
+              id={`${formId}-licenceAgreement`}
+              name="licenceAgreement"
+              label={intl.formatMessage({ id: 'StripePaymentForm.licenceCheckboxLabel' })}
+              value="agreed"
+              validate={validators.requiredFieldArrayCheckbox(
+                intl.formatMessage({ id: 'StripePaymentForm.licenceRequired' })
+              )}
             />
           </div>
         ) : null}
