@@ -1,11 +1,7 @@
 # Account status badge — design spec (`rt-status`)
 
-Design-only spec. No code changes made — the Developer builds this once
-`docs/specs/account-status-lifecycle.md` is signed off by Neil (that spec is still
-**DRAFT, awaiting sign-off** as of this writing). One flag for the PM below: this spec adds
-**one new token family** (amber) to the design system — that's a small, permanent palette
-extension, not just a UI tweak, so it should get an explicit nod from Neil alongside the
-lifecycle sign-off rather than being nodded through silently with the rest of the build.
+**APPROVED by Neil in chat 2026-09-21** — lifecycle spec ("Spec is approved") and the new
+amber token family ("Yes, add the amber token"). Cleared to build.
 
 Owner: ux-designer. Consumes: `docs/specs/account-status-lifecycle.md` (5 statuses, semantics),
 `design-system/DESIGN_SYSTEM.md` + `src/styles/designTokens.css` (token system, `rt-badge`/
