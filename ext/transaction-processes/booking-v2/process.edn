@@ -204,27 +204,39 @@
    :actions [{:name :action/stripe-create-payout}],
    :from :state/cancelled-charged,
    :to :state/cancelled-charged-paid}
+  ;; SAF-25: each review transition also runs :action/update-protected-data so the
+  ;; client can persist a structured "Safety & respect" score (integer 1-5) into the
+  ;; transaction protectedData alongside the native review. It is stored per reviewer
+  ;; role (safetyRespectRatingByCustomer / safetyRespectRatingByProvider) so the two
+  ;; parties' scores never overwrite each other. protectedData is visible to the two
+  ;; parties + operator only — the score is intentionally NOT public on profiles.
   {:name :transition/review-1-by-provider,
    :actor :actor.role/provider,
-   :actions [{:name :action/post-review-by-provider}],
+   :actions
+   [{:name :action/update-protected-data} ;; SAF-25: safetyRespectRatingByProvider
+    {:name :action/post-review-by-provider}],
    :from :state/delivered,
    :to :state/reviewed-by-provider}
   {:name :transition/review-2-by-provider,
    :actor :actor.role/provider,
    :actions
-   [{:name :action/post-review-by-provider}
+   [{:name :action/update-protected-data} ;; SAF-25: safetyRespectRatingByProvider
+    {:name :action/post-review-by-provider}
     {:name :action/publish-reviews}],
    :from :state/reviewed-by-customer,
    :to :state/reviewed}
   {:name :transition/review-1-by-customer,
    :actor :actor.role/customer,
-   :actions [{:name :action/post-review-by-customer}],
+   :actions
+   [{:name :action/update-protected-data} ;; SAF-25: safetyRespectRatingByCustomer
+    {:name :action/post-review-by-customer}],
    :from :state/delivered,
    :to :state/reviewed-by-customer}
   {:name :transition/review-2-by-customer,
    :actor :actor.role/customer,
    :actions
-   [{:name :action/post-review-by-customer}
+   [{:name :action/update-protected-data} ;; SAF-25: safetyRespectRatingByCustomer
+    {:name :action/post-review-by-customer}
     {:name :action/publish-reviews}],
    :from :state/reviewed-by-provider,
    :to :state/reviewed}
