@@ -14,6 +14,7 @@ const pageDataLoadingAPI = getPageDataLoadingAPI();
 
 const AuthenticationPage = loadable(() => import(/* webpackChunkName: "AuthenticationPage" */ '../containers/AuthenticationPage/AuthenticationPage'));
 const CheckoutPage = loadable(() => import(/* webpackChunkName: "CheckoutPage" */ '../containers/CheckoutPage/CheckoutPage'));
+const ClientVerificationPage = loadable(() => import(/* webpackChunkName: "ClientVerificationPage" */ '../containers/ClientVerificationPage/ClientVerificationPage'));
 const CMSPage = loadable(() => import(/* webpackChunkName: "CMSPage" */ '../containers/CMSPage/CMSPage'));
 const ContactDetailsPage = loadable(() => import(/* webpackChunkName: "ContactDetailsPage" */ '../containers/ContactDetailsPage/ContactDetailsPage'));
 const EditListingPage = loadable(() => import(/* webpackChunkName: "EditListingPage" */ '../containers/EditListingPage/EditListingPage'));
@@ -425,6 +426,19 @@ const routeConfiguration = (layoutConfig, accessControlConfig) => {
       path: '/report-concern',
       name: 'SafetyReportPage',
       component: SafetyReportPage,
+    },
+    {
+      // SAF-03: client identity verification (Stripe Identity). Requires login; the
+      // client verifies here after signup / before their first booking. Stripe.js is
+      // prioritised so window.Stripe().verifyIdentity is ready.
+      path: '/verify-identity',
+      name: 'ClientVerificationPage',
+      auth: true,
+      authPage: 'LoginPage',
+      component: ClientVerificationPage,
+      prioritizeLibraryLoading: {
+        stripe: true,
+      },
     },
     {
       path: '/styleguide',

@@ -160,3 +160,13 @@ export const deleteUserAccount = body => {
 export const submitSafetyReport = body => {
   return post('/api/safety-report', body);
 };
+
+// SAF-03: create a Stripe Identity VerificationSession for the logged-in client.
+// Returns { clientSecret, sessionId, url, status } (or { alreadyVerified: true }).
+// The server resolves the user from the session cookie; no body is required.
+//
+// See `server/api/create-identity-session.js`. Fails with a 503
+// `identity-verification-not-configured` error until Neil provisions the Stripe keys.
+export const createIdentitySession = () => {
+  return post('/api/create-identity-session', {});
+};

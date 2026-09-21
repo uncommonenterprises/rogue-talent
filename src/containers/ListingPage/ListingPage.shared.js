@@ -7,7 +7,11 @@ import { convertMoneyToNumber, formatMoney } from '../../util/currency';
 import { timestampToDate } from '../../util/dates';
 import { requireListingImage } from '../../util/configHelpers';
 import { richText } from '../../util/richText';
-import { hasPermissionToInitiateTransactions, isUserAuthorized } from '../../util/userHelpers';
+import {
+  hasPermissionToInitiateTransactions,
+  isUserAuthorized,
+  clientNeedsIdentityVerification,
+} from '../../util/userHelpers';
 import {
   ensureListing,
   ensureOwnListing,
@@ -472,6 +476,15 @@ export const handleSubmit = parameters => values => {
     },
     confirmPaymentError: null,
   };
+
+  // SAF-03: proactively route an unverified client to identity verification before
+  // reaching checkout (UX mirror of the server-side booking gate). Only engages when
+  // the feature is switched on (REACT_APP_IDENTITY_VERIFICATION_ENABLED='true'); it
+  // is a no-op otherwise, so bookings are never blocked before Neil provisions.
+  if (clientNeedsIdentityVerification(currentUser)) {
+    history.push(createResourceLocatorString('ClientVerificationPage', routes, {}, {}));
+    return;
+  }
 
   const saveToSessionStorage = !currentUser;
 

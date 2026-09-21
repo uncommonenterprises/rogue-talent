@@ -194,6 +194,59 @@ export const hasPermissionToViewData = currentUser => {
 export const isUserAuthorized = currentUser => currentUser?.attributes?.state === 'active';
 
 /**
+ * SAF-03: whether the user is a client (buyer) user type. Models are providers and
+ * are ID-verified via Stripe Connect, not the client identity flow.
+ *
+ * @param {Object} user - a user/currentUser API entity
+ * @returns {Boolean} true if the user's userType is 'client'
+ */
+export const isClientUser = user =>
+  user?.attributes?.profile?.publicData?.userType === 'client';
+
+/**
+ * SAF-03: whether a client has completed Stripe Identity verification. Reads the
+ * server-written boolean `profile.metadata.identity_verified` (set by the webhook
+ * in server/api/stripe-identity-webhook.js). This is a UX mirror only — the
+ * authoritative gate is server-side in server/api/initiate-privileged.js.
+ *
+ * NOTE: this is a DISTINCT key from the model "Verified" display badge
+ * (`metadata.id_verified === 'verified'`, see components/VerifiedBadge).
+ *
+ * @param {Object} currentUser - a currentUser API entity
+ * @returns {Boolean} true if the client is identity-verified
+ */
+export const isClientIdentityVerified = currentUser =>
+  currentUser?.attributes?.profile?.metadata?.identity_verified === true;
+
+/**
+ * SAF-03: whether the client-side identity gate UX is switched ON. This is a
+ * non-secret, client-visible flag (REACT_APP_IDENTITY_VERIFICATION_ENABLED='true')
+ * that Neil flips ALONGSIDE provisioning the server Stripe keys. When it is not set,
+ * the proactive listing/checkout redirects DO NOTHING — bookings are never blocked
+ * on the test env before provisioning (fail-open UX, mirroring the server gate).
+ *
+ * Independent of this flag, the checkout error message still surfaces + links to the
+ * verification flow if the server ever returns the identity-required error.
+ *
+ * @returns {Boolean} true if the proactive client-side gate is enabled
+ */
+export const isIdentityVerificationEnabled = () =>
+  process.env.REACT_APP_IDENTITY_VERIFICATION_ENABLED === 'true';
+
+/**
+ * SAF-03: whether a client should be proactively routed to verify before booking.
+ * True only when the feature UX is enabled, the user is a client, and they are not
+ * yet identity-verified. UX mirror only — the server is the authoritative gate.
+ *
+ * @param {Object} currentUser - a currentUser API entity
+ * @returns {Boolean}
+ */
+export const clientNeedsIdentityVerification = currentUser =>
+  isIdentityVerificationEnabled() &&
+  isClientUser(currentUser) &&
+  !isClientIdentityVerified(currentUser);
+
+/**
  * Get the user type configuration for the current user's user type
  * @param {*} config marketplace configuration
  * @param {*} currentUser API entity

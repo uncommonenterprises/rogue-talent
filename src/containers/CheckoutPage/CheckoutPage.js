@@ -12,7 +12,11 @@ import {
   NO_ACCESS_PAGE_INITIATE_TRANSACTIONS,
   NO_ACCESS_PAGE_USER_PENDING_APPROVAL,
 } from '../../util/urlHelpers';
-import { hasPermissionToInitiateTransactions, isUserAuthorized } from '../../util/userHelpers';
+import {
+  hasPermissionToInitiateTransactions,
+  isUserAuthorized,
+  clientNeedsIdentityVerification,
+} from '../../util/userHelpers';
 import { isErrorNoPermissionForInitiateTransactions } from '../../util/errors';
 import {
   INQUIRY_PROCESS_NAME,
@@ -130,6 +134,13 @@ const EnhancedCheckoutPage = props => {
       // when they were already on the checkout page and the user has not refreshed the page)
       isErrorNoPermissionForInitiateTransactions(initiateOrderError));
 
+  // SAF-03: route an unverified client to identity verification before checkout (UX
+  // mirror of the server booking gate). No-op unless the feature is switched on
+  // (REACT_APP_IDENTITY_VERIFICATION_ENABLED='true'), so it never blocks bookings
+  // before Neil provisions.
+  const shouldRedirectForIdentityVerification =
+    isDataLoaded && clientNeedsIdentityVerification(currentUser);
+
   // Redirect back to ListingPage if data is missing.
   // Redirection must happen before any data format error is thrown (e.g. wrong currency)
   if (shouldRedirect) {
@@ -152,6 +163,9 @@ const EnhancedCheckoutPage = props => {
         params={{ missingAccessRight: NO_ACCESS_PAGE_INITIATE_TRANSACTIONS }}
       />
     );
+    // SAF-03: redirect an unverified client to the identity verification flow
+  } else if (shouldRedirectForIdentityVerification) {
+    return <NamedRedirect name="ClientVerificationPage" />;
   }
 
   const validListingTypes = config.listing.listingTypes;
