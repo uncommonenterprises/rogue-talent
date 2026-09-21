@@ -123,6 +123,7 @@ export class TransactionPanelComponent extends Component {
       offer,
       activityFeed,
       actionButtons,
+      usageLicence,
       isInquiryProcess,
       orderBreakdown,
       orderPanel,
@@ -242,6 +243,8 @@ export class TransactionPanelComponent extends Component {
             {requestQuote}
             {offer}
             {transactionFieldsComponent}
+            {/* Contracts v1 — image usage licence block (both parties). */}
+            {usageLicence}
 
             {/* SAF-11: private-residence safety advisory for the model (advisory,
                 non-blocking, not shown to the client). */}
