@@ -1,0 +1,149 @@
+.layoutMain {
+  display: flex;
+  flex-direction: column;
+}
+
+.content {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 24px;
+  width: 100%;
+
+  @media (--viewportMedium) {
+    padding: 48px 24px 96px 24px;
+  }
+}
+
+.loading,
+.error {
+  composes: h4 from global;
+
+  color: var(--colorGrey600);
+  text-align: center;
+  margin: 48px 0;
+}
+
+.contract {
+  background-color: var(--colorWhite);
+}
+
+.contractHeader {
+  margin-bottom: 32px;
+}
+
+.noPrint {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.backLink {
+  composes: h5 from global;
+
+  color: var(--colorGrey700);
+}
+
+.printButton {
+  min-height: 48px;
+  width: auto;
+  padding: 0 24px;
+}
+
+.contractTitle {
+  margin: 0 0 6px 0;
+}
+
+.draftNotice {
+  composes: marketplaceTinyFontStyles from global;
+
+  color: var(--colorFail);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: var(--fontWeightSemiBold);
+  margin: 0 0 8px 0;
+}
+
+.reference {
+  composes: h5 from global;
+
+  color: var(--colorGrey600);
+  margin: 0;
+}
+
+.section {
+  padding: 20px 0;
+  border-top: 1px solid var(--colorGrey100);
+}
+
+.sectionHeading {
+  margin: 0 0 12px 0;
+}
+
+.definitions {
+  margin: 0;
+}
+
+.row {
+  display: flex;
+  flex-direction: column;
+  padding: 6px 0;
+
+  @media (--viewportMedium) {
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 24px;
+  }
+}
+
+.rowLabel {
+  composes: h5 from global;
+
+  color: var(--colorGrey600);
+  margin: 0;
+}
+
+.rowValue {
+  composes: h4 from global;
+
+  color: var(--colorGrey700);
+  margin: 0;
+
+  @media (--viewportMedium) {
+    text-align: right;
+  }
+}
+
+.paragraph,
+.licenceBodyDraft {
+  composes: h5 from global;
+
+  color: var(--colorGrey700);
+  margin: 12px 0 0 0;
+  white-space: pre-line;
+}
+
+.footnote {
+  composes: marketplaceTinyFontStyles from global;
+
+  color: var(--colorGrey600);
+  margin: 12px 0 0 0;
+}
+
+/* Print / save-as-PDF: hide app chrome + interactive controls, keep the
+   contract body clean. No PDF library — the browser generates the PDF. */
+@media print {
+  .noPrint {
+    display: none;
+  }
+
+  .content {
+    max-width: none;
+    padding: 0;
+  }
+
+  .section {
+    break-inside: avoid;
+  }
+}

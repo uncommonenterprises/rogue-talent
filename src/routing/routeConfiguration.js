@@ -17,6 +17,7 @@ const CheckoutPage = loadable(() => import(/* webpackChunkName: "CheckoutPage" *
 const ClientVerificationPage = loadable(() => import(/* webpackChunkName: "ClientVerificationPage" */ '../containers/ClientVerificationPage/ClientVerificationPage'));
 const CMSPage = loadable(() => import(/* webpackChunkName: "CMSPage" */ '../containers/CMSPage/CMSPage'));
 const ContactDetailsPage = loadable(() => import(/* webpackChunkName: "ContactDetailsPage" */ '../containers/ContactDetailsPage/ContactDetailsPage'));
+const ContractPage = loadable(() => import(/* webpackChunkName: "ContractPage" */ '../containers/ContractPage/ContractPage'));
 const EditListingPage = loadable(() => import(/* webpackChunkName: "EditListingPage" */ '../containers/EditListingPage/EditListingPage'));
 const EmailVerificationPage = loadable(() => import(/* webpackChunkName: "EmailVerificationPage" */ '../containers/EmailVerificationPage/EmailVerificationPage'));
 const InboxPage = loadable(() => import(/* webpackChunkName: "InboxPage" */ '../containers/InboxPage/InboxPage'));
@@ -313,6 +314,17 @@ const routeConfiguration = (layoutConfig, accessControlConfig) => {
       loadData: (params, ...rest) =>
         pageDataLoadingAPI.TransactionPage.loadData({ ...params, transactionRole: 'customer' }, ...rest),
       setInitialValues: pageDataLoadingAPI.TransactionPage.setInitialValues,
+    },
+    {
+      // Contracts v1 — print-optimised image-usage contract for a booking.
+      // Reachable by both parties from the TransactionPage; API enforces that
+      // only the customer/provider (or operator) can load the transaction.
+      path: '/contract/:id',
+      name: 'ContractPage',
+      auth: true,
+      authPage: 'LoginPage',
+      component: ContractPage,
+      loadData: pageDataLoadingAPI.ContractPage.loadData,
     },
     {
       path: '/order/:id/details',
