@@ -36,6 +36,26 @@
   white-space: pre-line;
 }
 
+/* SAF-25: "Safety & respect" score shown beside a review (parties + operator only). */
+.safetyRespect {
+  composes: h5 from global;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  margin-bottom: 0;
+  color: var(--colorGrey600);
+}
+
+.safetyRespectLabel {
+  color: var(--colorGrey600);
+}
+
+.safetyRespectRating {
+  display: inline-flex;
+  white-space: nowrap;
+}
+
 .reviewInfo {
   composes: h5 from global;
   margin-top: 10px;

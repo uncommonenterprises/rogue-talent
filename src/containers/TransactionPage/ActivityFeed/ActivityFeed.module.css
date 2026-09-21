@@ -96,6 +96,21 @@
   font-styles: initial;
 }
 
+/* SAF-25: "Safety & respect" score beside a review (parties + operator only). */
+.safetyRespect {
+  composes: marketplaceTinyFontStyles from global;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 4px 0 0 0;
+  color: var(--colorGrey600);
+}
+
+.safetyRespectStars {
+  display: inline-flex;
+  white-space: nowrap;
+}
+
 .showOlderWrapper {
   text-align: center;
   margin-bottom: 1px;
