@@ -1,7 +1,8 @@
 # Account status lifecycle — models & clients (SPEC, for Neil sign-off)
 
-Status: DRAFT SPEC — awaiting Neil sign-off. **No code until signed off** (Neil, 2026-09-21:
-"get this very clear before we code anything to avoid any rework").
+Status: **APPROVED by Neil in chat 2026-09-21 ("Spec is approved").** Cleared to build.
+(One dependency still needs a separate nod — the new amber design token in the companion
+badge spec `account-status-badge-design.md`; see that doc §1.2. Everything else here is greenlit.)
 
 Owner: PM. Design (colours/badge): ux-designer. Origin: Neil's 2026-09-21 proposal + refinements.
 
