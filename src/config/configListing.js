@@ -690,6 +690,63 @@ export const listingTypes = [
           required: true,
         },
       },
+      // ── Image-usage-rights (contracts v1) ─────────────────────────────────
+      // Customer-role fields collected at checkout; they freeze onto the tx
+      // protectedData via the existing request-payment step (no EDN change) and
+      // form the "image usage licence" the model agrees to by accepting the
+      // booking. The enum options are a DEFAULT taxonomy — safe to refine later
+      // (keep option keys stable once bookings exist so past contracts resolve).
+      // See docs/spikes/contracts-usage-rights.md + src/util/contracts.js.
+      // NOTE: these must also exist as transaction/protected-data fields in the
+      // Sharetribe Console (same as the shoot_* fields).
+      {
+        key: 'usage_duration',
+        label: 'Image usage duration',
+        schemaType: 'enum',
+        showTo: 'customer',
+        saveConfig: {
+          required: true,
+        },
+        enumOptions: [
+          { option: '6-months', label: '6 months' },
+          { option: '1-year', label: '1 year' },
+          { option: '2-years', label: '2 years' },
+          { option: '3-years', label: '3 years' },
+          { option: 'perpetual', label: 'Perpetual (buyout)' },
+        ],
+      },
+      {
+        key: 'usage_channels',
+        label: 'Image usage channels',
+        schemaType: 'multi-enum',
+        showTo: 'customer',
+        saveConfig: {
+          required: true,
+        },
+        enumOptions: [
+          { option: 'social-media', label: 'Social media' },
+          { option: 'website-digital', label: 'Website & digital' },
+          { option: 'print', label: 'Print' },
+          { option: 'broadcast-tv', label: 'Broadcast (TV)' },
+          { option: 'out-of-home', label: 'Out-of-home' },
+          { option: 'all-media', label: 'All media' },
+        ],
+      },
+      {
+        key: 'usage_territory',
+        label: 'Image usage territory',
+        schemaType: 'enum',
+        showTo: 'customer',
+        saveConfig: {
+          required: true,
+        },
+        enumOptions: [
+          { option: 'uk', label: 'UK' },
+          { option: 'europe', label: 'Europe' },
+          { option: 'worldwide', label: 'Worldwide' },
+          { option: 'other', label: 'Other' },
+        ],
+      },
     ],
   },
 ];
