@@ -60,9 +60,16 @@ These gate go-live and are NOT instant. Kicking them off today compresses the ti
    a booking money-path (use Stripe's live-mode test affordances / a small real transaction you
    refund), cancel + dispute, search filters, and confirm emails actually deliver (not spam).
 10. **Go-live gates (all must be true):** listing-approval ON *and* approval/under-review emails
-    exist + deliver; all public safety/verification/fee claims true (audit resolved); Terms/Privacy
-    lawyer-reviewed; safety reporting (SAF-29) live + `safety@roguetalent.co` monitored; secret
-    rotated + repo private.
+    exist + deliver; all public safety/verification/fee claims true (audit resolved —
+    `docs/safety-claims-audit-2026-09-21.md`); Terms/Privacy lawyer-reviewed; safety reporting
+    (SAF-29) live + `safety@roguetalent.co` monitored; secret rotated + repo private.
+    - **Client-verification copy gate:** the "businesses/clients are verified" claims
+      (`ModelsLandingPage`, `GeneralLandingPage`, Console Safety/FAQ) must NOT be public until client
+      ID verification (SAF-03) is **actually live** — Stripe Identity + Integration creds provisioned
+      on Railway, `REACT_APP_IDENTITY_VERIFICATION_ENABLED=true`, and the gate confirmed active on a
+      real client booking. Built-but-dormant (fail-open) does not satisfy this.
+    - **Contract-copy gate:** in-app `Contract.*` / checkout clickwrap copy is DRAFT until the
+      solicitor signs off the licence wording (contract v3 sent 2026-09-21).
 11. **Onboard the first real models** (see `docs/path-to-first-ten-models.md`), then the first client
     booking = **first £1**.
 
