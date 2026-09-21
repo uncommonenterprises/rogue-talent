@@ -46,6 +46,15 @@ const ReviewForm = props => (
         id: 'ReviewForm.reviewRatingRequired',
       });
 
+      // SAF-25: structured "Safety & respect" score. Stored in the transaction
+      // protectedData (not part of the native public review) — see reviewSafety.js.
+      const safetyRespectRating = intl.formatMessage({
+        id: 'ReviewForm.safetyRespectRatingLabel',
+      });
+      const safetyRespectRatingRequiredMessage = intl.formatMessage({
+        id: 'ReviewForm.safetyRespectRatingRequired',
+      });
+
       const reviewContent = intl.formatMessage({ id: 'ReviewForm.reviewContentLabel' });
       const reviewContentPlaceholderMessage = intl.formatMessage({
         id: 'ReviewForm.reviewContentPlaceholder',
@@ -81,6 +90,14 @@ const ReviewForm = props => (
             name="reviewRating"
             label={reviewRating}
             validate={required(reviewRatingRequiredMessage)}
+          />
+
+          <FieldReviewRating
+            className={css.reviewRating}
+            id={formId ? `${formId}.safetyRespectRating` : 'safetyRespectRating'}
+            name="safetyRespectRating"
+            label={safetyRespectRating}
+            validate={required(safetyRespectRatingRequiredMessage)}
           />
 
           <FieldTextInput
