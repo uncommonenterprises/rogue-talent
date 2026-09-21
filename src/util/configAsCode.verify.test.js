@@ -62,13 +62,17 @@ describe('config-as-code (Option A) merge precedence', () => {
     expect(keys).not.toContain('hosted_field_should_be_ignored');
   });
 
-  test('model-profile transaction fields resolve (4 of them)', () => {
+  test('model-profile transaction fields resolve (shoot + usage-rights)', () => {
     const mp = merged.listing.listingTypes.find(lt => lt.listingType === 'model-profile');
     expect(mp.transactionFields.map(f => f.key)).toEqual([
       'shoot_description',
       'shoot_type',
       'location_type',
       'shoot_address',
+      // Contracts v1 — image-usage-rights fields (must also exist in Console).
+      'usage_duration',
+      'usage_channels',
+      'usage_territory',
     ]);
   });
 
