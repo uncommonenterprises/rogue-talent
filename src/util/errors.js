@@ -146,6 +146,15 @@ export const isTransactionInitiateBookingTimeNotAvailableError = error =>
 export const isBookingUnavailableError = error => hasErrorWithCode(error, 'booking-not-available');
 
 /**
+ * SAF-03: Check if a booking was blocked because the requesting client is not
+ * identity-verified. The server (server/api-util/clientIdentityGate.js) returns the
+ * code `identity-verification-required`; the checkout renders a "verify your identity"
+ * message linking to the verification flow.
+ */
+export const isIdentityVerificationRequiredError = error =>
+  hasErrorWithCode(error, 'identity-verification-required');
+
+/**
  * Check if the given API error (from `sdk.transaction.initiate()` or
  * `sdk.transaction.initiateSpeculative()`) is due to insufficient stock.
  */

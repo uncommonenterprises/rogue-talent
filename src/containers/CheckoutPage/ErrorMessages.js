@@ -1,8 +1,10 @@
 import React from 'react';
 
 import { FormattedMessage } from '../../util/reactIntl';
+import { NamedLink } from '../../components';
 import {
   isBookingUnavailableError,
+  isIdentityVerificationRequiredError,
   isTransactionInitiateAmountTooLowError,
   isTransactionInitiateMissingStripeAccountError,
   isTransactionInitiateBookingTimeNotAvailableError,
@@ -40,6 +42,20 @@ export const getErrorMessages = (
   } else if (isBookingUnavailableError(initiateOrderError)) {
     // SAF-14: generic, reason-free "not available" message. Never reveals the boundary.
     initiateOrderErrorMessage = <FormattedMessage id="CheckoutPage.bookingUnavailableMessage" />;
+  } else if (isIdentityVerificationRequiredError(initiateOrderError)) {
+    // SAF-03: the client must verify their identity before booking. Link to the flow.
+    initiateOrderErrorMessage = (
+      <FormattedMessage
+        id="CheckoutPage.identityVerificationRequired"
+        values={{
+          verifyLink: (
+            <NamedLink name="ClientVerificationPage">
+              <FormattedMessage id="CheckoutPage.identityVerificationLinkText" />
+            </NamedLink>
+          ),
+        }}
+      />
+    );
   } else if (isAmountTooLowError) {
     initiateOrderErrorMessage = <FormattedMessage id="CheckoutPage.initiateOrderAmountTooLow" />;
   } else if (isTransactionInitiateBookingTimeNotAvailableError(initiateOrderError)) {
