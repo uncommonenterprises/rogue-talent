@@ -19,8 +19,11 @@ flows get a **human dev review before real users** (charter) — flagged per ite
 - **SAF-25 — "Safety & respect" review dimension — DONE** (merged 2026-09-21; EDN change awaits Neil's flex-cli push, bundled with emails).
 - **SAF-29 — Safety reporting flow — DONE + deploy-verified live.** `/report-concern` + transaction
   entry point + footer link; form with mandatory 999/not-monitored copy; server capture (logging +
-  reporter privateData). Caught+fixed an SSR crash before it stuck. **Gap:** email alert to safety@ needs
-  the email provider (long-lead item) → wire `sendMail` in `server/api/safety-report.js` after.
+  reporter privateData). Caught+fixed an SSR crash before it stuck. **Email alert — NOW WIRED**
+  (2026-09-21): `server/api-util/mailer.js` (Postmark HTTP transport, no npm dep, fail-safe) + best-effort
+  alert to `safety@roguetalent.co` in `server/api/safety-report.js`. DORMANT until Neil adds
+  `POSTMARK_SERVER_TOKEN` to Railway (Postmark domain roguetalent.co is DKIM/Return-Path/DMARC verified).
+  Until the token lands it degrades to log + privateData capture (unchanged); no request can fail on mail.
 - **SAF-13/14 — Boundary toggle + silent filter — DONE (merged, build+SSR pass).** Model-only toggle in
   ProfileSettings → `privateData.safety_boundaries.no_private_residence`; server-side silent block in
   `initiate-privileged` (generic "not available", boundary never revealed). **Gap:** enforcement needs

@@ -17,21 +17,27 @@
  *      profile. Degrades gracefully to logging-only when creds are absent or the
  *      reporter is not resolvable (e.g. a logged-out general report).
  *
- * ⚠️ INFRA GAP (flagged for Neil): there is NO transactional-email transport in
- * this stack, so this endpoint does NOT yet email safety@roguetalent.co. Wiring
- * that notification is a remaining infra step. Until then the operator must
- * retrieve reports from the logs / the reporter's privateData.
+ *   3. BEST-EFFORT email alert: if the Postmark transport is configured
+ *      (POSTMARK_SERVER_TOKEN present), email an alert to the safety inbox so the
+ *      operator is notified proactively rather than having to poll the logs. This
+ *      is fail-safe — when mail is not configured, or a send fails, the log +
+ *      durable capture above still stand and the request still succeeds.
  *
  * ⚠️ TEST MARKETPLACE ONLY (`ndstealth1-test`). Never point at a live env.
  *
- * Env (optional — enables the durable record; from .env / Railway, gitignored):
- *   SHARETRIBE_INTEGRATION_CLIENT_ID
- *   SHARETRIBE_INTEGRATION_CLIENT_SECRET
+ * Env (all optional; from .env / Railway, gitignored):
+ *   SHARETRIBE_INTEGRATION_CLIENT_ID / SHARETRIBE_INTEGRATION_CLIENT_SECRET
+ *                          enable the durable per-reporter record.
+ *   POSTMARK_SERVER_TOKEN  enables the email alert (see api-util/mailer.js).
+ *   SAFETY_ALERT_EMAIL     alert recipient. Optional — defaults to safety@roguetalent.co.
  */
 
 const crypto = require('crypto');
 const { getSdk } = require('../api-util/sdk');
+const { sendMail } = require('../api-util/mailer');
 const log = require('../log');
+
+const SAFETY_ALERT_EMAIL = process.env.SAFETY_ALERT_EMAIL || 'safety@roguetalent.co';
 
 const VALID_CATEGORIES = [
   'safety-concern',
@@ -84,6 +90,48 @@ const resolveReporter = sdk =>
     .catch(() => null);
 
 // Append the report to the reporter's privateData.safetyReports (best-effort).
+// Compose the operator alert email body from a captured report (plain text).
+const buildAlertEmail = report => {
+  const reporter = report.reporter || {};
+  const lines = [
+    'A safety concern has been reported on Rogue Talent.',
+    '',
+    `Report ID:        ${report.reportId}`,
+    `Submitted:        ${report.submittedAt}`,
+    `Category:         ${report.category}`,
+    `Source:           ${report.source}`,
+    `Related booking:  ${report.relatedTransactionId || '—'}`,
+    `Who it concerns:  ${report.relatedParty || '—'}`,
+    '',
+    'Reporter:',
+    `  User ID:        ${reporter.userId || '(not signed in)'}`,
+    `  Name:           ${reporter.name || '—'}`,
+    `  Email:          ${reporter.email || '—'}`,
+    '',
+    'Description:',
+    report.description,
+    '',
+    '—',
+    'This is an automated alert. The reporter has been told this inbox is not a',
+    'monitored emergency service. Triage same working day (SAF-30). The full record',
+    "is in the server logs ([SAFETY_REPORT]) and on the reporter's privateData.",
+  ];
+  return lines.join('\n');
+};
+
+// Best-effort operator alert (never throws; resolves to a status flag).
+const sendAlertEmail = report =>
+  sendMail({
+    to: SAFETY_ALERT_EMAIL,
+    subject: `[Safety report] ${report.category} — ${report.reportId.slice(0, 8)}`,
+    textBody: buildAlertEmail(report),
+    // Let the operator reply straight to the reporter where we have an address.
+    replyTo: report.reporter?.email || undefined,
+    tag: 'safety-report',
+  })
+    .then(result => !!result?.sent)
+    .catch(() => false);
+
 const persistToReporterProfile = (integrationSdk, reporterId, report) =>
   integrationSdk.users.show({ id: reporterId }).then(res => {
     const existing = res?.data?.data?.attributes?.profile?.privateData?.safetyReports;
@@ -163,8 +211,12 @@ module.exports = (req, res) => {
           )
         : Promise.resolve(false);
 
-    return durablePersist.then(persisted => {
-      return res.status(200).json({ reportId, persisted });
+    // 3) Best-effort email alert to the safety inbox (fail-safe; no-op until Postmark
+    //    is provisioned). Runs alongside the durable write; neither can fail the request.
+    const alertEmail = sendAlertEmail(report);
+
+    return Promise.all([durablePersist, alertEmail]).then(([persisted, emailed]) => {
+      return res.status(200).json({ reportId, persisted, emailed });
     });
   });
 };
