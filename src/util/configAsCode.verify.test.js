@@ -62,17 +62,15 @@ describe('config-as-code (Option A) merge precedence', () => {
     expect(keys).not.toContain('hosted_field_should_be_ignored');
   });
 
-  test('model-profile transaction fields resolve (shoot + usage-rights)', () => {
+  test('model-profile transaction fields resolve (shoot details only)', () => {
     const mp = merged.listing.listingTypes.find(lt => lt.listingType === 'model-profile');
+    // Contracts (v1) capture NO per-booking usage-rights fields — the standard
+    // licence applies to every booking, so only the shoot-detail fields remain.
     expect(mp.transactionFields.map(f => f.key)).toEqual([
       'shoot_description',
       'shoot_type',
       'location_type',
       'shoot_address',
-      // Contracts v1 — image-usage-rights fields (must also exist in Console).
-      'usage_duration',
-      'usage_channels',
-      'usage_territory',
     ]);
   });
 
