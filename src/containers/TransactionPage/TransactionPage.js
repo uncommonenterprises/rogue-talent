@@ -21,6 +21,10 @@ import { getCurrentUserTypeRoles, hasPermissionToViewData } from '../../util/use
 import { userDisplayNameAsString } from '../../util/data';
 import { isMobileSafari } from '../../util/userAgent';
 import { isUsageRightsFieldKey } from '../../util/contracts';
+import {
+  SAFETY_RESPECT_RATING_BY_CUSTOMER,
+  SAFETY_RESPECT_RATING_BY_PROVIDER,
+} from '../../util/reviewSafety';
 
 import {
   INQUIRY_PROCESS_NAME,
@@ -499,7 +503,7 @@ export const TransactionPageComponent = props => {
 
   // Submit review and close the review modal
   const onSubmitReview = values => {
-    const { reviewRating, reviewContent } = values;
+    const { reviewRating, reviewContent, safetyRespectRating } = values;
     const rating = Number.parseInt(reviewRating, 10);
     const { states, transitions } = process;
     const transitionOptions =
@@ -518,7 +522,20 @@ export const TransactionPageComponent = props => {
               .getTransitionsToStates([states.REVIEWED_BY_CUSTOMER])
               .includes(transaction.attributes.lastTransition),
           };
-    const params = { reviewRating: rating, reviewContent };
+    // SAF-25: persist the structured "Safety & respect" score to the transaction
+    // protectedData (via :action/update-protected-data on the review transition),
+    // keyed by reviewer role so both parties' scores are retained. Guarded so a
+    // missing value simply isn't written. Visible to the two parties + operator;
+    // NOT public on profiles.
+    const safetyRating = Number.parseInt(safetyRespectRating, 10);
+    const safetyKey =
+      transactionRole === CUSTOMER
+        ? SAFETY_RESPECT_RATING_BY_CUSTOMER
+        : SAFETY_RESPECT_RATING_BY_PROVIDER;
+    const protectedDataMaybe = Number.isInteger(safetyRating)
+      ? { protectedData: { [safetyKey]: safetyRating } }
+      : {};
+    const params = { reviewRating: rating, reviewContent, ...protectedDataMaybe };
 
     onSendReview(transaction, transitionOptions, params, config)
       .then(r => {
