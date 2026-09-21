@@ -15,7 +15,8 @@ flows get a **human dev review before real users** (charter) — flagged per ite
 - **SAF-04/05** Client business/presence checks, **SAF-31/32/34/35/36/39** enforcement/log/dashboard —
   MANUAL/policy at launch volume (operator via Console + spreadsheet). No build; needs written policy.
 
-## Built Day 2 (2026-09-20) ✅
+## Built ✅ (Day 2–3)
+- **SAF-25 — "Safety & respect" review dimension — DONE** (merged 2026-09-21; EDN change awaits Neil's flex-cli push, bundled with emails).
 - **SAF-29 — Safety reporting flow — DONE + deploy-verified live.** `/report-concern` + transaction
   entry point + footer link; form with mandatory 999/not-monitored copy; server capture (logging +
   reporter privateData). Caught+fixed an SSR crash before it stuck. **Gap:** email alert to safety@ needs
