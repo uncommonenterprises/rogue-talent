@@ -20,7 +20,6 @@ import { requireListingImage } from '../../util/configHelpers';
 import { getCurrentUserTypeRoles, hasPermissionToViewData } from '../../util/userHelpers.js';
 import { userDisplayNameAsString } from '../../util/data';
 import { isMobileSafari } from '../../util/userAgent';
-import { isUsageRightsFieldKey } from '../../util/contracts';
 import {
   SAFETY_RESPECT_RATING_BY_CUSTOMER,
   SAFETY_RESPECT_RATING_BY_PROVIDER,
@@ -872,24 +871,19 @@ export const TransactionPageComponent = props => {
       ? window.matchMedia(`(max-width: ${MAX_MOBILE_SCREEN_WIDTH}px)`)?.matches
       : true;
 
-  // Contracts v1 — the image-usage-rights fields are surfaced in the dedicated
-  // "Image usage licence" block below, so exclude them from the generic
-  // transaction-fields list to avoid showing them twice.
-  const displayTransactionFieldConfigs = (foundListingTypeConfig?.transactionFields || []).filter(
-    f => !isUsageRightsFieldKey(f.key)
-  );
+  // Contracts (v1): no per-booking usage fields exist, so the generic
+  // transaction-fields list is just the shoot-detail fields.
+  const displayTransactionFieldConfigs = foundListingTypeConfig?.transactionFields || [];
 
   // The model's Accept transition is the recorded provider agreement to the
-  // licence. Show the "accepting agrees the usage terms" statement while the
-  // model is still being asked to accept (preauthorized state).
+  // standard licence. Show the "accepting agrees the licence" statement while
+  // the model is still being asked to accept (preauthorized state).
   const showLicenceAcceptStatement =
     isProviderRole && !!process && bookingProcessState === process.states?.PREAUTHORIZED;
 
   const usageLicence = (
     <UsageLicenceSection
-      protectedData={transaction?.attributes?.protectedData}
-      transactionFieldConfigs={foundListingTypeConfig?.transactionFields}
-      transactionId={transaction?.id?.uuid}
+      transaction={transaction}
       showAcceptStatement={showLicenceAcceptStatement}
     />
   );

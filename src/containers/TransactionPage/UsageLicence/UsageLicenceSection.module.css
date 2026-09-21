@@ -22,6 +22,25 @@
   margin: 0 0 16px 0;
 }
 
+.summaryIntro {
+  composes: h5 from global;
+
+  color: var(--colorGrey700);
+  margin: 0 0 8px 0;
+}
+
+.summaryList {
+  margin: 0 0 20px 0;
+  padding-left: 20px;
+}
+
+.summaryItem {
+  composes: h5 from global;
+
+  color: var(--colorGrey700);
+  margin: 0 0 6px 0;
+}
+
 .terms {
   margin: 0;
 }
