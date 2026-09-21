@@ -15,6 +15,8 @@ import {
   TX_TRANSITION_ACTOR_SYSTEM,
 } from '../../../transactions/transaction';
 
+import { getSafetyRespectRatingForReviewType } from '../../../util/reviewSafety';
+
 import { InlineTextButton, ReviewRating, UserDisplayName } from '../../../components';
 import { Message, OwnMessage } from '../Message/Message';
 
@@ -32,7 +34,7 @@ const { Money } = sdkTypes;
  * @returns {JSX.Element} The Review component
  */
 const Review = props => {
-  const { content, rating } = props;
+  const { content, rating, safetyRating, intl } = props;
   return (
     <div>
       <p className={css.reviewContent}>{content}</p>
@@ -42,6 +44,19 @@ const Review = props => {
           className={css.reviewStars}
           rating={rating}
         />
+      ) : null}
+      {/* SAF-25: "Safety & respect" score, from transaction protectedData (parties + operator only). */}
+      {safetyRating ? (
+        <p className={css.safetyRespect}>
+          <span className={css.safetyRespectLabel}>
+            {intl.formatMessage({ id: 'Reviews.safetyRespectLabel' })}
+          </span>
+          <ReviewRating
+            reviewStarClassName={css.reviewStar}
+            className={css.safetyRespectStars}
+            rating={safetyRating}
+          />
+        </p>
       ) : null}
     </div>
   );
@@ -151,17 +166,24 @@ const reviewByAuthorId = (transaction, userId) => {
 };
 
 const ReviewComponentMaybe = props => {
-  const { showReviews, isRelevantTransition, reviewEntity, intl } = props;
+  const { showReviews, isRelevantTransition, reviewEntity, transaction, intl } = props;
   if (showReviews && isRelevantTransition) {
     const deletedReviewContent = intl.formatMessage({
       id: 'TransactionPage.ActivityFeed.deletedReviewContent',
     });
-    const content = reviewEntity?.attributes?.deleted
-      ? deletedReviewContent
-      : reviewEntity?.attributes?.content;
+    const isDeleted = reviewEntity?.attributes?.deleted;
+    const content = isDeleted ? deletedReviewContent : reviewEntity?.attributes?.content;
     const rating = reviewEntity?.attributes?.rating;
     const ratingMaybe = rating ? { rating } : {};
-    return <Review content={content} {...ratingMaybe} />;
+    // SAF-25: read the reviewer's "Safety & respect" score from the transaction
+    // protectedData (guarded — absent on older reviews or deleted reviews).
+    const safetyRating = isDeleted
+      ? null
+      : getSafetyRespectRatingForReviewType(
+          reviewEntity?.attributes?.type,
+          transaction?.attributes?.protectedData
+        );
+    return <Review content={content} {...ratingMaybe} safetyRating={safetyRating} intl={intl} />;
   }
   return null;
 };
@@ -332,6 +354,7 @@ export const ActivityFeed = props => {
               showReviews={stateData.showReviews}
               isRelevantTransition={isCustomerReview || isProviderRieview}
               reviewEntity={reviewEntity}
+              transaction={transaction}
               intl={intl}
             />
           }
