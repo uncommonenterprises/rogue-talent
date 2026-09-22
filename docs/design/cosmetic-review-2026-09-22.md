@@ -1,7 +1,13 @@
 # Rogue Talent — cosmetic / visual-polish review
 
 **Author:** UX Designer (capstone review) · **Date:** 2026-09-22
-**Scope:** design-only. No code touched. Grounded in `design-system/DESIGN_SYSTEM.md` +
+**Scope:** design-only. No code touched.
+
+> **Implementation status (2026-09-22, Neil green-lit "quick wins + global headings"):**
+> ✅ IMPLEMENTED + merged (main): COS-02, 06, 07, 08, 21, 24, 25, 28, 33, 34 (one commit per id).
+> 🔵 COS-01 (footer slogan) = **Neil, in Console** — chosen slogan: **"Professional talent, booked direct."**
+> ⬜ Remaining Medium (COS-04/05, 09/10, 18, 22, 30, 31, 36) + Larger (COS-11, 20, 23, 27, 38) = not yet
+> started; the 3 Larger rebuilds (profile page / checkout / transaction panel) are a proposed follow-on project. Grounded in `design-system/DESIGN_SYSTEM.md` +
 `src/styles/designTokens.css` + `design-system/components.css` (the target), the actual
 component/CSS-module code under `src/` (what exists), and the live test site
 (`https://rogue-talent-production.up.railway.app`) fetched for content/structure.
