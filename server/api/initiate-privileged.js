@@ -3,6 +3,7 @@ const { transactionLineItems } = require('../api-util/lineItems');
 const { isIntentionToMakeOffer } = require('../api-util/negotiation');
 const { enforceResidenceBoundary } = require('../api-util/residenceBoundary');
 const { enforceClientIdentityVerification } = require('../api-util/clientIdentityGate');
+const { enforceProviderVerified } = require('../api-util/providerVerifiedGate');
 const {
   getSdk,
   getTrustedSdk,
@@ -83,8 +84,12 @@ module.exports = (req, res) => {
       //   2. SAF-03: block a real booking by a CLIENT who is not identity-verified
       //      (Stripe Identity). Speculative previews are allowed; the gate only engages
       //      when the feature is configured (fails OPEN otherwise — see clientIdentityGate).
+      //   3. Account-status: block a real booking whose PROVIDER (model) is not Verified,
+      //      with a neutral message (don't rely only on the implicit Stripe-charge failure).
+      //      Speculative allowed; engages only when configured (fails OPEN otherwise).
       return enforceResidenceBoundary({ listing, orderData, bodyParams })
         .then(() => enforceClientIdentityVerification({ sdk, isSpeculative }))
+        .then(() => enforceProviderVerified({ listing, isSpeculative }))
         .then(() => getTrustedSdk(req));
     })
     .then(trustedSdk => {
