@@ -1,7 +1,9 @@
 # Account status — Step 2: onboarding rewire + visibility enforcement (SPEC, needs Neil decision)
 
-Status: DRAFT SPEC — **needs Neil's decision on the approach before build** (safety-critical: it
-decides who is discoverable/bookable). Builds on the APPROVED `account-status-lifecycle.md`.
+Status: **APPROVED (Neil 2026-09-22, all three §5 decisions) → BUILT + MERGED to main behind a
+feature flag (DORMANT), 2026-09-22.** Flag `REACT_APP_ACCOUNT_STATUS_FLOW_ENABLED` default OFF =
+today's exact behaviour; build/SSR/tests pass; PM code-reviewed. NOT yet cut over — see the cutover
+checklist + residual risks at the bottom. Safety-critical → still needs the pre-go-live human review.
 Owner: PM. Origin: lifecycle spec §11 items 4 + 7, and the Developer's step-1 flow report.
 
 ## 1. Goal
@@ -88,3 +90,36 @@ cleaner; noting B only for completeness.
 - Retire old VerifiedBadge (step 5).
 - Fix the ProfileSettingsPage `submitted(model)` display gap (surface status where the listing is
   loaded, or load it) — small follow-up, can ride with step 1's placement.
+
+---
+
+## Build status + CUTOVER CHECKLIST (added 2026-09-22)
+Built behind `REACT_APP_ACCOUNT_STATUS_FLOW_ENABLED` (default OFF). Key files: `server/api-util/modelVisibility.js`
+(reconcile core), `providerVerifiedGate.js` (booking gate), `server/api/stripe-connect-webhook.js`,
+`server/api/reconcile-own-listing.js`, `EditListingWizard.js` (flag-gated publish). All server pieces
+fail-safe/inactive without creds. Merged dormant — nothing changes for models until the flag is flipped.
+
+**Do NOT flip the flag ON until ALL of these are true (in order):**
+1. **Listing-approval turned ON in Console** (Neil). #1 precondition — without it a submitted profile
+   auto-publishes while unverified (the one dangerous state).
+2. **Integration creds present on Railway** (`SHARETRIBE_INTEGRATION_CLIENT_ID/SECRET`) — activates reconcile + the booking gate.
+3. **Stripe Connect `account.updated` webhook registered** (platform acct, TEST mode) + `STRIPE_CONNECT_WEBHOOK_SECRET` on Railway.
+4. **Residual risk #1 resolved** (below).
+5. **Pre-go-live human dev review** of the reconcile + gate.
+6. Then set `REACT_APP_ACCOUNT_STATUS_FLOW_ENABLED=true` and verify end-to-end on test.
+
+## Residual risks (PM/human-review focus)
+1. **Connect webhook account→user mapping (biggest).** The Integration API has no Stripe endpoint, so
+   the webhook must map `acct_…` → Sharetribe user via metadata; it's unconfirmed Sharetribe sets a
+   usable key. Best-effort now (logs + no write on miss). Consequence: a Stripe **lapse-while-away**
+   may not hide the model until their next dashboard load (booking still fails at Stripe capture +
+   the provider gate, but less cleanly). **PM recommendation to resolve before cutover:** store the
+   model's Stripe `acct_…` id on their listing `publicData` at connect time, and have the webhook
+   look up the listing by that id via the Integration API (which CAN query listings) — removes the
+   metadata guess entirely. A light periodic sweep is the alternative/backup.
+2. **Gate B not readable server-side at booking** — enforced via reconcile (published⟺Verified) +
+   Stripe at capture (defence-in-depth). Accepted.
+3. **accountStatus predicate mirrored** in `modelVisibility.computeModelVerified` (frontend ESM can't
+   be required server-side). Keep in lockstep if the Verified definition changes.
+4. **Reconcile could reopen a model's voluntarily-closed listing** if they're Verified (decideTransition
+   closed+verified→open). No voluntary-close UX today; flag for when one is added.
