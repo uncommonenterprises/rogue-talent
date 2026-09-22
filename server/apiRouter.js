@@ -19,6 +19,7 @@ const deleteAccount = require('./api/delete-account');
 const safetyReport = require('./api/safety-report');
 const createIdentitySession = require('./api/create-identity-session');
 const reconcileOwnListing = require('./api/reconcile-own-listing');
+const verifyNudge = require('./api/verify-nudge');
 
 const createUserWithIdp = require('./api/auth/createUserWithIdp');
 
@@ -72,6 +73,12 @@ router.post('/create-identity-session', createIdentitySession);
 // pings this so operator approval / return-from-Stripe takes effect on next load. Fail-safe:
 // never blocks the caller (see server/api/reconcile-own-listing.js).
 router.post('/reconcile-own-listing', reconcileOwnListing);
+
+// Account-status Step 4: "Approved → please verify" email nudge (lifecycle §8). A
+// scheduled cron pings this with the CRON_SECRET; it sweeps Approved-unverified accounts
+// (models via listing-state, clients via metadata) and sends spaced/capped Postmark
+// nudges. Dormant + fail-safe until provisioned (see server/api/verify-nudge.js).
+router.post('/cron/verify-nudge', verifyNudge);
 
 // Create user with identity provider (e.g. Facebook or Google)
 // This endpoint is called to create a new user after user has confirmed
