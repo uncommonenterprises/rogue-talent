@@ -109,14 +109,21 @@ fail-safe/inactive without creds. Merged dormant — nothing changes for models 
 6. Then set `REACT_APP_ACCOUNT_STATUS_FLOW_ENABLED=true` and verify end-to-end on test.
 
 ## Residual risks (PM/human-review focus)
-1. **Connect webhook account→user mapping (biggest).** The Integration API has no Stripe endpoint, so
-   the webhook must map `acct_…` → Sharetribe user via metadata; it's unconfirmed Sharetribe sets a
-   usable key. Best-effort now (logs + no write on miss). Consequence: a Stripe **lapse-while-away**
-   may not hide the model until their next dashboard load (booking still fails at Stripe capture +
-   the provider gate, but less cleanly). **PM recommendation to resolve before cutover:** store the
-   model's Stripe `acct_…` id on their listing `publicData` at connect time, and have the webhook
-   look up the listing by that id via the Integration API (which CAN query listings) — removes the
-   metadata guess entirely. A light periodic sweep is the alternative/backup.
+1. **Connect webhook account→user mapping (biggest). — RESOLVED 2026-09-22 (dev; pending human review).**
+   The webhook no longer relies on unconfirmed Stripe metadata. The own-session reconcile stamps the
+   model's connected `acct_…` id onto their listing `publicData.stripeAccountId` (idempotent — only
+   when missing/changed), and the Connect webhook resolves `acct_…` → model by querying that listing
+   via the Integration API (`listings.query({ pub_stripeAccountId })`, which returns listings in any
+   state) and taking the listing author. The metadata guess is kept ONLY as a last-resort fallback.
+   Fail-safe unchanged (logs + 200-ack, no write, on a miss). Implemented in
+   `server/api-util/modelVisibility.js` (`stampStripeAccountId`, `findListingByStripeAccountId`,
+   `resolveUserForConnectAccount`) + `server/api/reconcile-own-listing.js`; tests added.
+   **Remaining narrow gap:** the FIRST `account.updated` that arrives before the model has ever
+   loaded their dashboard (so the listing is not yet stamped) still falls through to the metadata
+   guess and may no-op. This is benign — such a model is unverified/hidden by default and only becomes
+   visible via a reconcile (own-session or a later webhook once stamped), and the booking-time
+   provider gate + Stripe-at-capture remain as defence-in-depth. A light periodic sweep is the
+   optional backstop if we ever want to close it fully.
 2. **Gate B not readable server-side at booking** — enforced via reconcile (published⟺Verified) +
    Stripe at capture (defence-in-depth). Accepted.
 3. **accountStatus predicate mirrored** in `modelVisibility.computeModelVerified` (frontend ESM can't

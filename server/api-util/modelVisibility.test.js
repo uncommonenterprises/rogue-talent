@@ -10,6 +10,7 @@ const mockSdk = {
     approve: jest.fn(),
     open: jest.fn(),
     close: jest.fn(),
+    update: jest.fn(),
   },
   users: {
     show: jest.fn(),
@@ -33,14 +34,26 @@ const {
   reconcileModelListingVisibility,
   reconcileFromConnectEvent,
   resolveUserIdFromConnectEvent,
+  resolveUserForConnectAccount,
+  findListingByStripeAccountId,
+  STRIPE_ACCOUNT_ID_PUBLIC_DATA_KEY,
 } = require('./modelVisibility');
 
-const modelListing = state => ({
+// A listings.query response wrapping one model-profile listing. `publicData` and
+// `authorId` are optional overrides (authorId adds the author relationship the webhook
+// listing-lookup path reads).
+const modelListing = (state, { publicData = {}, authorId = null } = {}) => ({
   data: {
     data: [
       {
         id: { uuid: 'listing-1' },
-        attributes: { state, publicData: { listingType: 'model-profile' } },
+        attributes: {
+          state,
+          publicData: { listingType: 'model-profile', ...publicData },
+        },
+        ...(authorId
+          ? { relationships: { author: { data: { id: { uuid: authorId } } } } }
+          : {}),
       },
     ],
   },
@@ -51,6 +64,7 @@ beforeEach(() => {
   mockSdk.listings.approve.mockReset().mockResolvedValue({});
   mockSdk.listings.open.mockReset().mockResolvedValue({});
   mockSdk.listings.close.mockReset().mockResolvedValue({});
+  mockSdk.listings.update.mockReset().mockResolvedValue({});
   mockSdk.users.show.mockReset();
 });
 
@@ -163,6 +177,111 @@ describe('reconcileModelListingVisibility', () => {
   });
 });
 
+// ---- stamping the acct→listing link (idempotent) -----------------------------
+
+describe('reconcileModelListingVisibility — Stripe account id stamping', () => {
+  it('stamps stripeAccountId onto the listing when missing', async () => {
+    mockSdk.listings.query.mockResolvedValue(modelListing('published'));
+    const result = await reconcileModelListingVisibility({
+      userId: 'u1',
+      verified: true,
+      stripeAccountId: 'acct_123',
+    });
+    expect(mockSdk.listings.update).toHaveBeenCalledWith({
+      id: 'listing-1',
+      publicData: { [STRIPE_ACCOUNT_ID_PUBLIC_DATA_KEY]: 'acct_123' },
+    });
+    expect(result.stamped).toBe(true);
+  });
+
+  it('re-stamps when the stored id has changed', async () => {
+    mockSdk.listings.query.mockResolvedValue(
+      modelListing('published', { publicData: { stripeAccountId: 'acct_OLD' } })
+    );
+    const result = await reconcileModelListingVisibility({
+      userId: 'u1',
+      verified: true,
+      stripeAccountId: 'acct_NEW',
+    });
+    expect(mockSdk.listings.update).toHaveBeenCalledWith({
+      id: 'listing-1',
+      publicData: { [STRIPE_ACCOUNT_ID_PUBLIC_DATA_KEY]: 'acct_NEW' },
+    });
+    expect(result.stamped).toBe(true);
+  });
+
+  it('is idempotent: no update when the id is already stamped', async () => {
+    mockSdk.listings.query.mockResolvedValue(
+      modelListing('published', { publicData: { stripeAccountId: 'acct_123' } })
+    );
+    const result = await reconcileModelListingVisibility({
+      userId: 'u1',
+      verified: true,
+      stripeAccountId: 'acct_123',
+    });
+    expect(mockSdk.listings.update).not.toHaveBeenCalled();
+    expect(result.stamped).toBe(false);
+  });
+
+  it('does not stamp when no stripeAccountId is supplied', async () => {
+    mockSdk.listings.query.mockResolvedValue(modelListing('published'));
+    await reconcileModelListingVisibility({ userId: 'u1', verified: true });
+    expect(mockSdk.listings.update).not.toHaveBeenCalled();
+  });
+
+  it('still applies the visibility transition even if stamping fails', async () => {
+    mockSdk.listings.query.mockResolvedValue(modelListing('published'));
+    mockSdk.listings.update.mockRejectedValue(new Error('update failed'));
+    const result = await reconcileModelListingVisibility({
+      userId: 'u1',
+      verified: false, // published + not verified → must still close
+      stripeAccountId: 'acct_123',
+    });
+    expect(mockSdk.listings.close).toHaveBeenCalledWith({ id: 'listing-1' });
+    expect(result).toMatchObject({ reconciled: true, action: 'close', stamped: false });
+  });
+});
+
+// ---- acct → user resolution via the listing link -----------------------------
+
+describe('findListingByStripeAccountId / resolveUserForConnectAccount', () => {
+  it('queries listings by pub_stripeAccountId', async () => {
+    mockSdk.listings.query.mockResolvedValue(modelListing('published', { authorId: 'u1' }));
+    await findListingByStripeAccountId(mockSdk, 'acct_123');
+    expect(mockSdk.listings.query).toHaveBeenCalledWith({ pub_stripeAccountId: 'acct_123' });
+  });
+
+  it('resolves the author id via the listing link (primary path)', async () => {
+    mockSdk.listings.query.mockResolvedValue(modelListing('published', { authorId: 'u1' }));
+    const result = await resolveUserForConnectAccount(
+      mockSdk,
+      { data: { object: { metadata: {} } } },
+      'acct_123'
+    );
+    expect(result).toEqual({ userId: 'u1', via: 'listing' });
+  });
+
+  it('falls back to metadata when no stamped listing is found', async () => {
+    mockSdk.listings.query.mockResolvedValue({ data: { data: [] } });
+    const result = await resolveUserForConnectAccount(
+      mockSdk,
+      { data: { object: { metadata: { 'sharetribe-user-id': 'u9' } } } },
+      'acct_123'
+    );
+    expect(result).toEqual({ userId: 'u9', via: 'metadata' });
+  });
+
+  it('falls back to metadata when the listing query errors', async () => {
+    mockSdk.listings.query.mockRejectedValue(new Error('integration down'));
+    const result = await resolveUserForConnectAccount(
+      mockSdk,
+      { data: { object: { metadata: { user_id: 'u7' } } } },
+      'acct_123'
+    );
+    expect(result).toEqual({ userId: 'u7', via: 'metadata' });
+  });
+});
+
 // ---- Connect event mapping + end-to-end --------------------------------------
 
 describe('resolveUserIdFromConnectEvent', () => {
@@ -181,7 +300,12 @@ describe('resolveUserIdFromConnectEvent', () => {
 });
 
 describe('reconcileFromConnectEvent', () => {
-  it('skips when the account cannot be mapped to a user', async () => {
+  const activeModel = {
+    data: { data: { attributes: { state: 'active', profile: { publicData: { userType: 'model' } } } } },
+  };
+
+  it('skips when no stamped listing exists and metadata has no user id', async () => {
+    mockSdk.listings.query.mockResolvedValue({ data: { data: [] } });
     const result = await reconcileFromConnectEvent({
       account: 'acct_1',
       data: { object: { metadata: {}, charges_enabled: true, payouts_enabled: true } },
@@ -189,37 +313,61 @@ describe('reconcileFromConnectEvent', () => {
     expect(result).toMatchObject({ skipped: true, why: 'no-user-mapping' });
   });
 
-  it('reconciles to Verified using the event flags + user state (active model)', async () => {
-    mockSdk.users.show.mockResolvedValue({
-      data: { data: { attributes: { state: 'active', profile: { publicData: { userType: 'model' } } } } },
+  it('resolves the model via the listing link (primary) and publishes when Verified', async () => {
+    // The listing carries the author (u1) and its stamped account id; no metadata needed.
+    mockSdk.listings.query.mockResolvedValue(
+      modelListing('pendingApproval', {
+        authorId: 'u1',
+        publicData: { stripeAccountId: 'acct_1' },
+      })
+    );
+    mockSdk.users.show.mockResolvedValue(activeModel);
+    const result = await reconcileFromConnectEvent({
+      account: 'acct_1',
+      data: { object: { metadata: {}, charges_enabled: true, payouts_enabled: true } },
     });
-    mockSdk.listings.query.mockResolvedValue(modelListing('pendingApproval'));
+    // Resolved without any Stripe metadata → the listing lookup was authoritative.
+    expect(mockSdk.listings.query).toHaveBeenCalledWith({ pub_stripeAccountId: 'acct_1' });
+    expect(mockSdk.users.show).toHaveBeenCalledWith({ id: 'u1' });
+    expect(mockSdk.listings.approve).toHaveBeenCalledWith({ id: 'listing-1' });
+    expect(result).toMatchObject({ reconciled: true, action: 'approve' });
+  });
+
+  it('hides a published listing when the event shows Stripe lapsed', async () => {
+    mockSdk.listings.query.mockResolvedValue(
+      modelListing('published', { authorId: 'u1', publicData: { stripeAccountId: 'acct_1' } })
+    );
+    mockSdk.users.show.mockResolvedValue(activeModel);
+    const result = await reconcileFromConnectEvent({
+      account: 'acct_1',
+      data: { object: { metadata: {}, charges_enabled: false, payouts_enabled: false } },
+    });
+    expect(mockSdk.listings.close).toHaveBeenCalledWith({ id: 'listing-1' });
+    expect(result).toMatchObject({ reconciled: true, action: 'close' });
+  });
+
+  it('falls back to metadata when the listing is not yet stamped', async () => {
+    // No listing matches the account id → metadata carries the user id (legacy fallback).
+    mockSdk.listings.query
+      .mockResolvedValueOnce({ data: { data: [] } }) // findListingByStripeAccountId → miss
+      .mockResolvedValueOnce(modelListing('pendingApproval', { authorId: 'u1' })); // findModelListing
+    mockSdk.users.show.mockResolvedValue(activeModel);
     const result = await reconcileFromConnectEvent({
       account: 'acct_1',
       data: {
-        object: { metadata: { 'sharetribe-user-id': 'u1' }, charges_enabled: true, payouts_enabled: true },
+        object: {
+          metadata: { 'sharetribe-user-id': 'u1' },
+          charges_enabled: true,
+          payouts_enabled: true,
+        },
       },
     });
     expect(mockSdk.listings.approve).toHaveBeenCalledWith({ id: 'listing-1' });
     expect(result).toMatchObject({ reconciled: true, action: 'approve' });
   });
 
-  it('hides a published listing when the event shows Stripe lapsed', async () => {
-    mockSdk.users.show.mockResolvedValue({
-      data: { data: { attributes: { state: 'active', profile: { publicData: { userType: 'model' } } } } },
-    });
-    mockSdk.listings.query.mockResolvedValue(modelListing('published'));
-    const result = await reconcileFromConnectEvent({
-      account: 'acct_1',
-      data: {
-        object: { metadata: { 'sharetribe-user-id': 'u1' }, charges_enabled: false, payouts_enabled: false },
-      },
-    });
-    expect(mockSdk.listings.close).toHaveBeenCalledWith({ id: 'listing-1' });
-    expect(result).toMatchObject({ reconciled: true, action: 'close' });
-  });
-
   it('skips a non-model user', async () => {
+    mockSdk.listings.query.mockResolvedValue({ data: { data: [] } });
     mockSdk.users.show.mockResolvedValue({
       data: { data: { attributes: { state: 'active', profile: { publicData: { userType: 'client' } } } } },
     });

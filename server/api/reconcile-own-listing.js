@@ -26,12 +26,25 @@ const log = require('../log');
 
 const MODEL_USER_TYPE = 'model';
 
-// Pull the denormalised Stripe account's raw data out of an `include: ['stripeAccount']`
+// Pull the denormalised Stripe account resource out of an `include: ['stripeAccount']`
 // currentUser response.
-const getStripeAccountData = showResponse => {
+const getStripeAccount = showResponse => {
   const included = showResponse?.data?.included || [];
-  const stripeAccount = included.find(entry => entry.type === 'stripeAccount');
-  return stripeAccount?.attributes?.stripeAccountData || null;
+  return included.find(entry => entry.type === 'stripeAccount') || null;
+};
+
+const getStripeAccountData = showResponse =>
+  getStripeAccount(showResponse)?.attributes?.stripeAccountData || null;
+
+// The connected account id (acct_…). Canonical field is stripeAccount.attributes.stripeAccountId
+// (see src/util/types.js); fall back to the id on the raw Stripe Account object.
+const getStripeAccountId = showResponse => {
+  const stripeAccount = getStripeAccount(showResponse);
+  return (
+    stripeAccount?.attributes?.stripeAccountId ||
+    stripeAccount?.attributes?.stripeAccountData?.id ||
+    null
+  );
 };
 
 module.exports = (req, res) => {
@@ -62,10 +75,18 @@ module.exports = (req, res) => {
       }
 
       const stripeAccountData = getStripeAccountData(showResponse);
+      const stripeAccountId = getStripeAccountId(showResponse);
       const verified = modelVisibility.computeModelVerified({ userState, stripeAccountData });
 
+      // Passing stripeAccountId stamps the durable acct→listing link (idempotent, only when
+      // missing/changed) so the Connect webhook can later map the account back to this model.
       return modelVisibility
-        .reconcileModelListingVisibility({ userId, verified, reason: 'own-session' })
+        .reconcileModelListingVisibility({
+          userId,
+          verified,
+          reason: 'own-session',
+          stripeAccountId,
+        })
         .then(result => respond(result));
     })
     .catch(e => {

@@ -21,6 +21,14 @@
  * approves the USER (Gate A) and this function — not a human — owns listing publish
  * state, driven by the live Verified computation.
  *
+ * ACCT → MODEL MAPPING (Connect webhook): the connected Stripe account id is stamped onto
+ * the model's listing publicData (`pub_stripeAccountId`) during the own-session reconcile,
+ * where the model is authenticated and we can read their account id. The Connect webhook
+ * then resolves `acct_…` → model by querying that listing via the Integration API (which,
+ * unlike the Marketplace API, can filter listings by publicData in any state). This removes
+ * the earlier reliance on unconfirmed Stripe metadata (kept only as a last-resort fallback
+ * for the narrow window before a model has ever loaded their dashboard).
+ *
  * ─────────────────────────────────────────────────────────────────────────────
  * ENV VARS NEIL MUST PROVIDE TO ACTIVATE (Railway + gitignored .env only — never
  * committed; this repo is public):
@@ -117,6 +125,24 @@ const computeModelVerified = ({ userState, stripeAccountData } = {}) => {
   return gateA && gateB;
 };
 
+// The listing publicData key that stores the connected Stripe account id. This is the
+// DURABLE acct→listing link the Connect webhook uses to map an `acct_…` back to a model
+// (queryable via the Integration API as `pub_stripeAccountId`), replacing the earlier
+// unconfirmed Stripe-metadata guess. Stamped on the own-session reconcile (see
+// stampStripeAccountId): the model is authenticated there and we can read their account id.
+const STRIPE_ACCOUNT_ID_PUBLIC_DATA_KEY = 'stripeAccountId';
+
+const pickModelListing = listings => {
+  const arr = listings || [];
+  // A model has a single model-profile listing; prefer that type, else the first.
+  const modelListing = arr.find(
+    l => l?.attributes?.publicData?.listingType === MODEL_LISTING_TYPE
+  );
+  return modelListing || arr[0] || null;
+};
+
+const getListingId = listing => listing?.id?.uuid || listing?.id || null;
+
 /**
  * Find a user's model-profile listing via the Integration API (any state).
  * @param {Object} integrationSdk
@@ -124,16 +150,60 @@ const computeModelVerified = ({ userState, stripeAccountData } = {}) => {
  * @returns {Promise<Object|null>} the listing resource, or null if none
  */
 const findModelListing = (integrationSdk, userId) =>
+  integrationSdk.listings.query({ authorId: userId }).then(res => pickModelListing(res?.data?.data));
+
+/**
+ * Find the model-profile listing carrying a given Stripe connected account id, via the
+ * Integration API publicData filter (`pub_stripeAccountId`). The Integration API returns
+ * listings in ALL states (draft/pendingApproval/published/closed), so this resolves the
+ * model even while their listing is hidden. The author relationship id is present without
+ * an `include`, so the caller can read `relationships.author.data.id.uuid`.
+ *
+ * @param {Object} integrationSdk
+ * @param {string} stripeAccountId - the connected account id (acct_…)
+ * @returns {Promise<Object|null>} the listing resource, or null if none
+ */
+const findListingByStripeAccountId = (integrationSdk, stripeAccountId) =>
   integrationSdk.listings
-    .query({ authorId: userId })
-    .then(res => {
-      const listings = res?.data?.data || [];
-      // A model has a single model-profile listing; prefer that type, else the first.
-      const modelListing = listings.find(
-        l => l?.attributes?.publicData?.listingType === MODEL_LISTING_TYPE
+    .query({ [`pub_${STRIPE_ACCOUNT_ID_PUBLIC_DATA_KEY}`]: stripeAccountId })
+    .then(res => pickModelListing(res?.data?.data));
+
+/**
+ * Idempotently stamp the connected Stripe account id onto a model's listing publicData —
+ * the durable acct→listing link the Connect webhook resolves against. Only writes when the
+ * id is missing or has changed; a match is a no-op. Best-effort: a stamp failure is logged
+ * but never propagated (it must not block the visibility transition, e.g. hiding a lapse).
+ *
+ * @param {Object} integrationSdk
+ * @param {Object} listing - the model's listing resource (already fetched)
+ * @param {string} stripeAccountId - the connected account id (acct_…)
+ * @param {Object} ctx - log context ({ userId, reason })
+ * @returns {Promise<{stamped: boolean, why?: string}>}
+ */
+const stampStripeAccountId = (integrationSdk, listing, stripeAccountId, ctx = {}) => {
+  if (!stripeAccountId) {
+    return Promise.resolve({ stamped: false, why: 'no-acct-id' });
+  }
+  const listingId = getListingId(listing);
+  const current = listing?.attributes?.publicData?.[STRIPE_ACCOUNT_ID_PUBLIC_DATA_KEY] || null;
+  if (current === stripeAccountId) {
+    return Promise.resolve({ stamped: false, why: 'already-stamped' });
+  }
+  return integrationSdk.listings
+    .update({ id: listingId, publicData: { [STRIPE_ACCOUNT_ID_PUBLIC_DATA_KEY]: stripeAccountId } })
+    .then(() => {
+      log.error(
+        new Error('Account-status reconcile stamped stripeAccountId on listing'),
+        'acct-status-stamp-applied',
+        { ...ctx, listingId, stripeAccountId }
       );
-      return modelListing || listings[0] || null;
+      return { stamped: true };
+    })
+    .catch(err => {
+      log.error(err, 'acct-status-stamp-failed', { ...ctx, listingId });
+      return { stamped: false, why: 'error' };
     });
+};
 
 /**
  * Decide the transition needed to make a listing's visibility match the Verified state.
@@ -170,9 +240,18 @@ const decideTransition = (listingState, verified) => {
  *   from an authoritative source: the model's own Stripe account on their session, or
  *   the Connect webhook's account object + a user-state lookup)
  * @param {string} [params.reason] - a short trigger tag for logs (e.g. 'own-session')
- * @returns {Promise<Object>} { reconciled, action, listingId, from, to, reason, skipped }
+ * @param {string} [params.stripeAccountId] - the model's connected Stripe account id. When
+ *   present it is stamped onto the listing's publicData (idempotently) so the Connect
+ *   webhook can later map the account back to this model. Typically supplied by the
+ *   own-session reconcile (the model is authenticated → we can read their account id).
+ * @returns {Promise<Object>} { reconciled, action, listingId, from, to, reason, skipped, stamped }
  */
-const reconcileModelListingVisibility = ({ userId, verified, reason = 'unspecified' } = {}) => {
+const reconcileModelListingVisibility = ({
+  userId,
+  verified,
+  reason = 'unspecified',
+  stripeAccountId = null,
+} = {}) => {
   if (!userId) {
     return Promise.resolve({ reconciled: false, skipped: true, why: 'no-user-id', reason });
   }
@@ -193,33 +272,50 @@ const reconcileModelListingVisibility = ({ userId, verified, reason = 'unspecifi
       if (!listing) {
         return { reconciled: false, skipped: true, why: 'no-listing', reason };
       }
-      const listingId = listing.id?.uuid || listing.id;
+      const listingId = getListingId(listing);
       const from = listing.attributes?.state;
-      const action = decideTransition(from, verified);
 
-      if (!action) {
-        // Already in the correct visibility state — idempotent no-op.
-        return { reconciled: false, skipped: false, action: null, listingId, from, verified, reason };
-      }
+      // Stamp the durable acct→listing link first (idempotent, best-effort). Doing it
+      // before the transition means the mapping is in place even if the transition
+      // errors — the webhook can then still resolve this model on a later event.
+      return stampStripeAccountId(integrationSdk, listing, stripeAccountId, { userId, reason }).then(
+        stampResult => {
+          const stamped = stampResult.stamped === true;
+          const action = decideTransition(from, verified);
 
-      const opById = { id: listingId };
-      const op =
-        action === 'approve'
-          ? integrationSdk.listings.approve(opById)
-          : action === 'open'
-          ? integrationSdk.listings.open(opById)
-          : integrationSdk.listings.close(opById);
+          if (!action) {
+            // Already in the correct visibility state — idempotent no-op.
+            return {
+              reconciled: false,
+              skipped: false,
+              action: null,
+              listingId,
+              from,
+              verified,
+              reason,
+              stamped,
+            };
+          }
 
-      return op.then(() => {
-        const to =
-          action === 'close' ? LISTING_STATE_CLOSED : LISTING_STATE_PUBLISHED;
-        log.error(
-          new Error('Account-status reconcile applied a visibility change'),
-          'acct-status-reconcile-applied',
-          { userId, listingId, action, from, to, verified, reason }
-        );
-        return { reconciled: true, action, listingId, from, to, verified, reason };
-      });
+          const opById = { id: listingId };
+          const op =
+            action === 'approve'
+              ? integrationSdk.listings.approve(opById)
+              : action === 'open'
+              ? integrationSdk.listings.open(opById)
+              : integrationSdk.listings.close(opById);
+
+          return op.then(() => {
+            const to = action === 'close' ? LISTING_STATE_CLOSED : LISTING_STATE_PUBLISHED;
+            log.error(
+              new Error('Account-status reconcile applied a visibility change'),
+              'acct-status-reconcile-applied',
+              { userId, listingId, action, from, to, verified, reason }
+            );
+            return { reconciled: true, action, listingId, from, to, verified, reason, stamped };
+          });
+        }
+      );
     })
     .catch(err => {
       // Never let reconcile break the caller. Log loudly for the operator.
@@ -240,16 +336,18 @@ const reconcileModelListingVisibility = ({ userId, verified, reason = 'unspecifi
 const constructConnectWebhookEvent = (rawBody, signatureHeader) =>
   stripeIdentity.verifyStripeWebhookSignature(rawBody, signatureHeader, getConnectWebhookSecret());
 
-// Candidate metadata keys where a Sharetribe user id MIGHT live on the connected
-// Stripe account. ⚠️ UNCERTAIN — Sharetribe creates the Custom Connect account and it
-// is NOT confirmed which (if any) metadata key carries the marketplace user id. This
-// must be verified against a real test connected account before the webhook path is
-// relied on for the lapse-while-away case (see the developer's step-2 report). When the
-// id cannot be resolved, the webhook logs loudly and acknowledges WITHOUT a write.
+// LAST-RESORT FALLBACK ONLY. The primary acct→user mapping is now the durable listing link
+// (findListingByStripeAccountId, keyed on pub_stripeAccountId — stamped on the own-session
+// reconcile). These candidate metadata keys are where a Sharetribe user id MIGHT ALSO live
+// on the connected Stripe account, but it is NOT confirmed Sharetribe sets any of them; the
+// listing lookup is authoritative. Kept only to cover the narrow window before a model has
+// ever loaded their dashboard (so the listing is not yet stamped). On a miss the webhook
+// logs loudly and acknowledges WITHOUT a write.
 const USER_ID_METADATA_KEYS = ['sharetribe-user-id', 'sharetribeUserId', 'user_id', 'userId'];
 
 /**
- * Best-effort resolution of a Sharetribe user id from a Connect `account.updated` event.
+ * Best-effort resolution of a Sharetribe user id from a Connect `account.updated` event's
+ * Stripe metadata. Fallback only — see resolveUserIdFromConnectEvent's callers.
  * @param {Object} event - the parsed Stripe event
  * @returns {string|null}
  */
@@ -264,6 +362,37 @@ const resolveUserIdFromConnectEvent = event => {
 };
 
 /**
+ * Resolve the Sharetribe user (model) for a Connect account id — PRIMARY PATH. Queries the
+ * model-profile listing carrying `pub_stripeAccountId === accountId` and returns its author
+ * id. Falls back to the (unconfirmed) Stripe-metadata guess only when no stamped listing is
+ * found. Never throws.
+ *
+ * @param {Object} integrationSdk
+ * @param {Object} event - the parsed Stripe event
+ * @param {string} accountId - the connected account id (acct_…)
+ * @returns {Promise<{userId: string|null, via: string}>}
+ */
+const resolveUserForConnectAccount = (integrationSdk, event, accountId) => {
+  const metadataUserId = () => ({ userId: resolveUserIdFromConnectEvent(event), via: 'metadata' });
+  if (!accountId) {
+    return Promise.resolve(metadataUserId());
+  }
+  return findListingByStripeAccountId(integrationSdk, accountId)
+    .then(listing => {
+      const authorId = listing?.relationships?.author?.data?.id?.uuid || null;
+      if (authorId) {
+        return { userId: authorId, via: 'listing' };
+      }
+      // No stamped listing yet (e.g. model never loaded their dashboard) → fallback.
+      return metadataUserId();
+    })
+    .catch(err => {
+      log.error(err, 'acct-status-connect-listing-lookup-failed', { accountId });
+      return metadataUserId();
+    });
+};
+
+/**
  * Reconcile from a Connect `account.updated` event: map the account to a Sharetribe
  * user, confirm Gate A (user active) via the Integration API, combine with the event's
  * Stripe flags (Gate B), and reconcile. Fail-safe; never throws.
@@ -273,44 +402,57 @@ const resolveUserIdFromConnectEvent = event => {
  */
 const reconcileFromConnectEvent = event => {
   const account = event?.data?.object || {};
-  const userId = resolveUserIdFromConnectEvent(event);
-  if (!userId) {
-    log.error(
-      new Error('Connect webhook could not map account → Sharetribe user (metadata gap)'),
-      'acct-status-connect-no-user',
-      { accountId: event?.account || account?.id || null }
-    );
-    return Promise.resolve({ reconciled: false, skipped: true, why: 'no-user-mapping' });
-  }
+  const accountId = event?.account || account?.id || null;
 
   const integrationSdk = getIntegrationSdk();
   if (!integrationSdk) {
     log.error(
       new Error('Account-status reconcile inactive: Integration credentials missing'),
       'acct-status-reconcile-inactive',
-      { userId, reason: 'connect-webhook' }
+      { accountId, reason: 'connect-webhook' }
     );
     return Promise.resolve({ reconciled: false, skipped: true, why: 'not-configured' });
   }
 
-  // Gate A (user state) is not in the Stripe event — look it up authoritatively.
-  return integrationSdk.users
-    .show({ id: userId })
-    .then(res => {
-      const user = res?.data?.data;
-      const userState = user?.attributes?.state;
-      const userType = user?.attributes?.profile?.publicData?.userType;
-      // Only models have a discoverable listing to reconcile.
-      if (userType && userType !== MODEL_USER_TYPE) {
-        return { reconciled: false, skipped: true, why: 'not-a-model' };
-      }
-      const verified = computeModelVerified({ userState, stripeAccountData: account });
-      return reconcileModelListingVisibility({ userId, verified, reason: 'connect-webhook' });
-    })
-    .catch(err => {
-      log.error(err, 'acct-status-connect-user-lookup-failed', { userId });
-      return { reconciled: false, skipped: false, why: 'error' };
-    });
+  // PRIMARY: map acct_… → model via the durable listing link (pub_stripeAccountId). Falls
+  // back to the (unconfirmed) Stripe-metadata guess only if no stamped listing exists yet.
+  return resolveUserForConnectAccount(integrationSdk, event, accountId).then(({ userId, via }) => {
+    if (!userId) {
+      // No listing stamped and no usable metadata → cannot map. Log loudly, no write.
+      log.error(
+        new Error('Connect webhook could not map account → Sharetribe user (no stamped listing)'),
+        'acct-status-connect-no-user',
+        { accountId }
+      );
+      return Promise.resolve({ reconciled: false, skipped: true, why: 'no-user-mapping' });
+    }
+
+    // Gate A (user state) is not in the Stripe event — look it up authoritatively.
+    return integrationSdk.users
+      .show({ id: userId })
+      .then(res => {
+        const user = res?.data?.data;
+        const userState = user?.attributes?.state;
+        const userType = user?.attributes?.profile?.publicData?.userType;
+        // Only models have a discoverable listing to reconcile.
+        if (userType && userType !== MODEL_USER_TYPE) {
+          return { reconciled: false, skipped: true, why: 'not-a-model' };
+        }
+        const verified = computeModelVerified({ userState, stripeAccountData: account });
+        // Pass the account id so the listing stays stamped (idempotent no-op via the
+        // listing path; a real stamp if we resolved via the metadata fallback).
+        return reconcileModelListingVisibility({
+          userId,
+          verified,
+          reason: `connect-webhook:${via}`,
+          stripeAccountId: accountId,
+        });
+      })
+      .catch(err => {
+        log.error(err, 'acct-status-connect-user-lookup-failed', { userId });
+        return { reconciled: false, skipped: false, why: 'error' };
+      });
+  });
 };
 
 module.exports = {
@@ -322,6 +464,10 @@ module.exports = {
   reconcileFromConnectEvent,
   constructConnectWebhookEvent,
   resolveUserIdFromConnectEvent,
+  resolveUserForConnectAccount,
+  findListingByStripeAccountId,
+  stampStripeAccountId,
   MODEL_LISTING_TYPE,
   MODEL_USER_TYPE,
+  STRIPE_ACCOUNT_ID_PUBLIC_DATA_KEY,
 };
