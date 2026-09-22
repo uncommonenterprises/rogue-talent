@@ -4,6 +4,8 @@ import { storableError } from '../../util/errors';
 import { createImageVariantConfig } from '../../util/sdkLoader';
 import { parse } from '../../util/urlHelpers';
 import { getReferralParams } from '../../util/webStorageHelpers';
+import { isAccountStatusFlowEnabled } from '../../util/accountStatus';
+import { reconcileOwnListing } from '../../util/api';
 
 import { fetchCurrentUser } from '../../ducks/user.duck';
 
@@ -275,6 +277,15 @@ export const loadData = (params, search, config) => (dispatch, getState, sdk) =>
   const queryParams = parse(search);
   const page = queryParams.page || 1;
   dispatch(clearOpenListingError());
+
+  // Account-status Step 2 (trigger b/c): reconcile the model's listing visibility to their
+  // live Verified state whenever they load their own "Your profile" dashboard, so operator
+  // approval ("approved while away") and returning from Stripe onboarding take effect on next
+  // load. Browser-only (never during SSR), flag-gated, and fire-and-forget — it must never
+  // block or fail this page load. The server call is itself fail-safe.
+  if (typeof window !== 'undefined' && isAccountStatusFlowEnabled()) {
+    reconcileOwnListing().catch(() => {});
+  }
 
   // Filter out potential referral data parameters so that they are not included in the API query
   const { userTypes = [] } = config.user;

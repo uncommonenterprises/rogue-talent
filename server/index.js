@@ -37,6 +37,7 @@ const passport = require('passport');
 const auth = require('./auth');
 const apiRouter = require('./apiRouter');
 const stripeIdentityWebhook = require('./api/stripe-identity-webhook');
+const stripeConnectWebhook = require('./api/stripe-connect-webhook');
 const wellKnownRouter = require('./wellKnownRouter');
 const webmanifestResourceRoute = require('./resources/webmanifest');
 const robotsTxtRoute = require('./resources/robotsTxt');
@@ -113,6 +114,11 @@ app.use(
 // unparsed request body. express.raw() delivers req.body as a Buffer to the handler.
 // This is registered before the CSP JSON parser (below) and before app.use('/api').
 app.post('/api/stripe-identity-webhook', express.raw({ type: '*/*' }), stripeIdentityWebhook);
+
+// Account-status Step 2: Stripe Connect account.updated webhook. Mounted HERE for the
+// same raw-body reason as the Identity webhook above — signature verification needs the
+// unparsed request body. Reconciles a model's listing visibility to their Verified state.
+app.post('/api/stripe-connect-webhook', express.raw({ type: '*/*' }), stripeConnectWebhook);
 
 if (cspEnabled) {
   app.use(generateCSPNonce);

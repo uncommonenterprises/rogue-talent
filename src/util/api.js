@@ -170,3 +170,13 @@ export const submitSafetyReport = body => {
 export const createIdentitySession = () => {
   return post('/api/create-identity-session', {});
 };
+
+// Account-status Step 2: ask the server to reconcile the logged-in model's listing
+// visibility to their live Verified state (operator approval / return-from-Stripe take
+// effect on next dashboard load). Fire-and-forget from the UI — the server resolves the
+// user from the session cookie, is fail-safe, and never blocks. No body required.
+//
+// See `server/api/reconcile-own-listing.js`.
+export const reconcileOwnListing = () => {
+  return post('/api/reconcile-own-listing', {});
+};

@@ -18,6 +18,7 @@ const transitionPrivileged = require('./api/transition-privileged');
 const deleteAccount = require('./api/delete-account');
 const safetyReport = require('./api/safety-report');
 const createIdentitySession = require('./api/create-identity-session');
+const reconcileOwnListing = require('./api/reconcile-own-listing');
 
 const createUserWithIdp = require('./api/auth/createUserWithIdp');
 
@@ -66,6 +67,11 @@ router.post('/safety-report', safetyReport);
 // (The paired webhook — /api/stripe-identity-webhook — is mounted at the app level
 // in server/index.js because it needs a raw request body for signature verification.)
 router.post('/create-identity-session', createIdentitySession);
+
+// Account-status Step 2: authenticated own-session reconcile. The model's dashboard/profile
+// pings this so operator approval / return-from-Stripe takes effect on next load. Fail-safe:
+// never blocks the caller (see server/api/reconcile-own-listing.js).
+router.post('/reconcile-own-listing', reconcileOwnListing);
 
 // Create user with identity provider (e.g. Facebook or Google)
 // This endpoint is called to create a new user after user has confirmed
