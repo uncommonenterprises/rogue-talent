@@ -277,16 +277,19 @@ a:hover {
 }
 
 h1 {
+  /* Design system display heading (Bricolage extrabold, tight tracking) */
+  font-family: var(--font-display);
   font-size: 24px;
   line-height: 24px;
-  font-weight: var(--fontWeightBlack);
+  font-weight: var(--weight-extrabold);
+  letter-spacing: var(--tracking-tight);
   padding: 3px 0 3px 0;
   /* margin-top + n * line-height + margin-bottom => x * 6px */
   margin-top: 18px;
   margin-bottom: 18px;
 
   @media (--viewportMedium) {
-    font-size: 64px;
+    font-size: var(--text-5xl);
     line-height: 64px;
     padding: 0;
     /* margin-top + n * line-height + margin-bottom => x * 8px */
@@ -296,9 +299,12 @@ h1 {
 }
 
 h2 {
+  /* Design system display heading (Bricolage extrabold, tight tracking) */
+  font-family: var(--font-display);
   font-size: 21px;
   line-height: 24px;
-  font-weight: var(--fontWeightBold);
+  font-weight: var(--weight-extrabold);
+  letter-spacing: var(--tracking-tight);
 
   padding: 4px 0 2px 0;
   /* x * 6px */
@@ -306,7 +312,7 @@ h2 {
   margin-bottom: 18px;
 
   @media (--viewportMedium) {
-    font-size: 40px;
+    font-size: var(--text-4xl);
     line-height: 56px;
     padding: 5px 0 3px 0;
     /* x * 8px */
@@ -316,7 +322,10 @@ h2 {
 }
 
 h3 {
-  font-weight: var(--fontWeightBold);
+  /* Design system display heading (Bricolage extrabold, tight tracking) */
+  font-family: var(--font-display);
+  font-weight: var(--weight-extrabold);
+  letter-spacing: var(--tracking-tight);
   font-size: 18px;
   line-height: 24px;
   /* x * 6px */
@@ -324,7 +333,7 @@ h3 {
   margin-bottom: 12px;
 
   @media (--viewportMedium) {
-    font-size: 30px;
+    font-size: var(--text-3xl);
     line-height: 40px;
     padding: 1px 0 7px 0;
     /* x * 8px */
@@ -638,7 +647,10 @@ textarea {
 }
 
 .h1 {
-  font-weight: var(--fontWeightBlack);
+  /* Design system display heading (Bricolage extrabold, tight tracking) */
+  font-family: var(--font-display);
+  font-weight: var(--weight-extrabold);
+  letter-spacing: var(--tracking-tight);
   font-size: 24px;
   line-height: 24px;
 
@@ -648,7 +660,7 @@ textarea {
   margin-bottom: 18px;
 
   @media (--viewportMedium) {
-    font-size: 64px;
+    font-size: var(--text-5xl);
     line-height: 64px;
     padding: 0;
     /* margin-top + n * line-height + margin-bottom => x * 8px */
@@ -658,7 +670,10 @@ textarea {
 }
 
 .h2 {
-  font-weight: var(--fontWeightBold);
+  /* Design system display heading (Bricolage extrabold, tight tracking) */
+  font-family: var(--font-display);
+  font-weight: var(--weight-extrabold);
+  letter-spacing: var(--tracking-tight);
   font-size: 21px;
   line-height: 24px;
 
@@ -668,7 +683,7 @@ textarea {
   margin-bottom: 18px;
 
   @media (--viewportMedium) {
-    font-size: 40px;
+    font-size: var(--text-4xl);
     line-height: 56px;
     padding: 5px 0 3px 0;
     /* x * 8px */
@@ -678,7 +693,10 @@ textarea {
 }
 
 .h3 {
-  font-weight: var(--fontWeightBold);
+  /* Design system display heading (Bricolage extrabold, tight tracking) */
+  font-family: var(--font-display);
+  font-weight: var(--weight-extrabold);
+  letter-spacing: var(--tracking-tight);
   font-size: 18px;
   line-height: 24px;
   /* x * 6px */
@@ -686,7 +704,7 @@ textarea {
   margin-bottom: 12px;
 
   @media (--viewportMedium) {
-    font-size: 30px;
+    font-size: var(--text-3xl);
     line-height: 40px;
     padding: 1px 0 7px 0;
     /* x * 8px */
