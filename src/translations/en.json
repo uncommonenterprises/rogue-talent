@@ -1,4 +1,9 @@
 {
+  "AccountStatusBadge.approved": "Approved",
+  "AccountStatusBadge.draft": "Draft",
+  "AccountStatusBadge.pending": "Pending approval",
+  "AccountStatusBadge.rejected": "Rejected",
+  "AccountStatusBadge.verified": "Verified",
   "AddressLinkMaybe.viewOnGoogleMaps": "View on Google Maps",
   "AuthenticationPage.confirmSignupInfoText": "Please check that your information is correct.",
   "AuthenticationPage.confirmSignupWithIdpTitle": "Sign up with {idp}",

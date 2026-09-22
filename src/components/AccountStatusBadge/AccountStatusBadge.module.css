@@ -1,0 +1,144 @@
+/* rt-status — account-status lifecycle badge.
+   Spec: docs/specs/account-status-badge-design.md §2. Tint + coloured dot + coloured text
+   (the rt-badge--verified / rt-badge--available pattern), never a solid saturated fill.
+   All colours reference design-system tokens — no hardcoded hex here. */
+
+.root {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-sans);
+  font-weight: var(--weight-bold);
+  font-size: var(--text-2xs); /* 11px — default size */
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  line-height: 1;
+  white-space: nowrap;
+  vertical-align: middle;
+  padding: 4px 9px;
+  border-radius: var(--radius-sm); /* same as rt-badge, not a pill */
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+/* ---- Size: --lg (prominent placement — own dashboard header, profile page) ---- */
+.large {
+  font-size: var(--text-xs); /* 12px */
+  padding: 6px 12px;
+  gap: 6px;
+}
+.large .dot {
+  width: 8px;
+  height: 8px;
+}
+
+/* ---- Minimal variant: dot + text, no chip (dense rows) ---- */
+.minimal {
+  background: transparent;
+  padding: 0;
+  text-transform: none; /* sentence case reads better inline */
+  font-weight: var(--weight-semibold);
+  font-size: var(--text-sm);
+  letter-spacing: 0;
+}
+
+/* ---- Status modifiers — light (default surface) ---- */
+.draft {
+  background: var(--ink-100);
+  color: var(--ink-700);
+}
+.draft .dot {
+  background: var(--ink-700);
+}
+
+.pending {
+  background: var(--amber-100);
+  color: var(--amber-700);
+}
+.pending .dot {
+  background: var(--amber-700);
+}
+
+.approved {
+  background: var(--accent-50);
+  color: var(--accent-700);
+}
+.approved .dot {
+  background: var(--accent-700);
+}
+
+.verified {
+  background: rgba(30, 127, 82, 0.12);
+  color: var(--status-success);
+}
+.verified .dot {
+  background: var(--status-success);
+}
+
+.rejected {
+  background: rgba(210, 43, 43, 0.1);
+  color: var(--status-error);
+}
+.rejected .dot {
+  background: var(--status-error);
+}
+
+/* Minimal variant carries the same text/dot colours but no tint fill. */
+.minimal.draft,
+.minimal.pending,
+.minimal.approved,
+.minimal.verified,
+.minimal.rejected {
+  background: transparent;
+}
+
+/* ---- Dark treatment via the .rt-on-ink context wrapper (spec §3) ---- */
+:global(.rt-on-ink) .root {
+  background: rgba(255, 255, 255, 0.06);
+}
+:global(.rt-on-ink) .minimal {
+  background: transparent;
+}
+
+:global(.rt-on-ink) .draft {
+  color: var(--ink-300);
+}
+:global(.rt-on-ink) .draft .dot {
+  background: var(--ink-300);
+}
+
+:global(.rt-on-ink) .pending {
+  color: var(--amber-400);
+}
+:global(.rt-on-ink) .pending .dot {
+  background: var(--amber-400);
+}
+
+:global(.rt-on-ink) .approved {
+  color: var(--accent-400);
+}
+:global(.rt-on-ink) .approved .dot {
+  background: var(--accent-400);
+}
+
+/* Verified & Rejected: no bright on-dark green/red token exists — text drops to a
+   high-contrast neutral and only the dot (WCAG 3:1 graphical bar) carries the hue. */
+:global(.rt-on-ink) .verified {
+  color: var(--white);
+}
+:global(.rt-on-ink) .verified .dot {
+  background: var(--status-success);
+}
+
+:global(.rt-on-ink) .rejected {
+  color: var(--white);
+}
+:global(.rt-on-ink) .rejected .dot {
+  background: var(--status-error);
+}

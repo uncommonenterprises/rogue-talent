@@ -66,6 +66,7 @@ export { default as TimeRange } from './TimeRange/TimeRange';
 export { default as UserDisplayName } from './UserDisplayName/UserDisplayName';
 export { default as ValidationError } from './ValidationError/ValidationError';
 export { default as VerifiedBadge, isUserVerified } from './VerifiedBadge/VerifiedBadge';
+export { default as AccountStatusBadge } from './AccountStatusBadge/AccountStatusBadge';
 export { default as HelpText } from './HelpText/HelpText';
 
 /**
