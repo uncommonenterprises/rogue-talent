@@ -259,7 +259,8 @@
   width: 100%;
   height: 100%;
   border-radius: 50%;
-  background-color: var(--colorFail);
+  /* Cobalt notification dot (red is reserved for danger) — matches TopbarDesktop */
+  background-color: var(--accent-500);
 }
 
 .itemUsername {
