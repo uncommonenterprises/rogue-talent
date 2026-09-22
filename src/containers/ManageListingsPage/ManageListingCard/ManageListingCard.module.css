@@ -50,8 +50,10 @@
 }
 
 .priceValue {
-  /* Font */
-  font-weight: var(--fontWeightSemiBold);
+  /* Font: Bricolage extrabold rate numeral — matches ListingCard.rate */
+  font-family: var(--font-display);
+  font-weight: var(--weight-extrabold);
+  letter-spacing: var(--tracking-tight);
   color: var(--marketplaceColor);
 
   /* Remove default margins from font */
@@ -65,8 +67,10 @@
 }
 
 .perUnit {
-  /* Font */
-  font-weight: var(--fontWeightSemiBold);
+  /* Font: Bricolage extrabold rate numeral — matches ListingCard.rate */
+  font-family: var(--font-display);
+  font-weight: var(--weight-extrabold);
+  letter-spacing: var(--tracking-tight);
   color: var(--marketplaceColor);
 
   /* Remove default margins from font */
