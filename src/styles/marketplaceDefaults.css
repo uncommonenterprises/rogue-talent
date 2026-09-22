@@ -117,20 +117,23 @@
   --spacingUnit: 6px;
   --spacingUnitDesktop: 8px;
 
-  /* Shadows */
-  --boxShadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
-  --boxShadowTop: 0 -2px 4px 0 rgba(0, 0, 0, 0.1);
-  --boxShadowLight: 0 2px 4px 0 rgba(0, 0, 0, 0.05);
-  --boxShadowPopup: 0 8px 16px 0 rgba(0, 0, 0, 0.3);
-  --boxShadowPopupLight: 0 3px 6px 0 rgba(0, 0, 0, 0.2);
-  --boxShadowBreakdown: 0 3px 6px 0 rgba(0, 0, 0, 0.2);
-  --boxShadowButton: 0 4px 8px 0 rgba(0, 0, 0, 0.1);
-  --boxShadowListingCard: 0 0 50px 0 rgba(0, 0, 0, 0.1);
-  --boxShadowFeaturedListingCard: 0 0 30px 0px rgba(0, 0, 0, 0.1);
-  --boxShadowNotFoundPageSearch: 0 2px 4px 0 rgba(0, 0, 0, 0.5);
-  --boxShadowSectionLocationHover: 0 10px 30px 0 rgba(0, 0, 0, 0.1);
-  --boxShadowBottomForm: 0 -2px 4px 0 rgba(0, 0, 0, 0.05);
-  --boxShadowFilterButton: 0 4px 16px 0 rgba(0, 0, 0, 0.2);
+  /* Shadows — legacy Sharetribe tokens re-aliased to the quiet, cool design-system
+     --shadow-* scale so every not-yet-rebuilt component softens at once (design system §Radii/
+     Shadows). Upward (negative-y) shadows have no DS equivalent, so they keep their direction
+     but adopt the DS tint/geometry (mirrors --shadow-sm). */
+  --boxShadow: var(--shadow-sm);
+  --boxShadowTop: 0 -2px 8px rgba(10, 10, 12, 0.06);
+  --boxShadowLight: var(--shadow-xs);
+  --boxShadowPopup: var(--shadow-md);
+  --boxShadowPopupLight: var(--shadow-sm);
+  --boxShadowBreakdown: var(--shadow-sm);
+  --boxShadowButton: var(--shadow-sm);
+  --boxShadowListingCard: var(--shadow-md);
+  --boxShadowFeaturedListingCard: var(--shadow-md);
+  --boxShadowNotFoundPageSearch: var(--shadow-md);
+  --boxShadowSectionLocationHover: var(--shadow-md);
+  --boxShadowBottomForm: 0 -2px 8px rgba(10, 10, 12, 0.06);
+  --boxShadowFilterButton: var(--shadow-md);
 
   /* ================ Z-index base levels ================ */
 
