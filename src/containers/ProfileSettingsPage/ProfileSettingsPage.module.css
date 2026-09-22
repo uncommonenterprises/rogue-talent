@@ -13,6 +13,12 @@
   }
 }
 
+.statusRow {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
 .headingContainer {
   display: flex;
   flex-direction: row;

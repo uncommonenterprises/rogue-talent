@@ -15,7 +15,16 @@ import {
 } from '../../util/userHelpers';
 import { isScrollingDisabled } from '../../ducks/ui.duck';
 
-import { H3, Page, UserNav, NamedLink, LayoutSingleColumn } from '../../components';
+import {
+  AccountStatusBadge,
+  H3,
+  Page,
+  UserNav,
+  NamedLink,
+  LayoutSingleColumn,
+} from '../../components';
+
+import { getAccountStatus } from '../../util/accountStatus';
 
 import TopbarContainer from '../../containers/TopbarContainer/TopbarContainer';
 import FooterContainer from '../../containers/FooterContainer/FooterContainer';
@@ -132,7 +141,14 @@ export const ProfileSettingsPageComponent = props => {
   };
 
   const user = ensureCurrentUser(currentUser);
-  const { firstName, lastName, displayName, bio, publicData, privateData } = user?.attributes.profile;
+  const {
+    firstName,
+    lastName,
+    displayName,
+    bio,
+    publicData,
+    privateData,
+  } = user?.attributes.profile;
   // I.e. the status is active, not pending-approval or banned
   const isUnauthorizedUser = currentUser && !isUserAuthorized(currentUser);
 
@@ -176,6 +192,13 @@ export const ProfileSettingsPageComponent = props => {
 
   const showManageListingsLink = showCreateListingLinkForUser(config, currentUser);
 
+  // Account-status lifecycle badge (self-view only). Gate B (verified) is derived from the
+  // Stripe account denormalised onto currentUser (models) or the identity_verified metadata
+  // (clients). NOTE: the model "submitted" signal needs the own model-profile listing, which
+  // this page does not load — so a not-yet-approved model reads as Draft until the dedicated
+  // "Submit for approval" UX (later task) supplies that signal. See util/accountStatus.js.
+  const accountStatus = currentUser?.id ? getAccountStatus({ currentUser }) : null;
+
   return (
     <Page className={css.root} title={title} scrollingDisabled={scrollingDisabled}>
       <LayoutSingleColumn
@@ -191,6 +214,11 @@ export const ProfileSettingsPageComponent = props => {
         footer={<FooterContainer />}
       >
         <div className={css.content}>
+          {accountStatus ? (
+            <div className={css.statusRow}>
+              <AccountStatusBadge status={accountStatus} large />
+            </div>
+          ) : null}
           <div className={css.headingContainer}>
             <H3 as="h1" className={css.heading}>
               <FormattedMessage id="ProfileSettingsPage.heading" />
