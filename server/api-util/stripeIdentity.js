@@ -210,18 +210,22 @@ const createVerificationSession = ({ userId, email } = {}) => {
 };
 
 /**
- * Verify a Stripe webhook signature and return the parsed event.
- * Mirrors Stripe's scheme: HMAC-SHA256 over `${timestamp}.${rawBody}` with the
- * signing secret, compared (constant-time) against the `v1` value in the
+ * Verify a Stripe webhook signature against a GIVEN signing secret and return the
+ * parsed event. Mirrors Stripe's scheme: HMAC-SHA256 over `${timestamp}.${rawBody}`
+ * with the signing secret, compared (constant-time) against the `v1` value in the
  * `Stripe-Signature` header, with a timestamp tolerance window.
+ *
+ * Exported so other Stripe webhook receivers (e.g. the Connect `account.updated`
+ * endpoint in modelVisibility.js) reuse the exact same verified crypto rather than
+ * duplicating it — each passes its own signing secret.
  *
  * @param {Buffer|string} rawBody - the UNPARSED request body
  * @param {string} signatureHeader - the `Stripe-Signature` header value
+ * @param {string} secret - the webhook signing secret to verify against
  * @returns {Object} the parsed Stripe event
  * @throws {Error} if the signing secret is missing or the signature is invalid
  */
-const constructWebhookEvent = (rawBody, signatureHeader) => {
-  const secret = getWebhookSecret();
+const verifyStripeWebhookSignature = (rawBody, signatureHeader, secret) => {
   if (!secret) {
     const err = new Error('Webhook signing secret not configured.');
     err.status = 503;
@@ -283,6 +287,18 @@ const constructWebhookEvent = (rawBody, signatureHeader) => {
 };
 
 /**
+ * Verify a Stripe Identity webhook event using this module's signing secret.
+ * Thin wrapper around verifyStripeWebhookSignature.
+ *
+ * @param {Buffer|string} rawBody - the UNPARSED request body
+ * @param {string} signatureHeader - the `Stripe-Signature` header value
+ * @returns {Object} the parsed Stripe event
+ * @throws {Error} if the signing secret is missing or the signature is invalid
+ */
+const constructWebhookEvent = (rawBody, signatureHeader) =>
+  verifyStripeWebhookSignature(rawBody, signatureHeader, getWebhookSecret());
+
+/**
  * Write the identity-verified boolean onto a user's Sharetribe profile metadata via
  * the Integration API. Stores ONLY the boolean + the session id — never document data.
  *
@@ -331,6 +347,7 @@ module.exports = {
   isWebhookConfigured,
   createVerificationSession,
   constructWebhookEvent,
+  verifyStripeWebhookSignature,
   writeIdentityVerifiedFlag,
   isUserIdentityVerified,
   IDENTITY_VERIFIED_METADATA_KEY,
