@@ -1,7 +1,8 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { denormalisedResponseEntities } from '../../util/data';
 import { storableError } from '../../util/errors';
-import { setCurrentUser } from '../../ducks/user.duck';
+import { LISTING_STATE_DRAFT } from '../../util/types';
+import { fetchCurrentUser, setCurrentUser } from '../../ducks/user.duck';
 
 // ================ Async Thunks ================ //
 
@@ -70,6 +71,36 @@ export const updateProfile = actionPayload => dispatch => {
   return dispatch(updateProfileThunk(actionPayload));
 };
 
+/////////////////////////////
+// Fetch own model listing //
+/////////////////////////////
+// Loads the current user's own model-profile listing so the account-status badge on this
+// page can read the Gate-A submission signal (listing state 'pendingApproval'/'published').
+// Without it a submitted-but-not-yet-approved model reads as "Draft". Non-critical: a failure
+// leaves ownListing null (badge falls back to Draft) and never blocks the page.
+export const fetchOwnListingThunk = createAsyncThunk(
+  'ProfileSettingsPage/fetchOwnListing',
+  (_, { rejectWithValue, extra: sdk }) => {
+    return sdk.ownListings
+      .query({})
+      .then(response => {
+        const listings = denormalisedResponseEntities(response);
+        // Single-profile-per-model marketplace: the same listing advances
+        // draft → pendingApproval → published. Prefer a submitted (non-draft) listing so a
+        // stray draft can't mask submission; otherwise fall back to the first listing.
+        const submitted = listings.find(l => l?.attributes?.state !== LISTING_STATE_DRAFT);
+        return submitted || listings[0] || null;
+      })
+      .catch(e => {
+        return rejectWithValue(storableError(e));
+      });
+  }
+);
+// Backward compatible wrapper for the thunk
+export const fetchOwnListing = () => dispatch => {
+  return dispatch(fetchOwnListingThunk());
+};
+
 // ================ Slice ================ //
 
 const profileSettingsPageSlice = createSlice({
@@ -80,6 +111,7 @@ const profileSettingsPageSlice = createSlice({
     uploadInProgress: false,
     updateInProgress: false,
     updateProfileError: null,
+    ownListing: null,
   },
   reducers: {
     clearUpdatedForm: state => {
@@ -120,9 +152,27 @@ const profileSettingsPageSlice = createSlice({
         state.image = null;
         state.updateInProgress = false;
         state.updateProfileError = action.payload;
+      })
+      // fetchOwnListing cases (account-status badge submission signal)
+      .addCase(fetchOwnListingThunk.fulfilled, (state, action) => {
+        state.ownListing = action.payload;
+      })
+      .addCase(fetchOwnListingThunk.rejected, state => {
+        // Non-critical: leave ownListing null so the badge falls back to Draft.
+        state.ownListing = null;
       });
   },
 });
 
 export const { clearUpdatedForm } = profileSettingsPageSlice.actions;
 export default profileSettingsPageSlice.reducer;
+
+// ================ loadData ================ //
+
+// SSR-safe: resolves currentUser (for the badge's Gate-B/verification read) and the user's
+// own model-profile listing (for the Gate-A submission signal). Both dispatches are awaited so
+// the badge is accurate on the server-rendered first paint. Never throws to the caller — a
+// listing-query failure is swallowed above and simply yields a Draft badge.
+export const loadData = (params, search, config) => dispatch => {
+  return Promise.all([dispatch(fetchCurrentUser()), dispatch(fetchOwnListing())]);
+};

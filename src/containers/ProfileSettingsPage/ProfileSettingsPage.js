@@ -71,6 +71,8 @@ const ViewProfileLink = props => {
  * @param {propTypes.image} props.image.uploadedImage - The uploaded image
  * @param {Function} props.onImageUpload - The image upload function
  * @param {Function} props.onUpdateProfile - The update profile function
+ * @param {propTypes.ownListing} [props.ownListing] - The user's own model-profile listing
+ *   (loaded by loadData) — supplies the account-status Gate-A submission signal
  * @param {boolean} props.scrollingDisabled - Whether the scrolling is disabled
  * @param {boolean} props.updateInProgress - Whether the update is in progress
  * @param {propTypes.error} props.updateProfileError - The update profile error
@@ -86,6 +88,7 @@ export const ProfileSettingsPageComponent = props => {
     image,
     onImageUpload,
     onUpdateProfile,
+    ownListing,
     scrollingDisabled,
     updateInProgress,
     updateProfileError,
@@ -194,10 +197,13 @@ export const ProfileSettingsPageComponent = props => {
 
   // Account-status lifecycle badge (self-view only). Gate B (verified) is derived from the
   // Stripe account denormalised onto currentUser (models) or the identity_verified metadata
-  // (clients). NOTE: the model "submitted" signal needs the own model-profile listing, which
-  // this page does not load — so a not-yet-approved model reads as Draft until the dedicated
-  // "Submit for approval" UX (later task) supplies that signal. See util/accountStatus.js.
-  const accountStatus = currentUser?.id ? getAccountStatus({ currentUser }) : null;
+  // (clients). The model "submitted" (Gate A) signal comes from the user's own model-profile
+  // listing, loaded by this page's loadData and threaded in as `ownListing` — so a
+  // submitted-but-not-yet-approved model now reads as "Pending approval", not "Draft".
+  // See util/accountStatus.js.
+  const accountStatus = currentUser?.id
+    ? getAccountStatus({ currentUser, ownListing })
+    : null;
 
   return (
     <Page className={css.root} title={title} scrollingDisabled={scrollingDisabled}>
@@ -241,10 +247,12 @@ const mapStateToProps = state => {
     uploadInProgress,
     updateInProgress,
     updateProfileError,
+    ownListing,
   } = state.ProfileSettingsPage;
   return {
     currentUser,
     image,
+    ownListing,
     scrollingDisabled: isScrollingDisabled(state),
     updateInProgress,
     updateProfileError,
