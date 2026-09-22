@@ -9,6 +9,7 @@ import {
   isAccountVerified,
   isAccountSubmitted,
   getAccountStatus,
+  isAccountStatusFlowEnabled,
 } from './accountStatus';
 
 // ---- Fixtures ----------------------------------------------------------------
@@ -180,5 +181,35 @@ describe('getAccountStatus', () => {
   it('undefined / empty input → draft (safe default)', () => {
     expect(getAccountStatus()).toBe(ACCOUNT_STATUS_DRAFT);
     expect(getAccountStatus({})).toBe(ACCOUNT_STATUS_DRAFT);
+  });
+});
+
+// ---- Step-2 feature flag (default OFF = today's behaviour) --------------------
+
+describe('isAccountStatusFlowEnabled', () => {
+  const original = process.env.REACT_APP_ACCOUNT_STATUS_FLOW_ENABLED;
+  afterEach(() => {
+    if (original === undefined) {
+      delete process.env.REACT_APP_ACCOUNT_STATUS_FLOW_ENABLED;
+    } else {
+      process.env.REACT_APP_ACCOUNT_STATUS_FLOW_ENABLED = original;
+    }
+  });
+
+  it('defaults OFF when the env var is unset (preserves RT-01 behaviour)', () => {
+    delete process.env.REACT_APP_ACCOUNT_STATUS_FLOW_ENABLED;
+    expect(isAccountStatusFlowEnabled()).toBe(false);
+  });
+
+  it('is OFF for any value other than the exact string "true"', () => {
+    process.env.REACT_APP_ACCOUNT_STATUS_FLOW_ENABLED = 'false';
+    expect(isAccountStatusFlowEnabled()).toBe(false);
+    process.env.REACT_APP_ACCOUNT_STATUS_FLOW_ENABLED = '1';
+    expect(isAccountStatusFlowEnabled()).toBe(false);
+  });
+
+  it('is ON only when set to "true"', () => {
+    process.env.REACT_APP_ACCOUNT_STATUS_FLOW_ENABLED = 'true';
+    expect(isAccountStatusFlowEnabled()).toBe(true);
   });
 });

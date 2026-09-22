@@ -542,6 +542,7 @@
   "EditListingWizard.payoutModalTitlePayoutPreferences": "Payout preferences",
   "EditListingWizard.redirectingToStripe": "You returned early from Stripe. Redirecting you back to Stripe…",
   "EditListingWizard.screenreader.tabNavigation": "Listing edit navigation",
+  "EditListingWizard.submitForApproval": "Submit for approval",
   "EditListingWizard.tabLabelAvailability": "Your availability",
   "EditListingWizard.tabLabelDelivery": "Delivery",
   "EditListingWizard.tabLabelDetails": "Your profile",

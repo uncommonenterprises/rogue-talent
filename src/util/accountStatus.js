@@ -27,6 +27,31 @@ export const ACCOUNT_STATUSES = [
 ];
 
 /**
+ * Step-2 onboarding-rewire feature flag (client-visible, non-secret).
+ *
+ * DEFAULT OFF → today's exact behaviour: the RT-01 "Stripe before submit" modal gate in
+ * EditListingWizard.handlePublishListing stays in force, and the submit CTA keeps its
+ * current wording. Only when `REACT_APP_ACCOUNT_STATUS_FLOW_ENABLED === 'true'` does the
+ * new flow activate: "Submit for approval" publishes the draft (to pendingApproval when
+ * listing-approval is ON in Console) WITHOUT requiring Stripe, and the server-side
+ * reconcile function owns when a listing becomes visible (published ⟺ Verified).
+ *
+ * ⚠️ SAFETY — cutover preconditions before flipping this ON (see the step-2 spec):
+ *   1. Listing-approval turned ON in the Sharetribe Console (so a submitted profile lands
+ *      in pendingApproval / hidden — NOT auto-published while unverified).
+ *   2. The reconcile function is live (SHARETRIBE_INTEGRATION_CLIENT_ID/SECRET present on
+ *      the server) so Verified models actually get published and lapses get hidden.
+ *   3. The Stripe Connect `account.updated` webhook is registered + its signing secret set.
+ * Turning this ON while (1) is false would let an unverified model auto-publish (visible) —
+ * never do that. The flag exists so the code can merge/deploy safely and be cut over
+ * deliberately once all three are true.
+ *
+ * @returns {boolean}
+ */
+export const isAccountStatusFlowEnabled = () =>
+  process.env.REACT_APP_ACCOUNT_STATUS_FLOW_ENABLED === 'true';
+
+/**
  * Whether a user is a model (provider). Clients are handled by isClientUser().
  * @param {Object} user - a user/currentUser API entity
  * @returns {boolean}

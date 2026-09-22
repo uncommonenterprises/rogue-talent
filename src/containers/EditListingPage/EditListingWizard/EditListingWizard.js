@@ -36,6 +36,7 @@ import {
 } from '../../../util/fieldHelpers';
 import { ensureCurrentUser, ensureListing } from '../../../util/data';
 import { getDisplayAccountType } from '../../../util/stripeConnect';
+import { isAccountStatusFlowEnabled } from '../../../util/accountStatus';
 import { INQUIRY_PROCESS_NAME, resolveLatestProcessName } from '../../../transactions/transaction';
 
 // Import shared components
@@ -125,7 +126,14 @@ const tabsForListingType = (processName, listingTypeConfig) => {
  * @param {boolean} isNewListingFlow
  * @param {string} processName
  */
-const tabLabelAndSubmit = (intl, tab, isNewListingFlow, isPriceDisabled, processName) => {
+const tabLabelAndSubmit = (
+  intl,
+  tab,
+  isNewListingFlow,
+  isPriceDisabled,
+  processName,
+  accountStatusFlowEnabled = false
+) => {
   const processNameString = isNewListingFlow ? `${processName}.` : '';
   const newOrEdit = isNewListingFlow ? 'new' : 'edit';
 
@@ -157,7 +165,14 @@ const tabLabelAndSubmit = (intl, tab, isNewListingFlow, isPriceDisabled, process
     submitButtonKey = `EditListingWizard.${processNameString}${newOrEdit}.saveAvailability`;
   } else if (tab === PHOTOS) {
     labelKey = 'EditListingWizard.tabLabelPhotos';
-    submitButtonKey = `EditListingWizard.${processNameString}${newOrEdit}.savePhotos`;
+    // Portfolio is the final step of the new model booking flow, so its submit button is the
+    // "publish the profile" CTA. When the step-2 account-status flow is ON, this submission no
+    // longer requires Stripe and sends the profile for manual review → reword to "Submit for
+    // approval". Flag OFF keeps the original per-process savePhotos wording untouched.
+    submitButtonKey =
+      accountStatusFlowEnabled && isNewListingFlow
+        ? 'EditListingWizard.submitForApproval'
+        : `EditListingWizard.${processNameString}${newOrEdit}.savePhotos`;
   } else if (tab === STYLE) {
     labelKey = 'EditListingWizard.tabLabelStyle';
     submitButtonKey = `EditListingWizard.${processNameString}${newOrEdit}.saveStyle`;
@@ -483,6 +498,16 @@ class EditListingWizard extends Component {
     const processName = listing?.attributes?.publicData?.transactionProcessAlias.split('/')[0];
     const isInquiryProcess = processName === INQUIRY_PROCESS_NAME;
 
+    // Step-2 account-status flow (flag ON): drop the RT-01 "Stripe before submit" modal gate.
+    // "Submit for approval" publishes the draft regardless of Stripe state; with listing-approval
+    // ON in Console the draft lands in pendingApproval (hidden) and the server reconcile function
+    // publishes it only once the account is Verified. When the flag is OFF, the original modal
+    // gate below is preserved exactly (today's behaviour) — see isAccountStatusFlowEnabled().
+    if (isAccountStatusFlowEnabled()) {
+      onPublishListingDraft(id);
+      return;
+    }
+
     const listingTypeConfig = getListingTypeConfig(listing, this.state.selectedListingType, config);
     // Through hosted configs (listingTypeConfig.defaultListingFields?.payoutDetails),
     // it's possible to publish listing without payout details set by provider.
@@ -709,7 +734,8 @@ class EditListingWizard extends Component {
               tab,
               isNewListingFlow,
               isPriceDisabled,
-              resolveLatestProcessName(processName)
+              resolveLatestProcessName(processName),
+              isAccountStatusFlowEnabled()
             );
             return (
               <EditListingWizardTab
