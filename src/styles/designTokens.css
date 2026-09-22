@@ -68,9 +68,18 @@
   /* Focus */
   --focus-ring: var(--accent-500);
 
+  /* --- Amber / warning ramp (Pending approval; also feeds rt-dot--busy) ---
+     Built around the existing --status-warning value, not a new hue. See
+     docs/specs/account-status-badge-design.md §1.2. */
+  --amber-50: #fbf3e4; /* faint tint surface (reserved for banner/alert use) */
+  --amber-100: #f5e3c2; /* tint fill — light-mode badge background */
+  --amber-400: #c98b2e; /* brightened variant for on-dark text/dot */
+  --amber-500: #b6791c; /* base tone — = existing --status-warning value, unchanged */
+  --amber-700: #8a5712; /* deep tone — light-mode badge text/dot */
+
   /* Status — red now means ONE thing: danger. */
   --status-success: #1e7f52;
-  --status-warning: #b6791c;
+  --status-warning: var(--amber-500); /* = #b6791c; amber ramp is the single source of truth */
   --status-error: #d22b2b;
   --status-info: var(--accent-500);
 }
