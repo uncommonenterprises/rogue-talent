@@ -9,6 +9,7 @@ import { useIntl } from '../../util/reactIntl';
 import { requireListingImage } from '../../util/configHelpers';
 import { lazyLoadWithDimensions } from '../../util/uiHelpers';
 import { createSlug } from '../../util/urlHelpers';
+import { isAccountStatusFlowEnabled } from '../../util/accountStatus';
 
 import {
   AspectRatioWrapper,
@@ -143,7 +144,10 @@ export const ListingCard = props => {
     config,
     intl
   );
-  const verified = isUserVerified(author);
+  // Account-status lifecycle §9: once the Verified-only visibility guarantee is live
+  // (step-2 flag ON), every visible model is Verified, so the per-card badge is redundant
+  // noise — stop rendering it. Flag OFF (today) keeps the badge exactly as before.
+  const verified = !isAccountStatusFlowEnabled() && isUserVerified(author);
   // Portrait 4:5 photo — the editorial fashion shape (design system §9).
   const photoAspectWidth = 4;
   const photoAspectHeight = 5;

@@ -6,6 +6,7 @@ import { FormattedMessage } from '../../../util/reactIntl';
 import { richText } from '../../../util/richText';
 import { ensureUser, ensureCurrentUser } from '../../../util/data';
 import { propTypes } from '../../../util/types';
+import { isAccountStatusFlowEnabled } from '../../../util/accountStatus';
 
 import { AvatarLarge, NamedLink, InlineTextButton, VerifiedBadge } from '../../../components';
 
@@ -159,7 +160,12 @@ const UserCard = props => {
           <div className={css.headingRow}>
             <span className={css.headingName}>
               <FormattedMessage id="UserCard.heading" values={{ name: displayName }} />
-              <VerifiedBadge className={css.verifiedBadge} user={ensuredUser} />
+              {/* Account-status lifecycle §9: with the step-2 Verified-only guarantee live
+                  (flag ON) every visible model is Verified, so the per-profile badge is
+                  redundant. Flag OFF (today) keeps it exactly as before. */}
+              {!isAccountStatusFlowEnabled() ? (
+                <VerifiedBadge className={css.verifiedBadge} user={ensuredUser} />
+              ) : null}
             </span>
             {editProfileDesktop}
           </div>
