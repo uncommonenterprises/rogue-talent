@@ -148,7 +148,8 @@
 .licenceDraftNotice {
   composes: marketplaceTinyFontStyles from global;
 
-  color: var(--colorFail);
+  /* Draft = attention/informational, not an error (red is reserved for danger) */
+  color: var(--status-warning);
   text-transform: uppercase;
   letter-spacing: 0.04em;
   margin: 12px 0 6px 0;
