@@ -35,7 +35,7 @@
   /* Preserve newlines, but collapse other whitespace */
   white-space: pre-line;
   margin: 18px 0 0 0;
-  transition: all 1s ease-in;
+  transition: max-height var(--dur-base) var(--ease-standard);
 
   @media (--viewportMedium) {
     margin: 0;
