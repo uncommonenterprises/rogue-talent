@@ -96,13 +96,17 @@ describe('config-as-code (Option A) merge precedence', () => {
     expect(model.displayNameSettings.required).toBe(true);
   });
 
-  test('all 8 user fields resolve and are limited to correct user types', () => {
+  test('all 9 user fields resolve and are limited to correct user types', () => {
     const keys = merged.user.userFields.map(f => f.key);
-    expect(keys).toHaveLength(8);
+    expect(keys).toHaveLength(9);
     const dob = merged.user.userFields.find(f => f.key === 'date_of_birth');
     expect(dob.userTypeConfig.userTypeIds).toEqual(['model']);
     const company = merged.user.userFields.find(f => f.key === 'company_name');
     expect(company.userTypeConfig.userTypeIds).toEqual(['client']);
+    // Step 3: company registration number for the manual Companies House check.
+    const companyReg = merged.user.userFields.find(f => f.key === 'company_registration_number');
+    expect(companyReg.userTypeConfig.userTypeIds).toEqual(['client']);
+    expect(companyReg.scope).toEqual('public');
     expect(keys).not.toContain('hosted_user_field');
   });
 

@@ -68,6 +68,33 @@ export const userFields = [
     },
   },
   {
+    // Step 3 of the account-status lifecycle: the operator manually verifies a
+    // client's business against Companies House during approval, and needs the
+    // registration number to do so. Paired with company_name (both public,
+    // both shown in signup) so the two business-identity fields sit together.
+    // Public scope keeps it operator-readable in Console / Integration API and
+    // matches company_name; a Companies House number is public-register data.
+    // Optional (isRequired: false) to match every other client field and avoid
+    // blocking existing/in-progress client accounts.
+    key: 'company_registration_number',
+    scope: 'public',
+    schemaType: 'shortText',
+    userTypeConfig: {
+      limitToUserTypeIds: true,
+      userTypeIds: ['client'],
+    },
+    helpText:
+      "Your company's registration number so we can verify your business (e.g. Companies House number).",
+    showConfig: {
+      label: 'Company registration number',
+    },
+    saveConfig: {
+      label: 'Company registration number',
+      displayInSignUp: true,
+      isRequired: false,
+    },
+  },
+  {
     key: 'client_website_url',
     scope: 'public',
     schemaType: 'shortText',
