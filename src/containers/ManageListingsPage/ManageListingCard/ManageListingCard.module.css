@@ -21,7 +21,7 @@
 
   &:hover {
     transform: scale(1.02);
-    box-shadow: var(--boxShadowListingCard);
+    box-shadow: var(--shadow-md);
   }
 }
 
