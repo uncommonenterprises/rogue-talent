@@ -35,16 +35,16 @@
 
   /* Button borders */
   border: 1px solid var(--colorGrey100);
-  border-radius: var(--borderRadiusMedium);
+  border-radius: var(--radius-lg);
 
   background-color: var(--colorWhite);
 
+  /* rt-chip-style hover: border darkens, no shadow */
   &:focus,
   &:hover {
     outline: none;
-    box-shadow: var(--boxShadowFilterButton);
     text-decoration: none;
-    border-color: var(--colorGrey300);
+    border-color: var(--ink-400);
   }
 
   &:disabled {
@@ -65,7 +65,7 @@
 
     &:hover,
     &:focus {
-      border-color: transparent;
+      border-color: var(--ink-400);
     }
   }
 }
