@@ -3,11 +3,15 @@
 **Author:** UX Designer (capstone review) · **Date:** 2026-09-22
 **Scope:** design-only. No code touched.
 
-> **Implementation status (2026-09-22, Neil green-lit "quick wins + global headings"):**
-> ✅ IMPLEMENTED + merged (main): COS-02, 06, 07, 08, 21, 24, 25, 28, 33, 34 (one commit per id).
-> 🔵 COS-01 (footer slogan) = **Neil, in Console** — chosen slogan: **"Professional talent, booked direct."**
-> ⬜ Remaining Medium (COS-04/05, 09/10, 18, 22, 30, 31, 36) + Larger (COS-11, 20, 23, 27, 38) = not yet
-> started; the 3 Larger rebuilds (profile page / checkout / transaction panel) are a proposed follow-on project. Grounded in `design-system/DESIGN_SYSTEM.md` +
+> **Implementation status:**
+> ✅ **Day 4 (quick wins + headings):** COS-02, 06, 07, 08, 21, 24, 25, 28, 33, 34 — merged.
+> ✅ **Day 5 (medium + the 3 money/trust screens):** COS-04/05, 10, 18, 22, 30, 36 (medium) + COS-23, 27, 38
+>   (DS-conformance token pass on profile/booking, checkout, transaction panel) — merged. COS-31 audited →
+>   no change needed (only the Details panel has field-group section headings). COS-09 (hero scrim) kept as an
+>   accepted photo-legibility exception (PM call, annotated in code).
+> 🔵 COS-01 (footer slogan) = **Neil, in Console** — chosen: **"Professional talent, booked direct."**
+> ⬜ Not done: COS-11 (real photography — asset sourcing, not code) + COS-20 (search filter sidebar rebuild →
+>   rt-chip pills — the one remaining "Larger" structural item). Plus the 6 tester-screenshot-pass areas. Grounded in `design-system/DESIGN_SYSTEM.md` +
 `src/styles/designTokens.css` + `design-system/components.css` (the target), the actual
 component/CSS-module code under `src/` (what exists), and the live test site
 (`https://rogue-talent-production.up.railway.app`) fetched for content/structure.
