@@ -254,7 +254,7 @@
 }
 
 .closedListingButton {
-  border-left: 1px solid var(--colorGrey100);
+  border-left: 1px solid var(--border-hairline);
   width: 100%;
   padding: 15px 24px 15px 24px;
   text-align: center;

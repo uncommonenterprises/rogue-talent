@@ -67,7 +67,7 @@
 
   @media (--viewportMedium) {
     flex-direction: row;
-    border-radius: var(--borderRadiusMedium);
+    border-radius: var(--radius-lg);
   }
 }
 
@@ -121,12 +121,12 @@
   /* Action bar prevents the image click events going to the parent and
    should not show a pointer */
   cursor: initial;
-  border-radius: var(--borderRadiusMedium);
+  border-radius: var(--radius-lg);
 
   &.actionBarNoBorderRadiusOnMobile {
     border-radius: 0;
     @media (--viewportMedium) {
-      border-radius: var(--borderRadiusMedium);
+      border-radius: var(--radius-lg);
     }
   }
 }
@@ -239,11 +239,11 @@
 
   @media (--viewportMedium) {
     object-fit: cover;
-    border-radius: var(--borderRadius);
+    border-radius: var(--radius-lg);
 
     &:hover {
       transform: scale(1.005);
-      box-shadow: var(--boxShadowListingCard);
+      box-shadow: var(--shadow-md);
     }
   }
 }
@@ -361,7 +361,7 @@
     display: block;
     margin-top: 80px;
     margin-left: 60px;
-    border-left: 1px solid var(--colorGrey100);
+    border-left: 1px solid var(--border-hairline);
     padding-left: 60px;
     flex-basis: 312px;
     flex-shrink: 0;
@@ -393,8 +393,10 @@
 }
 
 .orderPanelTitle {
-  /* Font */
-  font-weight: var(--fontWeightBold);
+  /* Font — Bricolage display so the model display name matches the search card that linked here */
+  font-family: var(--font-display);
+  font-weight: var(--weight-extrabold);
+  letter-spacing: var(--tracking-tight);
 
   /* Layout */
   width: 100%;
@@ -681,7 +683,7 @@
   gap: 8px;
 
   &:not(:last-child) {
-    border-bottom: 1px solid var(--colorGrey100);
+    border-bottom: 1px solid var(--border-subtle);
   }
 
   @media (--viewportMedium) {
