@@ -1401,7 +1401,7 @@ textarea {
   padding: var(--modalPadding);
 
   background-color: var(--colorWhite);
-  border-radius: var(--borderRadius);
+  border-radius: var(--radius-lg);
   border-bottom: none;
 
   @media (--viewportMedium) {
@@ -1411,7 +1411,8 @@ textarea {
     padding: var(--modalPaddingMedium);
     margin-top: 12.5vh;
     margin-bottom: 12.5vh;
-    border-bottom: 8px solid var(--marketplaceColor);
+    /* No heavy cobalt bottom border here: a plain modal reads calmer and keeps the
+       one cobalt mark for the actual CTA (brand rule: one cobalt action per view). */
   }
 }
 
