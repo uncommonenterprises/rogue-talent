@@ -286,7 +286,9 @@
 .talentPhoto {
   position: relative;
   aspect-ratio: 4 / 5;
-  background: repeating-linear-gradient(135deg, #ecedef 0 10px, #f4f5f6 10px 20px);
+  /* Standard "no photo yet" placeholder stripe — matches the DS rt-talent spec
+     (design-system/components.css). Keep in sync with .featureMedia below. */
+  background: repeating-linear-gradient(135deg, #ecedef 0 12px, #f4f5f6 12px 24px);
 }
 .verified {
   position: absolute;
@@ -367,7 +369,8 @@
 .featureMedia {
   aspect-ratio: 4 / 3;
   border-radius: 10px;
-  background: repeating-linear-gradient(135deg, #eef0f3 0 14px, #f6f7f8 14px 28px);
+  /* Standard "no photo yet" placeholder stripe — matches the DS rt-talent spec. */
+  background: repeating-linear-gradient(135deg, #ecedef 0 12px, #f4f5f6 12px 24px);
 }
 
 /* ---------- 6. TRUST (dark) ---------- */
