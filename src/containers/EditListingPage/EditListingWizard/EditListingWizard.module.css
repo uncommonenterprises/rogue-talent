@@ -33,15 +33,15 @@
   padding: 0;
   flex-shrink: 0;
   background-color: var(--colorWhite);
-  box-shadow: var(--boxShadowLight);
-  border-top: 1px solid var(--colorGrey100);
+  box-shadow: var(--shadow-xs);
+  border-top: 1px solid var(--border-hairline);
   overflow-x: scroll;
 
   @media (--viewportLarge) {
     padding: 72px 0 82px 36px;
     flex-direction: column;
     overflow-x: auto;
-    background-color: var(--colorGrey50);
+    background-color: var(--surface-subtle);
     box-shadow: none;
     border-top: none;
   }
