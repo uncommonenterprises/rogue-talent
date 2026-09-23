@@ -71,7 +71,7 @@
   width: 100%;
 
   @media (--viewportLarge) {
-    border-radius: 2px 2px 0 0;
+    border-radius: var(--radius-lg, 8px) var(--radius-lg, 8px) 0 0;
   }
 }
 
@@ -262,8 +262,8 @@
 .detailCard {
   @media (--viewportLarge) {
     background-color: var(--colorWhite);
-    border: 1px solid var(--colorGrey100);
-    border-radius: 2px;
+    border: 1px solid var(--border-hairline, var(--colorGrey100));
+    border-radius: var(--radius-lg, 8px);
   }
 }
 
@@ -356,7 +356,7 @@
   margin: 12px 24px 5px 24px;
 
   border: none;
-  background-color: var(--colorGrey100);
+  background-color: var(--border-hairline, var(--colorGrey100));
 
   @media (--viewportLarge) {
     margin: 7px 48px 0 48px;
