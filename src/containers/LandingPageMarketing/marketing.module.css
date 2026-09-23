@@ -262,7 +262,7 @@
 /* ---------- 4. FEATURED ---------- */
 .featured {
   padding: 80px 24px;
-  background: var(--surface-subtle, #f7f8f9);
+  background: var(--surface-subtle);
 }
 .featuredHead {
   display: flex;
@@ -583,7 +583,7 @@
   letter-spacing: 0.06em;
   text-transform: uppercase;
   background: rgba(255, 255, 255, 0.92);
-  color: var(--status-success, #1e7f52);
+  color: var(--status-success);
   padding: 3px 7px;
   border-radius: var(--radius-sm);
 }
@@ -591,13 +591,13 @@
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: var(--status-success, #1e7f52);
+  background: var(--status-success);
 }
 
 /* ---------- trust bar (clients logos) ---------- */
 .trustBar {
   padding: 44px 24px;
-  background: var(--surface-subtle, #f7f8f9);
+  background: var(--surface-subtle);
   border-bottom: var(--border-hair) solid var(--border-hairline);
   text-align: center;
 }

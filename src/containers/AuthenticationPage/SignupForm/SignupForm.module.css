@@ -46,7 +46,7 @@
 
 .passwordHint {
   composes: textXSmall from global;
-  color: var(--colorGrey700, #4a4a4a);
+  color: var(--colorGrey700);
   margin-top: -12px;
   margin-bottom: 24px;
 }
@@ -61,7 +61,7 @@
 
 .dateOfBirthHint {
   composes: textXSmall from global;
-  color: var(--text-muted, #71757e);
+  color: var(--text-muted);
   margin-top: 6px;
   margin-bottom: 0;
 }
