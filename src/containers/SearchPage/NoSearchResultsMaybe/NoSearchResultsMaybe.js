@@ -17,14 +17,18 @@ const NoSearchResultsMaybe = props => {
 
   return hasNoResult ? (
     <div className={css.noSearchResults}>
-      <FormattedMessage id="SearchPage.noResults" />
-      <br />
+      <span className={css.eyebrow}>
+        <FormattedMessage id="SearchPage.noResultsEyebrow" />
+      </span>
+      <p className={css.message}>
+        <FormattedMessage id="SearchPage.noResults" />
+      </p>
       {hasSearchParams ? (
         <button className={css.resetAllFiltersButton} onClick={e => resetAll(e)}>
           <FormattedMessage id={'SearchPage.resetAllFilters'} />
         </button>
       ) : null}
-      <p>{createListingLinkMaybe}</p>
+      {createListingLinkMaybe ? <p className={css.createListing}>{createListingLinkMaybe}</p> : null}
     </div>
   ) : null;
 };

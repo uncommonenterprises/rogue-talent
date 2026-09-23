@@ -1167,6 +1167,7 @@
   "SearchPage.detailYes": "Yes",
   "SearchPage.invalidDatesFilter": "Invalid date range filter values in URL. The filter was ignored.",
   "SearchPage.noResults": "Couldn't find any listings that match your search criteria.",
+  "SearchPage.noResultsEyebrow": "No matches",
   "SearchPage.resetAllFilters": "Reset filters",
   "SearchPage.schemaDescription": "Showing search results",
   "SearchPage.schemaForSearch": "a query",

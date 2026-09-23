@@ -1,10 +1,9 @@
 @import '../../../styles/customMediaQueries.css';
 
 .noSearchResults {
-  composes: h4 from global;
-
-  /* Reserves 48px of vertical space */
-  line-height: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
   margin-top: 18px;
   margin-bottom: 18px;
 
@@ -14,29 +13,49 @@
   }
 }
 
-.createListingLink,
-.resetAllFiltersButton {
-  composes: h5 from global;
-  font-weight: var(--fontWeightMedium);
-  color: var(--marketplaceColor);
+/* Tracked uppercase eyebrow (design system rt eyebrow) */
+.eyebrow {
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-bold);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin: 0 0 8px 0;
+}
 
-  /* Layout */
+/* Bricolage display message */
+.message {
+  font-family: var(--font-display);
+  font-weight: var(--weight-extrabold);
+  font-size: var(--text-2xl);
+  line-height: var(--leading-snug);
+  letter-spacing: var(--tracking-tight);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+/* Reset action rendered as rt-btn--secondary (inline) */
+.resetAllFiltersButton {
+  composes: buttonSecondaryInline from global;
+  margin: 20px 0 0 0;
+}
+
+.createListing {
+  margin: 16px 0 0 0;
+}
+
+.createListingLink {
+  font-family: var(--font-sans);
+  font-weight: var(--weight-semibold);
+  color: var(--text-accent);
+
   display: inline;
   margin: 0;
   padding: 0;
 
-  /* Override button styles */
-  outline: none;
-  text-align: left;
-  border: none;
-  cursor: pointer;
-
   &:focus,
   &:hover {
-    color: var(--colorGrey700);
-  }
-
-  @media (--viewportMedium) {
-    padding: 3px 0 5px 0;
+    color: var(--accent-700);
   }
 }
