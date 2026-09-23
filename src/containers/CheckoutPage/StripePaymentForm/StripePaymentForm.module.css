@@ -133,8 +133,8 @@
 .licenceTerms {
   margin-bottom: 16px;
   padding: 12px 14px;
-  border: 1px solid var(--colorGrey100);
-  border-radius: var(--borderRadiusMedium);
+  border: 1px solid var(--border-hairline);
+  border-radius: var(--radius-lg);
 }
 
 .licenceTermsSummary {
