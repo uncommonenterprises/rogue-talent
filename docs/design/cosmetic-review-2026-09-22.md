@@ -10,8 +10,12 @@
 >   no change needed (only the Details panel has field-group section headings). COS-09 (hero scrim) kept as an
 >   accepted photo-legibility exception (PM call, annotated in code).
 > 🔵 COS-01 (footer slogan) = **Neil, in Console** — chosen: **"Professional talent, booked direct."**
-> ⬜ Not done: COS-11 (real photography — asset sourcing, not code) + COS-20 (search filter sidebar rebuild →
->   rt-chip pills — the one remaining "Larger" structural item). Plus the 6 tester-screenshot-pass areas. Grounded in `design-system/DESIGN_SYSTEM.md` +
+> ✅ **Day 5 (also):** COS-20 (filter sidebar → rt-chip pills, presentation-only, filtering verified live:
+>   clicking Female → /s?pub_gender=female, 4→3 results, selected state persists) + terminology sweep
+>   ("listings" → "models" in client search/browse copy). **Cosmetic backlog is now CODE-COMPLETE.**
+> 🔵 Neil, in Console: COS-01 (footer slogan, chosen). ⬜ Not code: COS-11 (real photography — asset sourcing).
+>   Nice-to-have later: the model-side "Your listings" nav → "Your profile" (a separate terminology tidy, not
+>   part of the "models" sweep). Plus the 6 tester-screenshot-pass areas (checkout/txn need booking states). Grounded in `design-system/DESIGN_SYSTEM.md` +
 `src/styles/designTokens.css` + `design-system/components.css` (the target), the actual
 component/CSS-module code under `src/` (what exists), and the live test site
 (`https://rogue-talent-production.up.railway.app`) fetched for content/structure.
