@@ -124,6 +124,9 @@
 .heroOverlay {
   position: absolute;
   inset: 0;
+  /* Intentional photo-scrim exception to the DS "no gradients" brand rule: this is a
+     legibility scrim over hero photography (darkens the left where the headline sits),
+     not decorative brand chrome. Accepted as-is (COS-09 deferred). */
   background: linear-gradient(
     90deg,
     rgba(10, 10, 11, 0.86) 0%,
