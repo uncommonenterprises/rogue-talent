@@ -26,7 +26,13 @@ const GroupOfFieldCheckboxes = props => {
           const fieldId = `${id}.${option}`;
           return (
             <li key={fieldId} className={css.item}>
-              <FieldCheckbox id={fieldId} name={name} label={label} value={option} />
+              <FieldCheckbox
+                className={css.chip}
+                id={fieldId}
+                name={name}
+                label={label}
+                value={option}
+              />
             </li>
           );
         })}

@@ -109,28 +109,32 @@
 }
 
 .resetAllButton {
-  composes: h5 from global;
-  font-weight: var(--fontWeightMedium);
-  color: var(--colorGrey600);
+  /* Quiet, secondary text treatment on design-system tokens (not a loud link) */
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  line-height: 18px;
+  font-weight: var(--weight-medium);
+  color: var(--text-muted);
 
   /* Layout */
   display: inline;
-  margin: 17px 0 0 0;
+  margin: var(--space-4) 0 0 0;
   padding: 0;
 
   /* Override button styles */
   outline: none;
   text-align: left;
   border: none;
+  background: none;
   cursor: pointer;
 
   &:focus,
   &:hover {
-    color: var(--colorGrey800);
+    color: var(--text-primary);
   }
 
   @media (--viewportMedium) {
-    margin: 24px 0 0 0;
+    margin: var(--space-5) 0 0 0;
     padding: 3px 0 5px 0;
   }
 }

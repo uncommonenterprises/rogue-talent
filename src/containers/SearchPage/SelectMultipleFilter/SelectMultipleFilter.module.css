@@ -31,15 +31,82 @@
 
 .list {
   margin: 0;
+  padding: 0;
+  list-style: none;
+
+  /* Design-system rt-chip group: options wrap as pills, not a vertical checkbox list */
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
 }
 
 .item {
-  padding: 4px 0 2px 0;
+  padding: 0;
 
   /* Fix broken multi-column layout in Chrome */
   page-break-inside: avoid;
+}
 
-  @media (--viewportMedium) {
-    padding: 4px 0;
-  }
+/*
+ * rt-chip (interactive filter option). The native checkbox input is KEPT as the state
+ * mechanism (same value, same onChange → same URL param) but visually hidden; the pill is
+ * the affordance. Selected = ink-900 fill (cobalt stays reserved for the one primary action
+ * per view), matching PopupOpenerButton's rt-chip convention.
+ */
+.chip label {
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 14px;
+
+  border: var(--border-hair) solid var(--ink-200);
+  border-radius: var(--radius-pill);
+  background-color: var(--white);
+  cursor: pointer;
+
+  transition: color var(--dur-fast) var(--ease-standard),
+    background-color var(--dur-fast) var(--ease-standard),
+    border-color var(--dur-fast) var(--ease-standard);
+}
+
+/* Hide the checkbox glyph — the pill itself signals selection */
+.chip label > span:first-child {
+  display: none;
+}
+
+/* Option text */
+.chip label > span:nth-child(2) {
+  margin: 0;
+  padding: 0;
+
+  font-weight: var(--weight-semibold);
+  font-size: var(--text-sm);
+  line-height: 18px;
+  letter-spacing: 0.01em;
+  color: var(--ink-800);
+}
+
+.chip label:hover {
+  border-color: var(--ink-400);
+}
+
+/* Selected: ink fill */
+.chip input:checked + label {
+  background-color: var(--ink-900);
+  border-color: var(--ink-900);
+}
+
+.chip input:checked + label > span:nth-child(2) {
+  color: var(--white);
+}
+
+.chip input:checked + label:hover {
+  background-color: var(--ink-800);
+  border-color: var(--ink-800);
+}
+
+/* Keyboard focus ring on the visually-hidden native input */
+.chip input:focus-visible + label {
+  outline: none;
+  border-color: var(--accent-500);
+  box-shadow: 0 0 0 3px var(--accent-100);
 }

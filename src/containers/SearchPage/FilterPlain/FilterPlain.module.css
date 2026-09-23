@@ -2,14 +2,15 @@
 
 .root {
   position: relative;
-  padding-top: 24px;
-  padding-bottom: 17px;
-  border-bottom: 1px solid var(--colorGrey100);
+  padding-top: var(--space-5);
+  padding-bottom: var(--space-4);
+  /* Design-system hairline divider between filter groups */
+  border-bottom: var(--border-hair) solid var(--border-subtle);
 
   @media (--viewportMedium) {
-    padding-top: 16px;
-    padding-bottom: 0;
-    border-bottom: 0;
+    padding-top: var(--space-4);
+    padding-bottom: var(--space-3);
+    border-bottom: var(--border-hair) solid var(--border-subtle);
   }
 }
 
@@ -29,14 +30,13 @@
 
   &:focus,
   &:hover {
-    color: var(--marketplaceColor);
+    color: var(--text-primary);
   }
 
   &:focus {
     & .label,
     & .label * {
-      color: var(--colorBlack);
-      color: var(--marketplaceColorDark);
+      color: var(--text-primary);
     }
   }
 }
@@ -46,11 +46,11 @@
   width: 100%;
 
   &:hover {
-    color: var(--marketplaceColor);
+    color: var(--text-primary);
 
     & * {
-      color: var(--marketplaceColor);
-      stroke: var(--marketplaceColor);
+      color: var(--text-primary);
+      stroke: var(--text-primary);
     }
   }
 }
@@ -67,23 +67,25 @@
 
   /* Baseline adjustment for label text */
   margin-top: 0;
-  margin-bottom: 12px;
+  margin-bottom: var(--space-3);
 
   @media (--viewportMedium) {
-    margin-bottom: 8px;
+    margin-bottom: var(--space-2);
   }
 }
 
+/* Group label / eyebrow on design-system type tokens */
 .label {
-  color: var(--colorGrey700);
+  color: var(--text-secondary);
+  letter-spacing: var(--tracking-wide);
 }
 
 .labelSelected {
-  color: var(--marketplaceColor);
+  color: var(--text-primary);
   margin-left: 5px;
 
   &:hover {
-    color: var(--marketplaceColorDark);
+    color: var(--text-primary);
   }
 }
 
@@ -92,22 +94,25 @@
 }
 
 .clearButton {
-  composes: h5 from global;
   margin: 0;
   display: block;
-  font-weight: var(--fontWeightMedium);
-  color: var(--colorGrey600);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  line-height: 18px;
+  font-weight: var(--weight-medium);
+  color: var(--text-muted);
   padding: 2px 0 4px 12px;
 
   /* Override button styles */
   outline: none;
   text-align: left;
   border: none;
+  background: none;
   cursor: pointer;
 
   &:focus,
   &:hover {
-    color: var(--colorBlack);
+    color: var(--text-primary);
   }
 
   @media (--viewportMedium) {
