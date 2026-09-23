@@ -50,6 +50,12 @@ These gate go-live and are NOT instant. Kicking them off today compresses the ti
    `REACT_APP_MARKETPLACE_ROOT_URL=https://roguetalent.co`, `REACT_APP_ENV=production`, Sentry DSN,
    email-provider keys.
 6. Point **`roguetalent.co`** at the live service; verify SSL.
+6a. **Sharetribe outgoing email address (LIVE-only setting):** in Console → Build → General → Outgoing
+   email address, set the sender to a `roguetalent.co` address (e.g. `noreply@roguetalent.co`) with name
+   "Rogue Talent". On TEST this is locked to Sharetribe's default (`noreply+…@mysharetribe-test.com`) +
+   a [TEST MODE] name prefix — cannot be changed, expected. This carries SHARETRIBE's transaction emails
+   (booking/accept/cancel/dispute/review) — SEPARATE from Postmark (our server emails, e.g. SAF-29).
+   Sharetribe will likely require its own sender-domain verification for the custom address → allow lead time.
 7. **Repo privacy migration** (public→private duplicate) per `docs/repo-migration-checklist.md` —
    sequence: rotate the leaked Sharetribe secret first (still-pending `882a…`), verify a test
    booking, then migrate; re-arm `core.hooksPath`, reconnect Railway. Do before real users.
