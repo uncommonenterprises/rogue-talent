@@ -79,15 +79,15 @@
 }
 
 .avatarPlaceholder {
-  /* Placeholder border */
+  /* Placeholder border — DS hairline tokens; dashed keeps the "add a photo" affordance */
   border-style: dashed;
-  border-color: var(--colorGrey100);
+  border-color: var(--border-hairline);
   border-width: 2px;
 
   transition: var(--transitionStyleButton);
 
   &:hover {
-    border-color: var(--colorGrey300);
+    border-color: var(--ink-400);
   }
 }
 
