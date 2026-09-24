@@ -7,6 +7,12 @@ and the **account-status lifecycle**. Both are built + fail-safe; this activates
 Legend: **[N]** = Neil (marketplace/Stripe/Railway writes). **[PM]** = I verify. Secrets → Railway/.env
 only, never chat.
 
+> **PROGRESS (2026-09-24 EOD):** Stage 0 ✅ (Integration creds added to Railway). Stage A IN PROGRESS —
+> Stripe Identity enabled, but **blocked on Stripe's required "Verify your identity" (account-owner)
+> step — Neil needs his passport**. RESUME HERE tomorrow: complete "Get verified" → enable Synthetic
+> Identity Protection → grab the secret key + register the Identity webhook → add the 3 Railway vars →
+> PM verifies. Then Stages B/C/D.
+
 ---
 
 ## Stage 0 — Shared foundation
