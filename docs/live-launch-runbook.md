@@ -31,18 +31,15 @@ ever pointed at live; all agent testing stays on `ndstealth1-test`.
 
 ## 🔑 Three launch-scope DECISIONS for Neil (these shape the path)
 
-**D1 — Client-ID verification (SAF-03).** Built, dormant. To make the "clients/businesses are verified"
-copy true at launch, it must be **live** (Stripe Identity keys + Integration creds on Railway, flag on).
-- **Recommend:** provision it for launch (it's cheap ~£1.25/verif, backs the trust claim + pairs with the
-  manual Companies House check). Alternative: launch with honest "businesses are checked" copy and add
-  client-ID as a fast-follow.
+**D1 — Client-ID verification (SAF-03). → DECIDED (Neil 2026-09-24): PROVISION FOR LAUNCH.** Built,
+dormant. Goes live for launch (Stripe Identity keys + Integration creds on Railway, flag on) so clients
+are genuinely identity-verified — backs the "verified" claim + pairs with the manual Companies House check.
 
-**D2 — Account-status lifecycle cutover.** Built, dormant. **Launch does NOT require it** — the current
-flow (Stripe-before-submit + manual user approval) is safe and works; no unverified model can be
-discoverable/bookable today.
-- **Recommend:** **fast-follow after £1** (it's a UX enhancement + needs the Connect webhook, Integration
-  creds, listing-approval ON, and a human review). Launching on the current flow is the faster, lower-risk
-  path to first revenue. Alternative: do the cutover pre-launch if you want the nicer onboarding from day 1.
+**D2 — Account-status lifecycle cutover. → DECIDED (Neil 2026-09-24): CUT OVER BEFORE LAUNCH** (not
+fast-follow). Built, dormant. The full Draft→Verified lifecycle + Verified-only visibility + verify-nudge
+emails go live for launch. Adds to the critical path: Connect webhook + Integration creds + `CRON_SECRET`
+on Railway, listing-approval ON in Console, the flag on, and the safety-critical **human dev review**.
+Verify end-to-end on **test first**, then replicate on live.
 
 **D3 — Contract sign-off.** Launch **requires** the solicitor to sign off the licence wording (v3 is with
 you). Until then the in-app contract copy stays DRAFT. This is a hard gate. → get it to the solicitor.
@@ -103,7 +100,6 @@ you). Until then the in-app contract copy stays DRAFT. This is a hard gate. → 
 ---
 
 ## 🕓 Fast-follow (post-£1, not launch-blocking)
-- Account-status lifecycle cutover (D2) — flag on + provisioning + human review.
 - Contract in-app copy sync to the solicitor's final wording.
 - SAF-25 behavioural test (needs a full booking→review lifecycle on the live/test process).
 - COS-11 real photography; COS-20 already done; remaining tester screenshot-pass areas.
