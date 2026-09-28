@@ -30,7 +30,7 @@ By default hosted (Console) config wins. The real merge functions (verified in `
 
 What this moves out of the Console and into Git:
 
-- Listing types and **listing fields** — this is where the model attributes actually live. In Phase 3 the ~14 public model-attribute fields (gender, measurements, hair/eye colour, ethnicity, experience level, `modelling_categories`, `half_day_rate`, `hourly_rate`, `travel_fee_policy`, `min_booking_notice`, etc.) were moved from user fields to **listing fields** on the `model-profile` type. Port these into `src/config/configListing.js`. _(Note: `shoot_types` was deleted — `modelling_categories` replaced it. `min_booking_notice` now lives on the "Your availability" step.)_
+- Listing types and **listing fields** — this is where the model attributes actually live. In Phase 3 the ~14 public model-attribute fields (gender, measurements, hair/eye colour, ethnicity, experience level, `modelling_categories`, `half_day_rate`, `hourly_rate`, `travel_fee_policy`, `min_booking_notice`, etc.) were moved from user fields to **listing fields** on the `model-profile` type. Port these into `src/config/configListing.js`. _(Note: `shoot_types` was deleted — `modelling_categories` replaced it. `min_booking_notice` now lives on the "Your rates" step - moved there from "Your availability" by RT-FB-10.)_
 - **User fields** — now only a couple remain: `date_of_birth` (private) and `id_verified` (metadata badge). Client-side user fields (the client `userType`) also live here. These go in `src/config/configUser.js`.
 - Search filters and their order/presentation (listing-field-driven — `configListing.js`)
 - Branding, colours, layout variants

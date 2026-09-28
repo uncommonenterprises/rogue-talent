@@ -61,11 +61,7 @@ import EditListingWizardTab, {
   PHOTOS,
   STYLE,
 } from './EditListingWizardTab';
-import {
-  isPricingListingField,
-  isAvailabilityListingField,
-  MIN_BOOKING_NOTICE_KEY,
-} from './rateFields';
+import { isPricingListingField } from './rateFields';
 import css from './EditListingWizard.module.css';
 
 // This is the initial tab on editlisting wizard.
@@ -287,14 +283,13 @@ const tabCompleted = (tab, listing, config) => {
         listingType &&
         transactionProcessAlias &&
         unitType &&
-        // Validate all listing fields except the pricing-tab fields (rates + travel fee
-        // policy) and the availability-tab field (minimum booking notice), which are
-        // collected on "Your rates" and "Your availability" respectively.
+        // Validate all listing fields except the pricing-tab fields (rates, travel fee
+        // policy, minimum booking notice), which are collected on "Your rates".
         hasValidListingFieldsInExtendedData(
           publicData,
           privateData,
           config,
-          f => !isPricingListingField(f) && !isAvailabilityListingField(f)
+          f => !isPricingListingField(f)
         )
       );
     case PROFILE:
@@ -304,7 +299,8 @@ const tabCompleted = (tab, listing, config) => {
       return !!(title && geolocation && publicData?.location?.address);
     case PRICING:
       // "Your rates" also collects the pricing-tab listing fields (half-day/hourly rates and
-      // the required travel fee policy), so validate those alongside the day-rate price.
+      // the required travel fee policy + minimum booking notice), so validate those
+      // alongside the day-rate price.
       return !!(
         price &&
         hasValidListingFieldsInExtendedData(publicData, privateData, config, isPricingListingField)
@@ -316,9 +312,7 @@ const tabCompleted = (tab, listing, config) => {
     case LOCATION:
       return !!(geolocation && publicData?.location?.address);
     case AVAILABILITY:
-      // "Your availability" also collects the required minimum-booking-notice field, so it's
-      // complete once the model has a plan (available by default) and a notice period set.
-      return !!(availabilityPlan && publicData?.[MIN_BOOKING_NOTICE_KEY]);
+      return !!availabilityPlan;
     case PHOTOS:
       return images && images.length > 0;
     case STYLE:

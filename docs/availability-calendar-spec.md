@@ -140,6 +140,8 @@ danger only), and cobalt only for booked/selected. Green reserved for any
 - `min_booking_notice`: existing custom enum field; move its rendering from
   "Your profile" to this step (exclude it from the Details form like the rate
   fields, render it in the settings row here, keep saving to `publicData`).
+  **Superseded by RT-FB-10 (28/09/2026):** the availability step left onboarding,
+  so `min_booking_notice` is now collected on "Your rates" as a pricing-tab field.
 
 ### 8.2 Save operations (existing SDK endpoints)
 - `ownListings.update` with `availabilityPlan` for the baseline/mode.
