@@ -37,7 +37,7 @@ only, never chat.
 - **[N] Stripe Dashboard (TEST):** register a **Connect `account.updated`** webhook at
   `https://rogue-talent-production.up.railway.app/api/stripe-connect-webhook`; put its signing secret in
   Railway as `STRIPE_CONNECT_WEBHOOK_SECRET`.
-- **[PM] Before the flag: confirm the model 18+ data exists.** Log in as a test model with completed Stripe and check (presence only, never read the value) that `stripeAccountData.individual.dob` + `individual.verification.status` come through Sharetribe. If yes, merge branch `rt-fb-03-verified-id-age-check` commit `74e480c9a` (model 18+ gate). If no, don't merge it; fetch the Connect account directly from Stripe instead (follow-up).
+- **[PM] Before the flag: confirm the model 18+ data exists.** Log in as a test model with completed Stripe and check (presence only, never read the value) that `stripeAccountData.individual.dob` + `individual.verification.status` come through Sharetribe. If yes, merge branch `rt-fb-03-verified-id-age-check` commit `74e480c9a` (model 18+ gate). When merging, also call `sendSafeguardingAlert` (server/api-util/safeguardingAlert.js) on the model under-18 path, with userType 'model' and source 'Stripe Connect (model KYC)', so model flags email safety@ like client flags do. If no, don't merge it; fetch the Connect account directly from Stripe instead (follow-up).
 - **[N] Console → Build → General → Access control:** turn **listing-approval ON** (so a submitted model
   profile lands in `pendingApproval` / hidden, and the reconcile publishes it only when Verified).
 - **[N] Railway env vars:** `REACT_APP_ACCOUNT_STATUS_FLOW_ENABLED=true`, and `CRON_SECRET`

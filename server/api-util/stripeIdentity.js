@@ -78,6 +78,7 @@
 const https = require('https');
 const crypto = require('crypto');
 const log = require('../log');
+const { sendSafeguardingAlert, ALERT_UNDER_18, ALERT_HELD } = require('./safeguardingAlert');
 const { evaluateDobAge, AGE_STATUS_ADULT, AGE_STATUS_UNDER_18 } = require('./ageCheck');
 
 const STRIPE_API_HOST = 'api.stripe.com';
@@ -528,7 +529,15 @@ const processVerifiedSession = ({ userId, sessionId, now } = {}) =>
             'rtfb03-age-check-held',
             { userId, sessionId }
           );
-          return write({ verified: false }).then(persisted => ({
+          return Promise.all([
+            write({ verified: false }),
+            sendSafeguardingAlert({
+              kind: ALERT_HELD,
+              userId,
+              userType: 'client',
+              source: 'Stripe Identity (client ID check)',
+            }),
+          ]).then(([persisted]) => ({
             persisted,
             outcome: AGE_OUTCOME_HELD,
           }));
@@ -549,7 +558,15 @@ const processVerifiedSession = ({ userId, sessionId, now } = {}) =>
         'rtfb03-age-check-under-18',
         { userId, sessionId }
       );
-      return write({ verified: false, ageCheckFailed: true }).then(persisted => ({
+      return Promise.all([
+        write({ verified: false, ageCheckFailed: true }),
+        sendSafeguardingAlert({
+          kind: ALERT_UNDER_18,
+          userId,
+          userType: 'client',
+          source: 'Stripe Identity (client ID check)',
+        }),
+      ]).then(([persisted]) => ({
         persisted,
         outcome: AGE_OUTCOME_UNDER_18,
       }));
