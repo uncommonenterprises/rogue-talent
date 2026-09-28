@@ -1486,6 +1486,122 @@ describe('EditListingPage', () => {
     });
   });
 
+  // RT-FB-10: availability is not an onboarding step. A draft (new-listing flow) shows
+  // About you -> Your profile -> Your rates -> Your portfolio, and the portfolio step is the
+  // final "publish" step. The calendar tab only exists once the profile is past draft.
+  // Note: renderWithProviders merges getDefaultConfiguration() (testHelpers), whose
+  // code-defined listing types are authoritative, so these use its 'rent-bicycles'
+  // default-booking/day type (same process + unit as model-profile).
+  const bookingDayListingTypeData = {
+    listingType: 'rent-bicycles',
+    transactionProcessAlias: 'default-booking/release-1',
+    unitType: 'day',
+  };
+
+  it('Booking (day): new listing flow has no availability tab and ends on photos', async () => {
+    const config = getConfig(listingTypesBookingDay, listingFieldsBooking);
+    const routeConfiguration = getRouteConfiguration(config.layout);
+    const listing = createOwnListing('listing-draft', {
+      title: 'Lucy S.',
+      description: 'Lorem ipsum',
+      state: 'draft',
+      price: new Money(1000, 'USD'),
+      // Deliberately no availabilityPlan: reaching the publish step must not depend on it.
+      availabilityPlan: null,
+      publicData: {
+        ...bookingDayListingTypeData,
+        location: { address: 'London, UK' },
+      },
+    });
+
+    const props = {
+      ...commonProps,
+      params: {
+        id: listing.id.uuid,
+        slug: 'slug',
+        type: LISTING_PAGE_PARAM_TYPE_DRAFT,
+        tab: PHOTOS,
+      },
+    };
+
+    const { getByText, queryByText, getByRole } = render(<EditListingPage {...props} />, {
+      initialState: initialState(listing),
+      config,
+      routeConfiguration,
+    });
+
+    await waitFor(() => {
+      expect(getByText('EditListingWizard.tabLabelProfile')).toBeInTheDocument();
+      expect(getByText('EditListingWizard.tabLabelDetails')).toBeInTheDocument();
+      expect(getByText('EditListingWizard.tabLabelPricing')).toBeInTheDocument();
+      expect(getByText('EditListingWizard.tabLabelPhotos')).toBeInTheDocument();
+      expect(queryByText('EditListingWizard.tabLabelAvailability')).not.toBeInTheDocument();
+
+      // The photos panel is reachable without an availability plan, and its submit is the
+      // new-flow publish CTA (last tab).
+      expect(getByText('EditListingPhotosPanel.createListingTitle')).toBeInTheDocument();
+      expect(
+        getByRole('button', { name: 'EditListingWizard.default-booking.new.savePhotos' })
+      ).toBeInTheDocument();
+    });
+  });
+
+  it('Booking (day): edit flow lists the calendar as the last tab', async () => {
+    const config = getConfig(listingTypesBookingDay, listingFieldsBooking);
+    const routeConfiguration = getRouteConfiguration(config.layout);
+    const listing = createOwnListing('listing-day', {
+      title: 'Lucy S.',
+      description: 'Lorem ipsum',
+      price: new Money(1000, 'USD'),
+      publicData: {
+        ...bookingDayListingTypeData,
+        location: { address: 'London, UK' },
+      },
+    });
+
+    const props = {
+      ...commonProps,
+      params: {
+        id: listing.id.uuid,
+        slug: 'slug',
+        type: LISTING_PAGE_PARAM_TYPE_EDIT,
+        tab: AVAILABILITY,
+      },
+    };
+
+    const { getByText, queryByRole } = render(<EditListingPage {...props} />, {
+      initialState: initialState(listing),
+      config,
+      routeConfiguration,
+      withPortals: false,
+    });
+
+    await waitFor(() => {
+      const labels = [
+        'EditListingWizard.tabLabelProfile',
+        'EditListingWizard.tabLabelDetails',
+        'EditListingWizard.tabLabelPricing',
+        'EditListingWizard.tabLabelPhotos',
+        'EditListingWizard.tabLabelAvailability',
+      ].map(label => getByText(label));
+      // Rendered in this order: each label precedes the next in the DOM.
+      labels.slice(1).forEach((label, i) => {
+        expect(
+          labels[i].compareDocumentPosition(label) & Node.DOCUMENT_POSITION_FOLLOWING
+        ).toBeTruthy();
+      });
+
+      // The calendar panel is reachable in edit mode, saves in place (no "Next" button),
+      // and no longer carries the minimum booking notice select (moved to "Your rates").
+      expect(getByText('EditListingAvailabilityPanel.title')).toBeInTheDocument();
+      expect(getByText('EditListingAvailabilityPanel.guidance')).toBeInTheDocument();
+      expect(
+        queryByRole('button', { name: 'EditListingWizard.edit.saveAvailability' })
+      ).not.toBeInTheDocument();
+      expect(queryByRole('combobox', { name: /minimum booking notice/i })).toBeNull();
+    });
+  });
+
   // Skipped: the weekly availability-plan modal (EditListingAvailabilityPlanForm) was
   // replaced by the always-on "available by default" month calendar for the day-based
   // model-profile marketplace, so this flow no longer exists. See

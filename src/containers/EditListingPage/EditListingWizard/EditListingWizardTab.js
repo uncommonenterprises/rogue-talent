@@ -158,8 +158,9 @@ const EditListingWizardTab = props => {
 
     return onUpdateListingOrCreateListingDraft(tab, updateListingValues)
       .then(r => {
-        // In Availability tab, the submitted data (plan) is inside a modal
-        // We don't redirect provider immediately after plan is set
+        // Availability ("Your calendar") saves happen in place (baseline plan, mode switch);
+        // they must never advance the wizard. Since RT-FB-10 that tab isn't part of the new
+        // listing flow at all, but keep the guard so a calendar save can't trigger publish.
         if (isNewListingFlow && tab !== AVAILABILITY) {
           const listingId = r.data.data.id;
           automaticRedirectsForNewListingFlow(tab, listingId);
@@ -276,16 +277,6 @@ const EditListingWizardTab = props => {
           onFetchExceptions={onFetchExceptions}
           onAddAvailabilityException={onAddAvailabilityException}
           onDeleteAvailabilityException={onDeleteAvailabilityException}
-          onNextTab={() =>
-            redirectAfterDraftUpdate(
-              listing.id,
-              params,
-              tab,
-              marketplaceTabs,
-              history,
-              routeConfiguration
-            )
-          }
           config={config}
           history={history}
           routeConfiguration={routeConfiguration}

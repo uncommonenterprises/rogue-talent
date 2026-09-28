@@ -114,17 +114,6 @@
   }
 }
 
-.goToNextTabButton {
-  margin-top: auto;
-  margin-bottom: 24px;
-  flex-shrink: 0;
-
-  @media (--viewportLarge) {
-    display: inline-block;
-    width: 241px;
-  }
-}
-
 .modalContainer {
   composes: marketplaceModalBaseStyles from global;
   min-height: 100vh;

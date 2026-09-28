@@ -49,9 +49,12 @@ const planForMode = (mode, timezone) =>
 //////////////////////////////////
 
 /**
- * A panel where a provider (model) manages availability. Baseline is "available by
- * default" (a fully-open plan is created on first visit); the month calendar lets them
- * block/unblock individual days, and the exception form blocks multi-day ranges.
+ * A panel where a provider (model) manages availability ("Your calendar"). Baseline is
+ * "available by default" (the plan is created with the profile draft, or on first visit
+ * here for older listings); the month calendar lets them block/unblock individual days,
+ * and the exception form blocks multi-day ranges. Since RT-FB-10 this panel is not part
+ * of onboarding - it's only reachable after the profile is submitted, and every change
+ * saves immediately, so there is no "Next" button.
  *
  * @component
  * @param {Object} props
@@ -67,8 +70,6 @@ const planForMode = (mode, timezone) =>
  * @param {Function} props.onFetchExceptions
  * @param {Function} props.onSubmit
  * @param {Function} props.onManageDisableScrolling
- * @param {Function} props.onNextTab
- * @param {string} props.submitButtonText
  * @param {boolean} props.updateInProgress
  * @param {Object} props.errors
  * @param {Object} props.config app config
@@ -89,8 +90,6 @@ const EditListingAvailabilityPanel = props => {
     onFetchExceptions,
     onSubmit,
     onManageDisableScrolling,
-    onNextTab,
-    submitButtonText,
     updateInProgress,
     errors,
     config,
@@ -253,16 +252,6 @@ const EditListingAvailabilityPanel = props => {
         <p className={css.error}>
           <FormattedMessage id="EditListingAvailabilityPanel.showListingFailed" />
         </p>
-      ) : null}
-
-      {!isPublished ? (
-        <Button
-          className={css.goToNextTabButton}
-          onClick={onNextTab}
-          disabled={!hasAvailabilityPlan}
-        >
-          {submitButtonText}
-        </Button>
       ) : null}
 
       {onManageDisableScrolling && isEditExceptionsModalOpen ? (

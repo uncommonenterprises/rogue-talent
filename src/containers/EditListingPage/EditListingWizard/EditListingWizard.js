@@ -83,9 +83,10 @@ const STRIPE_ONBOARDING_RETURN_URL_FAILURE = 'failure';
  *
  * @param {string} processName - The name of the process
  * @param {Object} listingTypeConfig - The listing type configuration
+ * @param {boolean} [isNewListingFlow] - Whether the listing is being created (new/draft URI)
  * @returns {Array<string>} - The allowed tabs for the given process and listing type configuration
  */
-const tabsForListingType = (processName, listingTypeConfig) => {
+export const tabsForListingType = (processName, listingTypeConfig, isNewListingFlow = false) => {
   const locationMaybe = displayLocation(listingTypeConfig) ? [LOCATION] : [];
   const pricingMaybe = displayPrice(listingTypeConfig) ? [PRICING] : [];
   const deliveryMaybe =
@@ -93,6 +94,11 @@ const tabsForListingType = (processName, listingTypeConfig) => {
       ? [DELIVERY]
       : [];
   const styleOrPhotosTab = requireListingImage(listingTypeConfig) ? [PHOTOS] : [STYLE];
+  // RT-FB-10: models are available by default (the "About you" step creates the draft with
+  // an all-days-open plan, and every booking request still needs the model's acceptance),
+  // so the availability step is NOT part of onboarding. After onboarding it's reachable as
+  // the last tab ("Your calendar") so a model can block out dates they can't work.
+  const calendarTabMaybe = isNewListingFlow ? [] : [AVAILABILITY];
 
   // You can reorder these panels.
   // Note 1: You need to change save button translations for new listing flow
@@ -105,7 +111,7 @@ const tabsForListingType = (processName, listingTypeConfig) => {
     // flow — it collects the model's display name (which seeds the listing title and
     // creates the draft), their city, and their profile attribute fields. All of it saves
     // to the listing. The separate LOCATION tab is omitted; the city lives in PROFILE.
-    ['default-booking']: [PROFILE, DETAILS, PRICING, AVAILABILITY, ...styleOrPhotosTab],
+    ['default-booking']: [PROFILE, DETAILS, PRICING, ...styleOrPhotosTab, ...calendarTabMaybe],
     ['default-purchase']: [DETAILS, PRICING_AND_STOCK, ...deliveryMaybe, ...styleOrPhotosTab],
     ['default-negotiation']: [DETAILS, ...locationMaybe, ...pricingMaybe, ...styleOrPhotosTab],
     ['default-inquiry']: [DETAILS, ...locationMaybe, ...pricingMaybe, ...styleOrPhotosTab],
@@ -604,7 +610,7 @@ class EditListingWizard extends Component {
     const tabs =
       isNewListingFlow && (invalidExistingListingType || !hasListingTypeSelected)
         ? TABS_DETAILS_ONLY
-        : tabsForListingType(processName, listingTypeConfig);
+        : tabsForListingType(processName, listingTypeConfig, isNewListingFlow);
 
     // Check if wizard tab is active / linkable.
     // When creating a new listing, we don't allow users to access next tab until the current one is completed.
@@ -618,7 +624,11 @@ class EditListingWizard extends Component {
     // If selectedTab is not active for listing with valid listing type,
     // redirect to the beginning of wizard
     if (!invalidExistingListingType && !tabsStatus[selectedTab]) {
-      const currentTabIndex = tabs.indexOf(selectedTab);
+      // A tab that isn't in this flow at all (e.g. an old "availability" link to a draft,
+      // which no longer has that step) is treated as "past the end", so the model lands on
+      // the furthest step they can reach rather than the second-to-last one.
+      const selectedTabIndex = tabs.indexOf(selectedTab);
+      const currentTabIndex = selectedTabIndex >= 0 ? selectedTabIndex : tabs.length;
       const nearestActiveTab = tabs
         .slice(0, currentTabIndex)
         .reverse()
