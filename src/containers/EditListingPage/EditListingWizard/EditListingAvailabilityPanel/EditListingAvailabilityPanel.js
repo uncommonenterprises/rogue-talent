@@ -3,7 +3,7 @@ import classNames from 'classnames';
 
 // Import configs and util modules
 import { FormattedMessage } from '../../../../util/reactIntl';
-import { getDefaultTimeZoneOnBrowser, timestampToDate } from '../../../../util/dates';
+import { timestampToDate } from '../../../../util/dates';
 import { LISTING_STATE_DRAFT } from '../../../../util/types';
 import { isFullDay } from '../../../../transactions/transaction';
 
@@ -13,14 +13,16 @@ import { Button, H3, InlineTextButton, ListingLink, Modal } from '../../../../co
 // Import modules from this directory
 import EditListingAvailabilityExceptionForm from './EditListingAvailabilityExceptionForm';
 import MonthAvailabilityCalendar from './MonthAvailabilityCalendar/MonthAvailabilityCalendar';
-import { createAllOpenPlan } from './availability.helpers';
+import { createAllOpenPlan, DEFAULT_AVAILABILITY_TIMEZONE } from './availability.helpers';
 
 import css from './EditListingAvailabilityPanel.module.css';
 
 const EDIT_AVAILABILITY_EXCEPTIONS_BUTTON = 'editAvailabilityExceptionsButton';
 
-const defaultTimeZone = () =>
-  typeof window !== 'undefined' ? getDefaultTimeZoneOnBrowser() : 'Etc/UTC';
+// Time zone for a listing that has no plan yet. Fixed to the marketplace default
+// (Europe/London) rather than the model's browser, so it matches the plan that "About you"
+// creates with the profile draft and doesn't depend on where the model happens to be.
+const defaultTimeZone = () => DEFAULT_AVAILABILITY_TIMEZONE;
 
 // Availability modes (stored in listing publicData.availabilityMode):
 // - 'available'  : available by default; the model blocks dates they're away (seats-0 exceptions)
