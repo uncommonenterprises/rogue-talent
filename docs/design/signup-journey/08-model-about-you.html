@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>08 · Model - About you - Rogue Talent sign-up mockups</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Hanken+Grotesk:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="journey.css">
+</head>
+<body>
+
+<div class="mock-toolbar">
+  <span class="tag">Mock</span>
+  <a href="index.html">Journey map</a>
+  <span class="divider">·</span>
+  <span class="title">Model · 08 · About you</span>
+  <span class="spacer"></span>
+  <a href="07-forgot-reset-password.html">← Prev</a>
+  <a href="09-model-profile.html">Next: Your profile →</a>
+</div>
+
+<nav class="wizard-nav">
+  <a class="rt-nav__brand" href="01-choose-path.html">Rogue<span style="color:var(--accent-500)">.</span></a>
+  <div class="rt-nav__actions">
+    <a class="rt-nav__link" href="14-model-pending.html">Save &amp; exit</a>
+  </div>
+</nav>
+
+<main class="wizard-main">
+  <div class="stepper-mobile">
+    <span class="label">Step 1 of 4 - About you</span>
+    <div class="bar"><span style="width:25%"></span></div>
+  </div>
+  <ol class="stepper">
+    <li class="is-current"><span class="step-dot">1</span>About you</li>
+    <li><span class="step-dot">2</span>Your profile</li>
+    <li><span class="step-dot">3</span>Your portfolio</li>
+    <li><span class="step-dot">4</span>Your rates</li>
+  </ol>
+
+  <form class="wizard-card" onsubmit="return false;">
+    <div>
+      <h1>About you</h1>
+      <p class="wizard-guidance" style="margin-top:var(--space-2);">We've set your display name to your first name and last initial. This is how clients see you, so your full surname stays private. Change it if you model under a professional name. Then confirm the city you're based in. You'll add your stats and details on the next step.</p>
+    </div>
+
+    <div class="form-fields">
+      <div class="rt-field">
+        <label class="rt-field__label">Display name <span class="rt-req">*</span></label>
+        <input class="rt-input" value="Jane D.">
+        <span class="rt-field__hint">Shown publicly on your profile instead of your full name.</span>
+      </div>
+
+      <div class="rt-field">
+        <label class="rt-field__label">City <span class="rt-req">*</span></label>
+        <div class="rt-search">
+          <span class="rt-search__icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 14s5-4.2 5-8a5 5 0 10-10 0c0 3.8 5 8 5 8z" stroke="currentColor" stroke-width="1.4"/><circle cx="8" cy="6" r="1.6" stroke="currentColor" stroke-width="1.2"/></svg></span>
+          <input class="rt-input" value="London">
+        </div>
+        <span class="rt-field__hint">Search suggestions appear as you type (Google Places). You control how precisely your location is shown to clients.</span>
+      </div>
+    </div>
+
+    <div class="wizard-actions">
+      <span></span>
+      <button class="rt-btn rt-btn--primary rt-btn--lg" type="submit">Continue</button>
+    </div>
+  </form>
+</main>
+
+<div class="notes-dock">
+  <details class="design-notes">
+    <summary>Design notes</summary>
+    <ul>
+      <li>Desktop shows the full 4-step stepper with labels; below ~760px it collapses to a compact "Step X of 4" progress bar (Airbnb/Linear pattern) so the wizard chrome doesn't eat the small screen.</li>
+      <li>This step now only collects display name + city. It creates the draft profile and its geolocation, per the Phase 3 rebuild already shipped. Attribute fields move to the next step.</li>
+      <li>Guidance copy is reused verbatim from the live <code>EditListingProfilePanel.guidance</code> string. It already reads well and matches the brand voice.</li>
+      <li>"Save &amp; exit" in the top nav is the only secondary escape hatch; the one cobalt action on the page is "Continue".</li>
+      <li><strong>RT-FB-10 (28/09):</strong> availability is no longer part of onboarding, so the stepper is 4 steps, not 6 (see screen 13's design notes for the full rationale).</li>
+    </ul>
+  </details>
+</div>
+
+</body>
+</html>

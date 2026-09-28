@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>11 · Model - Your rates - Rogue Talent sign-up mockups</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Hanken+Grotesk:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="journey.css">
+</head>
+<body>
+
+<div class="mock-toolbar">
+  <span class="tag">Mock</span>
+  <a href="index.html">Journey map</a>
+  <span class="divider">·</span>
+  <span class="title">Model · 11 · Your rates</span>
+  <span class="spacer"></span>
+  <a href="10-model-portfolio.html">← Prev</a>
+  <a href="13-model-review-submit.html">Next: Review &amp; submit →</a>
+</div>
+
+<nav class="wizard-nav">
+  <a class="rt-nav__brand" href="01-choose-path.html">Rogue<span style="color:var(--accent-500)">.</span></a>
+  <div class="rt-nav__actions">
+    <a class="rt-nav__link" href="14-model-pending.html">Save &amp; exit</a>
+  </div>
+</nav>
+
+<main class="wizard-main">
+  <div class="stepper-mobile">
+    <span class="label">Step 4 of 4 - Your rates</span>
+    <div class="bar"><span style="width:100%"></span></div>
+  </div>
+  <ol class="stepper">
+    <li class="is-done"><span class="step-dot"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l2.5 2.5L10 3" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>About you</li>
+    <li class="is-done"><span class="step-dot"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l2.5 2.5L10 3" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Your profile</li>
+    <li class="is-done"><span class="step-dot"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l2.5 2.5L10 3" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Your portfolio</li>
+    <li class="is-current"><span class="step-dot">4</span>Your rates</li>
+  </ol>
+
+  <form class="wizard-card" onsubmit="return false;">
+    <div>
+      <h1>Your rates</h1>
+      <p class="wizard-guidance" style="margin-top:var(--space-2);">Set your rates. Your day rate is used for bookings, and you can add optional half-day and hourly rates too. Clients book and pay you directly, with no agency taking a cut, and you can update your rates whenever you like.</p>
+    </div>
+
+    <div class="form-fields">
+      <div class="rt-field">
+        <label class="rt-field__label">Day rate <span class="rt-req">*</span></label>
+        <div style="position:relative;">
+          <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text-muted);font-family:var(--font-sans);">£</span>
+          <input class="rt-input" style="padding-left:28px;" value="450">
+        </div>
+        <span class="rt-field__hint">Used for full-day bookings, the price shown on your profile.</span>
+      </div>
+
+      <div class="field-row">
+        <div class="rt-field">
+          <label class="rt-field__label">Half-day rate <span class="rt-field__hint" style="display:inline;font-weight:400;">(optional)</span></label>
+          <div style="position:relative;">
+            <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text-muted);font-family:var(--font-sans);">£</span>
+            <input class="rt-input" style="padding-left:28px;" value="260">
+          </div>
+        </div>
+        <div class="rt-field">
+          <label class="rt-field__label">Hourly rate <span class="rt-field__hint" style="display:inline;font-weight:400;">(optional)</span></label>
+          <div style="position:relative;">
+            <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text-muted);font-family:var(--font-sans);">£</span>
+            <input class="rt-input" style="padding-left:28px;" placeholder="0">
+          </div>
+        </div>
+      </div>
+
+      <div class="rt-field">
+        <label class="rt-field__label">Travel costs <span class="rt-req">*</span></label>
+        <span class="rt-field__hint" style="margin-top:-4px;">Whether travel costs are included in your rate or charged separately.</span>
+        <div class="chip-row">
+          <span class="rt-chip rt-chip--selected">Included in rate</span>
+          <span class="rt-chip">Charged separately</span>
+        </div>
+      </div>
+
+      <div class="callout callout--muted">
+        <h3>How the fee works</h3>
+        <p>Clients pay one flat 15% booking fee on top of your rate. You keep 100% of the £450 shown above, there's no commission taken from your side.</p>
+      </div>
+    </div>
+
+    <div class="wizard-actions">
+      <button class="rt-btn rt-btn--secondary" type="button">Back</button>
+      <button class="rt-btn rt-btn--primary rt-btn--lg" type="submit">Continue</button>
+    </div>
+  </form>
+</main>
+
+<div class="notes-dock">
+  <details class="design-notes">
+    <summary>Design notes</summary>
+    <ul>
+      <li>Currency inputs use a plain "£" prefix inside the field rather than a separate currency selector. The marketplace is GBP-only, so a picker would be a false choice.</li>
+      <li>The fee-explainer callout is the one place on this step that states the commercial model plainly (100% to the model, one flat 15% fee to the client). It's the wedge, so it earns a moment of emphasis without becoming a second cobalt element (the callout uses a neutral surface, not accent fill).</li>
+      <li>Guidance copy reused verbatim from the live <code>EditListingPricingPanel.guidance</code> string.</li>
+      <li>This is the last step of the wizard now (RT-FB-10, 28/09): "Continue" goes straight to Review &amp; submit. There is no separate availability step; models are available by default and every booking request still needs their acceptance, so there is nothing to configure here before submitting.</li>
+    </ul>
+  </details>
+</div>
+
+</body>
+</html>

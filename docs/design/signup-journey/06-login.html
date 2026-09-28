@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>06 · Log in - Rogue Talent sign-up mockups</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Hanken+Grotesk:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="journey.css">
+</head>
+<body>
+
+<div class="mock-toolbar">
+  <span class="tag">Mock</span>
+  <a href="index.html">Journey map</a>
+  <span class="divider">·</span>
+  <span class="title">Account · 06 · Log in</span>
+  <span class="spacer"></span>
+  <a href="05-email-verified.html">← Prev</a>
+  <a href="07-forgot-reset-password.html">Next: Forgot / reset password →</a>
+</div>
+
+<main class="auth-shell">
+  <aside class="auth-shell__panel rt-on-ink">
+    <a class="panel-brand" href="01-choose-path.html">Rogue<span>.</span></a>
+    <div class="panel-body-group">
+      <span class="rt-eyebrow rt-eyebrow--inverse">Welcome back</span>
+      <h1 class="panel-headline">Good to<br><em>see you.</em></h1>
+      <p class="panel-lede">Log in to pick up where you left off, your profile, your bookings, your messages.</p>
+    </div>
+    <p class="panel-foot">New here? <a href="01-choose-path.html" style="color:var(--ink-300)">Create an account →</a></p>
+  </aside>
+
+  <div class="auth-shell__content">
+    <form class="form-card" onsubmit="return false;">
+      <div class="form-head">
+        <h1>Log in</h1>
+        <p>Enter your details to continue.</p>
+      </div>
+
+      <div class="social-row">
+        <button type="button" class="rt-btn rt-btn--secondary rt-btn--block">
+          <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 01-1.8 2.72v2.26h2.9c1.7-1.57 2.7-3.88 2.7-6.62z"/><path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.9-2.26c-.8.54-1.84.86-3.06.86-2.35 0-4.34-1.59-5.05-3.72H.96v2.33A9 9 0 009 18z"/><path fill="#FBBC05" d="M3.95 10.7A5.4 5.4 0 013.68 9c0-.59.1-1.17.27-1.7V4.97H.96A9 9 0 000 9c0 1.45.35 2.83.96 4.03l2.99-2.33z"/><path fill="#EA4335" d="M9 3.58c1.32 0 2.51.45 3.44 1.35l2.58-2.58C13.46.9 11.43 0 9 0A9 9 0 00.96 4.97l2.99 2.33C4.66 5.17 6.65 3.58 9 3.58z"/></svg>
+          Continue with Google
+        </button>
+      </div>
+      <div class="form-divider">or</div>
+
+      <div class="form-fields">
+        <div class="rt-field">
+          <label class="rt-field__label">Email</label>
+          <input class="rt-input" placeholder="jane.doe@example.com">
+        </div>
+        <div class="rt-field">
+          <label class="rt-field__label">Password</label>
+          <input class="rt-input" type="password" placeholder="Enter your password…">
+          <span class="rt-field__hint" style="text-align:right;"><a href="07-forgot-reset-password.html">Forgot your password?</a></span>
+        </div>
+      </div>
+
+      <button class="rt-btn rt-btn--primary rt-btn--block rt-btn--lg" type="submit">Log in</button>
+      <p class="form-foot">Don't have an account? <a href="01-choose-path.html">Sign up</a></p>
+    </form>
+  </div>
+</main>
+
+<div class="notes-dock">
+  <details class="design-notes">
+    <summary>Design notes</summary>
+    <ul>
+      <li>Same split-shell frame as sign-up for one consistent auth system, but the panel copy is role-neutral (login doesn't know who's arriving). Warm and simple rather than a value pitch.</li>
+      <li>"Forgot your password?" sits as a hint directly under the password field, not buried below the button - one glance, not a hunt.</li>
+      <li>Only one primary (cobalt) action on the page: Log in. Google sign-in is secondary; both sign-up links are text links, not competing buttons.</li>
+    </ul>
+  </details>
+</div>
+
+</body>
+</html>

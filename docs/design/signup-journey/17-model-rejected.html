@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>17 · Model - Not approved - Rogue Talent sign-up mockups</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Hanken+Grotesk:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="journey.css">
+</head>
+<body>
+
+<div class="mock-toolbar">
+  <span class="tag">Mock</span>
+  <a href="index.html">Journey map</a>
+  <span class="divider">·</span>
+  <span class="title">Model · 17 · Not approved</span>
+  <span class="spacer"></span>
+  <a href="16-model-verified.html">← Prev</a>
+  <a href="18-client-business-details.html">Next: Client - Business details →</a>
+</div>
+
+<nav class="rt-nav">
+  <a class="rt-nav__brand" href="01-choose-path.html">Rogue<span>.</span></a>
+  <div class="rt-nav__actions">
+    <span class="rt-status rt-status--rejected"><span class="rt-status__dot"></span>Not approved</span>
+    <span class="rt-avatar rt-avatar--sm">J</span>
+  </div>
+</nav>
+
+<div class="dash-shell">
+  <div class="dash-main">
+    <div class="status-card">
+      <div class="status-card__head">
+        <div class="status-icon status-icon--rejected">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M9 9l6 6M15 9l-6 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        </div>
+        <span class="rt-status rt-status--lg rt-status--rejected"><span class="rt-status__dot"></span>Not approved</span>
+        <h1>Your profile wasn't approved this time</h1>
+        <p>That's not a permanent decision. Most profiles get through on a second pass once the note below is addressed.</p>
+      </div>
+
+      <div class="callout">
+        <h3>What our reviewer noted</h3>
+        <p>"A couple of your portfolio photos are low-resolution or heavily filtered. Clients need to see clear, current shots. Everything else looked good."</p>
+      </div>
+
+      <ul class="info-list">
+        <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Update the flagged photos in your portfolio</li>
+        <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Resubmit: there's no limit on attempts</li>
+        <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Not sure what to fix? Contact us and we'll talk it through</li>
+      </ul>
+
+      <div style="display:flex; flex-direction:column; gap:var(--space-3);">
+        <button class="rt-btn rt-btn--primary rt-btn--lg rt-btn--block" type="button">Edit your profile</button>
+        <button class="rt-btn rt-btn--ghost rt-btn--block" type="button">Contact us</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="notes-dock">
+  <details class="design-notes">
+    <summary>Design notes</summary>
+    <ul>
+      <li>Tone is respectful and specific, not a form-letter rejection. A reviewer note is quoted directly, framed as fixable rather than final. Red is used correctly here: this genuinely is a "danger/blocked" state, not decoration.</li>
+      <li><strong>Open question (a build dependency, not just a design one):</strong> the quoted reviewer note assumes the operator can attach a short free-text reason when declining in Console/the approval tool. If that mechanism doesn't exist yet, this screen needs a fallback (e.g. a small fixed set of reasons) rather than a blank note. Flag to the Developer/PM before building this screen.</li>
+      <li><strong>Open question:</strong> the screen list in the brief only specifies a model-side "Not approved" screen, with no client-parallel. Clients can also be declined at Gate A (failed Companies House check). Worth confirming whether that needs its own near-identical screen or can reuse this one's structure with client-specific copy.</li>
+      <li>"Contact us" is a ghost link, not a second competing primary. "Edit your profile" stays the one cobalt action, since resubmitting is the productive path for the vast majority of cases.</li>
+    </ul>
+  </details>
+</div>
+
+</body>
+</html>

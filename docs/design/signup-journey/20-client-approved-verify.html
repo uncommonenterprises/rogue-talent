@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>20 · Client - Approved, verify - Rogue Talent sign-up mockups</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Hanken+Grotesk:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="journey.css">
+</head>
+<body>
+
+<div class="mock-toolbar">
+  <span class="tag">Mock</span>
+  <a href="index.html">Journey map</a>
+  <span class="divider">·</span>
+  <span class="title">Client · 20 · Approved - verify</span>
+  <span class="spacer"></span>
+  <a href="19-client-pending.html">← Prev</a>
+  <a href="21-client-verified.html">Next: Verified - ready to book →</a>
+</div>
+
+<nav class="rt-nav">
+  <a class="rt-nav__brand" href="01-choose-path.html">Rogue<span>.</span></a>
+  <div class="rt-nav__actions">
+    <span class="rt-status rt-status--approved"><span class="rt-status__dot"></span>Approved</span>
+    <span class="rt-avatar rt-avatar--sm">A</span>
+  </div>
+</nav>
+
+<div class="dash-shell">
+  <div class="dash-main">
+    <div class="status-card">
+      <div class="status-card__head">
+        <div class="status-icon status-icon--approved">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+        </div>
+        <span class="rt-status rt-status--lg rt-status--approved"><span class="rt-status__dot"></span>Approved</span>
+        <h1>Verify your identity to start booking</h1>
+        <p>Northside Studio is approved. One step left before you can send your first booking request.</p>
+      </div>
+
+      <div class="callout">
+        <h3>Why we ask</h3>
+        <p>For the safety of the models on Rogue Talent, we ask every client to verify their identity before their first booking. The same standard we hold every model to before they're visible. It's a one-off check, not a recurring one.</p>
+      </div>
+
+      <ul class="info-list">
+        <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="4" width="12" height="8" rx="1.5" stroke="currentColor" stroke-width="1.3"/></svg>A photo ID (passport or driving licence)</li>
+        <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="6" r="2.6" stroke="currentColor" stroke-width="1.3"/><path d="M3.5 14c0-2.5 2-4.5 4.5-4.5s4.5 2 4.5 4.5" stroke="currentColor" stroke-width="1.3"/></svg>A quick live selfie, to match your ID</li>
+      </ul>
+
+      <button class="rt-btn rt-btn--primary rt-btn--lg rt-btn--block" type="button">
+        Verify with Stripe
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5M4 8h7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <p style="font-size:var(--text-xs);color:var(--text-muted);text-align:center;">Takes a few minutes. You'll be taken to Stripe Identity, then brought straight back here.</p>
+
+      <button class="rt-btn rt-btn--secondary rt-btn--block" type="button">Browse models</button>
+    </div>
+  </div>
+</div>
+
+<div class="notes-dock">
+  <details class="design-notes">
+    <summary>Design notes</summary>
+    <ul>
+      <li>Mirrors the model's Approved-verify screen (15) for pattern consistency, but the "why we ask" framing is deliberately different: for clients, verification is explicitly framed as being for the models' safety, not the client's own benefit. That's the honest reason (SAF-03) and it's a more persuasive one than a generic "verify your account" line.</li>
+      <li>Only two requirements listed (no bank details needed for a client, that's a model-side ask), so this card is shorter than screen 15's.</li>
+      <li>"Browse models" stays available as a secondary action, consistent with the Pending screen. Browsing was never gated, only booking is.</li>
+    </ul>
+  </details>
+</div>
+
+</body>
+</html>

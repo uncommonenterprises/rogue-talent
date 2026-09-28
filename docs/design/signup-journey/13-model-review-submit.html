@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>13 · Model - Review &amp; submit - Rogue Talent sign-up mockups</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Hanken+Grotesk:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="journey.css">
+</head>
+<body>
+
+<div class="mock-toolbar">
+  <span class="tag">Mock</span>
+  <a href="index.html">Journey map</a>
+  <span class="divider">·</span>
+  <span class="title">Model · 13 · Review &amp; submit</span>
+  <span class="spacer"></span>
+  <a href="11-model-rates.html">← Prev</a>
+  <a href="14-model-pending.html">Next: Pending approval →</a>
+</div>
+
+<nav class="wizard-nav">
+  <a class="rt-nav__brand" href="01-choose-path.html">Rogue<span style="color:var(--accent-500)">.</span></a>
+  <div class="rt-nav__actions">
+    <a class="rt-nav__link" href="14-model-pending.html">Save &amp; exit</a>
+  </div>
+</nav>
+
+<main class="wizard-main">
+  <div class="stepper-mobile">
+    <span class="label">All 4 steps complete - review &amp; submit</span>
+    <div class="bar"><span style="width:100%"></span></div>
+  </div>
+  <ol class="stepper">
+    <li class="is-done"><span class="step-dot"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l2.5 2.5L10 3" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>About you</li>
+    <li class="is-done"><span class="step-dot"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l2.5 2.5L10 3" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Your profile</li>
+    <li class="is-done"><span class="step-dot"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l2.5 2.5L10 3" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Your portfolio</li>
+    <li class="is-done"><span class="step-dot"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l2.5 2.5L10 3" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Your rates</li>
+  </ol>
+
+  <div class="wizard-card">
+    <div>
+      <h1>Review your profile</h1>
+      <p class="wizard-guidance" style="margin-top:var(--space-2);">Check everything looks right. You can still edit any section after you submit, but changes made while your profile is pending will restart the review.</p>
+    </div>
+
+    <div class="review-section">
+      <div class="review-section__head"><h2>About you</h2><a href="08-model-about-you.html">Edit</a></div>
+      <dl class="review-kv">
+        <dt>Display name</dt><dd>Jane D.</dd>
+        <dt>City</dt><dd>London</dd>
+      </dl>
+    </div>
+
+    <div class="review-section">
+      <div class="review-section__head"><h2>Your profile</h2><a href="09-model-profile.html">Edit</a></div>
+      <dl class="review-kv">
+        <dt>Gender</dt><dd>Female</dd>
+        <dt>Height</dt><dd>175cm</dd>
+        <dt>Experience</dt><dd>Some experience</dd>
+        <dt>Categories</dt><dd>Fashion, Editorial +5</dd>
+      </dl>
+    </div>
+
+    <div class="review-section">
+      <div class="review-section__head"><h2>Portfolio</h2><a href="10-model-portfolio.html">Edit</a></div>
+      <div class="review-thumbs">
+        <div class="photo-stripe"></div>
+        <div class="photo-stripe"></div>
+        <div class="photo-stripe"></div>
+        <div class="photo-stripe"></div>
+        <div class="photo-stripe"></div>
+      </div>
+    </div>
+
+    <div class="review-section">
+      <div class="review-section__head"><h2>Rates</h2><a href="11-model-rates.html">Edit</a></div>
+      <dl class="review-kv">
+        <dt>Day rate</dt><dd>£450</dd>
+        <dt>Half-day rate</dt><dd>£260</dd>
+        <dt>Travel costs</dt><dd>Included in rate</dd>
+      </dl>
+    </div>
+
+    <div class="callout callout--muted">
+      <h3>What happens next</h3>
+      <p>Our team reviews every profile and portfolio by hand before it goes live. We'll email you as soon as there's a decision. You can verify your identity and bank details with Stripe at any time before or after this, and it won't slow your review down. You're available by default from the moment you go live; every booking request still needs your acceptance, so there's nothing to set up here.</p>
+    </div>
+
+    <div class="consent-block">
+      <label class="rt-check">
+        <input type="checkbox" checked>
+        <span class="rt-check__box"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l2.5 2.5L10 3" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        I confirm this information is accurate and the portfolio images are of me
+      </label>
+    </div>
+
+    <div class="wizard-actions">
+      <button class="rt-btn rt-btn--secondary" type="button">Back</button>
+      <button class="rt-btn rt-btn--primary rt-btn--lg" type="button">Submit for approval</button>
+    </div>
+  </div>
+</main>
+
+<div class="notes-dock">
+  <details class="design-notes">
+    <summary>Design notes</summary>
+    <ul>
+      <li>Every section has its own "Edit" link back to that wizard step. No single monolithic "Edit profile" button, so a model correcting one thing (say, a rate) isn't sent back through the whole flow.</li>
+      <li>"Submit for approval" replaces the old Stripe-gated "Publish listing" wording. Per the account-status-lifecycle spec, Gate B (Stripe) is explicitly not a prerequisite to submit for Gate A (quality review).</li>
+      <li>The "what happens next" callout makes no promise about review turnaround time. We don't have data to back a number yet, and RT-FB-09 already flagged the cost of publishing unbacked claims.</li>
+      <li>A single ownership/accuracy tick box sits just above the submit button, lightweight, but gives the model an explicit accountability moment for the portfolio images specifically (SAF-02 territory).</li>
+      <li><strong>RT-FB-10 (Neil, 28/09):</strong> there is no Availability section on this review screen any more, and the stepper above is 4 steps, not 6. Models are available by default; every booking request still needs acceptance within a 48-hour window, and an accepted booking auto-blocks those dates, so there's no onboarding step needed to set this up. Models can optionally block out dates later from their dashboard: see the "Manage your calendar" link on screens 14 and 16.</li>
+    </ul>
+  </details>
+</div>
+
+</body>
+</html>

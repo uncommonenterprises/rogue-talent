@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>19 · Client - Pending approval - Rogue Talent sign-up mockups</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Hanken+Grotesk:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="journey.css">
+</head>
+<body>
+
+<div class="mock-toolbar">
+  <span class="tag">Mock</span>
+  <a href="index.html">Journey map</a>
+  <span class="divider">·</span>
+  <span class="title">Client · 19 · Pending approval</span>
+  <span class="spacer"></span>
+  <a href="18-client-business-details.html">← Prev</a>
+  <a href="20-client-approved-verify.html">Next: Approved - verify →</a>
+</div>
+
+<nav class="rt-nav">
+  <a class="rt-nav__brand" href="01-choose-path.html">Rogue<span>.</span></a>
+  <div class="rt-nav__actions">
+    <span class="rt-status"><span class="rt-status__dot"></span>Pending approval</span>
+    <span class="rt-avatar rt-avatar--sm">A</span>
+  </div>
+</nav>
+<style>.rt-nav__actions .rt-status{background:var(--amber-100);color:var(--amber-700);}.rt-nav__actions .rt-status .rt-status__dot{background:var(--amber-700);}</style>
+
+<div class="dash-shell">
+  <div class="dash-main">
+    <div class="status-card">
+      <div class="status-card__head">
+        <div class="status-icon status-icon--pending">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M12 7v5l3.5 2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <span class="rt-status rt-status--lg rt-status--pending"><span class="rt-status__dot"></span>Pending approval</span>
+        <h1>We're reviewing your business</h1>
+        <p>Our team checks every company by hand before it can book. We'll email you as soon as there's a decision.</p>
+      </div>
+
+      <ul class="info-list">
+        <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5 7-7.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Submitted: Northside Studio, registration number on file</li>
+        <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.4"/></svg>Under review: a Companies House and legitimacy check</li>
+        <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.4"/></svg>Not yet bookable: you can browse models now, but can't send a booking request yet</li>
+      </ul>
+
+      <div class="callout callout--accent">
+        <h3>Get a head start - verify now</h3>
+        <p>Verifying your identity with Stripe takes a couple of minutes and doesn't affect your business review. Do it now and you'll be ready to book the moment you're approved.</p>
+        <button class="rt-btn rt-btn--primary" type="button">Verify with Stripe</button>
+      </div>
+
+      <button class="rt-btn rt-btn--secondary rt-btn--block" type="button">Browse models</button>
+    </div>
+  </div>
+</div>
+
+<div class="notes-dock">
+  <details class="design-notes">
+    <summary>Design notes</summary>
+    <ul>
+      <li>Mirrors the model's Pending screen (14) structurally, so the pattern is learned once and recognised on both sides. Only the checklist copy and reviewer detail (Companies House vs portfolio quality) differ.</li>
+      <li>Browsing is allowed while Pending (there's no reason to block discovery), but it's a secondary action. Booking is the gated capability, not browsing, so the copy is precise about what "not yet bookable" actually means.</li>
+      <li>Same banked-verification sub-note pattern as screen 14 would apply here if verified early. Omitted from this file to avoid repeating it a third time; see screen 14's alternate state for the full treatment.</li>
+    </ul>
+  </details>
+</div>
+
+</body>
+</html>

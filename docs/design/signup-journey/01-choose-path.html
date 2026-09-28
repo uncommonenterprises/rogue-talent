@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>01 · Choose your path - Rogue Talent sign-up mockups</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Hanken+Grotesk:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="journey.css">
+</head>
+<body>
+
+<div class="mock-toolbar">
+  <span class="tag">Mock</span>
+  <a href="index.html">Journey map</a>
+  <span class="divider">·</span>
+  <span class="title">Account · 01 · Choose your path</span>
+  <span class="spacer"></span>
+  <a href="02-signup-model.html">Next: Sign up (model) →</a>
+</div>
+
+<main class="auth-shell">
+  <aside class="auth-shell__panel rt-on-ink">
+    <a class="panel-brand" href="#">Rogue<span>.</span></a>
+    <div class="panel-body-group">
+      <span class="rt-eyebrow rt-eyebrow--inverse">Join Rogue Talent</span>
+      <h1 class="panel-headline">Direct bookings.<br><em>No agency.</em></h1>
+      <p class="panel-lede">Rogue Talent puts models and the people who book them in the same room - no agent, no mark-up.</p>
+      <ul class="panel-points">
+        <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5 7-7.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Models keep 100% of their rate</li>
+        <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5 7-7.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>One flat 15% fee, paid by the client</li>
+        <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5 7-7.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Every account is reviewed before it goes live</li>
+      </ul>
+    </div>
+    <p class="panel-foot">Rogue Talent - the model, disrupted.</p>
+  </aside>
+
+  <div class="auth-shell__content">
+    <div class="form-card" style="max-width:640px; align-items:center; text-align:center;">
+      <div class="form-head">
+        <h1>How do you want to join?</h1>
+        <p>You can only pick one role per account. Clients and models sign up separately.</p>
+      </div>
+
+      <div class="role-grid">
+        <a class="role-card" href="02-signup-model.html">
+          <span class="role-card__icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="3.4" stroke="currentColor" stroke-width="1.6"/><path d="M5 20c0-3.9 3.1-7 7-7s7 3.1 7 7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          </span>
+          <h2 class="role-card__title">I'm a model</h2>
+          <p class="role-card__body">Create a profile, set your own rates and get booked direct. You keep 100% of what you earn.</p>
+          <span class="role-card__cta">Sign up as a model
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+        </a>
+
+        <a class="role-card" href="03-signup-client.html">
+          <span class="role-card__icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="3" y="8" width="18" height="12" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M8 8V6a2 2 0 012-2h4a2 2 0 012 2v2" stroke="currentColor" stroke-width="1.6"/></svg>
+          </span>
+          <h2 class="role-card__title">I'm booking talent</h2>
+          <p class="role-card__body">Search verified models, message direct and book with confidence. One flat fee, no agency mark-ups.</p>
+          <span class="role-card__cta">Sign up as a client
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+        </a>
+      </div>
+
+      <p class="form-foot">Already have an account? <a href="06-login.html">Log in</a></p>
+    </div>
+  </div>
+</main>
+
+<div class="notes-dock">
+  <details class="design-notes">
+    <summary>Design notes</summary>
+    <ul>
+      <li>Two role cards replace the old "User type" dropdown (RT-FB-01). The choice is the first thing a visitor makes, with no empty gap while a role is unpicked.</li>
+      <li>Split layout: the ink panel carries the value proposition so the choice itself stays uncluttered. No stock photography anywhere in this journey. See the portfolio step for where real photography belongs.</li>
+      <li>Cards use a hairline border with a cobalt hover state, not a filled cobalt background. They're navigation, not a competing primary action, so "one cobalt action per view" still holds.</li>
+      <li>Copy only uses facts we can stand behind today: 100% of rate to the model, one flat 15% fee, manual review on both sides. No invented member counts or booking volumes (RT-FB-09).</li>
+    </ul>
+  </details>
+</div>
+
+</body>
+</html>

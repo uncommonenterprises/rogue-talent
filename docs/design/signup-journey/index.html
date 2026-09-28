@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sign-up &amp; onboarding journey - Rogue Talent design mockups</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Hanken+Grotesk:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="journey.css">
+</head>
+<body>
+
+<div class="mock-toolbar">
+  <span class="tag">Mock</span>
+  <span>Rogue Talent - sign-up &amp; onboarding journey</span>
+  <span class="spacer"></span>
+  <span class="title">20 screens · click any card to open</span>
+</div>
+
+<header class="map-hero">
+  <div class="container--editorial">
+    <span class="rt-eyebrow rt-eyebrow--inverse">Design review · ux-designer → PM → Neil</span>
+    <h1>The whole sign-up &amp; onboarding journey, <span>as one set.</span></h1>
+    <p>Every screen a model or client sees from "sign up" to "ready to work", redesigned to the split-layout pattern agreed in RT-FB-01 and built for the new Draft → Pending approval → Approved → Verified account-status lifecycle. Nothing here is live; it's for review and sign-off before any of it goes to the Developer.</p>
+  </div>
+</header>
+
+<div class="container--editorial">
+
+  <section class="map-group">
+    <h2>Account <span style="color:var(--text-muted); font-family:var(--font-sans); font-weight:600; font-size:var(--text-base);">- shared by both roles</span></h2>
+    <p class="group-sub">Choosing a role, signing up, verifying email, logging in and recovering a password.</p>
+    <div class="map-list">
+      <a class="map-card" href="01-choose-path.html"><span class="num">01</span><h3>Choose your path</h3><p>Two role cards ("I'm a model" / "I'm booking talent") replace the old dropdown.</p></a>
+      <a class="map-card" href="02-signup-model.html"><span class="num">02</span><h3>Sign up - model</h3><p>First/last name, email, password, phone, 18+ tick, terms.</p></a>
+      <a class="map-card" href="03-signup-client.html"><span class="num">03</span><h3>Sign up - client</h3><p>Adds company name; includes the one inline validation-error example.</p></a>
+      <a class="map-card" href="04-check-inbox.html"><span class="num">04</span><h3>Check your inbox</h3><p>RT-FB-06 best-practice rework, both model and client variants shown.</p></a>
+      <a class="map-card" href="05-email-verified.html"><span class="num">05</span><h3>Email verified</h3><p>Confirmation-banner pattern for RT-FB-07/08, plus the no-session edge case.</p></a>
+      <a class="map-card" href="06-login.html"><span class="num">06</span><h3>Log in</h3><p>Same split shell, role-neutral copy.</p></a>
+      <a class="map-card" href="07-forgot-reset-password.html"><span class="num">07</span><h3>Forgot / reset password</h3><p>Both states of account recovery on one file.</p></a>
+    </div>
+  </section>
+
+  <section class="map-group">
+    <h2>Model journey</h2>
+    <p class="group-sub">The 4-step profile wizard, then the Draft → Pending → Approved → Verified lifecycle.</p>
+    <p style="font-size:var(--text-xs); color:var(--text-muted); margin:-8px 0 var(--space-5);">RT-FB-10 (Neil, 28/09): the wizard no longer has an availability step. Screen 12 has been removed; "Continue" on screen 11 goes straight to Review &amp; submit.</p>
+    <div class="map-list">
+      <a class="map-card" href="08-model-about-you.html"><span class="num">08</span><h3>About you</h3><p>Display name + city. Step 1 of 4.</p></a>
+      <a class="map-card" href="09-model-profile.html"><span class="num">09</span><h3>Your profile</h3><p>Attributes grouped into Basics, Measurements, Style &amp; experience, Where you'll work.</p></a>
+      <a class="map-card" href="10-model-portfolio.html"><span class="num">10</span><h3>Your portfolio</h3><p>Empty upload state and a filled grid, no stock photography.</p></a>
+      <a class="map-card" href="11-model-rates.html"><span class="num">11</span><h3>Your rates</h3><p>Day/half-day/hourly rate, travel costs, the flat-fee explainer. Last step of the wizard.</p></a>
+      <a class="map-card" href="13-model-review-submit.html"><span class="num">13</span><h3>Review &amp; submit</h3><p>Per-section edit links; "Submit for approval", no Stripe gate.</p></a>
+      <a class="map-card" href="14-model-pending.html"><span class="num">14</span><h3>Pending approval</h3><p><code>rt-status</code> amber badge; verify-now callout; quiet "manage your calendar" link.</p></a>
+      <a class="map-card" href="15-model-approved-verify.html"><span class="num">15</span><h3>Approved - get verified</h3><p>Why it matters, what's needed, one button out to Stripe.</p></a>
+      <a class="map-card" href="16-model-verified.html"><span class="num">16</span><h3>Verified / you're live</h3><p>Restrained celebration; share profile, manage your calendar (optional).</p></a>
+      <a class="map-card" href="17-model-rejected.html"><span class="num">17</span><h3>Not approved</h3><p>Respectful, specific, resubmittable.</p></a>
+    </div>
+  </section>
+
+  <section class="map-group" style="border-bottom:0;">
+    <h2>Client journey</h2>
+    <p class="group-sub">Business details, then the same lifecycle pattern with Stripe Identity instead of Connect.</p>
+    <div class="map-list">
+      <a class="map-card" href="18-client-business-details.html"><span class="num">18</span><h3>Your business details</h3><p>Company registration number + enrichment fields, after sign-up.</p></a>
+      <a class="map-card" href="19-client-pending.html"><span class="num">19</span><h3>Pending approval</h3><p>Companies House / legitimacy review; browsing stays open.</p></a>
+      <a class="map-card" href="20-client-approved-verify.html"><span class="num">20</span><h3>Approved - verify identity</h3><p>Framed around the models' safety, via Stripe Identity.</p></a>
+      <a class="map-card" href="21-client-verified.html"><span class="num">21</span><h3>Verified - ready to book</h3><p>Closes the loop on the sign-up value proposition.</p></a>
+    </div>
+  </section>
+
+</div>
+
+<div class="container--editorial" style="padding: var(--space-7) 0 var(--space-8); border-top: var(--border-hair) solid var(--border-hairline);">
+  <h2 style="font-family:var(--font-display); font-weight:800; font-size:var(--text-2xl); margin-bottom: var(--space-5);">Design principles applied</h2>
+  <div class="principle-grid">
+    <div><h3>One primary action per screen</h3><p>Every screen has exactly one cobalt <code>rt-btn--primary</code>. Everything else is secondary or ghost, including on the busiest screens (rates, review).</p></div>
+    <div><h3>Progressive disclosure</h3><p>Sign-up asks for the minimum; business/attribute detail moves to dedicated steps after the account exists. Mirrors the wizard split already shipped for models, extended to clients.</p></div>
+    <div><h3>Always a next step, never a dead end</h3><p>Pending, Approved and Rejected all carry one clear action: verify now, or fix and resubmit, instead of leaving the user waiting with nothing to do.</p></div>
+    <div><h3>Honest trust signals</h3><p>Every claim in this journey (100% of rate, one flat 15% fee, ID/bank verification, manual review) is true today per <code>safety-framework-v1-scope.md</code> and the account-status-lifecycle spec. Nothing borrowed from a future roadmap, no invented stats (RT-FB-09).</p></div>
+    <div><h3>No stock photography</h3><p>Every image slot uses the design-system diagonal-stripe placeholder, labelled, so it's unmistakable where real photography goes (RT-FB-01's fern-photo complaint, solved for good).</p></div>
+    <div><h3>One learned pattern, reused</h3><p>The split auth shell, the wizard stepper, and the status-card layout each appear multiple times with the same structure. A model and a client shown the same pattern once each need less onboarding of their own.</p></div>
+  </div>
+</div>
+
+<div class="container--editorial" style="padding: 0 0 var(--space-9);">
+  <h2 style="font-family:var(--font-display); font-weight:800; font-size:var(--text-2xl); margin-bottom: var(--space-5);">Open questions for Neil</h2>
+  <div class="oq-list">
+    <div class="oq-item">
+      <h3>1. Move company registration number off the sign-up form?</h3>
+      <p>Screens 03 + 18 design a split where only company name is asked at sign-up, and registration number (plus industry/website/VAT) moves to a new "Your business details" step afterwards. Today's config (<code>configUser.js</code>) has <code>company_registration_number</code> set to show at sign-up already. If this split is approved, it's a real config change for the Developer, not just a new screen.</p>
+      <p class="oq-rec"><strong>PM recommends: yes.</strong> A shorter first form means more clients finish signing up, and we still get the number before anyone can book, because approval depends on it.</p>
+    </div>
+    <div class="oq-item">
+      <h3>2. Confirm the "confirmation on arrival" pattern for email verification</h3>
+      <p>Screen 05 proposes a dismissible success banner on whichever destination the user lands on (profile wizard for models, search for clients) rather than a standalone "you're verified" page, plus a pre-filled login for the no-session case (RT-FB-07). Is this the direction to build, or would a dedicated interstitial page be preferred?</p>
+      <p class="oq-rec"><strong>PM recommends: the banner.</strong> It confirms what happened without adding a click, and it fixes the silent redirect you flagged in RT-FB-08.</p>
+    </div>
+    <div class="oq-item">
+      <h3>3. Is a client-side "Not approved" screen needed?</h3>
+      <p>The set only specifies a model "Not approved" screen (17). Clients can equally fail review (for example a failed Companies House check). Worth confirming whether that needs its own design or can reuse screen 17's structure with client-specific copy.</p>
+      <p class="oq-rec"><strong>PM recommends: reuse screen 17's layout</strong> with client wording ("Your business wasn't approved this time", "Update your business details"). No separate design round needed.</p>
+    </div>
+    <div class="oq-item">
+      <h3>4. Should there be a minimum portfolio photo count before submitting?</h3>
+      <p>Screen 10 has no upload minimum, but the approval review exists specifically to check portfolio quality (account-status-lifecycle §2). Worth deciding whether "Submit for approval" should require a minimum number of photos.</p>
+      <p class="oq-rec"><strong>PM recommends: a minimum of 3 photos.</strong> Enough to judge quality and range, low enough not to put off newer models. It also saves your review time on half-finished profiles.</p>
+    </div>
+    <div class="oq-item oq-item--closed">
+      <h3>Resolved by PM: can a reviewer attach a reason when declining? (screen 17)</h3>
+      <p>Yes. The operator can edit a user's private admin data in Sharetribe Console, so the Developer will add a "reason for decline" field there that screen 17 reads and shows. If no reason is entered, the screen falls back to a general line inviting the model to get in touch. No decision needed from you.</p>
+    </div>
+  </div>
+</div>
+
+<footer class="map-foot">
+  <div class="container--editorial">Rogue Talent - design mockups for review only. Not built. ux-designer, 2026-09-28. Revision 1: em dashes removed throughout, the incorrect legal-entity suffix removed from the footer copy on screen 01, availability step retired per RT-FB-10.</div>
+</footer>
+
+</body>
+</html>
