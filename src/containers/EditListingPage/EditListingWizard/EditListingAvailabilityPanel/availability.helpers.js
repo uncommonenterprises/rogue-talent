@@ -12,6 +12,47 @@ import {
 export const MAX_AVAILABILITY_EXCEPTIONS_RANGE = 366;
 const TODAY = new Date();
 
+// This is the order of days as JavaScript understands them (getDay() -> 0 = Sunday).
+export const WEEKDAYS = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+
+// Time zone given to the default plan when a model's profile draft is created. Rogue Talent
+// is a UK marketplace, so this is fixed rather than read from the model's browser.
+export const DEFAULT_AVAILABILITY_TIMEZONE = 'Europe/London';
+
+/**
+ * "Available by default" plan: every day of the week open, full day, one seat. This is the
+ * single source of the plan shape - the calendar panel ("Your calendar") uses it as its
+ * baseline and the "About you" step includes it when it creates the profile draft, so a
+ * freshly onboarded model is bookable on any future date without touching a calendar.
+ * The model then blocks dates they can't work via seats-0 availability exceptions.
+ *
+ * @param {string} timezone IANA time zone name, e.g. 'Europe/London'
+ * @returns {Object} { availabilityPlan } ready to spread into a listing create/update payload
+ */
+export const createAllOpenPlan = timezone => ({
+  availabilityPlan: {
+    type: 'availability-plan/time',
+    timezone,
+    entries: WEEKDAYS.map(dayOfWeek => ({
+      dayOfWeek,
+      startTime: '00:00',
+      endTime: '00:00', // 00:00 -> 00:00 represents a full day in Sharetribe's plan
+      seats: 1,
+    })),
+  },
+});
+
+/**
+ * The default plan to include when saving a listing, but ONLY if the listing doesn't have
+ * a plan yet. A listing that already has a plan (e.g. the model set "unavailable by
+ * default", or already has one from the calendar) is never overwritten.
+ *
+ * @param {Object?} listing the listing entity being saved (may be null in the new flow)
+ * @returns {Object} { availabilityPlan } or {}
+ */
+export const defaultAvailabilityPlanMaybe = listing =>
+  listing?.attributes?.availabilityPlan ? {} : createAllOpenPlan(DEFAULT_AVAILABILITY_TIMEZONE);
+
 // Helper for the pickers of DatePicker (weekly and monthly calendars)
 export const getStartOfWeekFn = (currentMoment, timeZone, firstDayOfWeek, offset = 0) => {
   const startOfWeek = getStartOfWeek(currentMoment, timeZone, firstDayOfWeek);

@@ -13,12 +13,11 @@ import { Button, H3, InlineTextButton, ListingLink, Modal } from '../../../../co
 // Import modules from this directory
 import EditListingAvailabilityExceptionForm from './EditListingAvailabilityExceptionForm';
 import MonthAvailabilityCalendar from './MonthAvailabilityCalendar/MonthAvailabilityCalendar';
+import { createAllOpenPlan } from './availability.helpers';
 import { MIN_BOOKING_NOTICE_KEY } from '../rateFields';
 
 import css from './EditListingAvailabilityPanel.module.css';
 
-// This is the order of days as JavaScript understands them (getDay() -> 0 = Sunday).
-const WEEKDAYS = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
 const EDIT_AVAILABILITY_EXCEPTIONS_BUTTON = 'editAvailabilityExceptionsButton';
 
 const defaultTimeZone = () =>
@@ -30,19 +29,8 @@ const defaultTimeZone = () =>
 const MODE_AVAILABLE = 'available';
 const MODE_UNAVAILABLE = 'unavailable';
 
-// "Available by default" baseline: every weekday open, full day, one seat.
-const createAllOpenPlan = timezone => ({
-  availabilityPlan: {
-    type: 'availability-plan/time',
-    timezone,
-    entries: WEEKDAYS.map(dayOfWeek => ({
-      dayOfWeek,
-      startTime: '00:00',
-      endTime: '00:00', // 00:00 -> 00:00 represents a full day in Sharetribe's plan
-      seats: 1,
-    })),
-  },
-});
+// "Available by default" baseline (every day open, full day, one seat) comes from
+// createAllOpenPlan in availability.helpers.js - shared with profile-draft creation.
 
 // "Unavailable by default" baseline: an empty plan (no open days); the model opens
 // specific dates via seats-1 exceptions. See docs/availability-calendar-spec.md.

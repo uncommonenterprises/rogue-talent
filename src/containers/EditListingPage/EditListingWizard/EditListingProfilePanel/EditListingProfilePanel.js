@@ -7,6 +7,9 @@ import { FormattedMessage, useIntl } from '../../../../util/reactIntl';
 // Import shared components
 import { H3 } from '../../../../components';
 
+// Import modules from parent directory
+import { defaultAvailabilityPlanMaybe } from '../EditListingAvailabilityPanel/availability.helpers';
+
 // Import modules from this directory
 import EditListingProfileForm from './EditListingProfileForm';
 import css from './EditListingProfilePanel.module.css';
@@ -65,6 +68,28 @@ const getInitialValues = props => {
       : null,
   };
 };
+
+/**
+ * Build the listing payload saved by the "About you" step: display name (title), city
+ * (geolocation + publicData.location) and the listing type values. In the new-listing flow
+ * this payload CREATES the draft, so it also carries the "available by default" plan (every
+ * day, full day, 1 seat, Europe/London) - models don't set availability during onboarding.
+ * The plan is only added when the listing has none, so an existing plan is never overwritten.
+ *
+ * @param {Object} values { title, address, origin } from the form
+ * @param {Object?} listing the listing being edited (null/empty in the new flow)
+ * @param {Object} config marketplace config
+ * @returns {Object} listing create/update values
+ */
+export const getProfileListingValues = ({ title, address, origin }, listing, config) => ({
+  title: title.trim(),
+  geolocation: origin,
+  ...defaultAvailabilityPlanMaybe(listing),
+  publicData: {
+    ...getListingTypeValues(listing, config),
+    location: { address },
+  },
+});
 
 /**
  * The EditListingProfilePanel — the "About you" wizard step (the first step). It collects
@@ -139,14 +164,11 @@ const EditListingProfilePanel = props => {
           const { selectedPlace } = location || {};
           const { address, origin } = selectedPlace || {};
 
-          const listingValues = {
-            title: title.trim(),
-            geolocation: origin,
-            publicData: {
-              ...getListingTypeValues(listing, config),
-              location: { address },
-            },
-          };
+          const listingValues = getProfileListingValues(
+            { title, address, origin },
+            listing,
+            config
+          );
 
           // Persist chosen place so the autocomplete keeps it through re-renders.
           setState({
