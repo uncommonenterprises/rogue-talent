@@ -56,6 +56,9 @@ you). Until then the in-app contract copy stays DRAFT. This is a hard gate. → 
 - **Accountant:** VAT agent-vs-principal (gates the flat-15% claim); DAC7 filing responsibility.
 - **(If D1=yes) provision client-ID:** Stripe Identity keys + Connect webhook — you have the click-by-click.
 
+- **Social accounts (Neil, pre-launch):** create Rogue Talent's own social accounts (e.g. Instagram, TikTok, LinkedIn - Neil to choose), then update the footer social links in Console > Content > Footer. Today they point at Sharetribe's own Facebook/X/YouTube (RT-FB-05) - must not go live like that; remove the icons if accounts aren't ready.
+- **Plan check (cost):** running custom code in the LIVE environment requires Sharetribe's **Extend plan** (test works on any plan). Confirm the account is on Extend before creating the live marketplace.
+
 ### Step 2 — Create the live marketplace + apply config (NEIL runs writes, PM prepares/guides)
 1. **Create the live Sharetribe marketplace** (separate from `ndstealth1-test`); note its app client
    id/secret + Integration (Ops) app id/secret (per-env).
@@ -65,6 +68,7 @@ you). Until then the in-app contract copy stays DRAFT. This is a hard gate. → 
    default-booking (v3 EDN: booking emails + SAF-25) → `update-alias release-1`; **apply the search
    schema** (`flex-cli search set` — `config/assets/SEARCH-SCHEMA.snapshot.txt`; easy to forget — a field
    shows but isn't filterable until this runs). I'll prep the exact commands like I did for test.
+3a. **Hosting mode = Custom code** on the live marketplace (Console > Build > Advanced > Hosting mode), then set **Marketplace URL** (Build > General > Domain) to `https://roguetalent.co`. Without this, Sharetribe hosts its own stock copy of the site and ALL email links (verification, password reset, booking) point there instead of our app (found on test, RT-FB-07).
 4. **Bucket C (manual Console, per env)** — reproduce from `config-as-code-hand-list.md` §C and DIFF vs
    test: access control (user-approval ON; listing-approval OFF unless D2=cutover), Stripe Connect (live
    account + live keys + KYB), **confirm NO Console commission** (15% is in code — double-charge risk),

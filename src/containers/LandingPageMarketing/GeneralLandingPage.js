@@ -11,11 +11,13 @@ import FooterContainer from '../FooterContainer/FooterContainer';
 import MarketingNav from './MarketingNav';
 import css from './marketing.module.css';
 
+// RT-FB-09: factual proof points only. The original mockup placeholders (4,200+ models,
+// 18k bookings, 40 cities, <2h response) were not true and must never ship.
 const STATS = [
-  { stat: '4,200', plus: true, label: 'Verified models' },
-  { stat: '18k', label: 'Direct bookings' },
-  { stat: '40', label: 'Cities' },
-  { stat: '<2h', label: 'Avg. response' },
+  { stat: '100%', label: 'Of the rate goes to the model' },
+  { stat: '15%', label: 'One flat booking fee' },
+  { stat: '0', label: 'Agents or middlemen' },
+  { stat: '5 days', label: 'Maximum wait to get paid' },
 ];
 
 const STEPS = [
