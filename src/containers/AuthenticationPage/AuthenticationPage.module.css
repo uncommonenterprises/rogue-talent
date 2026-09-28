@@ -220,6 +220,36 @@
   composes: marketplaceModalHelperText from global;
 }
 
+/* RT-FB-06: verify-email screen - one clear next step + a single quiet help line. */
+.verifyNextStep {
+  margin-top: var(--space-6);
+}
+
+.verifyPrimaryAction {
+  composes: buttonPrimary from global;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: none;
+  }
+}
+
+.verifyNote {
+  margin: var(--space-3) 0 0 0;
+  font-size: var(--text-sm);
+  line-height: var(--leading-normal);
+  color: var(--text-muted);
+}
+
+.verifyHelpLine {
+  margin: var(--space-6) 0 0 0;
+  padding-top: var(--space-4);
+  border-top: var(--border-hair) solid var(--border-hairline);
+  font-size: var(--text-sm);
+  line-height: var(--leading-normal);
+  color: var(--text-muted);
+}
+
 .modalIcon {
   composes: marketplaceModalIconStyles from global;
 

@@ -29,19 +29,16 @@ const EmailVerificationInfo = props => {
     </NamedLink>
   );
 
-  // Verification is a soft nag: a model can start building their profile with an
-  // unverified email (they just can't go live). Offer that forward path so the
-  // screen isn't a dead end. Models only — the client flow is unchanged.
-  const verifyLaterMaybe =
-    isModel && closeLinkName ? (
-      <p className={css.modalHelperText}>
-        <NamedLink className={css.modalHelperLink} name={closeLinkName}>
-          <FormattedMessage id="AuthenticationPage.verifyLaterModelLink" />
-        </NamedLink>
-        <br />
-        <FormattedMessage id="AuthenticationPage.verifyLaterModelNote" />
-      </p>
-    ) : null;
+  // RT-FB-06: follow the pattern leading products use for "check your email" screens:
+  // short headline, one line showing the address, ONE clear next step (so the screen is
+  // never a dead end - verification is a soft gate), and recovery options kept as a single
+  // quiet line directly beneath rather than floated to the bottom of the card.
+  const ctaId = isModel
+    ? 'AuthenticationPage.verifyLaterModelLink'
+    : 'AuthenticationPage.verifyEmailClientCta';
+  const noteId = isModel
+    ? 'AuthenticationPage.verifyLaterModelNote'
+    : 'AuthenticationPage.verifyEmailClientNote';
 
   return (
     <div className={css.content}>
@@ -52,21 +49,30 @@ const EmailVerificationInfo = props => {
       <p className={css.modalMessage}>
         <FormattedMessage id="AuthenticationPage.verifyEmailText" values={{ email }} />
       </p>
-      {verifyLaterMaybe}
+
+      {closeLinkName ? (
+        <div className={css.verifyNextStep}>
+          <NamedLink className={css.verifyPrimaryAction} name={closeLinkName}>
+            <FormattedMessage id={ctaId} />
+          </NamedLink>
+          <p className={css.verifyNote}>
+            <FormattedMessage id={noteId} />
+          </p>
+        </div>
+      ) : null}
+
       {resendErrorMessage}
 
-      <div className={css.bottomWrapper}>
-        <p className={css.modalHelperText}>
-          {sendVerificationEmailInProgress ? (
-            <FormattedMessage id="AuthenticationPage.sendingEmail" />
-          ) : (
-            <FormattedMessage id="AuthenticationPage.resendEmail" values={{ resendEmailLink }} />
-          )}
-        </p>
-        <p className={css.modalHelperText}>
-          <FormattedMessage id="AuthenticationPage.fixEmail" values={{ fixEmailLink }} />
-        </p>
-      </div>
+      <p className={css.verifyHelpLine}>
+        {sendVerificationEmailInProgress ? (
+          <FormattedMessage id="AuthenticationPage.sendingEmail" />
+        ) : (
+          <FormattedMessage
+            id="AuthenticationPage.resendEmail"
+            values={{ resendEmailLink, fixEmailLink }}
+          />
+        )}
+      </p>
     </div>
   );
 };
