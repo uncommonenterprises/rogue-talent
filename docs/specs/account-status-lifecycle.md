@@ -6,6 +6,8 @@ badge spec `account-status-badge-design.md`; see that doc §1.2. Everything else
 
 Owner: PM. Design (colours/badge): ux-designer. Origin: Neil's 2026-09-21 proposal + refinements.
 
+> **Amendment 28/09/2026 (Neil's RT-FB-03 decision):** the sign-up date-of-birth field is replaced by an "I confirm I'm 18 or over" tick box, so **Verified now also requires an 18+ check against the date of birth on the Stripe-verified ID** (clients: Stripe Identity - merged, dormant until client-ID goes live; models: Stripe Connect KYC - built, held pending a data check at cutover). Fails closed; the DOB itself is never stored. An account flagged under-18 stays blocked for operator review.
+
 ## 1. Purpose
 Make each account's onboarding stage explicit, consistent, and visible — one lifecycle shared by both
 user types, so "where am I / why can't I do X yet" is always answerable. Replaces today's implicit

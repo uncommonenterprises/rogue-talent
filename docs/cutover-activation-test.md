@@ -26,6 +26,7 @@ only, never chat.
 - **[N] Stripe Dashboard (TEST mode):** enable **Identity**; register a webhook at
   `https://rogue-talent-production.up.railway.app/api/stripe-identity-webhook` for events
   `identity.verification_session.verified`, `.requires_input`, `.redacted`.
+- **[N] Stripe Dashboard (TEST): create a RESTRICTED key** with only Identity "Verification Results" and "Recent Detailed Verification Results" = Read (Stripe only releases the verified date of birth to a restricted key). Add to Railway as `STRIPE_IDENTITY_RESTRICTED_KEY`. **Without it no client can become verified** (the 18+ check fails closed - RT-FB-03, merged 28/09).
 - **[N] Railway env vars:** `STRIPE_SECRET_KEY` (`sk_test_…`), `STRIPE_IDENTITY_WEBHOOK_SECRET`
   (`whsec_…`), `REACT_APP_IDENTITY_VERIFICATION_ENABLED=true`. Redeploy.
 - **[PM] Verify:** the `/verify-identity` page runs; a client can't book until verified; the boolean
@@ -36,6 +37,7 @@ only, never chat.
 - **[N] Stripe Dashboard (TEST):** register a **Connect `account.updated`** webhook at
   `https://rogue-talent-production.up.railway.app/api/stripe-connect-webhook`; put its signing secret in
   Railway as `STRIPE_CONNECT_WEBHOOK_SECRET`.
+- **[PM] Before the flag: confirm the model 18+ data exists.** Log in as a test model with completed Stripe and check (presence only, never read the value) that `stripeAccountData.individual.dob` + `individual.verification.status` come through Sharetribe. If yes, merge branch `rt-fb-03-verified-id-age-check` commit `74e480c9a` (model 18+ gate). If no, don't merge it; fetch the Connect account directly from Stripe instead (follow-up).
 - **[N] Console → Build → General → Access control:** turn **listing-approval ON** (so a submitted model
   profile lands in `pendingApproval` / hidden, and the reconcile publishes it only when Verified).
 - **[N] Railway env vars:** `REACT_APP_ACCOUNT_STATUS_FLOW_ENABLED=true`, and `CRON_SECRET`
