@@ -15,12 +15,16 @@
  * arrives here as a Buffer.
  *
  * Handled events:
- *   identity.verification_session.verified        → metadata.identity_verified = true
+ *   identity.verification_session.verified        → RT-FB-03 18+ check on the verified
+ *                                                    DOB; metadata.identity_verified = true
+ *                                                    ONLY if 18+ (fail closed otherwise; see
+ *                                                    stripeIdentity.processVerifiedSession)
  *   identity.verification_session.requires_input  → metadata.identity_verified = false (retry)
  *   identity.verification_session.redacted        → metadata.identity_verified = false (GDPR)
  *
  * ENV VARS NEIL MUST PROVIDE TO ACTIVATE (Railway + gitignored .env only):
  *   STRIPE_IDENTITY_WEBHOOK_SECRET  webhook signing secret (whsec_...)
+ *   STRIPE_IDENTITY_RESTRICTED_KEY  restricted key that can read the verified DOB (RT-FB-03)
  *   SHARETRIBE_INTEGRATION_CLIENT_ID / SHARETRIBE_INTEGRATION_CLIENT_SECRET
  * WEBHOOK ENDPOINT TO REGISTER IN THE STRIPE DASHBOARD:
  *   POST https://<railway-host>/api/stripe-identity-webhook
@@ -69,28 +73,40 @@ module.exports = (req, res) => {
     return res.status(200).json({ received: true, persisted: false });
   }
 
-  let verified;
+  let resultPromise;
   switch (type) {
     case 'identity.verification_session.verified':
-      verified = true;
+      // RT-FB-03: verified ID is necessary but not sufficient - the holder must also be
+      // 18+ on the verified DOB. The DOB is read from Stripe, used, and discarded.
+      resultPromise = stripeIdentity
+        .processVerifiedSession({ userId, sessionId })
+        .then(({ persisted, outcome }) => ({
+          persisted,
+          outcome,
+          verified: outcome === stripeIdentity.AGE_OUTCOME_ADULT,
+        }));
       break;
     case 'identity.verification_session.requires_input':
     case 'identity.verification_session.redacted':
-      verified = false;
+      resultPromise = stripeIdentity
+        .writeIdentityVerifiedFlag({ userId, verified: false, sessionId })
+        .then(persisted => ({ persisted, verified: false }));
       break;
     default:
       // Unhandled event type — acknowledge without a write.
       return res.status(200).json({ received: true, ignored: true });
   }
 
-  return stripeIdentity
-    .writeIdentityVerifiedFlag({ userId, verified, sessionId })
-    .then(persisted => {
-      log.error(
-        new Error('SAF-03 identity result persisted'),
-        'saf03-webhook-processed',
-        { type, userId, sessionId, verified, persisted }
-      );
+  return resultPromise
+    .then(({ persisted, verified, outcome }) => {
+      log.error(new Error('SAF-03 identity result persisted'), 'saf03-webhook-processed', {
+        type,
+        userId,
+        sessionId,
+        verified,
+        outcome,
+        persisted,
+      });
       // Always 200 so Stripe considers the event delivered; the durable-write
       // outcome is logged for the operator.
       return res.status(200).json({ received: true, persisted });
