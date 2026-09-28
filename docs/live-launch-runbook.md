@@ -52,6 +52,7 @@ you). Until then the in-app contract copy stays DRAFT. This is a hard gate. → 
 - **Domain:** point `roguetalent.co`'s web record at the live host (Railway prod service). Keep the
   Google Workspace MX untouched. (DNS control confirmed via the Postmark setup.)
 - **Legal:** contract v3 → solicitor; Terms/Privacy + cookie/consent review (`compliance-open-items.md`).
+  Also ask: is an "I confirm I'm 18 or over" tick box at sign-up, plus an 18+ check against the Stripe-verified ID date of birth before anyone can book or be booked, sufficient age assurance for us (replaces the DOB field; SAF-38; Online Safety Act view of self-declaration)?
 - **Accountant:** VAT agent-vs-principal (gates the flat-15% claim); DAC7 filing responsibility.
 - **(If D1=yes) provision client-ID:** Stripe Identity keys + Connect webhook — you have the click-by-click.
 
