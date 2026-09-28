@@ -46,8 +46,9 @@
 
 .passwordHint {
   composes: textXSmall from global;
-  color: var(--colorGrey700);
-  margin-top: -12px;
+  color: var(--text-muted);
+  /* Sit below the design-system input (taller than the stock field); matches .dateOfBirthHint. */
+  margin-top: 6px;
   margin-bottom: 24px;
 }
 
