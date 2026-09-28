@@ -273,6 +273,14 @@ export const AuthenticationPageComponent = props => {
   // flag only when the current user is fully loaded.
   const showEmailVerification = !isLogin && currentUserLoaded && !user.attributes.emailVerified;
 
+  // RT-FB-04: after sign up, the verify-email message replaces the form in place. The sign-up
+  // form is long, so the user is usually scrolled down; jump to the top so they see the start.
+  useEffect(() => {
+    if (showEmailVerification) {
+      window.scrollTo(0, 0);
+    }
+  }, [showEmailVerification]);
+
   const marketplaceName = config.marketplaceName;
   const schemaTitle = isLogin
     ? intl.formatMessage({ id: 'AuthenticationPage.schemaTitleLogin' }, { marketplaceName })
