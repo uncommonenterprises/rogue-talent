@@ -55,6 +55,9 @@ you). Until then the in-app contract copy stays DRAFT. This is a hard gate. → 
   Also ask: is an "I confirm I'm 18 or over" tick box at sign-up, plus an 18+ check against the Stripe-verified ID date of birth before anyone can book or be booked, sufficient age assurance for us (replaces the DOB field; SAF-38; Online Safety Act view of self-declaration)? Note: an ID-plus-selfie check proves an adult was present, not that the account holder is that adult (a parent could verify on a child's account) - is that residual risk acceptable?
 - **Accountant:** VAT agent-vs-principal (gates the flat-15% claim); DAC7 filing responsibility.
 - **(If D1=yes) provision client-ID:** Stripe Identity keys + Connect webhook — you have the click-by-click.
+  Also in LIVE mode (the Sandbox copies may not carry over, noted 29/09): Identity **branding** (accent
+  `#2B57FF` + Rogue Talent icon) and **Synthetic Identity Protection** (Identity > Enable product
+  enhancements). Both were set up in Sandbox first for the test site.
 
 - **Social accounts (Neil, pre-launch):** create Rogue Talent's own social accounts (e.g. Instagram, TikTok, LinkedIn - Neil to choose), then update the footer social links in Console > Content > Footer. Today they point at Sharetribe's own Facebook/X/YouTube (RT-FB-05) - must not go live like that; remove the icons if accounts aren't ready.
 - **Plan check (cost):** running custom code in the LIVE environment requires Sharetribe's **Extend plan** (test works on any plan). Confirm the account is on Extend before creating the live marketplace.

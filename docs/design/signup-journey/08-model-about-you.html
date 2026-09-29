@@ -36,8 +36,8 @@
   <ol class="stepper">
     <li class="is-current"><span class="step-dot">1</span>About you</li>
     <li><span class="step-dot">2</span>Your profile</li>
-    <li><span class="step-dot">3</span>Your portfolio</li>
-    <li><span class="step-dot">4</span>Your rates</li>
+    <li><span class="step-dot">3</span>Your rates</li>
+    <li><span class="step-dot">4</span>Your portfolio</li>
   </ol>
 
   <form class="wizard-card" onsubmit="return false;">
@@ -79,6 +79,7 @@
       <li>Guidance copy is reused verbatim from the live <code>EditListingProfilePanel.guidance</code> string. It already reads well and matches the brand voice.</li>
       <li>"Save &amp; exit" in the top nav is the only secondary escape hatch; the one cobalt action on the page is "Continue".</li>
       <li><strong>RT-FB-10 (28/09):</strong> availability is no longer part of onboarding, so the stepper is 4 steps, not 6 (see screen 13's design notes for the full rationale).</li>
+      <li><strong>Wizard order (PM decision, 29/09):</strong> the four steps run About you → Your profile → Your rates → Your portfolio, matching the live product. File names and screen numbers are unchanged (screen 10 is still Your portfolio, screen 11 is still Your rates); only the order they're walked through has moved.</li>
     </ul>
   </details>
 </div>

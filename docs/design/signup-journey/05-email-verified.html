@@ -91,6 +91,7 @@
   <details class="design-notes">
     <summary>Design notes</summary>
     <ul>
+      <li><strong>Decided by Neil, 29/09:</strong> this confirmation-on-arrival pattern is approved, both the dismissible success banner (State A) and the pre-filled login for the no-session case (State B).</li>
       <li>A banner-on-destination beats a standalone "verified" page because it never strands the user one click short of the thing they actually came to do, and it still gives an explicit, visible confirmation (the silent redirect Neil flagged in RT-FB-08 is gone either way).</li>
       <li>Banner is green (success), dismissible, and shows once, not as a persistent fixture, so it doesn't clutter return visits.</li>
       <li>State B's pre-filled, password-only login is the smallest possible ask given the platform constraint (no magic-link auth). It reframes "you're logged out" as a one-field form, not a dead end.</li>

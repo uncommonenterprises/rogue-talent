@@ -89,7 +89,7 @@
     <summary>Design notes</summary>
     <ul>
       <li><strong>The sign-up/step-2 split, and why:</strong> company name stays on the sign-up form (screen 03) because it's identity-defining and low-friction to type. Everything else (registration number, industry, project types, website, VAT) moves here, after email verification, following the same progressive-disclosure principle as the model wizard: get the account created fast, ask for more once someone's committed.</li>
-      <li><strong>Open question for Neil/Developer:</strong> today's config (<code>configUser.js</code>) has <code>company_registration_number</code> set to <code>displayInSignUp: true</code>, i.e. it currently shows on the sign-up form. Building this design means flipping that to <code>false</code> and adding this new step instead, a real config change, not just a visual one.</li>
+      <li><strong>Decided by Neil, 29/09:</strong> today's config (<code>configUser.js</code>) has <code>company_registration_number</code> set to <code>displayInSignUp: true</code>, i.e. it currently shows on the sign-up form. When this is built, the Developer will flip that to <code>false</code> and add this new step instead, a real config change, not just a visual one.</li>
       <li>Registration number is the only required field here. It's the one thing Gate A's Companies House check actually depends on; everything else is enrichment and stays optional, matching every other client field's existing convention.</li>
       <li>"Submit for approval" on this screen doubles as the client's Gate-A submission (there's no separate client "review" screen in this journey, unlike the model's 4-step wizard, since there's much less to review).</li>
     </ul>

@@ -17,8 +17,8 @@
   <span class="divider">·</span>
   <span class="title">Model · 10 · Your portfolio</span>
   <span class="spacer"></span>
-  <a href="09-model-profile.html">← Prev</a>
-  <a href="11-model-rates.html">Next: Your rates →</a>
+  <a href="11-model-rates.html">← Prev</a>
+  <a href="13-model-review-submit.html">Next: Review &amp; submit →</a>
 </div>
 
 <nav class="wizard-nav">
@@ -30,14 +30,14 @@
 
 <main class="wizard-main">
   <div class="stepper-mobile">
-    <span class="label">Step 3 of 4 - Your portfolio</span>
-    <div class="bar"><span style="width:75%"></span></div>
+    <span class="label">Step 4 of 4 - Your portfolio</span>
+    <div class="bar"><span style="width:100%"></span></div>
   </div>
   <ol class="stepper">
     <li class="is-done"><span class="step-dot"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l2.5 2.5L10 3" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>About you</li>
     <li class="is-done"><span class="step-dot"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l2.5 2.5L10 3" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Your profile</li>
-    <li class="is-current"><span class="step-dot">3</span>Your portfolio</li>
-    <li><span class="step-dot">4</span>Your rates</li>
+    <li class="is-done"><span class="step-dot"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l2.5 2.5L10 3" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Your rates</li>
+    <li class="is-current"><span class="step-dot">4</span>Your portfolio</li>
   </ol>
 
   <div class="wizard-card">
@@ -53,6 +53,15 @@
         <span>Drag photos here, or click to upload</span>
       </div>
       <p class="rt-field__hint" style="margin-top:var(--space-3);">Tip: Upload your full portfolio, the more high-quality shots the better. Include headshots and a range of looks (editorial, commercial, full-length). There's no limit, so show your best work.</p>
+      <p class="rt-field__hint" style="margin-top:var(--space-2); font-weight:600; color:var(--text-primary);">Add at least 3 photos to continue.</p>
+
+      <div class="wizard-actions">
+        <button class="rt-btn rt-btn--secondary" type="button">Back</button>
+        <div style="display:flex; align-items:center; gap:var(--space-3);">
+          <span class="rt-field__hint" style="margin:0;">0 of 3 minimum</span>
+          <button class="rt-btn rt-btn--primary rt-btn--lg" type="button" disabled>Continue</button>
+        </div>
+      </div>
     </div>
 
     <div>
@@ -84,11 +93,11 @@
           <span>Add more</span>
         </div>
       </div>
-    </div>
 
-    <div class="wizard-actions">
-      <button class="rt-btn rt-btn--secondary" type="button">Back</button>
-      <button class="rt-btn rt-btn--primary rt-btn--lg" type="button">Continue</button>
+      <div class="wizard-actions">
+        <button class="rt-btn rt-btn--secondary" type="button">Back</button>
+        <button class="rt-btn rt-btn--primary rt-btn--lg" type="button">Continue</button>
+      </div>
     </div>
   </div>
 </main>
@@ -98,9 +107,10 @@
     <summary>Design notes</summary>
     <ul>
       <li>No stock photography anywhere in this file. Every image slot uses the DS diagonal-stripe placeholder with a "Model photography" label, so it's unmistakably a placeholder for real portfolio shots, not a finished screen.</li>
-      <li>Both states are shown stacked (empty and filled) per the brief; in the live product only one shows at a time depending on upload count.</li>
+      <li>Both states are shown stacked (empty and filled) per the brief, each with its own Continue button state; in the live product only one shows at a time depending on upload count.</li>
       <li>The first uploaded photo carries an "Ink" badge marked "Cover". Since Gate A review is specifically a portfolio-quality check (account-status-lifecycle §2), it's worth being explicit about which shot leads on the live card.</li>
-      <li><strong>Open question:</strong> there's no minimum-photo requirement enforced anywhere today, but Gate A exists specifically to review portfolio quality. Worth deciding whether "Continue"/"Submit for approval" should require a minimum (e.g. 3 photos) before it's enabled.</li>
+      <li><strong>Decided by Neil, 29/09:</strong> a minimum of 3 photos is required before "Continue" is enabled. The empty state shows a "0 of 3 minimum" counter next to a disabled Continue button and a hint below the upload tile; once 3 or more photos are uploaded (five shown in the filled state above), Continue is enabled.</li>
+      <li><strong>Wizard order (PM decision, 29/09):</strong> portfolio is now the last of the 4 wizard steps (previously step 3, now step 4), matching the live product. "Continue" here goes to Review &amp; submit; the step before it is Your rates (screen 11), not Your profile.</li>
     </ul>
   </details>
 </div>

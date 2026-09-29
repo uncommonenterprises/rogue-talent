@@ -18,7 +18,7 @@
   <span class="title">Model · 09 · Your profile</span>
   <span class="spacer"></span>
   <a href="08-model-about-you.html">← Prev</a>
-  <a href="10-model-portfolio.html">Next: Your portfolio →</a>
+  <a href="11-model-rates.html">Next: Your rates →</a>
 </div>
 
 <nav class="wizard-nav">
@@ -36,8 +36,8 @@
   <ol class="stepper">
     <li class="is-done"><span class="step-dot"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l2.5 2.5L10 3" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>About you</li>
     <li class="is-current"><span class="step-dot">2</span>Your profile</li>
-    <li><span class="step-dot">3</span>Your portfolio</li>
-    <li><span class="step-dot">4</span>Your rates</li>
+    <li><span class="step-dot">3</span>Your rates</li>
+    <li><span class="step-dot">4</span>Your portfolio</li>
   </ol>
 
   <form class="wizard-card" onsubmit="return false;">
@@ -168,6 +168,7 @@
       <li>Optional fields (Website, Instagram) are explicitly labelled "(optional)" per the already-shipped app-wide convention in `CustomExtendedDataField.js`.</li>
       <li>"Back" is a secondary button (not a link) since this is a long step and users may want a clear, deliberate way to return, but it stays visually subordinate to the one cobalt "Continue".</li>
       <li>"Availability radius" here is unrelated to the calendar-availability step that's been removed (RT-FB-10). It's a travel-distance preference, stays part of the profile attributes.</li>
+      <li><strong>Wizard order (PM decision, 29/09):</strong> "Continue" now goes to Your rates (screen 11), not Your portfolio. Portfolio is the new last step, before Review &amp; submit.</li>
     </ul>
   </details>
 </div>

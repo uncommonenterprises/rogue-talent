@@ -15,7 +15,7 @@
   <span class="tag">Mock</span>
   <a href="index.html">Journey map</a>
   <span class="divider">·</span>
-  <span class="title">Model · 17 · Not approved</span>
+  <span class="title">Model &amp; client · 17 · Not approved</span>
   <span class="spacer"></span>
   <a href="16-model-verified.html">← Prev</a>
   <a href="18-client-business-details.html">Next: Client - Business details →</a>
@@ -30,33 +30,68 @@
 </nav>
 
 <div class="dash-shell">
-  <div class="dash-main">
-    <div class="status-card">
-      <div class="status-card__head">
-        <div class="status-icon status-icon--rejected">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M9 9l6 6M15 9l-6 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+  <div class="dash-main" style="flex-direction:column; gap:var(--space-8); padding-top:var(--space-8); padding-bottom:var(--space-8);">
+
+    <div style="width:100%; max-width:560px;">
+      <div class="state-label">Model variant</div>
+      <div class="status-card">
+        <div class="status-card__head">
+          <div class="status-icon status-icon--rejected">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M9 9l6 6M15 9l-6 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          </div>
+          <span class="rt-status rt-status--lg rt-status--rejected"><span class="rt-status__dot"></span>Not approved</span>
+          <h1>Your profile wasn't approved this time</h1>
+          <p>That's not a permanent decision. Fix what the note below mentions and resubmit.</p>
         </div>
-        <span class="rt-status rt-status--lg rt-status--rejected"><span class="rt-status__dot"></span>Not approved</span>
-        <h1>Your profile wasn't approved this time</h1>
-        <p>That's not a permanent decision. Most profiles get through on a second pass once the note below is addressed.</p>
-      </div>
 
-      <div class="callout">
-        <h3>What our reviewer noted</h3>
-        <p>"A couple of your portfolio photos are low-resolution or heavily filtered. Clients need to see clear, current shots. Everything else looked good."</p>
-      </div>
+        <div class="callout">
+          <h3>What our reviewer noted</h3>
+          <p>"A couple of your portfolio photos are low-resolution or heavily filtered. Clients need to see clear, current shots. Everything else looked good."</p>
+        </div>
 
-      <ul class="info-list">
-        <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Update the flagged photos in your portfolio</li>
-        <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Resubmit: there's no limit on attempts</li>
-        <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Not sure what to fix? Contact us and we'll talk it through</li>
-      </ul>
+        <ul class="info-list">
+          <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Update the flagged photos in your portfolio</li>
+          <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Resubmit: there's no limit on attempts</li>
+          <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Not sure what to fix? Contact us and we'll talk it through</li>
+        </ul>
 
-      <div style="display:flex; flex-direction:column; gap:var(--space-3);">
-        <button class="rt-btn rt-btn--primary rt-btn--lg rt-btn--block" type="button">Edit your profile</button>
-        <button class="rt-btn rt-btn--ghost rt-btn--block" type="button">Contact us</button>
+        <div style="display:flex; flex-direction:column; gap:var(--space-3);">
+          <button class="rt-btn rt-btn--primary rt-btn--lg rt-btn--block" type="button">Edit your profile</button>
+          <button class="rt-btn rt-btn--ghost rt-btn--block" type="button">Contact us</button>
+        </div>
       </div>
     </div>
+
+    <div style="width:100%; max-width:560px;">
+      <div class="state-label">Client variant</div>
+      <div class="status-card">
+        <div class="status-card__head">
+          <div class="status-icon status-icon--rejected">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M9 9l6 6M15 9l-6 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          </div>
+          <span class="rt-status rt-status--lg rt-status--rejected"><span class="rt-status__dot"></span>Not approved</span>
+          <h1>Your business wasn't approved this time</h1>
+          <p>That's not a permanent decision. Fix what the note below mentions and resubmit.</p>
+        </div>
+
+        <div class="callout">
+          <h3>What our reviewer noted</h3>
+          <p>"We couldn't match the company registration number to an active company on Companies House. Please check the number and resubmit."</p>
+        </div>
+
+        <ul class="info-list">
+          <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Update your business details</li>
+          <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Resubmit: there's no limit on attempts</li>
+          <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Not sure what to fix? Contact us and we'll talk it through</li>
+        </ul>
+
+        <div style="display:flex; flex-direction:column; gap:var(--space-3);">
+          <button class="rt-btn rt-btn--primary rt-btn--lg rt-btn--block" type="button">Update your business details</button>
+          <button class="rt-btn rt-btn--ghost rt-btn--block" type="button">Contact us</button>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -65,9 +100,9 @@
     <summary>Design notes</summary>
     <ul>
       <li>Tone is respectful and specific, not a form-letter rejection. A reviewer note is quoted directly, framed as fixable rather than final. Red is used correctly here: this genuinely is a "danger/blocked" state, not decoration.</li>
-      <li><strong>Open question (a build dependency, not just a design one):</strong> the quoted reviewer note assumes the operator can attach a short free-text reason when declining in Console/the approval tool. If that mechanism doesn't exist yet, this screen needs a fallback (e.g. a small fixed set of reasons) rather than a blank note. Flag to the Developer/PM before building this screen.</li>
-      <li><strong>Open question:</strong> the screen list in the brief only specifies a model-side "Not approved" screen, with no client-parallel. Clients can also be declined at Gate A (failed Companies House check). Worth confirming whether that needs its own near-identical screen or can reuse this one's structure with client-specific copy.</li>
-      <li>"Contact us" is a ghost link, not a second competing primary. "Edit your profile" stays the one cobalt action, since resubmitting is the productive path for the vast majority of cases.</li>
+      <li><strong>Decided (PM, resolved):</strong> the decline reason is resolved. The operator enters a short reason in a private admin field in Sharetribe Console, and this screen reads and quotes it as the reviewer note. If no reason is entered, the screen shows a general fallback line instead of a blank note, for example: "We didn't include a specific note this time. If anything's unclear, contact us and we'll talk you through it."</li>
+      <li><strong>Decided by Neil, 29/09:</strong> the client "Not approved" variant reuses this screen's layout with business wording rather than a separate design. It's shown below the model version as a second status card (state-label "Client variant").</li>
+      <li>"Contact us" is a ghost link, not a second competing primary, in both variants. Each card's primary action ("Edit your profile" / "Update your business details") stays the one cobalt action for that real screen; the two cards are shown stacked here only for review, never simultaneously in the live product.</li>
     </ul>
   </details>
 </div>

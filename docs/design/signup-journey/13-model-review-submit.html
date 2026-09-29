@@ -17,7 +17,7 @@
   <span class="divider">·</span>
   <span class="title">Model · 13 · Review &amp; submit</span>
   <span class="spacer"></span>
-  <a href="11-model-rates.html">← Prev</a>
+  <a href="10-model-portfolio.html">← Prev</a>
   <a href="14-model-pending.html">Next: Pending approval →</a>
 </div>
 
@@ -36,8 +36,8 @@
   <ol class="stepper">
     <li class="is-done"><span class="step-dot"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l2.5 2.5L10 3" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>About you</li>
     <li class="is-done"><span class="step-dot"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l2.5 2.5L10 3" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Your profile</li>
-    <li class="is-done"><span class="step-dot"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l2.5 2.5L10 3" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Your portfolio</li>
     <li class="is-done"><span class="step-dot"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l2.5 2.5L10 3" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Your rates</li>
+    <li class="is-done"><span class="step-dot"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l2.5 2.5L10 3" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Your portfolio</li>
   </ol>
 
   <div class="wizard-card">
@@ -65,6 +65,16 @@
     </div>
 
     <div class="review-section">
+      <div class="review-section__head"><h2>Rates</h2><a href="11-model-rates.html">Edit</a></div>
+      <dl class="review-kv">
+        <dt>Day rate</dt><dd>£450</dd>
+        <dt>Half-day rate</dt><dd>£260</dd>
+        <dt>Travel costs</dt><dd>Included in rate</dd>
+        <dt>Minimum booking notice</dt><dd>48 hours</dd>
+      </dl>
+    </div>
+
+    <div class="review-section">
       <div class="review-section__head"><h2>Portfolio</h2><a href="10-model-portfolio.html">Edit</a></div>
       <div class="review-thumbs">
         <div class="photo-stripe"></div>
@@ -73,15 +83,6 @@
         <div class="photo-stripe"></div>
         <div class="photo-stripe"></div>
       </div>
-    </div>
-
-    <div class="review-section">
-      <div class="review-section__head"><h2>Rates</h2><a href="11-model-rates.html">Edit</a></div>
-      <dl class="review-kv">
-        <dt>Day rate</dt><dd>£450</dd>
-        <dt>Half-day rate</dt><dd>£260</dd>
-        <dt>Travel costs</dt><dd>Included in rate</dd>
-      </dl>
     </div>
 
     <div class="callout callout--muted">
@@ -112,7 +113,9 @@
       <li>"Submit for approval" replaces the old Stripe-gated "Publish listing" wording. Per the account-status-lifecycle spec, Gate B (Stripe) is explicitly not a prerequisite to submit for Gate A (quality review).</li>
       <li>The "what happens next" callout makes no promise about review turnaround time. We don't have data to back a number yet, and RT-FB-09 already flagged the cost of publishing unbacked claims.</li>
       <li>A single ownership/accuracy tick box sits just above the submit button, lightweight, but gives the model an explicit accountability moment for the portfolio images specifically (SAF-02 territory).</li>
-      <li><strong>RT-FB-10 (Neil, 28/09):</strong> there is no Availability section on this review screen any more, and the stepper above is 4 steps, not 6. Models are available by default; every booking request still needs acceptance within a 48-hour window, and an accepted booking auto-blocks those dates, so there's no onboarding step needed to set this up. Models can optionally block out dates later from their dashboard: see the "Manage your calendar" link on screens 14 and 16.</li>
+      <li><strong>RT-FB-10 (Neil, 28/09):</strong> there is no Availability section on this review screen any more. Models are available by default; every booking request still needs acceptance within a 48-hour window, and an accepted booking auto-blocks those dates, so there's no onboarding step needed to set this up. Models can optionally block out dates later from their dashboard: see the "Manage your calendar" link on screens 14 and 16.</li>
+      <li><strong>Wizard order (PM decision, 29/09):</strong> the stepper and the review sections below both run in wizard order now: About you, Your profile, Rates, Portfolio. Rates and Portfolio have swapped places from the previous revision (Portfolio is step 4, the last step, not step 3). "Back" now returns to Your portfolio (screen 10).</li>
+      <li><strong>Minimum booking notice</strong> (new required field on Your rates, screen 11) is included in the Rates review section above.</li>
     </ul>
   </details>
 </div>

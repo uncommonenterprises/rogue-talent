@@ -45,17 +45,18 @@
   <section class="map-group">
     <h2>Model journey</h2>
     <p class="group-sub">The 4-step profile wizard, then the Draft → Pending → Approved → Verified lifecycle.</p>
-    <p style="font-size:var(--text-xs); color:var(--text-muted); margin:-8px 0 var(--space-5);">RT-FB-10 (Neil, 28/09): the wizard no longer has an availability step. Screen 12 has been removed; "Continue" on screen 11 goes straight to Review &amp; submit.</p>
+    <p style="font-size:var(--text-xs); color:var(--text-muted); margin:-8px 0 4px;">RT-FB-10 (Neil, 28/09): the wizard no longer has an availability step. Screen 12 has been removed.</p>
+    <p style="font-size:var(--text-xs); color:var(--text-muted); margin:0 0 var(--space-5);">PM decision (29/09), matching the live product: the wizard order is now 1 About you, 2 Your profile, 3 Your rates (screen 11), 4 Your portfolio (screen 10). So "Continue" on screen 11 goes to Your portfolio, and "Continue" on screen 10 (now the last step) goes to Review &amp; submit. File names and screen numbers below are unchanged; the map cards stay in number order for reference, but this is the order a model actually walks through.</p>
     <div class="map-list">
       <a class="map-card" href="08-model-about-you.html"><span class="num">08</span><h3>About you</h3><p>Display name + city. Step 1 of 4.</p></a>
       <a class="map-card" href="09-model-profile.html"><span class="num">09</span><h3>Your profile</h3><p>Attributes grouped into Basics, Measurements, Style &amp; experience, Where you'll work.</p></a>
-      <a class="map-card" href="10-model-portfolio.html"><span class="num">10</span><h3>Your portfolio</h3><p>Empty upload state and a filled grid, no stock photography.</p></a>
-      <a class="map-card" href="11-model-rates.html"><span class="num">11</span><h3>Your rates</h3><p>Day/half-day/hourly rate, travel costs, the flat-fee explainer. Last step of the wizard.</p></a>
+      <a class="map-card" href="10-model-portfolio.html"><span class="num">10</span><h3>Your portfolio</h3><p>Empty upload state and a filled grid, no stock photography. Last step of the wizard.</p></a>
+      <a class="map-card" href="11-model-rates.html"><span class="num">11</span><h3>Your rates</h3><p>Day/half-day/hourly rate, travel costs, minimum booking notice, the flat-fee explainer.</p></a>
       <a class="map-card" href="13-model-review-submit.html"><span class="num">13</span><h3>Review &amp; submit</h3><p>Per-section edit links; "Submit for approval", no Stripe gate.</p></a>
       <a class="map-card" href="14-model-pending.html"><span class="num">14</span><h3>Pending approval</h3><p><code>rt-status</code> amber badge; verify-now callout; quiet "manage your calendar" link.</p></a>
       <a class="map-card" href="15-model-approved-verify.html"><span class="num">15</span><h3>Approved - get verified</h3><p>Why it matters, what's needed, one button out to Stripe.</p></a>
       <a class="map-card" href="16-model-verified.html"><span class="num">16</span><h3>Verified / you're live</h3><p>Restrained celebration; share profile, manage your calendar (optional).</p></a>
-      <a class="map-card" href="17-model-rejected.html"><span class="num">17</span><h3>Not approved</h3><p>Respectful, specific, resubmittable.</p></a>
+      <a class="map-card" href="17-model-rejected.html"><span class="num">17</span><h3>Not approved</h3><p>Respectful, specific, resubmittable. Model and client variants shown.</p></a>
     </div>
   </section>
 
@@ -85,37 +86,37 @@
 </div>
 
 <div class="container--editorial" style="padding: 0 0 var(--space-9);">
-  <h2 style="font-family:var(--font-display); font-weight:800; font-size:var(--text-2xl); margin-bottom: var(--space-5);">Open questions for Neil</h2>
+  <h2 style="font-family:var(--font-display); font-weight:800; font-size:var(--text-2xl); margin-bottom: var(--space-5);">Decisions (Neil, 29/09/2026)</h2>
   <div class="oq-list">
     <div class="oq-item">
-      <h3>1. Move company registration number off the sign-up form?</h3>
-      <p>Screens 03 + 18 design a split where only company name is asked at sign-up, and registration number (plus industry/website/VAT) moves to a new "Your business details" step afterwards. Today's config (<code>configUser.js</code>) has <code>company_registration_number</code> set to show at sign-up already. If this split is approved, it's a real config change for the Developer, not just a new screen.</p>
-      <p class="oq-rec"><strong>PM recommends: yes.</strong> A shorter first form means more clients finish signing up, and we still get the number before anyone can book, because approval depends on it.</p>
+      <h3>1. Company registration number moves off the client sign-up form</h3>
+      <p>Screens 03 + 18 design a split where only company name is asked at sign-up, and registration number (plus industry/website/VAT) moves to a new "Your business details" step straight after sign-up. Today's config (<code>configUser.js</code>) has <code>company_registration_number</code> set to show at sign-up already, so this is a real config change for the Developer, not just a new screen.</p>
+      <p class="oq-rec"><strong>Decided by Neil, 29/09/2026:</strong> approved.</p>
     </div>
     <div class="oq-item">
-      <h3>2. Confirm the "confirmation on arrival" pattern for email verification</h3>
-      <p>Screen 05 proposes a dismissible success banner on whichever destination the user lands on (profile wizard for models, search for clients) rather than a standalone "you're verified" page, plus a pre-filled login for the no-session case (RT-FB-07). Is this the direction to build, or would a dedicated interstitial page be preferred?</p>
-      <p class="oq-rec"><strong>PM recommends: the banner.</strong> It confirms what happened without adding a click, and it fixes the silent redirect you flagged in RT-FB-08.</p>
+      <h3>2. The "confirmation on arrival" pattern for email verification</h3>
+      <p>Screen 05 designs a dismissible success banner on whichever destination the user lands on (profile wizard for models, search for clients) rather than a standalone "you're verified" page, plus a pre-filled login for the no-session case (RT-FB-07).</p>
+      <p class="oq-rec"><strong>Decided by Neil, 29/09/2026:</strong> approved.</p>
     </div>
     <div class="oq-item">
-      <h3>3. Is a client-side "Not approved" screen needed?</h3>
-      <p>The set only specifies a model "Not approved" screen (17). Clients can equally fail review (for example a failed Companies House check). Worth confirming whether that needs its own design or can reuse screen 17's structure with client-specific copy.</p>
-      <p class="oq-rec"><strong>PM recommends: reuse screen 17's layout</strong> with client wording ("Your business wasn't approved this time", "Update your business details"). No separate design round needed.</p>
+      <h3>3. The client-side "Not approved" screen</h3>
+      <p>Clients can equally fail review (for example a failed Companies House check). Screen 17 now shows a second status card, labelled "Client variant", below the model version, using the same structure with business wording, rather than a separate design.</p>
+      <p class="oq-rec"><strong>Decided by Neil, 29/09/2026:</strong> approved.</p>
     </div>
     <div class="oq-item">
-      <h3>4. Should there be a minimum portfolio photo count before submitting?</h3>
-      <p>Screen 10 has no upload minimum, but the approval review exists specifically to check portfolio quality (account-status-lifecycle §2). Worth deciding whether "Submit for approval" should require a minimum number of photos.</p>
-      <p class="oq-rec"><strong>PM recommends: a minimum of 3 photos.</strong> Enough to judge quality and range, low enough not to put off newer models. It also saves your review time on half-finished profiles.</p>
+      <h3>4. Minimum portfolio photo count before submitting</h3>
+      <p>Screen 10 has a minimum of 3 photos before "Continue" is enabled, with a "0 of 3 minimum" counter and hint shown in the empty state. Enough to judge quality and range, low enough not to put off newer models, and it saves review time on half-finished profiles.</p>
+      <p class="oq-rec"><strong>Decided by Neil, 29/09/2026:</strong> minimum of 3 photos, approved.</p>
     </div>
     <div class="oq-item oq-item--closed">
-      <h3>Resolved by PM: can a reviewer attach a reason when declining? (screen 17)</h3>
-      <p>Yes. The operator can edit a user's private admin data in Sharetribe Console, so the Developer will add a "reason for decline" field there that screen 17 reads and shows. If no reason is entered, the screen falls back to a general line inviting the model to get in touch. No decision needed from you.</p>
+      <h3>5. Resolved by PM: can a reviewer attach a reason when declining? (screen 17)</h3>
+      <p>Yes. The operator can edit a user's private admin data in Sharetribe Console, so the Developer will add a "reason for decline" field there that screen 17 reads and shows. If no reason is entered, the screen falls back to a general line inviting the model to get in touch. No decision needed from Neil.</p>
     </div>
   </div>
 </div>
 
 <footer class="map-foot">
-  <div class="container--editorial">Rogue Talent - design mockups for review only. Not built. ux-designer, 2026-09-28. Revision 1: em dashes removed throughout, the incorrect legal-entity suffix removed from the footer copy on screen 01, availability step retired per RT-FB-10.</div>
+  <div class="container--editorial">Rogue Talent - design mockups for review only. Not built. ux-designer, 2026-09-28. Revision 1: em dashes removed throughout, the incorrect legal-entity suffix removed from the footer copy on screen 01, availability step retired per RT-FB-10. Revision 2: Neil's decisions applied, wizard order matches the live product, minimum booking notice added to Your rates, client Not approved variant added.</div>
 </footer>
 
 </body>

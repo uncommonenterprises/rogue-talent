@@ -114,7 +114,7 @@
     <summary>Design notes</summary>
     <ul>
       <li>This screen carries the one inline validation-error example for the pair of sign-up forms: a mistyped email domain ("gmial.com"), shown in the <code>rt-input--error</code> state with the matching <code>rt-field__error</code> message. Illustrative only, not the default state.</li>
-      <li><strong>Deliberate split from the current config:</strong> company name is collected here, but <em>company registration number</em> (and industry/website/VAT) move to a dedicated "Your business details" step after email verification (screen 18) rather than sitting on the sign-up form, to keep this first screen fast. This is an open question for Neil. See the journey map.</li>
+      <li><strong>Decided by Neil, 29/09:</strong> company name is collected here, but <em>company registration number</em> (and industry/website/VAT) move to a dedicated "Your business details" step after email verification (screen 18) rather than sitting on the sign-up form, to keep this first screen fast. This split is approved.</li>
       <li>Same 18+ tick box and terms/privacy pattern as the model form, for consistency across both sign-up variants.</li>
       <li>Phone number is required for clients (not models) per the existing user-type config. Reflected here without inventing a new field.</li>
     </ul>

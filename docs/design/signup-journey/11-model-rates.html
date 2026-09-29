@@ -17,8 +17,8 @@
   <span class="divider">·</span>
   <span class="title">Model · 11 · Your rates</span>
   <span class="spacer"></span>
-  <a href="10-model-portfolio.html">← Prev</a>
-  <a href="13-model-review-submit.html">Next: Review &amp; submit →</a>
+  <a href="09-model-profile.html">← Prev</a>
+  <a href="10-model-portfolio.html">Next: Your portfolio →</a>
 </div>
 
 <nav class="wizard-nav">
@@ -30,14 +30,14 @@
 
 <main class="wizard-main">
   <div class="stepper-mobile">
-    <span class="label">Step 4 of 4 - Your rates</span>
-    <div class="bar"><span style="width:100%"></span></div>
+    <span class="label">Step 3 of 4 - Your rates</span>
+    <div class="bar"><span style="width:75%"></span></div>
   </div>
   <ol class="stepper">
     <li class="is-done"><span class="step-dot"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l2.5 2.5L10 3" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>About you</li>
     <li class="is-done"><span class="step-dot"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l2.5 2.5L10 3" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Your profile</li>
-    <li class="is-done"><span class="step-dot"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l2.5 2.5L10 3" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Your portfolio</li>
-    <li class="is-current"><span class="step-dot">4</span>Your rates</li>
+    <li class="is-current"><span class="step-dot">3</span>Your rates</li>
+    <li><span class="step-dot">4</span>Your portfolio</li>
   </ol>
 
   <form class="wizard-card" onsubmit="return false;">
@@ -82,6 +82,12 @@
         </div>
       </div>
 
+      <div class="rt-field">
+        <label class="rt-field__label">Minimum booking notice <span class="rt-req">*</span></label>
+        <select class="rt-select"><option>48 hours</option><option>24 hours</option><option>72 hours</option><option>1 week</option></select>
+        <span class="rt-field__hint">The least notice you need before a shoot. You can still decline any request.</span>
+      </div>
+
       <div class="callout callout--muted">
         <h3>How the fee works</h3>
         <p>Clients pay one flat 15% booking fee on top of your rate. You keep 100% of the £450 shown above, there's no commission taken from your side.</p>
@@ -102,7 +108,8 @@
       <li>Currency inputs use a plain "£" prefix inside the field rather than a separate currency selector. The marketplace is GBP-only, so a picker would be a false choice.</li>
       <li>The fee-explainer callout is the one place on this step that states the commercial model plainly (100% to the model, one flat 15% fee to the client). It's the wedge, so it earns a moment of emphasis without becoming a second cobalt element (the callout uses a neutral surface, not accent fill).</li>
       <li>Guidance copy reused verbatim from the live <code>EditListingPricingPanel.guidance</code> string.</li>
-      <li>This is the last step of the wizard now (RT-FB-10, 28/09): "Continue" goes straight to Review &amp; submit. There is no separate availability step; models are available by default and every booking request still needs their acceptance, so there is nothing to configure here before submitting.</li>
+      <li><strong>New field (PM decision, 29/09): Minimum booking notice.</strong> A required <code>rt-select</code> next to Travel costs, example value "48 hours". This sets an expectation only, it does not claim the system blocks or filters booking requests that fall inside the window, because it doesn't: the model can still decline any request regardless of notice given. The hint says so explicitly.</li>
+      <li><strong>Wizard order (PM decision, 29/09):</strong> Rates is step 3 of 4 now, matching the live product. "Continue" goes to Your portfolio (screen 10), the new last step, not straight to Review &amp; submit. There is still no separate availability step; models are available by default and every booking request still needs their acceptance.</li>
     </ul>
   </details>
 </div>
