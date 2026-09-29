@@ -12,6 +12,7 @@ import { NamedRedirect } from '../components';
 
 const pageDataLoadingAPI = getPageDataLoadingAPI();
 
+const AccountStatusPage = loadable(() => import(/* webpackChunkName: "AccountStatusPage" */ '../containers/AccountStatusPage/AccountStatusPage'));
 const AuthenticationPage = loadable(() => import(/* webpackChunkName: "AuthenticationPage" */ '../containers/AuthenticationPage/AuthenticationPage'));
 const BusinessDetailsPage = loadable(() => import(/* webpackChunkName: "BusinessDetailsPage" */ '../containers/BusinessDetailsPage/BusinessDetailsPage'));
 const CheckoutPage = loadable(() => import(/* webpackChunkName: "CheckoutPage" */ '../containers/CheckoutPage/CheckoutPage'));
@@ -463,6 +464,17 @@ const routeConfiguration = (layoutConfig, accessControlConfig) => {
       authPage: 'LoginPage',
       component: BusinessDetailsPage,
       loadData: pageDataLoadingAPI.BusinessDetailsPage.loadData,
+    },
+    {
+      // Sign-up stage 3, screens 14 to 17 (models) and 19 to 21 (clients): the account-status
+      // home. Part of the dormant account-status lifecycle: with
+      // REACT_APP_ACCOUNT_STATUS_FLOW_ENABLED off it only redirects to today's destinations.
+      path: '/account-status',
+      name: 'AccountStatusPage',
+      auth: true,
+      authPage: 'LoginPage',
+      component: AccountStatusPage,
+      loadData: pageDataLoadingAPI.AccountStatusPage.loadData,
     },
     {
       path: '/styleguide',

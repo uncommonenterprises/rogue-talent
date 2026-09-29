@@ -1,0 +1,243 @@
+@import '../../styles/customMediaQueries.css';
+
+/* Account-status home (sign-up journey screens 14 to 21, journey.css "dash-shell").
+   Design-system tokens only. */
+
+.shell {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-7) var(--space-5);
+  background: var(--surface-subtle);
+}
+
+.loading {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+}
+
+.visibilityNote {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  line-height: var(--leading-normal);
+  color: var(--text-secondary);
+}
+
+.actionGroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.smallPrint {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  line-height: var(--leading-normal);
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.reviewerNote {
+  color: var(--text-primary);
+}
+
+/* ================ Buttons (rt-btn, as links) ================ */
+
+/* rt-btn--primary (inside a callout): auto width */
+.primaryButton {
+  composes: buttonPrimary from global;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  width: auto;
+  min-height: 44px;
+  padding: 12px 20px;
+  font-size: var(--text-sm);
+  line-height: 1;
+
+  @media (--viewportMedium) {
+    padding: 12px 20px;
+  }
+}
+
+/* rt-btn--primary rt-btn--lg rt-btn--block */
+.primaryButtonBlock {
+  composes: buttonPrimary from global;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  width: 100%;
+  min-height: 52px;
+  padding: 15px 28px;
+  font-size: var(--text-base);
+  line-height: 1;
+
+  @media (--viewportMedium) {
+    padding: 15px 28px;
+  }
+}
+
+/* rt-btn--secondary rt-btn--block */
+.secondaryButtonBlock {
+  composes: buttonSecondary from global;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 44px;
+  padding: 12px 20px;
+  font-size: var(--text-sm);
+  line-height: 1;
+
+  @media (--viewportMedium) {
+    padding: 12px 20px;
+  }
+}
+
+/* rt-btn--ghost rt-btn--block */
+.ghostButtonBlock {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 44px;
+  padding: 12px 20px;
+  font-family: var(--font-sans);
+  font-weight: var(--weight-bold);
+  font-size: var(--text-sm);
+  line-height: 1;
+  letter-spacing: 0.005em;
+  color: var(--accent-600);
+  background: transparent;
+  border: var(--border-key) solid transparent;
+  border-radius: var(--radius-lg);
+  text-decoration: none;
+  transition: background var(--dur-fast) var(--ease-standard);
+
+  &:hover {
+    background: var(--accent-50);
+    color: var(--accent-600);
+    text-decoration: none;
+  }
+
+  &:active {
+    background: var(--accent-100);
+    transform: translateY(1px);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--white), 0 0 0 4px var(--accent-500);
+  }
+}
+
+/* ================ "Manage your calendar" (quiet link) ================ */
+
+.calendarRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding-top: var(--space-2);
+  border-top: var(--border-hair) solid var(--border-subtle);
+  color: var(--text-muted);
+}
+
+.quietLink {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-family: var(--font-sans);
+  font-weight: var(--weight-semibold);
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  text-decoration: none;
+
+  &:hover {
+    color: var(--text-primary);
+    text-decoration: underline;
+  }
+}
+
+.calendarHint {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  line-height: var(--leading-normal);
+  color: var(--text-muted);
+}
+
+/* ================ Profile link + Copy (screen 16) ================ */
+
+.copyFieldRoot {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.fieldLabel {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-sans);
+  font-weight: var(--weight-semibold);
+  font-size: var(--text-sm);
+  line-height: var(--leading-snug);
+  color: var(--text-primary);
+
+  @media (--viewportMedium) {
+    padding: 0;
+  }
+}
+
+.copyField {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.copyInput {
+  flex: 1;
+  min-width: 0;
+  min-height: 44px;
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+}
+
+/* rt-btn--secondary */
+.copyButton {
+  composes: buttonSecondary from global;
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  min-width: 80px;
+  min-height: 44px;
+  padding: 12px 20px;
+  font-size: var(--text-sm);
+  line-height: 1;
+
+  @media (--viewportMedium) {
+    padding: 12px 20px;
+  }
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

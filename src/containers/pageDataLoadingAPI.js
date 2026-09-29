@@ -1,6 +1,7 @@
 /**
  * Export loadData calls from ducks modules of different containers
  */
+import { loadData as AccountStatusPageLoader } from './AccountStatusPage/AccountStatusPage.duck';
 import { loadData as AuthenticationPageLoader } from './AuthenticationPage/AuthenticationPage.duck';
 import { loadData as LandingPageLoader } from './LandingPage/LandingPage.duck';
 import { loadData as BusinessDetailsPageLoader } from './BusinessDetailsPage/BusinessDetailsPage.duck';
@@ -30,6 +31,9 @@ import {
 
 const getPageDataLoadingAPI = () => {
   return {
+    AccountStatusPage: {
+      loadData: AccountStatusPageLoader,
+    },
     AuthenticationPage: {
       loadData: AuthenticationPageLoader,
     },
