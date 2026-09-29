@@ -60,6 +60,8 @@ you). Until then the in-app contract copy stays DRAFT. This is a hard gate. → 
   enhancements). Both were set up in Sandbox first for the test site.
 
 - **Social accounts (Neil, pre-launch):** create Rogue Talent's own social accounts (e.g. Instagram, TikTok, LinkedIn - Neil to choose), then update the footer social links in Console > Content > Footer. Today they point at Sharetribe's own Facebook/X/YouTube (RT-FB-05) - must not go live like that; remove the icons if accounts aren't ready.
+- **Sign-up panel claims depend on the cutover (copy truth, flagged 29/09):** the new sign-up screens say "Clients are ID-verified before they can book you" (model form) and "Every model is ID and bank verified" (client form). These are only true once client-ID (Stage A) AND the account-status lifecycle (Stage B: only Verified models visible/bookable) are live. Do not open to real users until both are on in live, or soften the two lines first.
+- **Google sign-in (decide pre-launch):** the approved sign-up/log-in designs include "Continue with Google". It only appears when `REACT_APP_GOOGLE_CLIENT_ID` + `GOOGLE_CLIENT_SECRET` are set (Google Cloud OAuth client + Sharetribe Console social login). Not set up on test, so the button is hidden. Set up, or confirm launching without it.
 - **Plan check (cost):** running custom code in the LIVE environment requires Sharetribe's **Extend plan** (test works on any plan). Confirm the account is on Extend before creating the live marketplace.
 
 ### Step 2 — Create the live marketplace + apply config (NEIL runs writes, PM prepares/guides)
