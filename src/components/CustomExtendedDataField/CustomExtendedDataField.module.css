@@ -18,6 +18,16 @@
   border: 0;
 }
 
+/* hintBelowInput: the inner field carries no margin (the wrapper does), and the help text
+   sits under the input as a design-system rt-field__hint. */
+.fieldWithHintBelow {
+  margin: 0;
+}
+
+.hintBelow {
+  composes: rtFieldHint from global;
+}
+
 .customField {
   margin-bottom: 24px;
 

@@ -18,9 +18,22 @@ import {
   validateYoutubeURL,
 } from '../../util/validators';
 // Import shared components
-import { FieldCheckboxGroup, FieldSelect, FieldTextInput, FieldBoolean } from '../../components';
+import {
+  FieldCheckboxGroup,
+  FieldChipGroup,
+  FieldMultiSelectDropdown,
+  FieldSelect,
+  FieldTextInput,
+  FieldBoolean,
+  HelpText,
+} from '../../components';
 // Import modules from this directory
 import css from './CustomExtendedDataField.module.css';
+
+// Optional alternative controls for enum / multi-enum fields (the `displayAs` prop).
+// Without `displayAs`, enums render as a select and multi-enums as a checkbox group.
+export const DISPLAY_AS_CHIPS = 'chips';
+export const DISPLAY_AS_DROPDOWN = 'dropdown';
 
 const createFilterOptions = options => options.map(o => ({ key: `${o.option}`, label: o.label }));
 
@@ -50,7 +63,15 @@ const getLabel = (fieldConfig, intl) => {
 };
 
 const CustomFieldEnum = props => {
-  const { name, fieldConfig, defaultRequiredMessage, formId, intl } = props;
+  const {
+    name,
+    fieldConfig,
+    defaultRequiredMessage,
+    formId,
+    intl,
+    fieldClassName,
+    displayAs,
+  } = props;
   const { enumOptions = [], saveConfig } = fieldConfig || {};
   const { placeholderMessage, isRequired, requiredMessage } = saveConfig || {};
   const validateMaybe = isRequired
@@ -63,9 +84,24 @@ const CustomFieldEnum = props => {
 
   const label = getLabel(fieldConfig, intl);
 
+  // Single choice shown as rt-chip pills (radios) instead of a select.
+  if (displayAs === DISPLAY_AS_CHIPS) {
+    return (
+      <FieldChipGroup
+        className={fieldClassName || css.customField}
+        id={formId ? `${formId}.${name}` : name}
+        name={name}
+        label={label}
+        helpText={fieldConfig?.helpText}
+        options={filterOptions}
+        {...validateMaybe}
+      />
+    );
+  }
+
   return filterOptions ? (
     <FieldSelect
-      className={css.customField}
+      className={fieldClassName || css.customField}
       name={name}
       id={formId ? `${formId}.${name}` : name}
       label={label}
@@ -88,17 +124,50 @@ const CustomFieldEnum = props => {
 };
 
 const CustomFieldMultiEnum = props => {
-  const { name, fieldConfig, defaultRequiredMessage, formId, intl } = props;
+  const {
+    name,
+    fieldConfig,
+    defaultRequiredMessage,
+    formId,
+    intl,
+    fieldClassName,
+    displayAs,
+  } = props;
   const { enumOptions = [], saveConfig } = fieldConfig || {};
   const { isRequired, requiredMessage } = saveConfig || {};
   const label = getLabel(fieldConfig, intl);
   const validateMaybe = isRequired
     ? { validate: nonEmptyArray(requiredMessage || defaultRequiredMessage) }
     : {};
+  const commonProps = {
+    className: fieldClassName || css.customField,
+    id: formId ? `${formId}.${name}` : name,
+    name,
+    label,
+    helpText: fieldConfig?.helpText,
+    options: createFilterOptions(enumOptions),
+    ...validateMaybe,
+  };
+
+  // Every option as an rt-chip pill (checkboxes), all visible at once.
+  if (enumOptions && displayAs === DISPLAY_AS_CHIPS) {
+    return <FieldChipGroup {...commonProps} isMulti />;
+  }
+  // A full-width dropdown with a list of tick boxes.
+  if (enumOptions && displayAs === DISPLAY_AS_DROPDOWN) {
+    return (
+      <FieldMultiSelectDropdown
+        {...commonProps}
+        placeholder={intl.formatMessage({
+          id: 'CustomExtendedDataField.placeholderMultiSelect',
+        })}
+      />
+    );
+  }
 
   return enumOptions ? (
     <FieldCheckboxGroup
-      className={css.customField}
+      className={fieldClassName || css.customField}
       id={formId ? `${formId}.${name}` : name}
       name={name}
       label={label}
@@ -110,7 +179,7 @@ const CustomFieldMultiEnum = props => {
 };
 
 const CustomFieldShortText = props => {
-  const { name, fieldConfig, defaultRequiredMessage, formId, intl } = props;
+  const { name, fieldConfig, defaultRequiredMessage, formId, intl, fieldClassName } = props;
   const { placeholderMessage, isRequired, requiredMessage } = fieldConfig?.saveConfig || {};
   const label = getLabel(fieldConfig, intl);
   const validateMaybe = isRequired
@@ -121,7 +190,7 @@ const CustomFieldShortText = props => {
 
   return (
     <FieldTextInput
-      className={css.customField}
+      className={fieldClassName || css.customField}
       id={formId ? `${formId}.${name}` : name}
       name={name}
       type="text"
@@ -135,7 +204,7 @@ const CustomFieldShortText = props => {
 };
 
 const CustomFieldText = props => {
-  const { name, fieldConfig, defaultRequiredMessage, formId, intl } = props;
+  const { name, fieldConfig, defaultRequiredMessage, formId, intl, fieldClassName } = props;
   const { placeholderMessage, isRequired, requiredMessage } = fieldConfig?.saveConfig || {};
   const label = getLabel(fieldConfig, intl);
   const validateMaybe = isRequired
@@ -146,7 +215,7 @@ const CustomFieldText = props => {
 
   return (
     <FieldTextInput
-      className={css.customField}
+      className={fieldClassName || css.customField}
       id={formId ? `${formId}.${name}` : name}
       name={name}
       type="textarea"
@@ -159,7 +228,7 @@ const CustomFieldText = props => {
 };
 
 const CustomFieldLong = props => {
-  const { name, fieldConfig, defaultRequiredMessage, formId, intl } = props;
+  const { name, fieldConfig, defaultRequiredMessage, formId, intl, fieldClassName } = props;
   const { minimum, maximum, saveConfig } = fieldConfig;
   const { placeholderMessage, isRequired, requiredMessage } = saveConfig || {};
   const label = getLabel(fieldConfig, intl);
@@ -184,7 +253,7 @@ const CustomFieldLong = props => {
 
   return (
     <FieldTextInput
-      className={css.customField}
+      className={fieldClassName || css.customField}
       id={formId ? `${formId}.${name}` : name}
       name={name}
       type="number"
@@ -214,7 +283,7 @@ const CustomFieldLong = props => {
 };
 
 const CustomFieldBoolean = props => {
-  const { name, fieldConfig, defaultRequiredMessage, formId, intl } = props;
+  const { name, fieldConfig, defaultRequiredMessage, formId, intl, fieldClassName } = props;
   const { placeholderMessage, isRequired, requiredMessage } = fieldConfig?.saveConfig || {};
   const label = getLabel(fieldConfig, intl);
   const validateMaybe = isRequired
@@ -225,7 +294,7 @@ const CustomFieldBoolean = props => {
 
   return (
     <FieldBoolean
-      className={css.customField}
+      className={fieldClassName || css.customField}
       id={formId ? `${formId}.${name}` : name}
       name={name}
       label={label}
@@ -237,7 +306,7 @@ const CustomFieldBoolean = props => {
 };
 
 const CustomFieldYoutube = props => {
-  const { name, fieldConfig, defaultRequiredMessage, formId, intl } = props;
+  const { name, fieldConfig, defaultRequiredMessage, formId, intl, fieldClassName } = props;
   const { placeholderMessage, isRequired, requiredMessage } = fieldConfig?.saveConfig || {};
   const label = getLabel(fieldConfig, intl);
   const placeholder =
@@ -257,7 +326,7 @@ const CustomFieldYoutube = props => {
 
   return (
     <FieldTextInput
-      className={css.customField}
+      className={fieldClassName || css.customField}
       id={formId ? `${formId}.${name}` : name}
       name={name}
       type="text"
@@ -276,34 +345,72 @@ const CustomFieldYoutube = props => {
  * in marketplace-custom-config.js. Other panels in EditListingWizard might add more extended data
  * fields (e.g. shipping fee), but these are independently customizable.
  *
+ * Optional props (all opt-in; without them the field renders exactly as before):
+ * - className: replaces the default root class (css.customField, which carries the margins).
+ * - displayAs: 'chips' renders an enum or multi-enum as rt-chip pills; 'dropdown' renders a
+ *   multi-enum as a full-width dropdown of tick boxes.
+ * - hintBelowInput: for single-input fields (select, text, number), show the help text under
+ *   the input instead of under the label. Groups (chips, checkboxes, dropdown) keep it under
+ *   the label.
+ *
  * @param {Object} props should contain fieldConfig that defines schemaType, enumOptions?, and
  * saveConfig for the field.
  */
 const CustomExtendedDataField = props => {
   const intl = useIntl();
-  const { enumOptions = [], schemaType } = props?.fieldConfig || {};
+  const { className, displayAs, hintBelowInput = false, ...rest } = props;
+  const { enumOptions = [], schemaType, helpText } = props?.fieldConfig || {};
   const defaultRequiredMessage = intl.formatMessage({
     id: 'CustomExtendedDataField.required',
   });
-  const renderFieldComponent = (FieldComponent, props) => (
-    <FieldComponent {...props} defaultRequiredMessage={defaultRequiredMessage} intl={intl} />
-  );
 
-  return schemaType === SCHEMA_TYPE_ENUM && enumOptions
-    ? renderFieldComponent(CustomFieldEnum, props)
-    : schemaType === SCHEMA_TYPE_MULTI_ENUM && enumOptions
-    ? renderFieldComponent(CustomFieldMultiEnum, props)
-    : schemaType === SCHEMA_TYPE_SHORT_TEXT
-    ? renderFieldComponent(CustomFieldShortText, props)
-    : schemaType === SCHEMA_TYPE_TEXT
-    ? renderFieldComponent(CustomFieldText, props)
-    : schemaType === SCHEMA_TYPE_LONG
-    ? renderFieldComponent(CustomFieldLong, props)
-    : schemaType === SCHEMA_TYPE_BOOLEAN
-    ? renderFieldComponent(CustomFieldBoolean, props)
-    : schemaType === SCHEMA_TYPE_YOUTUBE
-    ? renderFieldComponent(CustomFieldYoutube, props)
-    : null;
+  const FieldComponent =
+    schemaType === SCHEMA_TYPE_ENUM && enumOptions
+      ? CustomFieldEnum
+      : schemaType === SCHEMA_TYPE_MULTI_ENUM && enumOptions
+      ? CustomFieldMultiEnum
+      : schemaType === SCHEMA_TYPE_SHORT_TEXT
+      ? CustomFieldShortText
+      : schemaType === SCHEMA_TYPE_TEXT
+      ? CustomFieldText
+      : schemaType === SCHEMA_TYPE_LONG
+      ? CustomFieldLong
+      : schemaType === SCHEMA_TYPE_BOOLEAN
+      ? CustomFieldBoolean
+      : schemaType === SCHEMA_TYPE_YOUTUBE
+      ? CustomFieldYoutube
+      : null;
+
+  if (!FieldComponent) {
+    return null;
+  }
+
+  const isGroupControl = schemaType === SCHEMA_TYPE_MULTI_ENUM || displayAs === DISPLAY_AS_CHIPS;
+  if (hintBelowInput && helpText && !isGroupControl) {
+    return (
+      <div className={className || css.customField}>
+        <FieldComponent
+          {...rest}
+          fieldConfig={{ ...rest.fieldConfig, helpText: undefined }}
+          fieldClassName={css.fieldWithHintBelow}
+          displayAs={displayAs}
+          defaultRequiredMessage={defaultRequiredMessage}
+          intl={intl}
+        />
+        <HelpText rootClassName={css.hintBelow} helpText={helpText} />
+      </div>
+    );
+  }
+
+  return (
+    <FieldComponent
+      {...rest}
+      fieldClassName={className}
+      displayAs={displayAs}
+      defaultRequiredMessage={defaultRequiredMessage}
+      intl={intl}
+    />
+  );
 };
 
 export default CustomExtendedDataField;

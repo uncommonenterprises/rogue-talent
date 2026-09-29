@@ -1,0 +1,74 @@
+@import '../../styles/customMediaQueries.css';
+
+.root {
+  margin: 0;
+  padding: 0;
+  border: none;
+  min-width: 0;
+}
+
+.legend {
+  padding: 0;
+}
+
+.list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  position: relative;
+  margin: 0;
+  padding: 0;
+}
+
+/* The native input stays in the accessibility tree and the tab order; only the chip shows. */
+.input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  margin: 0;
+}
+
+/* design-system rt-chip. At least 44px tall below the medium breakpoint (touch target). */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  margin: 0;
+  padding: 8px 14px;
+  font-family: var(--font-sans);
+  font-weight: var(--weight-semibold);
+  font-size: var(--text-sm);
+  line-height: var(--leading-snug);
+  color: var(--ink-800);
+  background: var(--white);
+  border: var(--border-hair) solid var(--ink-200);
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease-standard),
+    border-color var(--dur-fast) var(--ease-standard), color var(--dur-fast) var(--ease-standard);
+
+  @media (--viewportMedium) {
+    min-height: 36px;
+  }
+}
+
+.chip:hover {
+  border-color: var(--ink-400);
+}
+
+.input:checked + .chip {
+  background: var(--ink-900);
+  color: var(--white);
+  border-color: var(--ink-900);
+}
+
+.input:focus-visible + .chip {
+  box-shadow: var(--shadow-focus);
+}

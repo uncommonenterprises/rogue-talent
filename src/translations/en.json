@@ -331,6 +331,7 @@
   "CustomExtendedDataField.numberTooSmall": "The number must be greater than or equal to {min}",
   "CustomExtendedDataField.placeholderBoolean": "Select…",
   "CustomExtendedDataField.placeholderLong": "Add number",
+  "CustomExtendedDataField.placeholderMultiSelect": "Select all that apply",
   "CustomExtendedDataField.placeholderSingleSelect": "Select…",
   "CustomExtendedDataField.placeholderText": "Write description…",
   "CustomExtendedDataField.placeholderYoutubeVideoURL": "The URL of a YouTube video",

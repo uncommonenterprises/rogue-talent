@@ -1,0 +1,168 @@
+@import '../../styles/customMediaQueries.css';
+
+.root {
+  position: relative;
+}
+
+/* Uses the app's standard field label styles (global label element rules). */
+.label {
+}
+
+.control {
+  position: relative;
+}
+
+/* Closed state: the app's select control (global select element rules, i.e. design-system
+   rt-select: same border, radius, padding, chevron, hover and focus ring) as a full-width
+   button, so it sits naturally beside the single-choice selects on the page. */
+.button {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  margin: 0;
+  padding: 12px 40px 12px 14px;
+  font-family: var(--font-sans);
+  font-weight: var(--weight-regular);
+  font-size: var(--text-base);
+  line-height: 24px;
+  text-align: left;
+  color: var(--text-primary);
+  background-color: var(--white);
+  background-image: url("data:image/svg+xml,%3Csvg width='10' height='16' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23131417' stroke='%23131417' stroke-width='.5' fill-rule='evenodd'%3E%3Cpath d='M4.687 15.315a.443.443 0 0 0 .626 0l3.557-3.556a.446.446 0 0 0-.629-.629L5 14.37l-3.241-3.24a.445.445 0 0 0-.629.63l3.557 3.553v.002ZM5.313 1.13a.443.443 0 0 0-.626 0L1.13 4.685a.446.446 0 0 0 .629.63L5 2.074l3.241 3.24a.445.445 0 0 0 .629-.629L5.313 1.131V1.13Z'/%3E%3C/g%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center right 14px;
+  background-size: 8px 14px;
+  border: var(--border-hair) solid var(--ink-200);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: border-color var(--dur-fast) var(--ease-standard),
+    box-shadow var(--dur-fast) var(--ease-standard);
+
+  @media (--viewportMedium) {
+    background-size: 10px 16px;
+  }
+}
+
+.button:hover {
+  border-color: var(--ink-300);
+}
+
+.button:focus {
+  outline: none;
+  border-color: var(--accent-500);
+  box-shadow: 0 0 0 3px var(--accent-100);
+}
+
+.buttonError {
+  border: var(--borderErrorField);
+}
+
+.value {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.placeholder {
+  color: var(--ink-400);
+}
+
+/* Open state: a panel of tick boxes under the button, full width of the field. */
+.panel {
+  position: absolute;
+  top: calc(100% + var(--space-1));
+  left: 0;
+  right: 0;
+  z-index: var(--zIndexPopup);
+  max-height: 320px;
+  overflow-y: auto;
+  padding: var(--space-2);
+  background: var(--white);
+  border: var(--border-hair) solid var(--ink-200);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.panel[hidden] {
+  display: none;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  position: relative;
+  margin: 0;
+  padding: 0;
+}
+
+.input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  margin: 0;
+}
+
+/* design-system rt-check row; 44px tall so each option is a comfortable touch target. */
+.option {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 44px;
+  margin: 0;
+  padding: 8px 10px;
+  font-family: var(--font-sans);
+  font-weight: var(--weight-regular);
+  font-size: var(--text-sm);
+  line-height: var(--leading-snug);
+  color: var(--text-primary);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+}
+
+.option:hover {
+  background: var(--ink-50);
+}
+
+.box {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  color: var(--white);
+  background: var(--white);
+  border: var(--border-key) solid var(--ink-300);
+  border-radius: var(--radius-sm);
+  transition: background var(--dur-fast) var(--ease-standard),
+    border-color var(--dur-fast) var(--ease-standard);
+}
+
+.tick {
+  opacity: 0;
+  transition: opacity var(--dur-fast) var(--ease-standard);
+}
+
+.input:checked + .option .box {
+  background: var(--accent-500);
+  border-color: var(--accent-500);
+}
+
+.input:checked + .option .tick {
+  opacity: 1;
+}
+
+.input:focus-visible + .option {
+  background: var(--ink-50);
+}
+
+.input:focus-visible + .option .box {
+  box-shadow: 0 0 0 3px var(--accent-100);
+}
