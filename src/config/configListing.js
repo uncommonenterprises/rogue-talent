@@ -393,10 +393,12 @@ export const listingFields = [
       indexForSearch: true,
       showFilter: true,
       group: 'primary',
-      label: 'Availability radius',
+      // Client-facing label (sign-up redesign stage 2, 29/09/2026). Models see
+      // "How far you'll travel" on Your rates (code override); stored values unchanged.
+      label: 'Travel range',
     },
     showConfig: {
-      label: 'Availability radius',
+      label: 'Travel range',
     },
     saveConfig: {
       label: 'Availability radius',

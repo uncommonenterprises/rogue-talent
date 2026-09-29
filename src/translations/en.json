@@ -588,7 +588,7 @@
   "EditListingReviewPanel.editSection": "Edit {title}",
   "EditListingReviewPanel.experience": "Experience",
   "EditListingReviewPanel.gender": "Gender",
-  "EditListingReviewPanel.guidance": "Check everything looks right. You can still edit any section after you submit, but changes made while your profile is pending will restart the review.",
+  "EditListingReviewPanel.guidance": "Check everything looks right. You can still edit any section after you submit.",
   "EditListingReviewPanel.halfDayRate": "Half-day rate",
   "EditListingReviewPanel.height": "Height",
   "EditListingReviewPanel.hourlyRate": "Hourly rate",
