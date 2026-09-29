@@ -12,7 +12,7 @@ import css from './marketing.module.css';
 
 const CAST = [
   { n: '01', title: 'Search', text: 'Filter by city, category, availability and budget.' },
-  { n: '02', title: 'Book direct', text: 'Message and confirm with the model — no gatekeeper.' },
+  { n: '02', title: 'Book direct', text: 'Message and confirm with the model - no gatekeeper.' },
   { n: '03', title: 'Shoot', text: 'Contracts, releases and payment handled in-platform.' },
 ];
 
@@ -27,12 +27,12 @@ const PROTECT = [
   {
     title: 'Escrow payments',
     text:
-      'Pay upfront into escrow; after the shoot, the model is paid — usually the next working day, always within five working days. A formal process covers any dispute.',
+      'Pay upfront into escrow; after the shoot, the model is paid - usually the next working day, always within five working days. A formal process covers any dispute.',
   },
   {
     title: 'Usage rights, locked in',
     text:
-      'One standard content licence and model release on every booking — broad, worldwide image usage for the long term, agreed by both sides before the shoot. No per-shoot usage haggling.',
+      'One standard content licence and model release on every booking - broad, worldwide image usage for the long term, agreed by both sides before the shoot. No per-shoot usage haggling.',
   },
   {
     title: 'Reviewed talent',
@@ -148,7 +148,7 @@ export const ClientsLandingPage = () => {
                 <div className={css.eyebrow}>One flat fee</div>
                 <h3 className={css.featureTitle}>The model keeps 100%. You pay one flat fee.</h3>
                 <p className={css.featureBody}>
-                  A flat 15% booking fee on top of the model's rate — no agency markup, and full
+                  A flat 15% booking fee on top of the model's rate - no agency markup, and full
                   transparency on exactly what the talent earns.
                 </p>
               </div>
@@ -161,7 +161,7 @@ export const ClientsLandingPage = () => {
                 <h3 className={css.featureTitle}>Every model checked. Every contract handled.</h3>
                 <p className={css.featureBody}>
                   Verified profiles, a standard licence and release agreed in-platform, and secure
-                  payment — all inside Rogue.
+                  payment - all inside Rogue.
                 </p>
               </div>
             </div>

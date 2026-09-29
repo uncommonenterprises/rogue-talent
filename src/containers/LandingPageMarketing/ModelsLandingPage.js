@@ -14,14 +14,14 @@ const VALUE = [
   {
     glyph: '100%',
     title: 'Keep your full rate',
-    text: 'No commission. You keep 100% of your day rate — the business pays the platform fee.',
+    text: 'No commission. You keep 100% of your day rate - the business pays the platform fee.',
   },
   { glyph: 'You', title: 'Set your own rates', text: 'You decide your day rate and which work you take on.' },
   { glyph: '↗', title: 'Get discovered', text: 'Verified brands search Rogue for talent like you every day.' },
   {
     glyph: '✓',
     title: 'Verified businesses only',
-    text: "Every business is verified before they can book — you're never dealing with random strangers.",
+    text: "Every business is verified before they can book - you're never dealing with random strangers.",
   },
 ];
 
@@ -35,7 +35,7 @@ const PROTECTED = [
   {
     title: 'Paid on time, always',
     text:
-      "Payment is secured in escrow before you arrive. You're paid after the shoot — usually the next working day, always within five working days.",
+      "Payment is secured in escrow before you arrive. You're paid after the shoot - usually the next working day, always within five working days.",
   },
   {
     title: 'Your image, your terms',
@@ -102,7 +102,7 @@ export const ModelsLandingPage = () => {
           </div>
         </section>
 
-        {/* FEATURE — booked direct */}
+        {/* FEATURE - booked direct */}
         <section className={css.features}>
           <div className={`${css.inner} ${css.featuresInner}`}>
             <div className={css.featureRow}>
