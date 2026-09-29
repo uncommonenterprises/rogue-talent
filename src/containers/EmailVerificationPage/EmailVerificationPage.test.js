@@ -12,7 +12,7 @@ import {
 
 const { screen } = testingLibrary;
 
-const userWithType = (userType, attributes = {}) => {
+const userWithType = (userType, attributes = {}, privateData = {}) => {
   const user = createCurrentUser('user-1');
   return {
     ...user,
@@ -21,10 +21,14 @@ const userWithType = (userType, attributes = {}) => {
       emailVerified: true,
       pendingEmail: null,
       ...attributes,
-      profile: { ...user.attributes.profile, publicData: { userType } },
+      profile: { ...user.attributes.profile, publicData: { userType }, privateData },
     },
   };
 };
+
+// A client who has already submitted "Your business details" (screen 18).
+const submittedClient = () =>
+  userWithType('client', {}, { businessDetailsSubmittedAt: '2026-09-30T10:00:00.000Z' });
 
 // Renders the current router location so the redirect target can be asserted.
 const LocationProbe = () => (
@@ -32,19 +36,23 @@ const LocationProbe = () => (
 );
 
 describe('EmailVerificationPage - where the user lands after verifying (screen 05)', () => {
-  it('sends clients to Browse models (SearchPage), not the marketing homepage', () => {
-    expect(getVerifiedDestinationRouteName(userWithType('client'))).toBe('SearchPage');
+  it('sends a new client on to Your business details (screen 18)', () => {
+    expect(getVerifiedDestinationRouteName(userWithType('client'))).toBe('BusinessDetailsPage');
+  });
+
+  it('sends a client who has submitted business details to Browse models, not the homepage', () => {
+    expect(getVerifiedDestinationRouteName(submittedClient())).toBe('SearchPage');
   });
 
   it('sends models to the profile wizard', () => {
     expect(getVerifiedDestinationRouteName(userWithType('model'))).toBe('NewListingPage');
   });
 
-  it('redirects a verified client to the search page', () => {
+  it('redirects a verified client with business details submitted to the search page', () => {
     render(
       <>
         <EmailVerificationPageComponent
-          currentUser={userWithType('client')}
+          currentUser={submittedClient()}
           isVerified
           emailVerificationInProgress={false}
           verificationError={null}

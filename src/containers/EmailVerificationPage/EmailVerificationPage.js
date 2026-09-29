@@ -7,6 +7,7 @@ import { FormattedMessage, useIntl } from '../../util/reactIntl';
 import { propTypes } from '../../util/types';
 import { parse } from '../../util/urlHelpers';
 import { ensureCurrentUser } from '../../util/data';
+import { clientNeedsBusinessDetails } from '../../util/clientBusinessDetails';
 import { verify } from '../../ducks/emailVerification.duck';
 import { isScrollingDisabled } from '../../ducks/ui.duck';
 import { Page, NamedRedirect, AuthShell } from '../../components';
@@ -39,14 +40,20 @@ const parseVerificationToken = search => {
 
 /**
  * Where a user lands straight after verifying their email (screen 05 / RT-FB-08): models continue
- * into the profile wizard; clients go to Browse models (SearchPage), not the marketing homepage.
- * The one-off "Your email is verified." banner is shown on arrival (see emailVerification.duck).
+ * into the profile wizard; clients continue to "Your business details" (screen 18, sign-up
+ * stage 3) until they've submitted it, then Browse models (SearchPage), not the marketing
+ * homepage. The one-off "Your email is verified." banner is shown on arrival (see
+ * emailVerification.duck).
  *
  * @param {Object} user current user entity
- * @returns {'NewListingPage'|'SearchPage'} route name
+ * @returns {'NewListingPage'|'BusinessDetailsPage'|'SearchPage'} route name
  */
 export const getVerifiedDestinationRouteName = user =>
-  user?.attributes?.profile?.publicData?.userType === 'model' ? 'NewListingPage' : 'SearchPage';
+  user?.attributes?.profile?.publicData?.userType === 'model'
+    ? 'NewListingPage'
+    : clientNeedsBusinessDetails(user)
+    ? 'BusinessDetailsPage'
+    : 'SearchPage';
 
 /**
  * The EmailVerificationPage component.

@@ -11,6 +11,7 @@ import { camelize } from '../../util/string';
 import { FormattedMessage, useIntl } from '../../util/reactIntl';
 import { propTypes } from '../../util/types';
 import { ensureCurrentUser, getFeaturedListingsProps } from '../../util/data';
+import { clientNeedsBusinessDetails } from '../../util/clientBusinessDetails';
 import {
   isSignupEmailTakenError,
   isTooManyEmailVerificationRequestsError,
@@ -320,6 +321,11 @@ export const AuthenticationPageComponent = props => {
       ) : (
         <NamedRedirect name="NewListingPage" />
       );
+    }
+    if (clientNeedsBusinessDetails(user)) {
+      // Sign-up stage 3: a client who hasn't submitted "Your business details" (screen 18) is
+      // brought back to it after logging in or signing up with Google, until it's submitted.
+      return <NamedRedirect name="BusinessDetailsPage" />;
     }
     // Already authenticated, redirect to the landing page (this was direct access to /login or /signup)
     return <NamedRedirect name="LandingPage" />;
