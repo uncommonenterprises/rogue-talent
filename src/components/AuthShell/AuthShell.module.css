@@ -1,0 +1,285 @@
+@import '../../styles/customMediaQueries.css';
+
+/* Split auth shell (sign-up journey mockups 01 to 07, docs/design/signup-journey/journey.css
+   ".auth-shell"). Design-system tokens only. The mockups switch layout at 900px: below it the ink
+   panel collapses to a slim header bar (brand + eyebrow) so the form starts near the top. */
+
+.root {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  min-height: 100vh;
+  background-color: var(--surface-page);
+
+  @media (min-width: 900px) {
+    flex-direction: row;
+  }
+}
+
+/* ================ Ink panel ================ */
+
+.panel {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-5);
+  background-color: var(--surface-ink);
+  color: var(--on-ink);
+
+  @media (min-width: 900px) {
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: space-between;
+    gap: var(--space-6);
+    width: 42%;
+    max-width: 480px;
+    flex-shrink: 0;
+    padding: var(--space-8) var(--space-7);
+  }
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  /* 44px tap target on the slim mobile bar */
+  min-height: 44px;
+  font-family: var(--font-display);
+  font-weight: var(--weight-extrabold);
+  font-size: var(--text-xl);
+  letter-spacing: var(--tracking-tight);
+  line-height: var(--leading-none);
+  color: var(--on-ink);
+  text-decoration: none;
+
+  &:hover {
+    color: var(--on-ink);
+    text-decoration: none;
+  }
+
+  &:focus-visible {
+    outline: none;
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-focus);
+  }
+
+  @media (min-width: 900px) {
+    align-self: flex-start;
+    min-height: 0;
+  }
+}
+
+.brandDot {
+  color: var(--accent-400);
+}
+
+.panelBody {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--space-3);
+
+  @media (min-width: 900px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-4);
+  }
+}
+
+.eyebrow {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-sans);
+  font-weight: var(--weight-bold);
+  font-size: var(--text-2xs);
+  line-height: var(--leading-snug);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--ink-400);
+}
+
+/* Headline, lede, points and the panel footer are desktop-only (mobile pass H). */
+.headline,
+.lede,
+.points,
+.panelFoot {
+  display: none;
+
+  @media (min-width: 900px) {
+    display: block;
+  }
+}
+
+.headline {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-display);
+  font-weight: var(--weight-extrabold);
+  font-size: var(--text-4xl);
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tighter);
+  color: var(--on-ink);
+}
+
+/* Bricolage is never italic: the accent line is set in cobalt instead. */
+.headlineAccent {
+  color: var(--accent-400);
+}
+
+.lede {
+  margin: 0;
+  padding: 0;
+  max-width: 38ch;
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
+  color: var(--ink-300);
+}
+
+.points {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  @media (min-width: 900px) {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+}
+
+.point {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  line-height: 1.5;
+  color: var(--ink-200);
+}
+
+.pointIcon {
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: var(--accent-400);
+}
+
+.panelFoot {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  line-height: var(--leading-normal);
+  color: var(--ink-500);
+}
+
+.panelFootLink {
+  color: var(--ink-300);
+  font-weight: var(--weight-semibold);
+  text-decoration: none;
+
+  &:hover {
+    color: var(--on-ink);
+    text-decoration: underline;
+  }
+
+  &:focus-visible {
+    outline: none;
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-focus);
+  }
+}
+
+/* ================ Form column ================ */
+
+.content {
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+  padding: var(--space-6) var(--space-5) var(--space-7);
+  background-color: var(--surface-page);
+
+  @media (min-width: 900px) {
+    align-items: center;
+    padding: var(--space-6) var(--space-7);
+  }
+}
+
+.contentInner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  min-width: 0;
+}
+
+/* The panel footer link, repeated under the form below 900px (mobile pass H). */
+.mobileSwitch {
+  margin: var(--space-2) 0 0 0;
+  padding: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  line-height: var(--leading-normal);
+  color: var(--text-secondary);
+  text-align: center;
+
+  @media (min-width: 900px) {
+    display: none;
+  }
+}
+
+.mobileSwitchLink {
+  display: inline-block;
+  /* 44px tap target */
+  padding: 12px 0;
+  font-weight: var(--weight-semibold);
+  color: var(--text-accent);
+  text-decoration: none;
+
+  &:hover {
+    color: var(--accent-700);
+    text-decoration: underline;
+  }
+}
+
+/* ================ Form header (AuthFormHeader) ================ */
+
+.formHeader {
+  width: 100%;
+}
+
+.formHeaderCentered {
+  text-align: center;
+}
+
+.formTitle {
+  margin: 0 0 var(--space-2) 0;
+  padding: 0;
+  font-family: var(--font-display);
+  font-weight: var(--weight-extrabold);
+  font-size: var(--text-2xl);
+  line-height: var(--leading-snug);
+  letter-spacing: var(--tracking-tight);
+  color: var(--text-primary);
+
+  @media (--viewportMedium) {
+    font-size: var(--text-3xl);
+    line-height: 1.1;
+  }
+}
+
+.formTitleSmall {
+  @media (--viewportMedium) {
+    font-size: var(--text-2xl);
+    line-height: var(--leading-snug);
+  }
+}
+
+.formLede {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  line-height: var(--leading-normal);
+  color: var(--text-secondary);
+}

@@ -969,6 +969,31 @@ textarea {
   }
 }
 
+/* ================ Design system rt-field label + hint ================ */
+
+/* Field label and hint text from design-system/DESIGN_SYSTEM.md §Form field (rt-field__label,
+   rt-field__hint). Pass rtFieldLabel to a Field* component's labelClassName. */
+.rtFieldLabel {
+  display: block;
+  margin: 0 0 var(--space-2) 0;
+  padding: 0;
+  font-family: var(--font-sans);
+  font-weight: var(--weight-semibold);
+  font-size: var(--text-sm);
+  line-height: var(--leading-snug);
+  color: var(--text-primary);
+}
+
+.rtFieldHint {
+  margin: var(--space-2) 0 0 0;
+  padding: 0;
+  font-family: var(--font-sans);
+  font-weight: var(--weight-regular);
+  font-size: var(--text-xs);
+  line-height: var(--leading-snug);
+  color: var(--text-muted);
+}
+
 /* ================ Tabbed navigation font styles ================ */
 
 .marketplaceTabNavFontStyles {

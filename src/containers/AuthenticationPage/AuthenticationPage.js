@@ -22,13 +22,13 @@ import { getListingsById } from '../../ducks/marketplaceData.duck';
 
 import {
   Page,
-  Heading,
   IconSpinner,
+  NamedLink,
   NamedRedirect,
-  LinkTabNavHorizontal,
-  ResponsiveBackgroundImageContainer,
   Modal,
   LayoutSingleColumn,
+  AuthShell,
+  AuthFormHeader,
 } from '../../components';
 
 import TopbarContainer from '../../containers/TopbarContainer/TopbarContainer';
@@ -57,40 +57,29 @@ import { TOS_ASSET_NAME, PRIVACY_POLICY_ASSET_NAME } from './AuthenticationPage.
 
 import css from './AuthenticationPage.module.css';
 
-const getTabHeading = ({ messageId, isSelected }) => {
-  return (
-    <Heading as={isSelected ? 'h1' : 'h2'} rootClassName={css.tab}>
-      <FormattedMessage id={messageId} />
-    </Heading>
-  );
+// Split-shell panel copy per screen (sign-up journey mockups 01 to 07). Sign-up and SSO confirm use
+// the role's own panel once the role is known; otherwise the neutral "join" panel.
+const getShellVariant = ({ showEmailVerification, isLogin, userType }) => {
+  if (showEmailVerification) {
+    return 'verify';
+  }
+  if (isLogin) {
+    return 'login';
+  }
+  return ['model', 'client'].includes(userType) ? userType : 'join';
 };
 
-const getAuthenticationTabs = ({ isLogin, signupRouteName, userTypeMaybe, fromState }) => {
-  return [
-    {
-      text: getTabHeading({
-        messageId: 'AuthenticationPage.signupLinkText',
-        isSelected: !isLogin,
-      }),
-      selected: !isLogin,
-      linkProps: {
-        name: signupRouteName,
-        params: userTypeMaybe,
-        to: fromState,
-      },
-    },
-    {
-      text: getTabHeading({
-        messageId: 'AuthenticationPage.loginLinkText',
-        isSelected: isLogin,
-      }),
-      selected: isLogin,
-      linkProps: {
-        name: 'LoginPage',
-        to: fromState,
-      },
-    },
-  ];
+// The "Already have an account? Log in" / "Don't have an account? Sign up" line under a form.
+const FormFootPrompt = props => {
+  const { messageId, linkMessageId, linkName, linkParams, linkTo } = props;
+  return (
+    <p className={css.formFoot}>
+      <FormattedMessage id={messageId} />{' '}
+      <NamedLink className={css.formFootLink} name={linkName} params={linkParams} to={linkTo}>
+        <FormattedMessage id={linkMessageId} />
+      </NamedLink>
+    </p>
+  );
 };
 
 const AuthenticationFormErrorMessage = props => {
@@ -256,7 +245,6 @@ export const AuthenticationPageComponent = props => {
 
   const { userTypes = [], userFields = [] } = config.user;
   const preselectedUserType = userTypes.find(conf => conf.userType === userType)?.userType || null;
-  const signupRouteName = !!preselectedUserType ? 'SignupForUserTypePage' : 'SignupPage';
   const userTypeMaybe = preselectedUserType ? { userType: preselectedUserType } : {};
   const fromMaybe = from ? { from } : {};
   const fromState = { state: { ...fromMaybe, ...userTypeMaybe } };
@@ -336,8 +324,14 @@ export const AuthenticationPageComponent = props => {
       intl={intl}
     />
   );
-  const signupLinkText = intl.formatMessage({ id: 'AuthenticationPage.signupLinkText' });
-  const loginLinkText = intl.formatMessage({ id: 'AuthenticationPage.loginLinkText' });
+  const soleUserType = userTypes.length === 1 ? userTypes[0].userType : null;
+  const shellVariant = getShellVariant({
+    showEmailVerification,
+    isLogin,
+    userType: preselectedUserType || soleUserType,
+  });
+  // Links that switch between auth screens keep the "from" redirect target.
+  const fromOnlyState = { state: { ...fromMaybe } };
 
   // There are three different scenarios to handle on this page:
   //   - Normal authentication (login/signup + SSO options)
@@ -350,6 +344,21 @@ export const AuthenticationPageComponent = props => {
   const showConfirmFormForSSO = !showEmailVerification && isConfirm;
   const showAuthenticationForm = !showEmailVerification && !isConfirm;
   const showLoginForm = showAuthenticationForm && isLogin;
+  const showSignupForm = showAuthenticationForm && !isLogin;
+
+  const socialLoginButtons = (
+    <SocialLoginButtons
+      isLogin={isLogin}
+      showFacebookLogin={!!process.env.REACT_APP_FACEBOOK_APP_ID}
+      showGoogleLogin={!!process.env.REACT_APP_GOOGLE_CLIENT_ID}
+      {...fromMaybe}
+      {...userTypeMaybe}
+    />
+  );
+
+  const signupHeadingType = ['model', 'client'].includes(preselectedUserType)
+    ? preselectedUserType
+    : 'default';
 
   return (
     <Page
@@ -362,125 +371,119 @@ export const AuthenticationPageComponent = props => {
         description: schemaDescription,
       }}
     >
-      <LayoutSingleColumn
-        mainColumnClassName={css.layoutWrapperMain}
-        topbar={<TopbarContainer className={topbarClasses} />}
-        footer={<FooterContainer />}
-      >
-        <ResponsiveBackgroundImageContainer
-          className={css.root}
-          childrenWrapperClassName={css.contentContainer}
-          as="section"
-          image={config.branding.brandImage}
-          sizes="100%"
-          useOverlay
-        >
-          {showAuthenticationForm ? (
-            <div className={css.content}>
-              <LinkTabNavHorizontal
-                className={css.tabs}
-                tabs={getAuthenticationTabs({
-                  isLogin,
-                  signupRouteName,
-                  userTypeMaybe,
-                  fromState,
-                })}
-                ariaLabel={`${signupLinkText} & ${loginLinkText}`}
-              />
+      <AuthShell variant={shellVariant} switchLinkTo={fromOnlyState}>
+        {showLoginForm ? (
+          <div className={css.formCard}>
+            <AuthFormHeader
+              title={<FormattedMessage id="AuthenticationPage.loginTitle" />}
+              lede={<FormattedMessage id="AuthenticationPage.loginLede" />}
+            />
+            <AuthenticationFormErrorMessage
+              isLogin={isLogin}
+              idpAuthError={authError}
+              loginError={loginError}
+              signupError={signupError}
+            />
+            {socialLoginButtons}
+            <LoginForm className={css.loginForm} onSubmit={submitLogin} inProgress={authInProgress} />
+            <FormFootPrompt
+              messageId="AuthenticationPage.noAccountPrompt"
+              linkMessageId="AuthenticationPage.signupLinkText"
+              linkName="SignupPage"
+              linkTo={fromOnlyState}
+            />
+          </div>
+        ) : null}
 
-              <AuthenticationFormErrorMessage
-                isLogin={isLogin}
-                idpAuthError={authError}
-                loginError={loginError}
-                signupError={signupError}
-              />
+        {showSignupForm ? (
+          <div className={classNames(css.formCard, css.formCardCompact)}>
+            <AuthFormHeader
+              title={
+                <FormattedMessage id={`AuthenticationPage.signupTitle.${signupHeadingType}`} />
+              }
+              lede={<FormattedMessage id={`AuthenticationPage.signupLede.${signupHeadingType}`} />}
+            />
+            <AuthenticationFormErrorMessage
+              isLogin={isLogin}
+              idpAuthError={authError}
+              loginError={loginError}
+              signupError={signupError}
+            />
+            {socialLoginButtons}
+            <SignupForm
+              className={css.signupForm}
+              onSubmit={getHandleSubmitSignup({
+                submitSignup,
+                userFields,
+                userTypes,
+              })}
+              inProgress={authInProgress}
+              termsAndConditions={termsAndConditions}
+              preselectedUserType={preselectedUserType}
+              userTypes={userTypes}
+              userFields={userFields}
+            />
+            <FormFootPrompt
+              messageId="AuthenticationPage.haveAccountPrompt"
+              linkMessageId="AuthenticationPage.loginLinkText"
+              linkName="LoginPage"
+              linkTo={fromOnlyState}
+            />
+          </div>
+        ) : null}
 
-              {showLoginForm ? (
-                <LoginForm
-                  className={css.loginForm}
-                  onSubmit={submitLogin}
-                  inProgress={authInProgress}
-                />
-              ) : (
-                <SignupForm
-                  className={css.signupForm}
-                  onSubmit={getHandleSubmitSignup({
-                    submitSignup,
-                    userFields,
-                    userTypes,
-                  })}
-                  inProgress={authInProgress}
-                  termsAndConditions={termsAndConditions}
-                  preselectedUserType={preselectedUserType}
-                  userTypes={userTypes}
-                  userFields={userFields}
-                />
-              )}
-
-              <SocialLoginButtons
-                isLogin={isLogin}
-                showFacebookLogin={!!process.env.REACT_APP_FACEBOOK_APP_ID}
-                showGoogleLogin={!!process.env.REACT_APP_GOOGLE_CLIENT_ID}
-                {...fromMaybe}
-                {...userTypeMaybe}
-              />
-            </div>
-          ) : null}
-
-          {showConfirmFormForSSO ? (
-            <div className={css.content}>
-              <Heading as="h1" rootClassName={css.signupWithIdpTitle}>
+        {showConfirmFormForSSO ? (
+          <div className={classNames(css.formCard, css.formCardCompact)}>
+            <AuthFormHeader
+              title={
                 <FormattedMessage
                   id="AuthenticationPage.confirmSignupWithIdpTitle"
                   values={{ idp }}
                 />
-              </Heading>
-
-              <p className={css.confirmInfoText}>
-                <FormattedMessage id="AuthenticationPage.confirmSignupInfoText" />
-              </p>
-              <AuthenticationFormErrorMessage
-                isLogin={false}
-                idpAuthError={null}
-                loginError={null}
-                signupError={confirmError}
-              />
-              <ConfirmSignupForm
-                className={css.form}
-                inProgress={authInProgress}
-                onSubmit={getHandleSubmitConfirm({
-                  authInfo,
-                  submitSingupWithIdp,
-                  userFields,
-                  userTypes,
-                })}
-                termsAndConditions={termsAndConditions}
-                authInfo={authInfo}
-                idp={idp}
-                preselectedUserType={preselectedUserType}
-                userTypes={userTypes}
-                userFields={userFields}
-              />
-            </div>
-          ) : null}
-
-          {showEmailVerification ? (
-            <EmailVerificationInfo
-              name={user.attributes.profile.firstName}
-              email={<span className={css.email}>{user.attributes.email}</span>}
-              isModel={isModel}
-              closeLinkName={isModel ? 'NewListingPage' : 'SearchPage'}
-              onResendVerificationEmail={onResendVerificationEmail}
-              resendErrorMessage={
-                <ResendVerificationErrorMessage
-                  sendVerificationEmailError={sendVerificationEmailError}
-                />
               }
-              sendVerificationEmailInProgress={sendVerificationEmailInProgress}
+              lede={<FormattedMessage id="AuthenticationPage.confirmSignupInfoText" />}
             />
-          ) : null}
-        </ResponsiveBackgroundImageContainer>
-      </LayoutSingleColumn>
+            <AuthenticationFormErrorMessage
+              isLogin={false}
+              idpAuthError={null}
+              loginError={null}
+              signupError={confirmError}
+            />
+            <ConfirmSignupForm
+              className={css.form}
+              inProgress={authInProgress}
+              onSubmit={getHandleSubmitConfirm({
+                authInfo,
+                submitSingupWithIdp,
+                userFields,
+                userTypes,
+              })}
+              termsAndConditions={termsAndConditions}
+              authInfo={authInfo}
+              idp={idp}
+              preselectedUserType={preselectedUserType}
+              userTypes={userTypes}
+              userFields={userFields}
+            />
+          </div>
+        ) : null}
+
+        {showEmailVerification ? (
+          <EmailVerificationInfo
+            name={user.attributes.profile.firstName}
+            email={<span className={css.email}>{user.attributes.email}</span>}
+            isModel={isModel}
+            closeLinkName={isModel ? 'NewListingPage' : 'SearchPage'}
+            onResendVerificationEmail={onResendVerificationEmail}
+            resendErrorMessage={
+              <ResendVerificationErrorMessage
+                sendVerificationEmailError={sendVerificationEmailError}
+              />
+            }
+            sendVerificationEmailInProgress={sendVerificationEmailInProgress}
+          />
+        ) : null}
+      </AuthShell>
       <Modal
         id="AuthenticationPage.tos"
         isOpen={tosModalOpen}

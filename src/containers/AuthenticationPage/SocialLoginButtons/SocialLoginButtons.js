@@ -69,15 +69,9 @@ const SocialLoginButtons = props => {
 
   return showSocialLogins ? (
     <div className={css.root}>
-      <div className={css.socialButtonsOr}>
-        <span className={css.socialButtonsOrText}>
-          <FormattedMessage id="AuthenticationPage.or" />
-        </span>
-      </div>
-
       {showFacebookLogin ? (
         <div className={css.socialButtonWrapper}>
-          <SocialLoginButton onClick={() => authWithFacebook()}>
+          <SocialLoginButton rootClassName={css.socialButton} onClick={() => authWithFacebook()}>
             <span className={css.buttonIcon}>
               <FacebookLogo ariaLabelledBy="facebook-authentication-msg" />
             </span>
@@ -88,7 +82,7 @@ const SocialLoginButtons = props => {
 
       {showGoogleLogin ? (
         <div className={css.socialButtonWrapper}>
-          <SocialLoginButton onClick={() => authWithGoogle()}>
+          <SocialLoginButton rootClassName={css.socialButton} onClick={() => authWithGoogle()}>
             <span className={css.buttonIcon}>
               <GoogleLogo ariaLabelledBy="google-authentication-msg" />
             </span>
@@ -96,6 +90,13 @@ const SocialLoginButtons = props => {
           </SocialLoginButton>
         </div>
       ) : null}
+
+      {/* Sign-up journey redesign: SSO sits above the email form, with the "or" divider below. */}
+      <div className={css.socialButtonsOr}>
+        <span className={css.socialButtonsOrText}>
+          <FormattedMessage id="AuthenticationPage.or" />
+        </span>
+      </div>
     </div>
   ) : null;
 };

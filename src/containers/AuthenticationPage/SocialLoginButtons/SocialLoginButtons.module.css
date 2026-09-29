@@ -1,50 +1,59 @@
+/* SSO buttons, restyled to the design-system secondary block button (rt-btn--secondary
+   rt-btn--block). Behaviour is unchanged. */
+
 .root {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  width: 100%;
+}
+
+.socialButtonWrapper {
+  width: 100%;
+}
+
+.socialButton {
+  composes: buttonSecondary from global;
+
+  /* Position the logo inside the button */
+  position: relative;
+  min-height: 48px;
+  padding: 12px 48px;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  line-height: var(--leading-snug);
 }
 
 .buttonIcon {
   position: absolute;
-  left: 0;
-  margin-left: 20px;
+  top: 50%;
+  left: 20px;
+  display: inline-flex;
+  transform: translateY(-50%);
 }
 
-.socialButtonWrapper {
-  margin-bottom: 6px;
-  @media (--viewportMedium) {
-    margin-top: 8px;
-  }
-}
-
+/* The "or" rule between SSO and the email form */
 .socialButtonsOr {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
   width: 100%;
-  height: 32px;
-  margin: 28px 0 20px 0;
-  text-align: center;
-  position: relative;
-  background-color: var(--colorWhite);
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  line-height: var(--leading-snug);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--text-muted);
 
-  &:after {
+  &::before,
+  &::after {
     content: '';
-    width: 100%;
-    border-bottom: solid 1px #d2d2d2;
-    position: absolute;
-    left: 0;
-    top: 50%;
-    z-index: 1;
-  }
-
-  @media (--viewportMedium) {
-    height: 34px;
-    margin: 15px 0;
+    flex: 1;
+    height: 1px;
+    background-color: var(--border-hairline);
   }
 }
 
 .socialButtonsOrText {
-  background-color: var(--colorWhite);
-  width: auto;
-  display: inline-block;
-  z-index: 3;
-  padding: 0 20px 0 20px;
-  position: relative;
   margin: 0;
 }

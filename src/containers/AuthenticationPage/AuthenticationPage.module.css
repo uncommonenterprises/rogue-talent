@@ -1,33 +1,7 @@
 @import '../../styles/customMediaQueries.css';
 
-.layoutWrapperMain {
-}
-
-.root {
-  flex-grow: 1;
-}
-
-.contentContainer {
-  composes: marketplaceModalRootStyles from global;
-  min-height: calc(100vh - 60px);
-  height: auto;
-
-  @media (--viewportMedium) {
-    height: unset;
-    min-height: unset;
-  }
-}
-
-.content {
-  composes: marketplaceModalBaseStyles from global;
-  padding-top: 29px;
-
-  @media (--viewportMedium) {
-    margin-top: 5vh;
-    margin-bottom: 7.5vh;
-    min-height: 700px;
-  }
-}
+/* The page layout itself is the shared split AuthShell (src/components/AuthShell). These are the
+   form-column pieces for the sign-up journey mockups 01 to 04 and 06. */
 
 .spinnerContainer {
   display: flex;
@@ -36,94 +10,69 @@
   height: 100%;
 }
 
-/* ================ Tabs & Form ================ */
+/* ================ Form card ================ */
 
-.tabs {
-  @media (--viewportMedium) {
-    margin-top: 6px;
-  }
+.formCard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  width: 100%;
+  max-width: 440px;
 }
 
-.tab {
-  composes: marketplaceModalTitleStyles from global;
-  padding: 0;
-  margin-top: 0;
-  margin-bottom: 0;
-
-  /* Break long words into multiple lines to avoid overflow */
-  word-break: break-word;
-  hyphens: auto;
-  font-size: 20px;
-
-  @media (min-width: 375px) {
-    font-size: 24px;
-  }
-
-  @media (min-width: 450px) {
-    font-size: 30px;
-  }
-
-  @media (--viewportMedium) {
-    word-break: unset;
-    hyphens: unset;
-    padding: 0;
-    margin-top: 0;
-  }
+/* Sign-up forms (screens 02 + 03): one spacing step tighter so each fits a ~800px-tall laptop
+   viewport without scrolling. */
+.formCardCompact {
+  gap: var(--space-4);
 }
 
+.loginForm,
+.signupForm,
 .form {
-  margin-top: 24px;
+  width: 100%;
+}
 
-  @media (--viewportMedium) {
-    margin-top: 30px;
-    padding-top: 2px;
+.formFoot {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  line-height: var(--leading-normal);
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+.formFootLink {
+  display: inline-block;
+  /* 44px tap target on mobile */
+  padding: 12px 0;
+  font-weight: var(--weight-semibold);
+  color: var(--text-accent);
+  text-decoration: none;
+
+  &:hover {
+    color: var(--accent-700);
+    text-decoration: underline;
+  }
+
+  @media (min-width: 900px) {
+    padding: 0;
   }
 }
 
-.loginForm {
-  margin-top: 24px;
+/* ================ Errors ================ */
 
-  /* We don't want the form to take the whole space so that on mobile view
-  the social login buttons will be after the sign up button
-  and not in the bottom of the page.
-  We also need to add flex-basis value so that Safari will show the
-  whole form correctly.  */
-  flex-grow: 0;
-  flex-basis: 260px;
-
-  @media (--viewportMedium) {
-    flex-basis: 330px;
-    margin-top: 30px;
-    padding-top: 2px;
-  }
+.error {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-sans);
+  font-weight: var(--weight-semibold);
+  font-size: var(--text-sm);
+  line-height: var(--leading-normal);
+  color: var(--status-error);
 }
 
-.signupForm {
-  margin-top: 24px;
-
-  /* We don't want the form to take the whole space so that on mobile view
-  the social login buttons will be after the sign up button
-  and not in the bottom of the page.
-  We also need to add flex-basis value so that Safari will show the
-  whole form correctly.  */
-  flex-grow: 0;
-  flex-basis: 340px;
-
-  @media (--viewportMedium) {
-    flex-basis: 410px;
-    margin-top: 30px;
-    padding-top: 2px;
-  }
-}
-
-.bottomWrapper {
-  composes: marketplaceModalBottomWrapper from global;
-
-  /* Align the helper links to the left since there isn't a Primary Button anymore */
-  text-align: left;
-}
-
-/* Terms of Service modal*/
+/* ================ Terms of Service modal ================ */
 
 .privacyWrapper,
 .termsWrapper {
@@ -136,30 +85,13 @@
   }
 }
 
-/* userType selection */
+/* ================ userType selection (FieldSelectUserType) ================ */
+
 .userTypeSelect {
-  margin-bottom: 24px;
-
-  @media (--viewportMedium) {
-    margin-bottom: 32px;
-  }
+  margin-bottom: var(--space-4);
 }
 
-.selectedLabel {
-  composes: label from global;
-}
-.selectedValue {
-  margin-top: 0;
-  margin-bottom: 6px;
-
-  @media (--viewportMedium) {
-    margin-top: 0;
-    margin-bottom: 0;
-    padding: 2px 0 6px 0;
-  }
-}
-
-/* ================ Hide Top bar in screens smaller than 768px  ================ */
+/* ================ Blank page (already authenticated) ================ */
 
 .hideOnMobile {
   display: none;
@@ -169,24 +101,12 @@
   }
 }
 
-/* ================ Close icon ================ */
+/* ================ Email verification (screen 04) ================ */
 
-.verifyClose {
-  composes: marketplaceModalCloseStyles from global;
-
-  /* This is not a real modal, z-index should not be modal's z-index */
-  z-index: 1;
+.content {
+  width: 100%;
+  max-width: 420px;
 }
-
-.closeText {
-  composes: marketplaceModalCloseText from global;
-}
-
-.closeIcon {
-  composes: marketplaceModalCloseIcon from global;
-}
-
-/* ================ Typography ================ */
 
 /* Title of the modal */
 .modalTitle {
@@ -201,6 +121,7 @@
 /* Make the email pop */
 .email {
   font-weight: var(--fontWeightHighlightEmail);
+  color: var(--text-primary);
 
   /* fallback option */
   word-break: break-all;
@@ -213,11 +134,6 @@
 .modalHelperLink {
   composes: a from global;
   composes: marketplaceModalHelperLink from global;
-}
-
-/* Helper texts for the links, not the actual links */
-.modalHelperText {
-  composes: marketplaceModalHelperText from global;
 }
 
 /* RT-FB-06: verify-email screen - one clear next step + a single quiet help line. */
@@ -252,35 +168,4 @@
 
 .modalIcon {
   composes: marketplaceModalIconStyles from global;
-
-  /* Align the icon and rest of the content in the modal. Sign & Login doesn't use an icon, maybe we should add one? */
-  margin-top: 47px;
-
-  @media (--viewportMedium) {
-    margin-top: 0;
-  }
-}
-
-/* ================ Errors ================ */
-
-.error {
-  composes: marketplaceModalPasswordMargins from global;
-}
-
-/* ================ Social logins & SSO ================ */
-
-.signupWithIdpTitle {
-  composes: marketplaceModalTitleStyles from global;
-  margin-top: 0;
-  margin-bottom: 0;
-  padding-top: 16px;
-  color: var(--colorBlack);
-
-  @media (--viewportMedium) {
-    padding: 0;
-    margin-top: 6px;
-  }
-}
-
-.confirmInfoText {
 }
