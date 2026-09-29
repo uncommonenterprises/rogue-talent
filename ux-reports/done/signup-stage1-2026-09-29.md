@@ -57,8 +57,9 @@ Impact:    Small but visible trust/polish issue on the client sign-up form, whic
            the first thing a paying client sees.
 
 ---
-Status: PENDING
-Note:
+Status: APPROVED
+Note: APPROVED by Neil in chat 2026-09-29 - "approve 01 and 03, defer 02".
+Implemented: 64a960509 2026-09-29
 
 ---
 
@@ -98,8 +99,8 @@ Impact:    Medium — a full advertised feature (from the approved mockups) is n
            reachable on any of the three account screens today.
 
 ---
-Status: PENDING
-Note:
+Status: DEFERRED
+Note: DEFERRED by Neil in chat 2026-09-29 - "approve 01 and 03, defer 02".
 
 ---
 
@@ -130,5 +131,6 @@ Impact:    Cosmetic only; bundle with any other homepage copy pass rather than a
            standalone deploy.
 
 ---
-Status: PENDING
-Note:
+Status: APPROVED
+Note: APPROVED by Neil in chat 2026-09-29 - "approve 01 and 03, defer 02".
+Implemented: 772f00e24 2026-09-29
