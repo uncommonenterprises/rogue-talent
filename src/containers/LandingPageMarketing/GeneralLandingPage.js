@@ -86,7 +86,7 @@ export const GeneralLandingPage = () => {
             <h1 className={css.heroTitle}>Models and brands, connected direct.</h1>
             <p className={css.heroIngress}>
               The marketplace where models and the businesses that book them work together
-              directly — no agents, no middlemen, no cut.
+              directly - no agents, no middlemen, no cut.
             </p>
             <div className={css.heroButtons}>
               {isAuthenticated ? null : (
