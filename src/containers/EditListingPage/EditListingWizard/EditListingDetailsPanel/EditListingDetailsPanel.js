@@ -18,10 +18,13 @@ import {
 import { isBookingProcessAlias } from '../../../../transactions/transaction';
 
 // Import shared components
-import { H3, ListingLink } from '../../../../components';
+import { ListingLink } from '../../../../components';
+
+// Import modules from parent directory
+import { isPricingListingField } from '../rateFields';
+import { WizardPanelHeader } from '../WizardShell/WizardShell';
 
 // Import modules from this directory
-import { isPricingListingField } from '../rateFields';
 import ErrorMessage from './ErrorMessage';
 import EditListingDetailsForm from './EditListingDetailsForm';
 import css from './EditListingDetailsPanel.module.css';
@@ -308,6 +311,7 @@ const EditListingDetailsPanel = props => {
     updateInProgress,
     errors,
     config,
+    backLinkProps,
     updatePageTitle: UpdatePageTitle,
     intl,
   } = props;
@@ -315,8 +319,8 @@ const EditListingDetailsPanel = props => {
   const classes = classNames(rootClassName || css.root, className);
   const { publicData, state } = listing?.attributes || {};
   const listingTypes = config.listing.listingTypes;
-  // Pricing-tab fields (rates, travel fee policy, minimum booking notice) live on "Your
-  // rates" and are excluded here (from rendering, initial values, and the submit pick).
+  // Pricing-tab fields (rates, travel costs, how far you'll travel, minimum booking notice)
+  // live on "Your rates" and are excluded here (from rendering, initial values, and the submit pick).
   // Everything else - the model attribute fields and the remaining offering fields - is on
   // this step.
   const listingFields = config.listing.listingFields.filter(f => !isPricingListingField(f));
@@ -381,18 +385,19 @@ const EditListingDetailsPanel = props => {
           { ...panelHeadingProps.messageProps }
         )}
       />
-      <H3 as="h1">
-        <FormattedMessage id={panelHeadingProps.id} values={{ ...panelHeadingProps.values }} />
-      </H3>
-      <p className={css.guidance}>
-        <FormattedMessage id="EditListingDetailsPanel.guidance" />
-      </p>
+      <WizardPanelHeader
+        title={
+          <FormattedMessage id={panelHeadingProps.id} values={{ ...panelHeadingProps.values }} />
+        }
+        guidance={<FormattedMessage id="EditListingDetailsPanel.guidance" />}
+      />
 
       {canShowEditListingDetailsForm ? (
         <EditListingDetailsForm
           className={css.form}
           initialValues={initialValues}
           saveActionMsg={submitButtonText}
+          backLinkProps={backLinkProps}
           onSubmit={values => {
             const {
               title,

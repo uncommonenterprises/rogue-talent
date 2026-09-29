@@ -24,6 +24,15 @@ import {
   Heading,
   CustomExtendedDataField,
 } from '../../../../components';
+
+// Import modules from parent directory
+import {
+  PROFILE_FIELD_DISPLAY,
+  groupProfileFields,
+  isFullWidthProfileField,
+} from '../profileFieldSections';
+import { WizardActions, wizardPrimaryButtonClassName } from '../WizardShell/WizardShell';
+
 // Import modules from this directory
 import css from './EditListingDetailsForm.module.css';
 
@@ -243,18 +252,6 @@ const FieldSelectCategory = props => {
   );
 };
 
-// Add collect data for listing fields (both publicData and privateData) based on configuration
-// Group the long "Your profile" field list into labelled sections to lower
-// perceived effort on the heaviest wizard step. Keys map to the Console
-// listing-field keys; any eligible field NOT listed here still renders (in a
-// trailing group), so adding/renaming a Console field never makes it disappear.
-const PROFILE_FIELD_SECTIONS = [
-  { id: 'Stats', keys: ['height_cm', 'waist_cm', 'hips_cm', 'bust_chest_cm', 'shoe_size_uk'] },
-  { id: 'Appearance', keys: ['gender', 'hair_colour', 'eye_colour', 'ethnicity'] },
-  { id: 'Work', keys: ['experience_level', 'modelling_categories', 'availability_radius'] },
-  { id: 'Links', keys: ['model_website_url', 'instagram_url'] },
-];
-
 // Namespaced form-field key for a listing field (matches the CustomExtendedDataField names).
 const namespacedFieldKey = fieldConfig => {
   const { key, scope } = fieldConfig;
@@ -305,47 +302,38 @@ const AddListingFields = props => {
 
   const renderField = fieldConfig => {
     const namespacedKey = namespacedFieldKey(fieldConfig);
+    const cellClasses = classNames(css.fieldAnchor, css.fieldCell, {
+      [css.fieldCellFullWidth]: isFullWidthProfileField(fieldConfig),
+    });
     return (
-      <div key={namespacedKey} id={`field-${namespacedKey}`} className={css.fieldAnchor}>
+      <div key={namespacedKey} id={`field-${namespacedKey}`} className={cellClasses}>
         <CustomExtendedDataField
+          className={css.field}
           name={namespacedKey}
           fieldConfig={fieldConfig}
           defaultRequiredMessage={intl.formatMessage({
             id: 'EditListingDetailsForm.defaultRequiredMessage',
           })}
           formId={formId}
+          displayAs={PROFILE_FIELD_DISPLAY[fieldConfig.key]}
+          hintBelowInput
         />
       </div>
     );
   };
 
-  const eligible = listingFieldsConfig.filter(isEligible);
-  const byKey = new Map(eligible.map(f => [f.key, f]));
-  const sectionedKeys = new Set();
-
-  const sections = PROFILE_FIELD_SECTIONS.map(section => {
-    const sectionFields = section.keys.map(k => byKey.get(k)).filter(Boolean);
-    sectionFields.forEach(f => sectionedKeys.add(f.key));
-    if (!sectionFields.length) {
-      return null;
-    }
-    return (
-      <div key={section.id} className={css.fieldSection}>
-        <h3 className={css.sectionHeading}>
-          {intl.formatMessage({ id: `EditListingDetailsForm.section${section.id}` })}
-        </h3>
-        {sectionFields.map(renderField)}
-      </div>
-    );
-  }).filter(Boolean);
-
-  // Fallback: eligible fields not covered by any section (config order preserved).
-  const remainder = eligible.filter(f => !sectionedKeys.has(f.key));
+  // Sections: Basics, Measurements, Style & experience, Your links (profileFieldSections.js).
+  // Any eligible field not listed there is added to the default section, never dropped.
+  const sections = groupProfileFields(listingFieldsConfig.filter(isEligible));
 
   return (
     <>
-      {sections}
-      {remainder.map(renderField)}
+      {sections.map(section => (
+        <section key={section.id} className={css.fieldSection}>
+          <h2 className={css.sectionHeading}>{intl.formatMessage({ id: section.labelId })}</h2>
+          <div className={css.fieldGrid}>{section.fields.map(renderField)}</div>
+        </section>
+      ))}
     </>
   );
 };
@@ -380,6 +368,7 @@ const getListingTypeConfig = (config, listingType) => {
  * @param {boolean} [props.autoFocus] - Whether the form should autofocus
  * @param {Function} props.onListingTypeChange - The listing type change function
  * @param {Function} props.onSubmit - The submit function
+ * @param {Object} [props.backLinkProps] - NamedLink props for the wizard's "Back" link
  * @returns {JSX.Element}
  */
 const EditListingDetailsForm = props => (
@@ -408,6 +397,7 @@ const EditListingDetailsForm = props => (
         pickSelectedCategories,
         categoryPrefix,
         saveActionMsg,
+        backLinkProps,
         updated,
         updateInProgress,
         fetchErrors,
@@ -594,15 +584,17 @@ const EditListingDetailsForm = props => (
             )
           ) : null}
 
-          <Button
-            className={css.submitButton}
-            type="submit"
-            inProgress={submitInProgress}
-            disabled={submitDisabled}
-            ready={submitReady}
-          >
-            {saveActionMsg}
-          </Button>
+          <WizardActions backLinkProps={backLinkProps}>
+            <Button
+              className={wizardPrimaryButtonClassName}
+              type="submit"
+              inProgress={submitInProgress}
+              disabled={submitDisabled}
+              ready={submitReady}
+            >
+              {saveActionMsg}
+            </Button>
+          </WizardActions>
         </Form>
       );
     }}

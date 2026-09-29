@@ -11,6 +11,7 @@ import {
   isRateListingField,
 } from './rateFields';
 import { MIN_PORTFOLIO_PHOTOS, countUploadedImages, hasMinimumPortfolio } from './portfolioRules';
+import { DEFAULT_PROFILE_SECTION_ID, groupProfileFields } from './profileFieldSections';
 
 const modelProfileConfig = listingTypes.find(t => t.listingType === 'model-profile');
 
@@ -120,5 +121,45 @@ describe('isOnboardingShellFlow', () => {
 
   it('is off in edit mode', () => {
     expect(isOnboardingShellFlow({ type: 'edit' }, null, config)).toBe(false);
+  });
+});
+
+describe('"Your profile" sections (profileFieldSections.js)', () => {
+  const detailsFields = listingFields.filter(f => !isPricingListingField(f));
+
+  it('maps every real profile field into Basics / Measurements / Style & experience / Links', () => {
+    const sections = groupProfileFields(detailsFields);
+    expect(sections.map(s => [s.id, s.fields.map(f => f.key)])).toEqual([
+      ['basics', ['gender', 'height_cm']],
+      ['measurements', ['waist_cm', 'hips_cm', 'bust_chest_cm', 'shoe_size_uk']],
+      [
+        'style',
+        ['hair_colour', 'eye_colour', 'ethnicity', 'experience_level', 'modelling_categories'],
+      ],
+      ['links', ['model_website_url', 'instagram_url']],
+    ]);
+  });
+
+  it('adds an unmapped field to the default section rather than dropping it', () => {
+    const extra = { key: 'languages', schemaType: 'shortText' };
+    const style = groupProfileFields([...detailsFields, extra]).find(
+      s => s.id === DEFAULT_PROFILE_SECTION_ID
+    );
+    expect(style.fields.map(f => f.key)).toContain('languages');
+  });
+
+  it('gives unmapped fields their own section if the default section is not configured', () => {
+    const sections = groupProfileFields(
+      [{ key: 'languages', schemaType: 'shortText' }],
+      [{ id: 'basics', labelId: 'x', keys: ['gender'] }],
+      'more'
+    );
+    expect(sections).toEqual([
+      {
+        id: 'more',
+        labelId: 'EditListingDetailsForm.sectionMore',
+        fields: [{ key: 'languages', schemaType: 'shortText' }],
+      },
+    ]);
   });
 });

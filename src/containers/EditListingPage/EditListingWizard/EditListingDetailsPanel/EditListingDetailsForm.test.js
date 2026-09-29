@@ -1,10 +1,12 @@
 import React from 'react';
 import '@testing-library/jest-dom';
 
+import { listingFields } from '../../../../config/configListing';
 import { pickCategoryFields } from '../../../../util/fieldHelpers';
 import { fakeIntl } from '../../../../util/testData';
 import { renderWithProviders as render, testingLibrary } from '../../../../util/testHelpers';
 
+import { isPricingListingField } from '../rateFields';
 import EditListingDetailsForm from './EditListingDetailsForm';
 
 const { screen, userEvent } = testingLibrary;
@@ -118,5 +120,92 @@ describe('EditListingDetailsForm', () => {
 
     // Test that save button is enabled
     expect(screen.getByRole('button', { name: saveActionMsg })).toBeEnabled();
+  });
+});
+
+describe('EditListingDetailsForm "Your profile" step (sign-up journey screen 09)', () => {
+  const modelProfileType = {
+    listingType: 'model-profile',
+    transactionProcessAlias: 'default-booking/release-1',
+    unitType: 'day',
+  };
+  // The real model-profile fields, minus the ones collected on "Your rates".
+  const profileFields = listingFields.filter(f => !isPricingListingField(f));
+
+  const renderProfileForm = (fields = profileFields, onSubmit = v => v) =>
+    render(
+      <EditListingDetailsForm
+        intl={fakeIntl}
+        dispatch={noop}
+        onListingTypeChange={noop}
+        onSubmit={onSubmit}
+        saveActionMsg="Continue"
+        updated={false}
+        updateInProgress={false}
+        disabled={false}
+        ready={false}
+        listingFieldsConfig={fields}
+        categoryPrefix="categoryLevel"
+        selectableCategories={[]}
+        pickSelectedCategories={values => pickCategoryFields(values, 'categoryLevel', 1, [])}
+        selectableListingTypes={[modelProfileType]}
+        hasPredefinedListingType
+        hasExistingTitle
+        initialValues={{ ...modelProfileType, title: 'Jane D.' }}
+        marketplaceCurrency="GBP"
+      />
+    );
+
+  it('groups the fields into Basics, Measurements, Style & experience and Your links', () => {
+    renderProfileForm();
+    const headings = screen.getAllByRole('heading', { level: 2 }).map(h => h.textContent);
+    expect(headings).toEqual([
+      'EditListingDetailsForm.sectionBasics',
+      'EditListingDetailsForm.sectionMeasurements',
+      'EditListingDetailsForm.sectionStyle',
+      'EditListingDetailsForm.sectionLinks',
+    ]);
+  });
+
+  it('does not ask for "How far you\'ll travel" (availability_radius), now on Your rates', () => {
+    renderProfileForm();
+    expect(screen.queryByLabelText(/Availability radius/)).not.toBeInTheDocument();
+    expect(document.getElementById('field-pub_availability_radius')).toBeNull();
+  });
+
+  it('shows ethnicity as a multi-select dropdown and saves several choices', async () => {
+    const user = userEvent.setup();
+    renderProfileForm();
+
+    const ethnicity = screen.getByRole('button', { name: /Ethnicity/ });
+    expect(ethnicity).toHaveTextContent('CustomExtendedDataField.placeholderMultiSelect');
+    expect(ethnicity).toHaveAttribute('aria-expanded', 'false');
+
+    await user.click(ethnicity);
+    await user.click(screen.getByRole('checkbox', { name: 'Mixed' }));
+    await user.click(screen.getByRole('checkbox', { name: 'White' }));
+    await user.keyboard('{Escape}');
+    expect(ethnicity).toHaveTextContent('Mixed, White');
+  });
+
+  it('shows all 13 modelling categories as pills from the start', () => {
+    renderProfileForm();
+    const group = screen.getByRole('group', { name: /Modelling categories/ });
+    expect(group.querySelectorAll('input[type="checkbox"]')).toHaveLength(13);
+    expect(screen.getByRole('checkbox', { name: 'Promotional/Events' })).toBeInTheDocument();
+  });
+
+  it('puts a field with no section into Style & experience instead of dropping it', () => {
+    const unmapped = {
+      key: 'languages',
+      scope: 'public',
+      schemaType: 'shortText',
+      saveConfig: { label: 'Languages', isRequired: false },
+    };
+    renderProfileForm([...profileFields, unmapped]);
+    const styleSection = screen
+      .getByRole('heading', { name: 'EditListingDetailsForm.sectionStyle' })
+      .closest('section');
+    expect(styleSection).toContainElement(screen.getByLabelText('Languages (optional)'));
   });
 });

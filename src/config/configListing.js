@@ -221,7 +221,7 @@ export const listingFields = [
     scope: 'public',
     schemaType: 'enum',
     listingTypeConfig: MODEL_PROFILE_ONLY,
-    helpText: 'Your current hair colour — pick "Other" if it changes often.',
+    helpText: 'Your current hair colour. Pick "Other" if it changes often.',
     enumOptions: [
       { option: 'black', label: 'Black' },
       { option: 'brown', label: 'Brown' },
@@ -308,9 +308,9 @@ export const listingFields = [
     scope: 'public',
     schemaType: 'enum',
     listingTypeConfig: MODEL_PROFILE_ONLY,
-    helpText: 'Be honest — clients book at every level, and new faces are in demand.',
+    helpText: 'Be honest, clients book at every level, and new faces are in demand.',
     enumOptions: [
-      { option: 'new-face', label: 'New Face (just starting out — building your first portfolio)' },
+      { option: 'new-face', label: 'New Face (just starting out, building your first portfolio)' },
       {
         option: 'some-experience',
         label: 'Some experience (a handful of shoots or jobs so far)',
