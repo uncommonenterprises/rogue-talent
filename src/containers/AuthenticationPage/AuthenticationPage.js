@@ -50,6 +50,7 @@ import TermsAndConditions from './TermsAndConditions/TermsAndConditions';
 import ConfirmSignupForm from './ConfirmSignupForm/ConfirmSignupForm';
 import LoginForm from './LoginForm/LoginForm';
 import SignupForm from './SignupForm/SignupForm';
+import ChooseRole from './ChooseRole/ChooseRole';
 import EmailVerificationInfo from './EmailVerificationInfo';
 import SocialLoginButtons from './SocialLoginButtons/SocialLoginButtons';
 
@@ -344,7 +345,11 @@ export const AuthenticationPageComponent = props => {
   const showConfirmFormForSSO = !showEmailVerification && isConfirm;
   const showAuthenticationForm = !showEmailVerification && !isConfirm;
   const showLoginForm = showAuthenticationForm && isLogin;
-  const showSignupForm = showAuthenticationForm && !isLogin;
+  // Screen 01: with more than one role and none chosen yet, show the role cards instead of a
+  // user-type dropdown. The cards link to /signup/:userType (SignupForUserTypePage).
+  const showChooseRole =
+    showAuthenticationForm && !isLogin && !preselectedUserType && userTypes.length > 1;
+  const showSignupForm = showAuthenticationForm && !isLogin && !showChooseRole;
 
   const socialLoginButtons = (
     <SocialLoginButtons
@@ -393,6 +398,21 @@ export const AuthenticationPageComponent = props => {
               linkTo={fromOnlyState}
             />
           </div>
+        ) : null}
+
+        {showChooseRole ? (
+          <ChooseRole
+            userTypes={userTypes}
+            linkTo={fromOnlyState}
+            footer={
+              <FormFootPrompt
+                messageId="AuthenticationPage.haveAccountPrompt"
+                linkMessageId="AuthenticationPage.loginLinkText"
+                linkName="LoginPage"
+                linkTo={fromOnlyState}
+              />
+            }
+          />
         ) : null}
 
         {showSignupForm ? (

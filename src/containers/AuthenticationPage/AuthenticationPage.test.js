@@ -86,6 +86,32 @@ describe('AuthenticationPage', () => {
   });
 });
 
+describe('AuthenticationPage sign-up journey (stage 1)', () => {
+  beforeEach(() => {
+    window.scrollTo = jest.fn();
+    process.env = Object.assign(process.env, { REACT_APP_FACEBOOK_APP_ID: '' });
+    process.env = Object.assign(process.env, { REACT_APP_GOOGLE_CLIENT_ID: '' });
+  });
+
+  afterAll(() => {
+    jest.clearAllMocks();
+  });
+
+  it('shows the two role cards instead of a user type dropdown on /signup', () => {
+    render(<AuthenticationPage {...props} tab="signup" location={{ state: {} }} params={{}} />);
+
+    expect(screen.getByRole('heading', { name: 'ChooseRole.title' })).toBeInTheDocument();
+    const modelCard = screen.getByRole('heading', { name: 'ChooseRole.model.title' }).closest('a');
+    const clientCard = screen.getByRole('heading', { name: 'ChooseRole.client.title' }).closest('a');
+    expect(modelCard).toHaveAttribute('href', '/signup/model');
+    expect(clientCard).toHaveAttribute('href', '/signup/client');
+
+    // No user type dropdown and no sign-up form until a role is chosen
+    expect(screen.queryByRole('combobox')).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('SignupForm.passwordLabel')).not.toBeInTheDocument();
+  });
+});
+
 describe('AuthenticationPage with SSO', () => {
   beforeEach(() => {
     // This is not defined by default on test env. AuthenticationPage needs it.
