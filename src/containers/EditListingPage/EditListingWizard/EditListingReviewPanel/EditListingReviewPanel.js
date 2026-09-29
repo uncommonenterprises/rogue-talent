@@ -50,13 +50,15 @@ const ReviewSection = props => {
     <section className={css.section}>
       <div className={css.sectionHead}>
         <h2 className={css.sectionTitle}>{title}</h2>
-        <NamedLink
-          {...editLinkProps}
-          className={css.editLink}
-          ariaLabel={intl.formatMessage({ id: 'EditListingReviewPanel.editSection' }, { title })}
-        >
-          <FormattedMessage id="EditListingReviewPanel.edit" />
-        </NamedLink>
+        {editLinkProps?.name ? (
+          <NamedLink
+            {...editLinkProps}
+            className={css.editLink}
+            ariaLabel={intl.formatMessage({ id: 'EditListingReviewPanel.editSection' }, { title })}
+          >
+            <FormattedMessage id="EditListingReviewPanel.edit" />
+          </NamedLink>
+        ) : null}
       </div>
       {children}
     </section>
