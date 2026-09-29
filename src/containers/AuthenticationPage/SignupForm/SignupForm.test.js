@@ -242,9 +242,25 @@ describe('SignupForm - Rogue Talent sign-up (stage 1)', () => {
 
     renderForRole('client');
     expect(screen.queryByLabelText(/SignupForm.phoneNumberLabel/)).not.toBeInTheDocument();
-    // Client company fields stay on the sign-up form
+    // Company name stays on the sign-up form
     expect(screen.getByLabelText(/Company\/Agency name/)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Company registration number/)).toBeInTheDocument();
+  });
+
+  it('asks clients only for the company name: registration number and business details come later', () => {
+    renderForRole('client');
+    // Company name is required at sign-up (sign-up stage 3)
+    expect(screen.getByLabelText(/Company\/Agency name/)).toBeInTheDocument();
+    expect(
+      screen.getByLabelText(/Company\/Agency name/, { selector: 'input' })
+    ).toBeInTheDocument();
+    // Moved to "Your business details" (screen 18)
+    expect(screen.queryByLabelText(/Company registration number/)).not.toBeInTheDocument();
+    expect(screen.queryByLabelText(/Business phone number/)).not.toBeInTheDocument();
+    expect(screen.queryByLabelText(/Business address/)).not.toBeInTheDocument();
+    expect(screen.queryByLabelText(/Business type/)).not.toBeInTheDocument();
+    // Removed (Neil, 29/09/2026)
+    expect(screen.queryByText(/VAT number/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Typical project types/)).not.toBeInTheDocument();
   });
 
   it('does not render date of birth at sign-up, even if a field config asks for it', () => {
