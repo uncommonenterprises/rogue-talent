@@ -202,30 +202,33 @@ export const GeneralLandingPage = () => {
           </div>
         </section>
 
-        {/* 7 - DUAL PATH */}
-        <section className={css.dualPath}>
-          <div className={`${css.inner} ${css.dualGrid}`}>
-            <div className={css.pathCard}>
-              <div className={css.pathTitle}>I'm a model</div>
-              <p className={css.pathText}>
-                Build a profile, set your rates, get booked directly. Keep everything you earn.
-              </p>
-              <NamedLink name="SignupPage" className={css.btnInk}>
-                Join as talent
-              </NamedLink>
+        {/* 7 - DUAL PATH ("Join as talent / business": sign-up only, so not shown to logged-in
+            users) */}
+        {isAuthenticated ? null : (
+          <section className={css.dualPath}>
+            <div className={`${css.inner} ${css.dualGrid}`}>
+              <div className={css.pathCard}>
+                <div className={css.pathTitle}>I'm a model</div>
+                <p className={css.pathText}>
+                  Build a profile, set your rates, get booked directly. Keep everything you earn.
+                </p>
+                <NamedLink name="SignupPage" className={css.btnInk}>
+                  Join as talent
+                </NamedLink>
+              </div>
+              <div className={`${css.pathCard} ${css.pathCardAccent}`}>
+                <div className={css.pathTitle}>I'm a business</div>
+                <p className={css.pathText}>
+                  Search, book and pay verified models directly. Faster casting, one flat 15%
+                  booking fee - no agency markup.
+                </p>
+                <NamedLink name="SignupPage" className={css.btnPathAccent}>
+                  Join as business
+                </NamedLink>
+              </div>
             </div>
-            <div className={`${css.pathCard} ${css.pathCardAccent}`}>
-              <div className={css.pathTitle}>I'm a business</div>
-              <p className={css.pathText}>
-                Search, book and pay verified models directly. Faster casting, one flat 15% booking
-                fee - no agency markup.
-              </p>
-              <NamedLink name="SignupPage" className={css.btnPathAccent}>
-                Join as business
-              </NamedLink>
-            </div>
-          </div>
-        </section>
+          </section>
+        )}
 
         {/* 8 - CLOSING CTA (sign-up only, so not shown to logged-in users) */}
         {isAuthenticated ? null : (
