@@ -8,55 +8,56 @@ exports[`EditListingDeliveryForm matches snapshot 1`] = `
     method="post"
   >
     <div
-      class="imagesFieldArray"
+      class="addImageWrapperEmpty"
     >
-      <div
-        class="addImageWrapper"
+      <input
+        accept="image/*"
+        class="addImageInput"
+        id="addImage"
+        multiple=""
+        name="addImage"
+        type="file"
+      />
+      <label
+        class="addImage addImageEmpty"
+        for="addImage"
       >
-        <div
-          class="root"
+        <span
+          class="chooseImageText"
         >
-          <div
-            class="aspectPadding"
-            style="padding-bottom: 100%;"
+          <svg
+            aria-hidden="true"
+            class="tileIcon"
+            fill="none"
+            focusable="false"
+            height="28"
+            viewBox="0 0 24 24"
+            width="28"
           >
-            <div
-              class="aspectBox"
-            >
-              <input
-                accept="image/*"
-                class="addImageInput"
-                id="addImage"
-                name="addImage"
-                type="file"
-              />
-              <label
-                class="addImage"
-                for="addImage"
-              >
-                <span
-                  class="chooseImageText"
-                >
-                  <span
-                    class="chooseImage"
-                  >
-                    <span>
-                      EditListingPhotosForm.chooseImage
-                    </span>
-                  </span>
-                  <span
-                    class="imageTypes"
-                  >
-                    <span>
-                      EditListingPhotosForm.imageTypes
-                    </span>
-                  </span>
-                </span>
-              </label>
-            </div>
-          </div>
-        </div>
-      </div>
+            <path
+              d="M4 16.5V19a2 2 0 002 2h12a2 2 0 002-2v-2.5M7 9l5-5 5 5M12 4v13"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="1.6"
+            />
+          </svg>
+          <span
+            class="chooseImage"
+          >
+            <span>
+              EditListingPhotosForm.chooseImage
+            </span>
+          </span>
+          <span
+            class="imageTypes"
+          >
+            <span>
+              EditListingPhotosForm.imageTypes
+            </span>
+          </span>
+        </span>
+      </label>
     </div>
     <p
       class="tip"
@@ -65,13 +66,36 @@ exports[`EditListingDeliveryForm matches snapshot 1`] = `
         EditListingPhotosForm.addImagesTip
       </span>
     </p>
-    <button
-      class="root submitButton"
-      disabled=""
-      type="submit"
+    <p
+      class="minimumHint"
     >
-      Save photos
-    </button>
+      <span>
+        EditListingPhotosForm.minimumHint
+      </span>
+    </p>
+    <div
+      class="actions"
+    >
+      <span />
+      <div
+        class="primaryGroup"
+      >
+        <span
+          class="aside"
+        >
+          <span>
+            EditListingPhotosForm.minimumCounter
+          </span>
+        </span>
+        <button
+          class="root primaryButton"
+          disabled=""
+          type="submit"
+        >
+          Save photos
+        </button>
+      </div>
+    </div>
   </form>
 </DocumentFragment>
 `;

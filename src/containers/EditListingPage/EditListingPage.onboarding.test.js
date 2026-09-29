@@ -122,6 +122,14 @@ describe('EditListingPage model onboarding (sign-up journey stage 2)', () => {
     expect(screen.getByText('EditListingWizard.shell.stepOf')).toBeInTheDocument();
     // The review step is the "all 4 complete" state, not a fifth step.
     expect(screen.queryByText('EditListingWizard.tabLabelReview')).not.toBeInTheDocument();
+    // Back goes to the previous step (Your rates); Continue goes on to Review & submit.
+    expect(screen.getByRole('link', { name: 'EditListingWizard.shell.back' })).toHaveAttribute(
+      'href',
+      '/l/jane-d/listing-draft/draft/pricing'
+    );
+    expect(
+      screen.getByRole('button', { name: 'EditListingWizard.default-booking.new.savePhotos' })
+    ).toBeEnabled();
   });
 
   it('adds "Review & submit" after the portfolio step and publishes from it', async () => {

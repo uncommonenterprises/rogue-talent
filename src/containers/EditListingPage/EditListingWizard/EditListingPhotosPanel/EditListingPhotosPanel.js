@@ -6,7 +6,10 @@ import { FormattedMessage } from '../../../../util/reactIntl';
 import { LISTING_STATE_DRAFT } from '../../../../util/types';
 
 // Import shared components
-import { H3, ListingLink } from '../../../../components';
+import { ListingLink } from '../../../../components';
+
+// Import modules from parent directory
+import { WizardPanelHeader } from '../WizardShell/WizardShell';
 
 // Import modules from this directory
 import EditListingPhotosForm from './EditListingPhotosForm';
@@ -53,6 +56,7 @@ const EditListingPhotosPanel = props => {
     onSubmit,
     onRemoveImage,
     listingImageConfig,
+    backLinkProps,
     updatePageTitle: UpdatePageTitle,
     intl,
   } = props;
@@ -81,25 +85,12 @@ const EditListingPhotosPanel = props => {
           { ...panelHeadingProps.messageProps }
         )}
       />
-      <H3 as="h1">
-        <FormattedMessage id={panelHeadingProps.id} values={{ ...panelHeadingProps.values }} />
-      </H3>
-      <p className={css.guidance}>
-        <FormattedMessage id="EditListingPhotosPanel.guidance" />
-      </p>
-      {/* <H3 as="h1">
-        {isPublished ? (
-          <FormattedMessage
-            id="EditListingPhotosPanel.title"
-            values={{ listingTitle: <ListingLink listing={listing} />, lineBreak: <br /> }}
-          />
-        ) : (
-          <FormattedMessage
-            id="EditListingPhotosPanel.createListingTitle"
-            values={{ lineBreak: <br /> }}
-          />
-        )}
-      </H3> */}
+      <WizardPanelHeader
+        title={
+          <FormattedMessage id={panelHeadingProps.id} values={{ ...panelHeadingProps.values }} />
+        }
+        guidance={<FormattedMessage id="EditListingPhotosPanel.guidance" />}
+      />
       <EditListingPhotosForm
         className={css.form}
         disabled={disabled}
@@ -113,6 +104,7 @@ const EditListingPhotosPanel = props => {
         }}
         onRemoveImage={onRemoveImage}
         saveActionMsg={submitButtonText}
+        backLinkProps={backLinkProps}
         updated={panelUpdated}
         updateInProgress={updateInProgress}
         listingImageConfig={listingImageConfig}

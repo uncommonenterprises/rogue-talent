@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import { ARRAY_ERROR } from 'final-form';
+import React, { useRef, useState } from 'react';
 import { Form as FinalForm, Field } from 'react-final-form';
 import arrayMutators from 'final-form-arrays';
 import { FieldArray } from 'react-final-form-arrays';
@@ -8,18 +7,25 @@ import classNames from 'classnames';
 
 // Import configs and util modules
 import { FormattedMessage, useIntl } from '../../../../util/reactIntl';
-import { propTypes } from '../../../../util/types';
-import { nonEmptyArray, composeValidators } from '../../../../util/validators';
 import { isUploadImageOverLimitError } from '../../../../util/errors';
 
 // Import shared components
 import { Button, Form, AspectRatioWrapper } from '../../../../components';
+
+// Import modules from parent directory
+import { MIN_PORTFOLIO_PHOTOS, countUploadedImages } from '../portfolioRules';
+import { WizardActions, wizardPrimaryButtonClassName } from '../WizardShell/WizardShell';
 
 // Import modules from this directory
 import ListingImage from './ListingImage';
 import css from './EditListingPhotosForm.module.css';
 
 const ACCEPT_IMAGES = 'image/*';
+
+// Portfolio tiles use the portrait 4:5 shape of the talent card, so the model sees the crop
+// clients will see (sign-up journey screen 10).
+const TILE_ASPECT_WIDTH = 4;
+const TILE_ASPECT_HEIGHT = 5;
 
 const ImageUploadError = props => {
   return props.uploadOverLimit ? (
@@ -33,17 +39,6 @@ const ImageUploadError = props => {
   ) : null;
 };
 
-// NOTE: PublishListingError and ShowListingsError are here since Photos panel is the last visible panel
-// before creating a new listing. If that order is changed, these should be changed too.
-// Create and show listing errors are shown above submit button
-const PublishListingError = props => {
-  return props.error ? (
-    <p className={css.error}>
-      <FormattedMessage id="EditListingPhotosForm.publishListingFailed" />
-    </p>
-  ) : null;
-};
-
 const ShowListingsError = props => {
   return props.error ? (
     <p className={css.error}>
@@ -52,29 +47,119 @@ const ShowListingsError = props => {
   ) : null;
 };
 
-// Field component that uses file-input to allow user to select images.
+const IconUpload = () => (
+  <svg
+    className={css.tileIcon}
+    width="28"
+    height="28"
+    viewBox="0 0 24 24"
+    fill="none"
+    aria-hidden="true"
+    focusable="false"
+  >
+    <path
+      d="M4 16.5V19a2 2 0 002 2h12a2 2 0 002-2v-2.5M7 9l5-5 5 5M12 4v13"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+const IconAdd = () => (
+  <svg
+    className={css.tileIcon}
+    width="22"
+    height="22"
+    viewBox="0 0 24 24"
+    fill="none"
+    aria-hidden="true"
+    focusable="false"
+  >
+    <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+  </svg>
+);
+
+const isImageFile = file => !file?.type || file.type.startsWith('image/');
+
+/**
+ * Field component that uses a file input to let the user pick images. Several files can be
+ * chosen at once, or dragged onto the tile.
+ *
+ * @component
+ * @param {Object} props
+ * @param {Object} props.formApi Final Form API ({ change, blur })
+ * @param {Function} props.onImageUploadHandler called once per chosen file
+ * @param {number} [props.aspectWidth] tile aspect ratio width
+ * @param {number} [props.aspectHeight] tile aspect ratio height
+ * @param {boolean} [props.isEmptyState] render the large "no photos yet" tile instead
+ * @param {boolean} [props.multiple] allow choosing several files at once
+ * @returns {JSX.Element}
+ */
 export const FieldAddImage = props => {
-  const { formApi, onImageUploadHandler, aspectWidth = 1, aspectHeight = 1, ...rest } = props;
+  const {
+    formApi,
+    onImageUploadHandler,
+    aspectWidth = 1,
+    aspectHeight = 1,
+    isEmptyState = false,
+    multiple = false,
+    ...rest
+  } = props;
+  const [isDragActive, setIsDragActive] = useState(false);
+
+  const handleFiles = fileList => {
+    const files = Array.from(fileList || []).filter(isImageFile);
+    if (files.length === 0) {
+      return;
+    }
+    formApi.change(`addImage`, files[0]);
+    formApi.blur(`addImage`);
+    files.forEach(file => onImageUploadHandler(file));
+  };
+
   return (
     <Field form={null} {...rest}>
       {fieldprops => {
         const { accept, input, label, disabled: fieldDisabled } = fieldprops;
         const { name, type } = input;
-        const onChange = e => {
-          const file = e.target.files[0];
-          formApi.change(`addImage`, file);
-          formApi.blur(`addImage`);
-          onImageUploadHandler(file);
-        };
-        const inputProps = { accept, id: name, name, onChange, type };
+        const onChange = e => handleFiles(e.target.files);
+        const inputProps = { accept, id: name, name, onChange, type, multiple };
+        const dropProps = fieldDisabled
+          ? {}
+          : {
+              onDragOver: e => {
+                e.preventDefault();
+                setIsDragActive(true);
+              },
+              onDragLeave: () => setIsDragActive(false),
+              onDrop: e => {
+                e.preventDefault();
+                setIsDragActive(false);
+                handleFiles(e.dataTransfer?.files);
+              },
+            };
+        const labelClasses = classNames(css.addImage, {
+          [css.addImageEmpty]: isEmptyState,
+          [css.addImageDragActive]: isDragActive,
+          [css.addImageDisabled]: fieldDisabled,
+        });
+        const labelElement = (
+          <label htmlFor={name} className={labelClasses} {...dropProps}>
+            {label}
+          </label>
+        );
         return (
-          <div className={css.addImageWrapper}>
-            <AspectRatioWrapper width={aspectWidth} height={aspectHeight}>
-              {fieldDisabled ? null : <input {...inputProps} className={css.addImageInput} />}
-              <label htmlFor={name} className={css.addImage}>
-                {label}
-              </label>
-            </AspectRatioWrapper>
+          <div className={isEmptyState ? css.addImageWrapperEmpty : css.addImageWrapper}>
+            {fieldDisabled ? null : <input {...inputProps} className={css.addImageInput} />}
+            {isEmptyState ? (
+              labelElement
+            ) : (
+              <AspectRatioWrapper width={aspectWidth} height={aspectHeight}>
+                {labelElement}
+              </AspectRatioWrapper>
+            )}
           </div>
         );
       }}
@@ -109,8 +194,15 @@ const FieldListingImage = props => {
   );
 };
 
+// The portfolio needs MIN_PORTFOLIO_PHOTOS finished uploads before the step can be saved.
+const minimumPhotos = message => images =>
+  countUploadedImages(images) >= MIN_PORTFOLIO_PHOTOS ? undefined : message;
+
 /**
- * The EditListingPhotosForm component.
+ * The EditListingPhotosForm component ("Your portfolio", sign-up journey screen 10). With no
+ * photos it shows one large upload tile; after that, a grid of photos (the first carries a
+ * "Cover" badge, each has a remove button) ending in an "Add more" tile. At least 3 photos are
+ * needed: until then the counter reads "X of 3 minimum" and Continue is disabled.
  *
  * @component
  * @param {Object} props
@@ -121,36 +213,37 @@ const FieldListingImage = props => {
  * @param {boolean} props.updated - Whether the form is updated
  * @param {boolean} props.updateInProgress - Whether the update is in progress
  * @param {Object} props.fetchErrors - The fetch errors object
- * @param {propTypes.error} props.fetchErrors.publishListingError - The publish listing error
  * @param {propTypes.error} props.fetchErrors.showListingsError - The show listings error
  * @param {propTypes.error} props.fetchErrors.uploadImageError - The upload image error
  * @param {propTypes.error} props.fetchErrors.updateListingError - The update listing error
  * @param {string} props.saveActionMsg - The save action message
+ * @param {Object} [props.backLinkProps] - NamedLink props for the wizard's "Back" link
  * @param {Function} props.onSubmit - The submit function
  * @param {Function} props.onImageUpload - The image upload function
  * @param {Function} props.onRemoveImage - The remove image function
  * @param {Object} props.listingImageConfig - The listing image config
- * @param {number} props.listingImageConfig.aspectWidth - The aspect width
- * @param {number} props.listingImageConfig.aspectHeight - The aspect height
  * @param {string} props.listingImageConfig.variantPrefix - The variant prefix
  * @returns {JSX.Element}
  */
 export const EditListingPhotosForm = props => {
-  const [state, setState] = useState({ imageUploadRequested: false });
+  // Several photos can upload at once, so count the uploads still in flight.
+  const [uploadsInProgress, setUploadsInProgress] = useState(0);
   const [submittedImages, setSubmittedImages] = useState([]);
+  const uploadCounter = useRef(0);
 
   const onImageUploadHandler = file => {
     const { listingImageConfig, onImageUpload } = props;
     if (file) {
-      setState({ imageUploadRequested: true });
+      uploadCounter.current += 1;
+      setUploadsInProgress(n => n + 1);
+      const done = () => setUploadsInProgress(n => Math.max(0, n - 1));
 
-      onImageUpload({ id: `${file.name}_${Date.now()}`, file }, listingImageConfig)
-        .then(() => {
-          setState({ imageUploadRequested: false });
-        })
-        .catch(() => {
-          setState({ imageUploadRequested: false });
-        });
+      onImageUpload(
+        { id: `${file.name}_${Date.now()}_${uploadCounter.current}`, file },
+        listingImageConfig
+      )
+        .then(done)
+        .catch(done);
     }
   };
   const intl = useIntl();
@@ -170,19 +263,20 @@ export const EditListingPhotosForm = props => {
           disabled,
           ready,
           saveActionMsg,
+          backLinkProps,
           updated,
           updateInProgress,
-          touched,
-          errors,
           values,
           listingImageConfig,
         } = formRenderProps;
 
         const images = values.images || [];
-        const { aspectWidth = 1, aspectHeight = 1, variantPrefix } = listingImageConfig;
+        const { variantPrefix } = listingImageConfig;
+        const isUploading = uploadsInProgress > 0;
+        const uploadedCount = countUploadedImages(images);
+        const belowMinimum = uploadedCount < MIN_PORTFOLIO_PHOTOS;
 
-        const { publishListingError, showListingsError, updateListingError, uploadImageError } =
-          fetchErrors || {};
+        const { showListingsError, updateListingError, uploadImageError } = fetchErrors || {};
         const uploadOverLimit = isUploadImageOverLimitError(uploadImageError);
 
         // imgs can contain added images (with temp ids) and submitted images with uniq ids.
@@ -196,10 +290,44 @@ export const EditListingPhotosForm = props => {
         const submitReady = (updated && pristineSinceLastSubmit) || ready;
         const submitInProgress = updateInProgress;
         const submitDisabled =
-          invalid || disabled || submitInProgress || state.imageUploadRequested || ready;
-        const imagesError = touched.images && errors?.images && errors.images[ARRAY_ERROR];
+          invalid || belowMinimum || disabled || submitInProgress || isUploading || ready;
 
         const classes = classNames(css.root, className);
+
+        const addImageField = isEmptyState => (
+          <FieldAddImage
+            id="addImage"
+            name="addImage"
+            accept={ACCEPT_IMAGES}
+            multiple
+            isEmptyState={isEmptyState}
+            label={
+              <span className={css.chooseImageText}>
+                {isEmptyState ? <IconUpload /> : <IconAdd />}
+                <span className={css.chooseImage}>
+                  <FormattedMessage
+                    id={
+                      isEmptyState
+                        ? 'EditListingPhotosForm.chooseImage'
+                        : 'EditListingPhotosForm.addMore'
+                    }
+                  />
+                </span>
+                {isEmptyState ? (
+                  <span className={css.imageTypes}>
+                    <FormattedMessage id="EditListingPhotosForm.imageTypes" />
+                  </span>
+                ) : null}
+              </span>
+            }
+            type="file"
+            disabled={isUploading}
+            formApi={form}
+            onImageUploadHandler={onImageUploadHandler}
+            aspectWidth={TILE_ASPECT_WIDTH}
+            aspectHeight={TILE_ASPECT_HEIGHT}
+          />
+        );
 
         return (
           <Form
@@ -215,59 +343,45 @@ export const EditListingPhotosForm = props => {
               </p>
             ) : null}
 
-            <div className={css.imagesFieldArray}>
-              <FieldArray
-                name="images"
-                validate={composeValidators(
-                  nonEmptyArray(
-                    intl.formatMessage({
-                      id: 'EditListingPhotosForm.imageRequired',
-                    })
-                  )
-                )}
-              >
-                {({ fields }) =>
-                  fields.map((name, index) => (
-                    <FieldListingImage
-                      key={name}
-                      name={name}
-                      onRemoveImage={imageId => {
-                        fields.remove(index);
-                        onRemoveImage(imageId);
-                      }}
-                      intl={intl}
-                      aspectWidth={aspectWidth}
-                      aspectHeight={aspectHeight}
-                      variantPrefix={variantPrefix}
-                    />
-                  ))
-                }
-              </FieldArray>
-
-              <FieldAddImage
-                id="addImage"
-                name="addImage"
-                accept={ACCEPT_IMAGES}
-                label={
-                  <span className={css.chooseImageText}>
-                    <span className={css.chooseImage}>
-                      <FormattedMessage id="EditListingPhotosForm.chooseImage" />
-                    </span>
-                    <span className={css.imageTypes}>
-                      <FormattedMessage id="EditListingPhotosForm.imageTypes" />
-                    </span>
-                  </span>
-                }
-                type="file"
-                disabled={state.imageUploadRequested}
-                formApi={form}
-                onImageUploadHandler={onImageUploadHandler}
-                aspectWidth={aspectWidth}
-                aspectHeight={aspectHeight}
-              />
-            </div>
-
-            {imagesError ? <div className={css.arrayError}>{imagesError}</div> : null}
+            <FieldArray
+              name="images"
+              validate={minimumPhotos(
+                intl.formatMessage(
+                  { id: 'EditListingPhotosForm.imageRequired' },
+                  { minimum: MIN_PORTFOLIO_PHOTOS }
+                )
+              )}
+            >
+              {({ fields }) =>
+                fields.length === 0 ? (
+                  addImageField(true)
+                ) : (
+                  <ul className={css.imagesGrid}>
+                    {fields.map((name, index) => (
+                      <li key={name} className={css.photoTile}>
+                        <FieldListingImage
+                          name={name}
+                          onRemoveImage={imageId => {
+                            fields.remove(index);
+                            onRemoveImage(imageId);
+                          }}
+                          intl={intl}
+                          aspectWidth={TILE_ASPECT_WIDTH}
+                          aspectHeight={TILE_ASPECT_HEIGHT}
+                          variantPrefix={variantPrefix}
+                        />
+                        {index === 0 ? (
+                          <span className={css.coverBadge}>
+                            <FormattedMessage id="EditListingPhotosForm.coverBadge" />
+                          </span>
+                        ) : null}
+                      </li>
+                    ))}
+                    <li className={css.addMoreTile}>{addImageField(false)}</li>
+                  </ul>
+                )
+              }
+            </FieldArray>
 
             <ImageUploadError
               uploadOverLimit={uploadOverLimit}
@@ -277,19 +391,38 @@ export const EditListingPhotosForm = props => {
             <p className={css.tip}>
               <FormattedMessage id="EditListingPhotosForm.addImagesTip" />
             </p>
+            {belowMinimum ? (
+              <p className={css.minimumHint}>
+                <FormattedMessage
+                  id="EditListingPhotosForm.minimumHint"
+                  values={{ minimum: MIN_PORTFOLIO_PHOTOS }}
+                />
+              </p>
+            ) : null}
 
-            <PublishListingError error={publishListingError} />
             <ShowListingsError error={showListingsError} />
 
-            <Button
-              className={css.submitButton}
-              type="submit"
-              inProgress={submitInProgress}
-              disabled={submitDisabled}
-              ready={submitReady}
+            <WizardActions
+              backLinkProps={backLinkProps}
+              aside={
+                belowMinimum ? (
+                  <FormattedMessage
+                    id="EditListingPhotosForm.minimumCounter"
+                    values={{ count: uploadedCount, minimum: MIN_PORTFOLIO_PHOTOS }}
+                  />
+                ) : null
+              }
             >
-              {saveActionMsg}
-            </Button>
+              <Button
+                className={wizardPrimaryButtonClassName}
+                type="submit"
+                inProgress={submitInProgress}
+                disabled={submitDisabled}
+                ready={submitReady}
+              >
+                {saveActionMsg}
+              </Button>
+            </WizardActions>
           </Form>
         );
       }}

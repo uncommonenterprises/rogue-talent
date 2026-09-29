@@ -1,5 +1,8 @@
 @import '../../../../styles/customMediaQueries.css';
 
+/* "Your portfolio" (sign-up journey screen 10, journey.css upload-tile / portfolio-grid).
+   Design-system tokens only. */
+
 .root {
   width: 100%;
   height: auto;
@@ -9,104 +12,145 @@
   flex-shrink: 0;
 }
 
-.imagesFieldArray {
-  flex-shrink: 0;
+/* ================ Photo grid ================ */
+
+.imagesGrid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 24px;
-  margin: 0 0 24px 0;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  @media (--viewportSmall) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.photoTile {
+  position: relative;
+  margin: 0;
+  overflow: hidden;
+  background-color: var(--ink-100);
+  border: var(--border-hair) solid var(--border-hairline);
+  border-radius: var(--radius-lg);
 }
 
 .thumbnail {
   width: 100%;
-  background-color: var(--colorGrey50);
+  background-color: var(--ink-100);
 }
 
+/* design-system rt-badge--ink */
+.coverBadge {
+  position: absolute;
+  top: var(--space-2);
+  left: var(--space-2);
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 9px;
+  font-family: var(--font-sans);
+  font-weight: var(--weight-bold);
+  font-size: var(--text-2xs);
+  line-height: var(--leading-snug);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--white);
+  background: var(--ink-950);
+  border-radius: var(--radius-sm);
+  pointer-events: none;
+}
+
+.addMoreTile {
+  margin: 0;
+}
+
+/* ================ Upload tiles ================ */
+
 .addImageWrapper {
-  float: left;
   position: relative;
   width: 100%;
-  overflow: hidden;
+}
 
-  &::after {
-    content: '.';
-    visibility: hidden;
-    display: block;
-    height: 0;
-    clear: both;
-  }
+.addImageWrapperEmpty {
+  position: relative;
+  width: 100%;
 }
 
 .addImage {
-  /* Layout */
-  /* Maintain aspect ratio */
+  /* Fills the aspect-ratio box of an "Add more" tile */
   position: absolute;
   top: 0;
   bottom: 0;
   left: 0;
   right: 0;
-  width: 100%;
-  height: 100%;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
-  margin-top: 0;
-
-  /* Colors */
-  background-color: var(--colorWhite);
-
-  @media (--viewportLarge) {
-    background-color: var(--colorGrey50);
-  }
-
-  border-style: dashed;
-  border-color: var(--colorGrey100);
-  border-width: 2px;
-  border-radius: 2px;
-
-  /* Behaviour */
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0 var(--space-3);
+  color: var(--text-muted);
+  background-color: var(--ink-50);
+  border: var(--border-key) dashed var(--ink-300);
+  border-radius: var(--radius-lg);
   cursor: pointer;
-  transition: var(--transitionStyleButton);
+  transition: border-color var(--dur-fast) var(--ease-standard),
+    background-color var(--dur-fast) var(--ease-standard);
 
   &:hover {
-    border-color: var(--colorGrey300);
+    border-color: var(--ink-400);
   }
+}
+
+/* No photos yet: one large tile */
+.addImageEmpty {
+  position: relative;
+  height: 220px;
+}
+
+.addImageDragActive {
+  border-color: var(--accent-500);
+  background-color: var(--accent-50);
+}
+
+.addImageDisabled {
+  cursor: progress;
 }
 
 .chooseImageText {
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 10px;
+  text-align: center;
+}
+
+.tileIcon {
+  display: block;
+  color: var(--ink-400);
 }
 
 .chooseImage {
-  composes: h4 from global;
-  color: var(--colorGrey700);
-  font-weight: var(--fontWeightSemiBold);
-
-  margin-top: 0;
-  margin-bottom: 0;
-
-  @media (--viewportLarge) {
-    font-weight: var(--fontWeightSemiBold);
-    margin-top: 0;
-    margin-bottom: 0;
-  }
+  font-family: var(--font-sans);
+  font-weight: var(--weight-semibold);
+  font-size: var(--text-xs);
+  line-height: var(--leading-snug);
+  color: var(--text-muted);
 }
 
 .imageTypes {
-  composes: marketplaceTinyFontStyles from global;
-  color: var(--colorGrey600);
-
-  margin-top: 0;
-  margin-bottom: 0;
-
-  @media (--viewportLarge) {
-    margin-top: 0;
-    margin-bottom: 0;
-  }
+  font-family: var(--font-sans);
+  font-weight: var(--weight-regular);
+  font-size: var(--text-2xs);
+  line-height: var(--leading-snug);
+  color: var(--text-muted);
 }
 
+/* The native input stays focusable; its focus ring shows on the tile. */
 .addImageInput {
   clip-path: inset(50%);
   height: 1px;
@@ -117,56 +161,28 @@
   position: absolute;
   white-space: nowrap;
 
-  &:focus ~ .addImage {
-    border-color: var(--colorGrey300);
+  &:focus-visible ~ .addImage,
+  &:focus-visible ~ * .addImage {
+    border-color: var(--accent-500);
+    box-shadow: 0 0 0 3px var(--accent-100);
   }
 }
 
+/* ================ Copy ================ */
+
+/* rt-field__hint */
 .tip {
-  composes: h5 from global;
+  composes: rtFieldHint from global;
+  margin-top: var(--space-3);
+}
 
-  flex-shrink: 0;
-  color: var(--colorGrey600);
-  margin-top: 24px;
-  margin-bottom: 60px;
-
-  @media (--viewportLarge) {
-    margin-top: 0;
-    margin-bottom: 0;
-  }
+.minimumHint {
+  composes: rtFieldHint from global;
+  font-weight: var(--weight-semibold);
+  color: var(--text-primary);
 }
 
 .error {
+  margin: var(--space-3) 0 0 0;
   color: var(--colorFail);
-}
-
-.arrayError {
-  font-weight: var(--fontWeightMedium);
-  font-size: 15px;
-  line-height: 24px;
-  letter-spacing: 0;
-  color: var(--colorFail);
-  width: 100%;
-  clear: both;
-
-  margin-top: 6px;
-  margin-bottom: 12px;
-
-  @media (--viewportMedium) {
-    font-weight: var(--fontWeightMedium);
-    margin-top: 6px;
-    margin-bottom: 10px;
-  }
-}
-
-.submitButton {
-  flex-shrink: 0;
-  margin-top: auto;
-  margin-bottom: 24px;
-
-  @media (--viewportLarge) {
-    display: inline-block;
-    width: 241px;
-    margin-top: 100px;
-  }
 }

@@ -20,6 +20,7 @@ const RemoveImageButton = props => {
   const classes = classNames(rootClassName || css.removeImage, className);
   return (
     <button
+      type="button"
       className={classes}
       onClick={onClick}
       aria-label={intl.formatMessage({ id: 'EditListingPage.screenreader.removeImage' })}
