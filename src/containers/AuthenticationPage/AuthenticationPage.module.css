@@ -112,5 +112,6 @@
   word-break: break-all;
   /* use break-word if available */
   word-break: break-word;
-  hyphens: auto;
+  /* Never insert a hyphen into an email address when it wraps (it reads as part of the address) */
+  hyphens: manual;
 }
