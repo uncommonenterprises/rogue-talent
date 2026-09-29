@@ -298,3 +298,30 @@
     }
   }
 }
+
+/* Sign-up stage 3: compact rt-status chip linking to the account-status page. */
+.accountStatusLink {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  height: 100%;
+  min-height: 44px;
+  padding: 0 12px;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: none;
+  }
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

@@ -4,6 +4,7 @@ import classNames from 'classnames';
 import { FormattedMessage } from '../../../../util/reactIntl';
 import { ACCOUNT_SETTINGS_PAGES } from '../../../../routing/routeConfiguration';
 import {
+  AccountStatusBadge,
   Avatar,
   InlineTextButton,
   LinkedLogo,
@@ -133,6 +134,8 @@ const ProfileMenu = ({ currentPage, currentUser, onLogout, showManageListingsLin
  * @param {boolean} props.showSearchForm
  * @param {boolean} props.showCreateListingsLink
  * @param {string} props.inboxTab
+ * @param {string?} props.accountStatus the user's account-status lifecycle status, when the page
+ *   shows it (the account-status page does); renders the compact rt-status chip, linked to it
  * @returns {JSX.Element} search icon
  */
 const TopbarDesktop = props => {
@@ -155,6 +158,7 @@ const TopbarDesktop = props => {
     showSearchForm,
     showCreateListingsLink,
     inboxTab,
+    accountStatus,
   } = props;
   const [mounted, setMounted] = useState(false);
 
@@ -184,6 +188,18 @@ const TopbarDesktop = props => {
       inboxLabelId={inboxLabelId}
     />
   ) : null;
+
+  // Sign-up stage 3 (screens 14 to 21): the compact status chip in the nav, linking to the
+  // account-status page.
+  const accountStatusMaybe =
+    authenticatedOnClientSide && accountStatus ? (
+      <NamedLink name="AccountStatusPage" className={css.accountStatusLink}>
+        <span className={css.srOnly}>
+          <FormattedMessage id="TopbarDesktop.accountStatusPrefix" />
+        </span>
+        <AccountStatusBadge status={accountStatus} />
+      </NamedLink>
+    ) : null;
 
   const profileMenuMaybe = authenticatedOnClientSide ? (
     <ProfileMenu
@@ -238,6 +254,7 @@ const TopbarDesktop = props => {
         currentUserHasListings={currentUserHasListings}
       />
 
+      {accountStatusMaybe}
       {inboxLinkMaybe}
       {profileMenuMaybe}
       {signupLinkMaybe}

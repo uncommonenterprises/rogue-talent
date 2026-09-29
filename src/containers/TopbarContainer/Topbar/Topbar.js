@@ -11,12 +11,14 @@ import { isMainSearchTypeKeywords, isOriginInUse } from '../../../util/search';
 import { parse, stringify } from '../../../util/urlHelpers';
 import { createResourceLocatorString, matchPathname, pathByRouteName } from '../../../util/routes';
 import {
+  AccountStatusBadge,
   Button,
   IconArrowHead,
   LimitedAccessBanner,
   LinkedLogo,
   Modal,
   ModalMissingInformation,
+  NamedLink,
 } from '../../../components';
 import { getSearchPageResourceLocatorStringParams } from '../../SearchPage/SearchPage.shared';
 
@@ -156,6 +158,7 @@ const TopbarComponent = props => {
     showGenericError,
     config,
     routeConfiguration,
+    accountStatus,
   } = props;
 
   const handleSubmit = values => {
@@ -367,7 +370,18 @@ const TopbarComponent = props => {
           alt={intl.formatMessage({ id: 'Topbar.logoIcon' })}
           linkToExternalSite={config?.topbar?.logoLink}
         />
-        {mobileSearchButtonMaybe}
+        {accountStatus && isAuthenticated ? (
+          // Sign-up stage 3 (screens 14 to 21): on the account-status page the compact status
+          // chip takes the search button's place, linking to the page (as on desktop).
+          <NamedLink name="AccountStatusPage" className={css.accountStatusMobile}>
+            <span className={css.srOnly}>
+              <FormattedMessage id="TopbarDesktop.accountStatusPrefix" />
+            </span>
+            <AccountStatusBadge status={accountStatus} />
+          </NamedLink>
+        ) : (
+          mobileSearchButtonMaybe
+        )}
       </nav>
       <div className={css.desktop}>
         <TopbarDesktop
@@ -388,6 +402,7 @@ const TopbarComponent = props => {
           showSearchForm={showSearchForm}
           showCreateListingsLink={showCreateListingsLink}
           inboxTab={topbarInboxTab}
+          accountStatus={accountStatus}
         />
       </div>
       <Modal
@@ -467,6 +482,8 @@ const TopbarComponent = props => {
  * @param {Function} props.history.push
  * @param {Object} props.location
  * @param {string} props.location.search '?foo=bar'
+ * @param {string?} props.accountStatus account-status lifecycle status to show as the compact
+ *   rt-status chip (the account-status page passes it)
  * @returns {JSX.Element} topbar component
  */
 const Topbar = props => {
