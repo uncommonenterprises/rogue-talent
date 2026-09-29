@@ -16,6 +16,15 @@ only, never chat.
 > **UPDATE 29/09 (Day 8):** Neil completed Stripe's "Verify your identity" (Identity application +
 > business details + account-owner verification all ticked). Stage A resumes at: Synthetic Identity
 > Protection -> TEST-mode secret key + restricted key + Identity webhook -> Railway vars -> PM verifies.
+>
+> **UPDATE 29/09 later:** Stage A PROVISIONED on test. Synthetic Identity Protection already on; branding
+> already applied; STRIPE_SECRET_KEY, STRIPE_IDENTITY_RESTRICTED_KEY, STRIPE_IDENTITY_WEBHOOK_SECRET,
+> REACT_APP_IDENTITY_VERIFICATION_ENABLED on the Rogue Talent Railway service (first added to the
+> CreatorOS project by mistake, then moved; removed from CreatorOS). PM-verified from outside: webhook
+> rejects unsigned calls (400 = secret loaded); create-identity-session passes its config check (secret
+> key loaded). Remaining: logged-in end-to-end test as a test client (Neil drives, PM guides).
+> Housekeeping: roll the sandbox sk_test key (it appeared in a screenshot), delete the unused old
+> "Restricted key".
 
 ---
 
