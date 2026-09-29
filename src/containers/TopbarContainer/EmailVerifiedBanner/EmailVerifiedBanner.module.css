@@ -30,7 +30,10 @@
   color: var(--status-success);
 }
 
-.icon {
+/* Line icons: sanitize.css sets svg { fill: currentColor }, which would fill these outlines. */
+.icon,
+.dismissIcon {
+  fill: none;
   flex-shrink: 0;
 }
 

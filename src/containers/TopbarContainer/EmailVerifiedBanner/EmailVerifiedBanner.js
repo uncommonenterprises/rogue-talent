@@ -47,6 +47,7 @@ const EmailVerifiedBanner = props => {
         aria-label={intl.formatMessage({ id: 'EmailVerifiedBanner.dismiss' })}
       >
         <svg
+          className={css.dismissIcon}
           width="14"
           height="14"
           viewBox="0 0 14 14"

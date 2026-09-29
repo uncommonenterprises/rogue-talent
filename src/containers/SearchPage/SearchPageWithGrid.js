@@ -9,6 +9,7 @@ import { manageDisableScrolling, isScrollingDisabled } from '../../ducks/ui.duck
 
 import { Page } from '../../components';
 import TopbarContainer from '../TopbarContainer/TopbarContainer';
+import EmailVerifiedNotice from '../TopbarContainer/EmailVerifiedBanner/EmailVerifiedNotice';
 import FooterContainer from '../FooterContainer/FooterContainer';
 
 import {
@@ -215,7 +216,13 @@ export class SearchPageComponent extends Component {
         title={title}
         schema={schema}
       >
-        <TopbarContainer rootClassName={topbarClasses} currentSearchParams={validQueryParams} />
+        <TopbarContainer
+          rootClassName={topbarClasses}
+          currentSearchParams={validQueryParams}
+          hideEmailVerifiedNotice
+        />
+        {/* Screen 05 banner: under the (desktop-fixed) topbar rather than hidden behind it */}
+        <EmailVerifiedNotice className={css.emailVerifiedNotice} />
         <div className={css.layoutWrapperContainer}>
           <aside className={css.layoutWrapperFilterColumn} data-testid="filterColumnAside">
             <div className={css.filterColumnContent}>

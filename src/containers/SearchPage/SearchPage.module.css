@@ -18,6 +18,19 @@
 
 /* Can be given to Topbar when a modal is opened
  * so that the Topbar is not rendered on top of it.*/
+/* Screen 05 "Your email is verified." banner (only rendered right after verifying). On desktop the
+   topbar is position: fixed and the layout below is padded by --topbarHeightDesktop, so the banner
+   sits just under the topbar and cancels that padding for the content that follows it. */
+.emailVerifiedNotice {
+  position: relative;
+  z-index: var(--zIndexTopbar);
+
+  @media (--viewportMedium) {
+    margin-top: var(--topbarHeightDesktop);
+    margin-bottom: calc(-1 * var(--topbarHeightDesktop));
+  }
+}
+
 .topbarBehindModal {
   z-index: initial;
 }

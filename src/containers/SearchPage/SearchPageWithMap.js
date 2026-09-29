@@ -11,6 +11,7 @@ import { manageDisableScrolling, isScrollingDisabled } from '../../ducks/ui.duck
 
 import { ModalInMobile, Page } from '../../components';
 import TopbarContainer from '../../containers/TopbarContainer/TopbarContainer';
+import EmailVerifiedNotice from '../TopbarContainer/EmailVerifiedBanner/EmailVerifiedNotice';
 
 import { setActiveListing } from './SearchPage.duck';
 import {
@@ -321,7 +322,13 @@ export class SearchPageComponent extends Component {
         title={title}
         schema={schema}
       >
-        <TopbarContainer rootClassName={topbarClasses} currentSearchParams={validQueryParams} />
+        <TopbarContainer
+          rootClassName={topbarClasses}
+          currentSearchParams={validQueryParams}
+          hideEmailVerifiedNotice
+        />
+        {/* Screen 05 banner: under the (desktop-fixed) topbar rather than hidden behind it */}
+        <EmailVerifiedNotice className={css.emailVerifiedNotice} />
         <div id="main-content" className={css.container} role="main">
           <div className={css.searchResultContainer}>
             <SearchFiltersMobile
