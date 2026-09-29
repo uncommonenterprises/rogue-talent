@@ -1397,8 +1397,8 @@ describe('EditListingPage', () => {
       // Tab: panel title
       expect(getByText('EditListingPricingPanel.title')).toBeInTheDocument();
 
-      // Tab/form: price
-      expect(getByRole('textbox', { name: 'EditListingPricingForm.pricePerProduct' })).toHaveValue(
+      // Tab/form: price (the day-rate label carries the required marker, hence the regex)
+      expect(getByRole('textbox', { name: /EditListingPricingForm.pricePerProduct/ })).toHaveValue(
         '$10.00'
       );
 
@@ -1408,12 +1408,12 @@ describe('EditListingPage', () => {
     });
 
     // Test intercation
-    await user.clear(getByRole('textbox', { name: 'EditListingPricingForm.pricePerProduct' }));
-    await user.type(getByRole('textbox', { name: 'EditListingPricingForm.pricePerProduct' }), '12');
+    await user.clear(getByRole('textbox', { name: /EditListingPricingForm.pricePerProduct/ }));
+    await user.type(getByRole('textbox', { name: /EditListingPricingForm.pricePerProduct/ }), '12');
     await user.click(queryAllByRole('heading')[0]); // create blur event
 
     // Tab/form: existing building
-    expect(getByLabelText('EditListingPricingForm.pricePerProduct')).toHaveValue('$12.00');
+    expect(getByLabelText(/EditListingPricingForm.pricePerProduct/)).toHaveValue('$12.00');
   });
 
   it('Booking (day): edit flow on availability tab', async () => {
