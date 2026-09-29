@@ -826,7 +826,7 @@
   "LoginForm.emailLabel": "Email",
   "LoginForm.emailPlaceholder": "jane.doe@example.com",
   "LoginForm.emailRequired": "This field is required.",
-  "LoginForm.forgotPassword": "Reset password",
+  "LoginForm.forgotPassword": "Forgot your password?",
   "LoginForm.forgotPasswordInfo": "Forgot your password? {passwordRecoveryLink}",
   "LoginForm.logIn": "Log in",
   "LoginForm.passwordLabel": "Password",

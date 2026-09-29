@@ -28,4 +28,17 @@ describe('LoginForm', () => {
     // Test that sign up button is enabled after typing the values
     expect(screen.getByRole('button', { name: 'LoginForm.logIn' })).toBeEnabled();
   });
+
+  it('shows "Forgot your password?" under the password field, linking to recovery', () => {
+    render(<LoginForm intl={fakeIntl} onSubmit={noop} />);
+
+    const recoveryLink = screen.getByRole('link', { name: 'LoginForm.forgotPassword' });
+    expect(recoveryLink).toHaveAttribute('href', '/recover-password');
+
+    // It sits between the password field and the Log in button
+    const password = screen.getByLabelText('LoginForm.passwordLabel');
+    const button = screen.getByRole('button', { name: 'LoginForm.logIn' });
+    expect(password.compareDocumentPosition(recoveryLink)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+    expect(recoveryLink.compareDocumentPosition(button)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+  });
 });

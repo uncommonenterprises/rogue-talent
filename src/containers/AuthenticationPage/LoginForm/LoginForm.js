@@ -22,6 +22,7 @@ const LoginFormComponent = props => (
         invalid,
         values,
         errors,
+        submitButtonText,
       } = fieldRenderProps;
 
       // email
@@ -71,40 +72,35 @@ const LoginFormComponent = props => (
 
       return (
         <Form className={classes} onSubmit={handleSubmit}>
-          <div>
-            <FieldTextInput
-              type="email"
-              id={formId ? `${formId}.email` : 'email'}
-              name="email"
-              autoComplete="email"
-              label={emailLabel}
-              placeholder={emailPlaceholder}
-              validate={validators.composeValidators(emailRequired, emailValid)}
-            />
-            <FieldTextInput
-              className={css.password}
-              type="password"
-              id={formId ? `${formId}.password` : 'password'}
-              name="password"
-              autoComplete="current-password"
-              label={passwordLabel}
-              placeholder={passwordPlaceholder}
-              validate={passwordRequired}
-            />
-          </div>
-          <div className={css.bottomWrapper}>
-            <p className={css.bottomWrapperText}>
-              <span className={css.recoveryLinkInfo}>
-                <FormattedMessage
-                  id="LoginForm.forgotPasswordInfo"
-                  values={{ passwordRecoveryLink }}
-                />
-              </span>
-            </p>
-            <PrimaryButton type="submit" inProgress={submitInProgress} disabled={submitDisabled}>
-              <FormattedMessage id="LoginForm.logIn" />
-            </PrimaryButton>
-          </div>
+          <FieldTextInput
+            type="email"
+            id={formId ? `${formId}.email` : 'email'}
+            name="email"
+            autoComplete="email"
+            label={emailLabel}
+            placeholder={emailPlaceholder}
+            validate={validators.composeValidators(emailRequired, emailValid)}
+          />
+          <FieldTextInput
+            className={css.password}
+            type="password"
+            id={formId ? `${formId}.password` : 'password'}
+            name="password"
+            autoComplete="current-password"
+            label={passwordLabel}
+            placeholder={passwordPlaceholder}
+            validate={passwordRequired}
+          />
+          {/* Screen 06: "Forgot your password?" sits directly under the password field. */}
+          <p className={css.recoveryLinkRow}>{passwordRecoveryLink}</p>
+          <PrimaryButton
+            className={css.submitButton}
+            type="submit"
+            inProgress={submitInProgress}
+            disabled={submitDisabled}
+          >
+            {submitButtonText || <FormattedMessage id="LoginForm.logIn" />}
+          </PrimaryButton>
         </Form>
       );
     }}
@@ -120,6 +116,7 @@ const LoginFormComponent = props => (
  * @param {string} props.className - The class that extends the root class
  * @param {string} props.formId - The form id
  * @param {boolean} props.inProgress - Whether the form is in progress
+ * @param {ReactNode} [props.submitButtonText] - Overrides the "Log in" button text
  * @returns {JSX.Element}
  */
 const LoginForm = props => {

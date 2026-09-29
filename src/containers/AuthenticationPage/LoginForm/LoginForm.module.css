@@ -1,32 +1,50 @@
-@import '../../../styles/customMediaQueries.css';
+/* Screen 06 log in form, inside the split AuthShell. */
 
 .root {
-  composes: marketplaceModalFormRootStyles from global;
-
-  justify-content: flex-start;
-
-  @media (--viewportMedium) {
-    justify-content: space-between;
-  }
+  display: flex;
+  flex-direction: column;
+  width: 100%;
 }
 
 .password {
-  composes: marketplaceModalPasswordMargins from global;
+  margin-top: var(--space-5);
 }
 
-.bottomWrapper {
-  composes: marketplaceModalBottomWrapper from global;
-}
-
-/* Adjust the bottomWrapper's margin to match modals without the helper text */
-.bottomWrapperText {
-  composes: marketplaceModalBottomWrapperText from global;
+/* "Forgot your password?" right-aligned under the password field */
+.recoveryLinkRow {
+  margin: var(--space-2) 0 0 0;
+  padding: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  line-height: var(--leading-snug);
+  text-align: right;
 }
 
 .recoveryLink {
-  composes: marketplaceModalHelperLink from global;
+  display: inline-block;
+  /* 44px tap target on mobile */
+  padding: 13px 0;
+  font-weight: var(--weight-semibold);
+  color: var(--text-accent);
+  text-decoration: none;
+
+  &:hover {
+    color: var(--accent-700);
+    text-decoration: underline;
+  }
+
+  @media (min-width: 900px) {
+    padding: 0;
+  }
 }
 
-.recoveryLinkInfo {
-  composes: marketplaceModalHelperText from global;
+.submitButton {
+  min-height: 48px;
+  margin-top: var(--space-5);
+  padding: 12px 0;
+  font-size: var(--text-base);
+
+  @media (min-width: 768px) {
+    padding: 12px 0;
+  }
 }
