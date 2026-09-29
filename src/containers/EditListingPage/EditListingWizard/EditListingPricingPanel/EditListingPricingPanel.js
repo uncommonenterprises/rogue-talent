@@ -10,10 +10,13 @@ import { isValidCurrencyForTransactionProcess } from '../../../../util/fieldHelp
 import { FIXED, isBookingProcess } from '../../../../transactions/transaction';
 
 // Import shared components
-import { H3, ListingLink } from '../../../../components';
+import { ListingLink } from '../../../../components';
+
+// Import modules from parent directory
+import { RATE_LISTING_FIELD_KEYS, getOrderedPricingFields } from '../rateFields';
+import { WizardPanelHeader } from '../WizardShell/WizardShell';
 
 // Import modules from this directory
-import { PRICING_LISTING_FIELD_KEYS, RATE_LISTING_FIELD_KEYS } from '../rateFields';
 import EditListingPricingForm from './EditListingPricingForm';
 import {
   getInitialValuesForPriceVariants,
@@ -32,10 +35,10 @@ const getListingTypeConfig = (publicData, listingTypes) => {
   return listingTypes.find(conf => conf.listingType === selectedListingType);
 };
 
-// The secondary rate fields (half-day, hourly) are custom listing fields surfaced on this
-// "Your rates" tab beside the day rate (the native price).
-const getPricingFields = config =>
-  (config?.listing?.listingFields || []).filter(f => PRICING_LISTING_FIELD_KEYS.includes(f.key));
+// The pricing-tab listing fields surfaced on this "Your rates" tab beside the day rate (the
+// native price): half-day and hourly rates, travel costs, how far you'll travel and minimum
+// booking notice, in the approved order (rateFields.js).
+const getPricingFields = config => getOrderedPricingFields(config?.listing?.listingFields || []);
 
 const namespacedRateKey = field =>
   field.scope === 'private' ? `priv_${field.key}` : `pub_${field.key}`;
@@ -141,6 +144,7 @@ const EditListingPricingPanel = props => {
     panelUpdated,
     updateInProgress,
     errors,
+    backLinkProps,
     updatePageTitle: UpdatePageTitle,
     intl,
   } = props;
@@ -192,12 +196,12 @@ const EditListingPricingPanel = props => {
           { ...panelHeadingProps.messageProps }
         )}
       />
-      <H3 as="h1">
-        <FormattedMessage id={panelHeadingProps.id} values={{ ...panelHeadingProps.values }} />
-      </H3>
-      <p className={css.guidance}>
-        <FormattedMessage id="EditListingPricingPanel.guidance" />
-      </p>
+      <WizardPanelHeader
+        title={
+          <FormattedMessage id={panelHeadingProps.id} values={{ ...panelHeadingProps.values }} />
+        }
+        guidance={<FormattedMessage id="EditListingPricingPanel.guidance" />}
+      />
       {priceCurrencyValid ? (
         <EditListingPricingForm
           className={css.form}
@@ -290,6 +294,7 @@ const EditListingPricingPanel = props => {
           isPriceVariationsInUse={isPriceVariationsInUse}
           listingMinimumPriceSubUnits={listingMinimumPriceSubUnits}
           saveActionMsg={submitButtonText}
+          backLinkProps={backLinkProps}
           disabled={disabled}
           ready={ready}
           updated={panelUpdated}

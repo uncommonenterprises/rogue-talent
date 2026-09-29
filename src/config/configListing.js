@@ -493,7 +493,7 @@ export const listingFields = [
     helpText: 'Whether travel costs are included in your rate or charged separately.',
     enumOptions: [
       { option: 'included', label: 'Included in rate' },
-      { option: 'charged-separately', label: 'Charged' },
+      { option: 'charged-separately', label: 'Charged separately' },
     ],
     filterConfig: {
       indexForSearch: true,
