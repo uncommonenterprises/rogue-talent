@@ -30,12 +30,12 @@ const TRUST = [
   {
     title: 'Escrow payments',
     text:
-      'The business pays upfront into escrow. After the shoot, the model is paid — usually the next working day, always within five working days. No chasing invoices.',
+      'The business pays upfront into escrow. After the shoot, the model is paid - usually the next working day, always within five working days. No chasing invoices.',
   },
   {
     title: 'Clear contracts',
     text:
-      'Every booking comes with one standard content licence and model release — broad, long-term image usage agreed by both sides before the shoot. No per-shoot usage negotiation.',
+      'Every booking comes with one standard content licence and model release - broad, long-term image usage agreed by both sides before the shoot. No per-shoot usage negotiation.',
   },
   {
     title: 'Two-way reviews',
@@ -78,7 +78,7 @@ export const GeneralLandingPage = () => {
         topbar={<MarketingNav page="general" />}
         footer={<FooterContainer />}
       >
-        {/* 1 — HERO */}
+        {/* 1 - HERO */}
         <section className={css.hero}>
           <div className={css.heroOverlay} />
           <div className={`${css.inner} ${css.heroInner}`}>
@@ -101,7 +101,7 @@ export const GeneralLandingPage = () => {
           </div>
         </section>
 
-        {/* 2 — STATS */}
+        {/* 2 - STATS */}
         <section className={css.statBand}>
           <div className={css.inner}>
             <div className={css.statGrid}>
@@ -118,12 +118,12 @@ export const GeneralLandingPage = () => {
           </div>
         </section>
 
-        {/* 3 — HOW IT WORKS */}
+        {/* 3 - HOW IT WORKS */}
         <section id="how" className={css.section}>
           <div className={css.inner}>
             <h2 className={css.sectionTitle}>How Rogue works</h2>
             <p className={css.sectionIngress}>
-              Find talent, agree terms and pay — all in one place, with no agency in the middle.
+              Find talent, agree terms and pay - all in one place, with no agency in the middle.
             </p>
             <div className={css.grid3}>
               {STEPS.map(step => (
@@ -137,7 +137,7 @@ export const GeneralLandingPage = () => {
           </div>
         </section>
 
-        {/* 4 — FEATURED TALENT — real, published model-profile listings */}
+        {/* 4 - FEATURED TALENT - real, published model-profile listings */}
         {featuredListings.length > 0 ? (
           <section className={css.featured}>
             <div className={css.inner}>
@@ -156,13 +156,13 @@ export const GeneralLandingPage = () => {
           </section>
         ) : null}
 
-        {/* 5 — FEATURES (alternating) */}
+        {/* 5 - FEATURES (alternating) */}
         <section className={css.features}>
           <div className={`${css.inner} ${css.featuresInner}`}>
             <div className={css.featureRow}>
               <div className={css.featureText}>
                 <div className={css.eyebrow}>No agents. Ever.</div>
-                <h3 className={css.featureTitle}>Keep the relationship — and the fee.</h3>
+                <h3 className={css.featureTitle}>Keep the relationship - and the fee.</h3>
                 <p className={css.featureBody}>
                   The work happens between the model and the business. Rogue just makes it safe, not
                   expensive.
@@ -183,12 +183,12 @@ export const GeneralLandingPage = () => {
           </div>
         </section>
 
-        {/* 6 — TRUST (dark) */}
+        {/* 6 - TRUST (dark) */}
         <section className={css.dark}>
           <div className={css.inner}>
             <h2 className={css.sectionTitleLight}>Built-in protection, every booking</h2>
             <p className={css.sectionIngressLight}>
-              The trust that agencies claimed to provide — now built into the platform, on both
+              The trust that agencies claimed to provide - now built into the platform, on both
               sides.
             </p>
             <div className={css.grid3}>
@@ -202,7 +202,7 @@ export const GeneralLandingPage = () => {
           </div>
         </section>
 
-        {/* 7 — DUAL PATH */}
+        {/* 7 - DUAL PATH */}
         <section className={css.dualPath}>
           <div className={`${css.inner} ${css.dualGrid}`}>
             <div className={css.pathCard}>
@@ -218,7 +218,7 @@ export const GeneralLandingPage = () => {
               <div className={css.pathTitle}>I'm a business</div>
               <p className={css.pathText}>
                 Search, book and pay verified models directly. Faster casting, one flat 15% booking
-                fee — no agency markup.
+                fee - no agency markup.
               </p>
               <NamedLink name="SignupPage" className={css.btnPathAccent}>
                 Join as business
