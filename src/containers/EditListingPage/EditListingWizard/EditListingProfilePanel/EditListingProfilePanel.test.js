@@ -1,8 +1,48 @@
 import { types as sdkTypes } from '../../../../util/sdkLoader';
 
-import { getProfileListingValues } from './EditListingProfilePanel';
+import {
+  defaultDisplayName,
+  getInitialValues,
+  getProfileListingValues,
+} from './EditListingProfilePanel';
 
 const { LatLng } = sdkTypes;
+
+const userNamed = (firstName, lastName) => ({
+  attributes: { profile: { firstName, lastName } },
+});
+
+describe('EditListingProfilePanel display-name pre-fill (sign-up journey screen 08)', () => {
+  it('suggests first name + last initial', () => {
+    expect(defaultDisplayName(userNamed('Jane', 'Doe'))).toEqual('Jane D.');
+    expect(defaultDisplayName(userNamed('  jane ', ' doe'))).toEqual('jane D.');
+  });
+
+  it('falls back to the first name, or nothing, when a name part is missing', () => {
+    expect(defaultDisplayName(userNamed('Jane', ''))).toEqual('Jane');
+    expect(defaultDisplayName(userNamed('', 'Doe'))).toEqual('');
+    expect(defaultDisplayName(null)).toEqual('');
+  });
+
+  it('pre-fills the display name when the listing has no title yet', () => {
+    const values = getInitialValues({ listing: null, currentUser: userNamed('Jane', 'Doe') });
+    expect(values.title).toEqual('Jane D.');
+    expect(values.location).toBeNull();
+  });
+
+  it('keeps a saved display name (the model may use a professional name)', () => {
+    const listing = {
+      attributes: {
+        title: 'Janey',
+        geolocation: new LatLng(51.5072, -0.1276),
+        publicData: { location: { address: 'London, UK' } },
+      },
+    };
+    const values = getInitialValues({ listing, currentUser: userNamed('Jane', 'Doe') });
+    expect(values.title).toEqual('Janey');
+    expect(values.location.search).toEqual('London, UK');
+  });
+});
 
 const config = {
   listing: {

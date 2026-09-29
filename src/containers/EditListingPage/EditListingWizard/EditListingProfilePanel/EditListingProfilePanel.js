@@ -4,11 +4,9 @@ import classNames from 'classnames';
 // Import configs and util modules
 import { FormattedMessage, useIntl } from '../../../../util/reactIntl';
 
-// Import shared components
-import { H3 } from '../../../../components';
-
 // Import modules from parent directory
 import { defaultAvailabilityPlanMaybe } from '../EditListingAvailabilityPanel/availability.helpers';
+import { WizardPanelHeader } from '../WizardShell/WizardShell';
 
 // Import modules from this directory
 import EditListingProfileForm from './EditListingProfileForm';
@@ -38,20 +36,35 @@ const getListingTypeValues = (listing, config) => {
   return {};
 };
 
-// Build a privacy-preserving default display name from the user's signup name:
-// "Lucy" + "Southern" -> "Lucy S.". Falls back to the first name alone (or '')
-// so the field is still editable if the surname is missing.
-const defaultDisplayName = currentUser => {
+/**
+ * Build a privacy-preserving default display name from the user's signup name:
+ * "Jane" + "Doe" -> "Jane D.". Falls back to the first name alone (or '') so the field
+ * is still editable if the surname is missing.
+ *
+ * @param {Object} currentUser
+ * @returns {string}
+ */
+export const defaultDisplayName = currentUser => {
   const { firstName, lastName } = currentUser?.attributes?.profile || {};
   const first = firstName?.trim();
   if (!first) {
     return '';
   }
-  const lastInitial = lastName?.trim()?.charAt(0)?.toUpperCase();
+  const lastInitial = lastName
+    ?.trim()
+    ?.charAt(0)
+    ?.toUpperCase();
   return lastInitial ? `${first} ${lastInitial}.` : first;
 };
 
-const getInitialValues = props => {
+/**
+ * Initial values for the "About you" form: the saved display name (listing title), or the
+ * "First L." default when the listing has no title yet, and the saved city.
+ *
+ * @param {Object} props { listing, currentUser }
+ * @returns {Object} { title, location }
+ */
+export const getInitialValues = props => {
   const { listing, currentUser } = props;
   // Display name is the listing title; location is stored on the listing
   // (geolocation + publicData.location.address).
@@ -130,6 +143,7 @@ const EditListingProfilePanel = props => {
     panelUpdated,
     updateInProgress,
     errors,
+    backLinkProps,
     updatePageTitle: UpdatePageTitle,
   } = props;
 
@@ -143,16 +157,15 @@ const EditListingProfilePanel = props => {
           panelHeading={intl.formatMessage({ id: 'EditListingProfilePanel.title' })}
         />
       ) : null}
-      <H3 as="h1">
-        <FormattedMessage id="EditListingProfilePanel.title" />
-      </H3>
-      <p className={css.guidance}>
-        <FormattedMessage id="EditListingProfilePanel.guidance" />
-      </p>
+      <WizardPanelHeader
+        title={<FormattedMessage id="EditListingProfilePanel.title" />}
+        guidance={<FormattedMessage id="EditListingProfilePanel.guidance" />}
+      />
       <EditListingProfileForm
         className={css.form}
         initialValues={state.initialValues}
         saveActionMsg={submitButtonText}
+        backLinkProps={backLinkProps}
         disabled={disabled}
         ready={ready}
         updated={panelUpdated}
