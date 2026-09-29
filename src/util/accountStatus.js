@@ -1,5 +1,6 @@
 import { LISTING_STATE_PENDING_APPROVAL, LISTING_STATE_PUBLISHED } from './types';
 import { isClientUser, isClientIdentityVerified } from './userHelpers';
+import { hasSubmittedBusinessDetails } from './clientBusinessDetails';
 
 /**
  * Account-status lifecycle — computed status for a single account.
@@ -108,9 +109,10 @@ const MODEL_SUBMITTED_LISTING_STATES = [LISTING_STATE_PENDING_APPROVAL, LISTING_
  *   Requires the own listing to be passed in — when it is not available on the surface (e.g. the
  *   profile-settings page does not currently load it), we cannot prove submission and fall back to
  *   `false` (→ Draft), which is safe for step 1.
- * - Client: there is no client "Submit for approval" flag yet.
- *   TODO(account-status): wire the definitive client submission flag when the "Submit for approval"
- *   UX lands (later task, per spec §11 item 4). Treated as not-submitted for now.
+ * - Client: they pressed "Submit for approval" on the "Your business details" step (sign-up
+ *   journey screen 18), which records `privateData.businessDetailsSubmittedAt` (see
+ *   util/clientBusinessDetails.js). This only separates Draft from Pending approval; it is not
+ *   read by any gate.
  *
  * @param {Object} params
  * @param {Object} params.currentUser - currentUser API entity
@@ -119,8 +121,7 @@ const MODEL_SUBMITTED_LISTING_STATES = [LISTING_STATE_PENDING_APPROVAL, LISTING_
  */
 export const isAccountSubmitted = ({ currentUser, ownListing } = {}) => {
   if (isClientUser(currentUser)) {
-    // TODO(account-status): no client submission flag exists yet — later task.
-    return false;
+    return hasSubmittedBusinessDetails(currentUser);
   }
   const listingState = ownListing?.attributes?.state;
   return MODEL_SUBMITTED_LISTING_STATES.includes(listingState);

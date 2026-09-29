@@ -92,13 +92,24 @@ describe('isAccountSubmitted', () => {
     expect(isAccountSubmitted({ currentUser: user(), ownListing: listing('draft') })).toBe(false);
     expect(isAccountSubmitted({ currentUser: user() })).toBe(false);
   });
-  it('client: always false for now (no submission flag yet)', () => {
+  it('client: not submitted until the business details step is submitted (a listing is ignored)', () => {
     expect(
       isAccountSubmitted({
         currentUser: user({ userType: 'client' }),
         ownListing: listing('published'),
       })
     ).toBe(false);
+  });
+  it('client: submitted once "Submit for approval" on business details recorded its timestamp', () => {
+    const submittedClient = user({ userType: 'client' });
+    submittedClient.attributes.profile.privateData = {
+      businessDetailsSubmittedAt: '2026-09-30T10:00:00.000Z',
+    };
+    expect(isAccountSubmitted({ currentUser: submittedClient })).toBe(true);
+    expect(getAccountStatus({ currentUser: submittedClient })).toBe(ACCOUNT_STATUS_PENDING);
+    expect(getAccountStatus({ currentUser: user({ userType: 'client' }) })).toBe(
+      ACCOUNT_STATUS_DRAFT
+    );
   });
 });
 
