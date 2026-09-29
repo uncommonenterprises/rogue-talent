@@ -219,7 +219,9 @@ const ProfileLinkField = props => {
           id={inputId}
           className={css.copyInput}
           type="text"
-          value={url}
+          // Shown without the protocol (as in the mockup) so the useful part fits on a phone;
+          // Copy puts the full address on the clipboard.
+          value={url.replace(/^https?:\/\//, '')}
           readOnly
           onFocus={e => e.target.select()}
         />
