@@ -52,6 +52,8 @@ export const GeneralLandingPage = () => {
   const config = useConfiguration();
   const intl = useIntl();
   const scrollingDisabled = useSelector(isScrollingDisabled);
+  // RT-FB-08: logged-in users don't get the "Create your account" calls to action.
+  const isAuthenticated = useSelector(state => !!state.auth?.isAuthenticated);
   const marketplaceName = config.marketplaceName;
 
   // Real, published model-profile listings for the "Featured talent" strip
@@ -87,9 +89,11 @@ export const GeneralLandingPage = () => {
               directly — no agents, no middlemen, no cut.
             </p>
             <div className={css.heroButtons}>
-              <NamedLink name="SignupPage" className={css.btnPrimary}>
-                Create your account
-              </NamedLink>
+              {isAuthenticated ? null : (
+                <NamedLink name="SignupPage" className={css.btnPrimary}>
+                  Create your account
+                </NamedLink>
+              )}
               <NamedLink name="SearchPage" className={css.btnGhostLight}>
                 Browse talent
               </NamedLink>
@@ -223,16 +227,18 @@ export const GeneralLandingPage = () => {
           </div>
         </section>
 
-        {/* 8 — CLOSING CTA */}
-        <section className={css.closing}>
-          <div className={css.inner}>
-            <h2 className={css.closingTitle}>Ready to go rogue?</h2>
-            <p className={css.closingText}>Create your free account in minutes.</p>
-            <NamedLink name="SignupPage" className={css.btnOnAccent}>
-              Create your account
-            </NamedLink>
-          </div>
-        </section>
+        {/* 8 - CLOSING CTA (sign-up only, so not shown to logged-in users) */}
+        {isAuthenticated ? null : (
+          <section className={css.closing}>
+            <div className={css.inner}>
+              <h2 className={css.closingTitle}>Ready to go rogue?</h2>
+              <p className={css.closingText}>Create your free account in minutes.</p>
+              <NamedLink name="SignupPage" className={css.btnOnAccent}>
+                Create your account
+              </NamedLink>
+            </div>
+          </section>
+        )}
       </LayoutSingleColumn>
     </Page>
   );
