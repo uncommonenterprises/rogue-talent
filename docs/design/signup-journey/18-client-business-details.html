@@ -43,9 +43,38 @@
 
     <div class="form-fields">
       <div class="rt-field">
+        <label class="rt-field__label">Business type <span class="rt-req">*</span></label>
+        <div class="rt-segmented">
+          <input type="radio" name="business-type-ltd" id="bt-ltd-main" checked><label for="bt-ltd-main">Limited company</label>
+          <input type="radio" name="business-type-ltd" id="bt-sole-main"><label for="bt-sole-main">Sole trader or self-employed</label>
+        </div>
+      </div>
+
+      <div class="rt-field">
+        <label class="rt-field__label">Company name <span class="rt-req">*</span></label>
+        <input class="rt-input" value="Northside Studio">
+        <span class="rt-field__hint">Check this matches your registered name.</span>
+      </div>
+
+      <div class="rt-field">
         <label class="rt-field__label">Company registration number <span class="rt-req">*</span></label>
         <input class="rt-input" placeholder="e.g. 12345678">
         <span class="rt-field__hint">Your company's registration number so we can verify your business (e.g. Companies House number).</span>
+      </div>
+
+      <div class="rt-field">
+        <label class="rt-field__label">Registered office address <span class="rt-req">*</span></label>
+        <div class="rt-search">
+          <span class="rt-search__icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 14s5-4.2 5-8a5 5 0 10-10 0c0 3.8 5 8 5 8z" stroke="currentColor" stroke-width="1.4"/><circle cx="8" cy="6" r="1.6" stroke="currentColor" stroke-width="1.2"/></svg></span>
+          <input class="rt-input" placeholder="Start typing an address…">
+        </div>
+        <span class="rt-field__hint">Search suggestions appear as you type (Google Places).</span>
+      </div>
+
+      <div class="rt-field">
+        <label class="rt-field__label">Business phone number <span class="rt-req">*</span></label>
+        <input class="rt-input" placeholder="07… or 020…">
+        <span class="rt-field__hint">So we can reach you about a booking or a safety concern. Never shown to models.</span>
       </div>
 
       <div class="rt-field">
@@ -54,26 +83,8 @@
       </div>
 
       <div class="rt-field">
-        <label class="rt-field__label">Typical project types <span class="rt-field__hint" style="display:inline;font-weight:400;">(optional)</span></label>
-        <div class="chip-row">
-          <span class="rt-chip rt-chip--selected">Campaign</span>
-          <span class="rt-chip rt-chip--selected">Lookbook</span>
-          <span class="rt-chip">E-commerce</span>
-          <span class="rt-chip">Editorial</span>
-          <span class="rt-chip">Events</span>
-          <span class="rt-chip">Social content</span>
-        </div>
-      </div>
-
-      <div class="field-row">
-        <div class="rt-field">
-          <label class="rt-field__label">Website <span class="rt-field__hint" style="display:inline;font-weight:400;">(optional)</span></label>
-          <input class="rt-input" placeholder="northside.studio">
-        </div>
-        <div class="rt-field">
-          <label class="rt-field__label">VAT number <span class="rt-field__hint" style="display:inline;font-weight:400;">(optional)</span></label>
-          <input class="rt-input" placeholder="GB123456789">
-        </div>
+        <label class="rt-field__label">Website <span class="rt-field__hint" style="display:inline;font-weight:400;">(optional)</span></label>
+        <input class="rt-input" placeholder="northside.studio">
       </div>
     </div>
 
@@ -84,14 +95,70 @@
   </form>
 </main>
 
+<section class="container--editorial" style="padding: var(--space-2) var(--space-5) var(--space-9);">
+  <div class="state-label">Sole trader variant</div>
+  <div class="status-card" style="max-width:672px;">
+    <div class="form-fields">
+      <div class="rt-field">
+        <label class="rt-field__label">Business type <span class="rt-req">*</span></label>
+        <div class="rt-segmented">
+          <input type="radio" name="business-type-sole" id="bt-ltd-sole"><label for="bt-ltd-sole">Limited company</label>
+          <input type="radio" name="business-type-sole" id="bt-sole-sole" checked><label for="bt-sole-sole">Sole trader or self-employed</label>
+        </div>
+      </div>
+
+      <div class="rt-field">
+        <label class="rt-field__label">Business or trading name <span class="rt-req">*</span></label>
+        <input class="rt-input" value="Alex Chen Photography">
+        <span class="rt-field__hint">The name you trade under.</span>
+      </div>
+
+      <div class="rt-field">
+        <label class="rt-field__label">Business address <span class="rt-req">*</span></label>
+        <div class="rt-search">
+          <span class="rt-search__icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 14s5-4.2 5-8a5 5 0 10-10 0c0 3.8 5 8 5 8z" stroke="currentColor" stroke-width="1.4"/><circle cx="8" cy="6" r="1.6" stroke="currentColor" stroke-width="1.2"/></svg></span>
+          <input class="rt-input" placeholder="Start typing an address…">
+        </div>
+        <span class="rt-field__hint">Search suggestions appear as you type (Google Places).</span>
+      </div>
+
+      <div class="rt-field">
+        <label class="rt-field__label">Website or social media link <span class="rt-req">*</span></label>
+        <input class="rt-input" placeholder="e.g. instagram.com/alexchenphoto">
+        <span class="rt-field__hint">Our main way to check a sole trader is an established business, since there's no company registration number to verify against.</span>
+      </div>
+
+      <div class="rt-field">
+        <label class="rt-field__label">Business phone number <span class="rt-req">*</span></label>
+        <input class="rt-input" placeholder="07… or 020…">
+        <span class="rt-field__hint">So we can reach you about a booking or a safety concern. Never shown to models.</span>
+      </div>
+
+      <div class="rt-field">
+        <label class="rt-field__label">Industry <span class="rt-field__hint" style="display:inline;font-weight:400;">(optional)</span></label>
+        <select class="rt-select"><option>Photography</option><option>Fashion brand</option><option>E-commerce</option><option>Advertising agency</option><option>Events</option><option>Film/TV</option><option>Other</option></select>
+      </div>
+    </div>
+
+    <div class="wizard-actions" style="padding-top:var(--space-5); margin-top:var(--space-5);">
+      <span></span>
+      <button class="rt-btn rt-btn--primary rt-btn--lg" type="submit">Submit for approval</button>
+    </div>
+  </div>
+</section>
+
 <div class="notes-dock">
   <details class="design-notes">
     <summary>Design notes</summary>
     <ul>
-      <li><strong>The sign-up/step-2 split, and why:</strong> company name stays on the sign-up form (screen 03) because it's identity-defining and low-friction to type. Everything else (registration number, industry, project types, website, VAT) moves here, after email verification, following the same progressive-disclosure principle as the model wizard: get the account created fast, ask for more once someone's committed.</li>
+      <li><strong>The sign-up/step-2 split, and why:</strong> company name stays on the sign-up form (screen 03) because it's identity-defining and low-friction to type. Everything else moves here, after email verification, following the same progressive-disclosure principle as the model wizard: get the account created fast, ask for more once someone's committed.</li>
       <li><strong>Decided by Neil, 29/09:</strong> today's config (<code>configUser.js</code>) has <code>company_registration_number</code> set to <code>displayInSignUp: true</code>, i.e. it currently shows on the sign-up form. When this is built, the Developer will flip that to <code>false</code> and add this new step instead, a real config change, not just a visual one.</li>
-      <li>Registration number is the only required field here. It's the one thing Gate A's Companies House check actually depends on; everything else is enrichment and stays optional, matching every other client field's existing convention.</li>
       <li>"Submit for approval" on this screen doubles as the client's Gate-A submission (there's no separate client "review" screen in this journey, unlike the model's 4-step wizard, since there's much less to review).</li>
+      <li><strong>Revision 3 (Neil, 29/09) - Neil's feedback was that this screen "feels very light".</strong> It now opens with a required "Business type" choice (Limited company / Sole trader or self-employed), built with <code>.rt-segmented</code> (the approved DS segmented-control component, previously unused in the live product but already specified in <code>DESIGN_SYSTEM.md</code> §9). Sole traders - for example freelance photographers - are a planned client type per <code>safety-framework-v1-scope.md</code>'s sole-trader rule, and have no Companies House number, so the form has to work for both without forcing a registration number that doesn't exist.</li>
+      <li><strong>Revision 3 - Limited company (main card):</strong> Company name (pre-filled from sign-up, editable, hint "Check this matches your registered name"), Company registration number (required), Registered office address (required, full width, using the same Google Places autocomplete look as screen 08's city field), Business phone number (required, hint explains why it's asked and that it's never shown to models), Industry (optional, unchanged), Website (optional, unchanged).</li>
+      <li><strong>Revision 3 - Sole trader (variant card below):</strong> no registration number field. Company name becomes "Business or trading name", with the hint "The name you trade under." Adds Business address (required, same address-autocomplete look) and "Website or social media link" (required - our main legitimacy signal for a sole trader, since there's no company number to check against). Business phone number is required the same as the limited-company card. Industry stays optional.</li>
+      <li><strong>Revision 3 - Removed:</strong> VAT number (PM decision: not used anywhere in the product) and Typical project types (nothing reads or displays it). Both are deleted from this screen and will need deleting from the Console listing/user field config at build time.</li>
+      <li><strong>Build notes for the Developer:</strong> new Console fields needed - <code>business_type</code> (enum: limited_company / sole_trader), <code>business_address</code> (one address field serves both paths: registered office address for limited companies, business address for sole traders; there is no existing address field for clients today), and a business phone field (currently the client's phone was collected at sign-up - this replaces that, scoped as private/business data, not shown on any public profile). <code>company_registration_number</code> becomes conditionally required (only when <code>business_type</code> = limited company). VAT number and Typical project types fields are removed in Console.</li>
     </ul>
   </details>
 </div>

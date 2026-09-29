@@ -42,11 +42,29 @@
         <p>Our team checks every company by hand before it can book. We'll email you as soon as there's a decision.</p>
       </div>
 
-      <ul class="info-list">
-        <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5 7-7.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Submitted: Northside Studio, registration number on file</li>
-        <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.4"/></svg>Under review: a Companies House and legitimacy check</li>
-        <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.4"/></svg>Not yet bookable: you can browse models now, but can't send a booking request yet</li>
-      </ul>
+      <ol class="progress-tracker">
+        <li class="progress-tracker__step is-done">
+          <span class="progress-tracker__marker"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l2.5 2.5L10 3" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <div class="progress-tracker__body"><span class="progress-tracker__title">Submitted</span></div>
+        </li>
+        <li class="progress-tracker__step is-current">
+          <span class="progress-tracker__marker">2</span>
+          <div class="progress-tracker__body">
+            <span class="progress-tracker__title">Business check by our team</span>
+            <span class="progress-tracker__status">In progress</span>
+          </div>
+        </li>
+        <li class="progress-tracker__step is-todo">
+          <span class="progress-tracker__marker">3</span>
+          <div class="progress-tracker__body"><span class="progress-tracker__title">Verify your identity</span></div>
+        </li>
+        <li class="progress-tracker__step is-todo">
+          <span class="progress-tracker__marker">4</span>
+          <div class="progress-tracker__body"><span class="progress-tracker__title">Ready to book</span></div>
+        </li>
+      </ol>
+
+      <p style="font-size:var(--text-sm);color:var(--text-secondary);margin:0;">You can browse models now, but you can't send a booking request until you're approved and verified.</p>
 
       <div class="callout callout--accent">
         <h3>Get a head start - verify now</h3>
@@ -63,9 +81,11 @@
   <details class="design-notes">
     <summary>Design notes</summary>
     <ul>
-      <li>Mirrors the model's Pending screen (14) structurally, so the pattern is learned once and recognised on both sides. Only the checklist copy and reviewer detail (Companies House vs portfolio quality) differ.</li>
+      <li>Mirrors the model's Pending screen (14) structurally, so the pattern is learned once and recognised on both sides. Only the tracker step copy and reviewer detail (Companies House vs portfolio quality) differ.</li>
       <li>Browsing is allowed while Pending (there's no reason to block discovery), but it's a secondary action. Booking is the gated capability, not browsing, so the copy is precise about what "not yet bookable" actually means.</li>
-      <li>Same banked-verification sub-note pattern as screen 14 would apply here if verified early. Omitted from this file to avoid repeating it a third time; see screen 14's alternate state for the full treatment.</li>
+      <li><strong>Revision 3 (Neil, 29/09):</strong> replaced the info-list checklist with the same vertical progress tracker pattern as screen 14: 1 Submitted (done), 2 Business check by our team (current, "In progress"), 3 Verify your identity (to do), 4 Ready to book (to do). Done, current and to-do are distinguished by fill/border colour and the explicit status label, never by an empty vs filled circle.</li>
+      <li><strong>Revision 3 (Neil, 29/09):</strong> the "you can browse but not book yet" message is now one short plain sentence under the tracker, rather than a checklist item.</li>
+      <li>Same banked-verification tracker state as screen 14 would apply here if verified early (step 3 done while step 2 is still current). Omitted from this file to avoid repeating it a third time; see screen 14's alternate state for the full treatment.</li>
     </ul>
   </details>
 </div>

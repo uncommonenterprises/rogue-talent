@@ -38,7 +38,7 @@
   </aside>
 
   <div class="auth-shell__content">
-    <form class="form-card" onsubmit="return false;">
+    <form class="form-card form-card--compact" onsubmit="return false;">
       <div class="form-head">
         <h1>Create your client account</h1>
         <p>We'll ask a couple of business details next, then you can start browsing.</p>
@@ -84,11 +84,6 @@
           <span class="rt-field__hint">Use at least 8 characters.</span>
         </div>
 
-        <div class="rt-field">
-          <label class="rt-field__label">Phone number <span class="rt-req">*</span></label>
-          <input class="rt-input" placeholder="07…">
-        </div>
-
         <div class="consent-block">
           <label class="rt-check">
             <input type="checkbox" checked>
@@ -98,7 +93,7 @@
           <label class="rt-check">
             <input type="checkbox" checked>
             <span class="rt-check__box"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l2.5 2.5L10 3" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-            I accept the <a href="#">Terms of Service</a> and the <a href="#">Privacy Policy</a>
+            <span>I accept the <a href="#">Terms of Service</a> and the <a href="#">Privacy Policy</a></span>
           </label>
         </div>
       </div>
@@ -114,9 +109,11 @@
     <summary>Design notes</summary>
     <ul>
       <li>This screen carries the one inline validation-error example for the pair of sign-up forms: a mistyped email domain ("gmial.com"), shown in the <code>rt-input--error</code> state with the matching <code>rt-field__error</code> message. Illustrative only, not the default state.</li>
-      <li><strong>Decided by Neil, 29/09:</strong> company name is collected here, but <em>company registration number</em> (and industry/website/VAT) move to a dedicated "Your business details" step after email verification (screen 18) rather than sitting on the sign-up form, to keep this first screen fast. This split is approved.</li>
+      <li><strong>Decided by Neil, 29/09:</strong> company name is collected here, but <em>company registration number</em> (and industry/website) move to a dedicated "Your business details" step after email verification (screen 18) rather than sitting on the sign-up form, to keep this first screen fast. This split is approved.</li>
       <li>Same 18+ tick box and terms/privacy pattern as the model form, for consistency across both sign-up variants.</li>
-      <li>Phone number is required for clients (not models) per the existing user-type config. Reflected here without inventing a new field.</li>
+      <li><strong>Revision 3 (Neil, 29/09):</strong> phone number is removed from this form (PM decision: we don't use it at sign-up). The client's phone moves to "Business phone number" on the new Your business details step (screen 18), where it belongs alongside the rest of the business information.</li>
+      <li><strong>Revision 3 (Neil, 29/09):</strong> fixed the same terms/privacy spacing bug as screen 02 - the label text and its links are now wrapped in a single <code>&lt;span&gt;</code> so <code>.rt-check</code>'s flex gap doesn't put a visible gap between every word and link.</li>
+      <li><strong>Revision 3 (Neil, 29/09):</strong> with phone removed, the form uses the same <code>.form-card--compact</code> tightened spacing as screen 02, so it fits a typical ~800px-tall laptop viewport without scrolling.</li>
     </ul>
   </details>
 </div>

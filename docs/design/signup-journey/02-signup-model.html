@@ -38,7 +38,7 @@
   </aside>
 
   <div class="auth-shell__content">
-    <form class="form-card" onsubmit="return false;">
+    <form class="form-card form-card--compact" onsubmit="return false;">
       <div class="form-head">
         <h1>Create your model account</h1>
         <p>Takes about a minute. You'll build your full profile next.</p>
@@ -75,11 +75,6 @@
           <span class="rt-field__hint">Use at least 8 characters.</span>
         </div>
 
-        <div class="rt-field">
-          <label class="rt-field__label">Phone number <span class="rt-field__hint" style="display:inline;font-weight:400;">(optional)</span></label>
-          <input class="rt-input" placeholder="07…">
-        </div>
-
         <div class="consent-block">
           <label class="rt-check">
             <input type="checkbox" checked>
@@ -89,7 +84,7 @@
           <label class="rt-check">
             <input type="checkbox" checked>
             <span class="rt-check__box"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l2.5 2.5L10 3" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-            I accept the <a href="#">Terms of Service</a> and the <a href="#">Privacy Policy</a>
+            <span>I accept the <a href="#">Terms of Service</a> and the <a href="#">Privacy Policy</a></span>
           </label>
         </div>
       </div>
@@ -106,7 +101,9 @@
     <ul>
       <li>Date of birth is gone (RT-FB-03, agreed 28/09): replaced with a plain "I confirm I'm 18 or over" tick box. Self-declared DOB gave no real protection over a tick, and the actual safeguard is the ID-verified 18+ check at Stripe verification (SAF-38). This supersedes the earlier <code>dob-field-spec.md</code>.</li>
       <li>Terms/privacy and the age confirmation are two separate tick boxes rather than one combined line, so each can carry its own validation error without a confusing compound message.</li>
-      <li>Fields match what's actually collected today (<code>configUser.js</code>): first/last name, email, password, optional phone. Display name isn't asked here. It's set from first name + last initial on the first onboarding step, editable there.</li>
+      <li><strong>Revision 3 (Neil, 29/09):</strong> phone number is removed from this form (it was optional and isn't used at sign-up; models can still add one in account settings). Fields collected: first/last name, email, password. Display name isn't asked here. It's set from first name + last initial on the first onboarding step, editable there.</li>
+      <li><strong>Revision 3 (Neil, 29/09):</strong> fixed a spacing bug in the terms/privacy tick box. <code>.rt-check</code> is <code>inline-flex</code> with a gap, so a bare text node broken up by inline links was rendering as several separate flex items with a visible gap between each. The label text and its links are now wrapped in a single <code>&lt;span&gt;</code> so they flow as normal text.</li>
+      <li><strong>Revision 3 (Neil, 29/09):</strong> with phone removed, the form is tightened with the <code>.form-card--compact</code> modifier (existing spacing tokens, one step down) so it fits a typical ~800px-tall laptop viewport without scrolling.</li>
       <li>One primary action (cobalt) on the page: "Create my model account". Google sign-in stays secondary/outline, consistent with the existing social auth pattern.</li>
       <li>The ink panel's claims are checkable today: 100% of rate, clients ID-verified before booking (Gate B, account-status-lifecycle spec), manual profile review (Gate A). Nothing about response times or member counts.</li>
     </ul>

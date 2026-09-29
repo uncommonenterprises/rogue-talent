@@ -42,11 +42,29 @@
         <p>Our team is reviewing your profile and portfolio by hand. We'll email you the moment there's a decision.</p>
       </div>
 
-      <ul class="info-list">
-        <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5 7-7.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Submitted: About you, your profile, portfolio and rates</li>
-        <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.4"/></svg>Under review: we look closely at your portfolio quality first</li>
-        <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.4"/></svg>Not yet visible: your profile won't appear in search until it's approved and verified</li>
-      </ul>
+      <ol class="progress-tracker">
+        <li class="progress-tracker__step is-done">
+          <span class="progress-tracker__marker"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l2.5 2.5L10 3" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <div class="progress-tracker__body"><span class="progress-tracker__title">Submitted</span></div>
+        </li>
+        <li class="progress-tracker__step is-current">
+          <span class="progress-tracker__marker">2</span>
+          <div class="progress-tracker__body">
+            <span class="progress-tracker__title">Review by our team</span>
+            <span class="progress-tracker__status">In progress</span>
+          </div>
+        </li>
+        <li class="progress-tracker__step is-todo">
+          <span class="progress-tracker__marker">3</span>
+          <div class="progress-tracker__body"><span class="progress-tracker__title">Verify with Stripe</span></div>
+        </li>
+        <li class="progress-tracker__step is-todo">
+          <span class="progress-tracker__marker">4</span>
+          <div class="progress-tracker__body"><span class="progress-tracker__title">Live in search</span></div>
+        </li>
+      </ol>
+
+      <p style="font-size:var(--text-sm);color:var(--text-secondary);margin:0;">Your profile won't appear in search until it's approved and verified.</p>
 
       <div class="callout callout--accent">
         <h3>Get a head start - verify now</h3>
@@ -76,10 +94,28 @@
       <h1>You're in the queue</h1>
       <p>Our team is reviewing your profile and portfolio by hand. We'll email you the moment there's a decision.</p>
     </div>
-    <div class="subnote">
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5 7-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      Identity verified, awaiting profile approval
-    </div>
+
+    <ol class="progress-tracker">
+      <li class="progress-tracker__step is-done">
+        <span class="progress-tracker__marker"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l2.5 2.5L10 3" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <div class="progress-tracker__body"><span class="progress-tracker__title">Submitted</span></div>
+      </li>
+      <li class="progress-tracker__step is-current">
+        <span class="progress-tracker__marker">2</span>
+        <div class="progress-tracker__body">
+          <span class="progress-tracker__title">Review by our team</span>
+          <span class="progress-tracker__status">In progress</span>
+        </div>
+      </li>
+      <li class="progress-tracker__step is-done">
+        <span class="progress-tracker__marker"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l2.5 2.5L10 3" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <div class="progress-tracker__body"><span class="progress-tracker__title">Verify with Stripe</span></div>
+      </li>
+      <li class="progress-tracker__step is-todo">
+        <span class="progress-tracker__marker">4</span>
+        <div class="progress-tracker__body"><span class="progress-tracker__title">Live in search</span></div>
+      </li>
+    </ol>
   </div>
 </section>
 
@@ -89,9 +125,11 @@
     <ul>
       <li>This is the model's dashboard/profile home while Pending. The amber <code>rt-status</code> badge appears both in the top nav (compact) and large on the card, per the badge spec's placement guidance.</li>
       <li>The "verify now" callout is the one cobalt action on this page: there's genuinely nothing else actionable to do while waiting, so it's safe to make it primary rather than secondary.</li>
-      <li>The alternate state (already-verified-while-pending) swaps the callout for a small green subnote instead of repeating the "verify now" prompt, per lifecycle spec §7, so an early verifier isn't confused by a call to action for something they've already done.</li>
       <li>No invented review-time estimate ("usually 2 days" etc.). We don't have real data yet to back a number.</li>
-      <li><strong>RT-FB-10 (Neil, 28/09):</strong> "availability" is removed from the submitted checklist (there's no onboarding availability step any more), and a quiet "Manage your calendar" link is added, deliberately understated (a plain text link, not a button) since it's entirely optional. Copy is explicit that models are available by default and still confirm every booking request themselves, so this never reads as something they forgot to do.</li>
+      <li><strong>Revision 3 (Neil, 29/09):</strong> replaced the old info-list (one tick plus two empty circles, which read like an unticked checklist) with a vertical progress tracker showing all four steps of the journey: 1 Submitted (done), 2 Review by our team (current, labelled "In progress" in amber), 3 Verify with Stripe (to do - a muted numbered circle, not an empty one), 4 Live in search (to do). Done, current and to-do are distinguished by fill and border colour as well as the explicit status label, so the state is clear at a glance rather than reading as a checklist someone forgot to finish.</li>
+      <li><strong>Revision 3 (Neil, 29/09):</strong> the "not visible in search until approved and verified" message is now one short plain sentence under the tracker, rather than a list item, since it's the one thing worth saying once it's clear the model still has steps to go.</li>
+      <li><strong>Revision 3 (Neil, 29/09):</strong> the alternate "already verified while waiting" state now shows the tracker itself, with step 3 (Verify with Stripe) marked done while step 2 (Review by our team) is still current/in progress - this replaces the old green subnote, which repeated information the tracker now shows directly.</li>
+      <li><strong>RT-FB-10 (Neil, 28/09):</strong> "availability" is not part of the submitted checklist (there's no onboarding availability step any more), and a quiet "Manage your calendar" link is added, deliberately understated (a plain text link, not a button) since it's entirely optional. Copy is explicit that models are available by default and still confirm every booking request themselves, so this never reads as something they forgot to do.</li>
     </ul>
   </details>
 </div>

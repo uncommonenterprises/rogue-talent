@@ -73,12 +73,24 @@
         </div>
       </div>
 
-      <div class="rt-field">
-        <label class="rt-field__label">Travel costs <span class="rt-req">*</span></label>
-        <span class="rt-field__hint" style="margin-top:-4px;">Whether travel costs are included in your rate or charged separately.</span>
-        <div class="chip-row">
-          <span class="rt-chip rt-chip--selected">Included in rate</span>
-          <span class="rt-chip">Charged separately</span>
+      <div class="field-row">
+        <div class="rt-field">
+          <label class="rt-field__label">Travel costs <span class="rt-req">*</span></label>
+          <span class="rt-field__hint" style="margin-top:-4px;">Whether travel costs are included in your rate or charged separately.</span>
+          <div class="chip-row">
+            <span class="rt-chip rt-chip--selected">Included in rate</span>
+            <span class="rt-chip">Charged separately</span>
+          </div>
+        </div>
+        <div class="rt-field">
+          <label class="rt-field__label">How far you'll travel <span class="rt-req">*</span></label>
+          <select class="rt-select">
+            <option>Local only (25 miles)</option>
+            <option>Regional (50 miles)</option>
+            <option selected>National</option>
+            <option>International</option>
+          </select>
+          <span class="rt-field__hint">How far from your base city you're happy to travel for a booking.</span>
         </div>
       </div>
 
@@ -108,7 +120,8 @@
       <li>Currency inputs use a plain "£" prefix inside the field rather than a separate currency selector. The marketplace is GBP-only, so a picker would be a false choice.</li>
       <li>The fee-explainer callout is the one place on this step that states the commercial model plainly (100% to the model, one flat 15% fee to the client). It's the wedge, so it earns a moment of emphasis without becoming a second cobalt element (the callout uses a neutral surface, not accent fill).</li>
       <li>Guidance copy reused verbatim from the live <code>EditListingPricingPanel.guidance</code> string.</li>
-      <li><strong>New field (PM decision, 29/09): Minimum booking notice.</strong> A required <code>rt-select</code> next to Travel costs, example value "48 hours". This sets an expectation only, it does not claim the system blocks or filters booking requests that fall inside the window, because it doesn't: the model can still decline any request regardless of notice given. The hint says so explicitly.</li>
+      <li><strong>New field (PM decision, 29/09): Minimum booking notice.</strong> A required <code>rt-select</code>, example value "48 hours". This sets an expectation only, it does not claim the system blocks or filters booking requests that fall inside the window, because it doesn't: the model can still decline any request regardless of notice given. The hint says so explicitly.</li>
+      <li><strong>Revision 3 (Neil, 29/09) - How far you'll travel:</strong> moved here from screen 09's old "Where you'll work" section, and relabelled from "Availability radius" for clarity. Required, sits directly next to Travel costs in the same row since both are travel-related. Options: "Local only (25 miles)", "Regional (50 miles)", "National", "International"; example value shown is "National". Underlying field is unchanged - it's still <code>availability_radius</code> in Sharetribe. Only the label and its position in the wizard change; this is a Console label edit at build time, not a new field.</li>
       <li><strong>Wizard order (PM decision, 29/09):</strong> Rates is step 3 of 4 now, matching the live product. "Continue" goes to Your portfolio (screen 10), the new last step, not straight to Review &amp; submit. There is still no separate availability step; models are available by default and every booking request still needs their acceptance.</li>
     </ul>
   </details>

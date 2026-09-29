@@ -101,13 +101,47 @@
       <div class="rt-field">
         <label class="rt-field__label">Ethnicity <span class="rt-req">*</span></label>
         <span class="rt-field__hint" style="margin-top:-4px;">Helps clients cast for specific briefs. Select all that apply.</span>
-        <div class="chip-row">
-          <span class="rt-chip rt-chip--selected">Mixed</span>
-          <span class="rt-chip">Asian</span>
-          <span class="rt-chip">Black</span>
-          <span class="rt-chip">White</span>
-          <span class="rt-chip">Hispanic/Latino</span>
-          <span class="rt-chip">Middle Eastern</span>
+        <button type="button" class="rt-input rt-select" style="text-align:left; color:var(--ink-400); cursor:pointer;">Select all that apply</button>
+      </div>
+
+      <div style="padding-top:var(--space-2);">
+        <div class="state-label" style="margin-bottom:var(--space-3);">Example - ethnicity dropdown, open state (multi-select, tick to choose several)</div>
+        <div style="border:var(--border-hair) solid var(--ink-200); border-radius:var(--radius-lg); background:var(--white); box-shadow:var(--shadow-sm); padding:var(--space-2); display:flex; flex-direction:column; max-width:320px;">
+          <label class="rt-check" style="padding:8px 10px; width:100%;">
+            <input type="checkbox">
+            <span class="rt-check__box"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l2.5 2.5L10 3" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            Asian
+          </label>
+          <label class="rt-check" style="padding:8px 10px; width:100%;">
+            <input type="checkbox">
+            <span class="rt-check__box"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l2.5 2.5L10 3" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            Black
+          </label>
+          <label class="rt-check" style="padding:8px 10px; width:100%;">
+            <input type="checkbox">
+            <span class="rt-check__box"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l2.5 2.5L10 3" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            Hispanic/Latino
+          </label>
+          <label class="rt-check" style="padding:8px 10px; width:100%;">
+            <input type="checkbox">
+            <span class="rt-check__box"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l2.5 2.5L10 3" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            Middle Eastern
+          </label>
+          <label class="rt-check" style="padding:8px 10px; width:100%;">
+            <input type="checkbox" checked>
+            <span class="rt-check__box"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l2.5 2.5L10 3" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            Mixed
+          </label>
+          <label class="rt-check" style="padding:8px 10px; width:100%;">
+            <input type="checkbox">
+            <span class="rt-check__box"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l2.5 2.5L10 3" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            White
+          </label>
+          <label class="rt-check" style="padding:8px 10px; width:100%;">
+            <input type="checkbox">
+            <span class="rt-check__box"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l2.5 2.5L10 3" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            Other
+          </label>
         </div>
       </div>
 
@@ -122,23 +156,24 @@
         <span class="rt-field__hint" style="margin-top:-4px;">The types of work you do and want to be booked for. Select all that apply.</span>
         <div class="chip-row">
           <span class="rt-chip rt-chip--selected">Fashion</span>
-          <span class="rt-chip rt-chip--selected">Editorial</span>
           <span class="rt-chip">Commercial</span>
-          <span class="rt-chip">Beauty</span>
+          <span class="rt-chip rt-chip--selected">Editorial</span>
+          <span class="rt-chip">Fitness</span>
           <span class="rt-chip">Lifestyle</span>
+          <span class="rt-chip">Beauty</span>
+          <span class="rt-chip">Lingerie</span>
           <span class="rt-chip">Swimwear</span>
-          <span class="rt-chip">+7 more</span>
+          <span class="rt-chip">Plus-size</span>
+          <span class="rt-chip">Petite</span>
+          <span class="rt-chip">Parts (hands/feet)</span>
+          <span class="rt-chip">Hair</span>
+          <span class="rt-chip">Promotional/Events</span>
         </div>
       </div>
     </div>
 
     <div class="field-section">
-      <h2>Where you'll work</h2>
-      <div class="rt-field">
-        <label class="rt-field__label">Availability radius <span class="rt-req">*</span></label>
-        <select class="rt-select"><option>National</option></select>
-        <span class="rt-field__hint">How far you'll travel from your base city for a booking.</span>
-      </div>
+      <h2>Your links</h2>
       <div class="field-row">
         <div class="rt-field">
           <label class="rt-field__label">Website <span class="rt-field__hint" style="display:inline;font-weight:400;">(optional)</span></label>
@@ -162,12 +197,13 @@
   <details class="design-notes">
     <summary>Design notes</summary>
     <ul>
-      <li>This is a representative subset of the real field list (<code>configListing.js</code>). Every required attribute is shown at least once, grouped into four labelled sections (Basics, Measurements, Style &amp; experience, Where you'll work) rather than one long undifferentiated list, so the page reads as a form, not a survey.</li>
+      <li>This is a representative subset of the real field list (<code>configListing.js</code>). Every required attribute is shown at least once, grouped into labelled sections (Basics, Measurements, Style &amp; experience, Your links) rather than one long undifferentiated list, so the page reads as a form, not a survey.</li>
       <li>Section headings use the tracked-uppercase label style (`rt-eyebrow`-style), matching the DS's "labels are tracked Hanken" rule, kept distinct from field labels so the hierarchy is unambiguous at a glance.</li>
-      <li>Multi-select fields (ethnicity, categories) use `rt-chip` toggle groups rather than a scrolling checkbox list or a multi-select dropdown. Faster to scan and matches the existing chip pattern used elsewhere in the product.</li>
       <li>Optional fields (Website, Instagram) are explicitly labelled "(optional)" per the already-shipped app-wide convention in `CustomExtendedDataField.js`.</li>
       <li>"Back" is a secondary button (not a link) since this is a long step and users may want a clear, deliberate way to return, but it stays visually subordinate to the one cobalt "Continue".</li>
-      <li>"Availability radius" here is unrelated to the calendar-availability step that's been removed (RT-FB-10). It's a travel-distance preference, stays part of the profile attributes.</li>
+      <li><strong>Revision 3 (Neil, 29/09) - Ethnicity:</strong> changed from a pill/chip group to a regular full-width dropdown. It's still a multi-select field in Sharetribe (a multi-enum), so the dropdown allows several choices - the closed state shows the placeholder "Select all that apply" (built from `.rt-input`/`.rt-select`'s existing look, not a new field style), and a small labelled example below shows what the open state looks like: a list of `.rt-check` tick boxes. Options, in order: Asian, Black, Hispanic/Latino, Middle Eastern, Mixed, White, Other. This is closer to how a real multi-select control behaves (a native `<select multiple>` or a checkbox-list popover) than the pill group was, and reads less like a set of mutually exclusive choices.</li>
+      <li><strong>Revision 3 (Neil, 29/09) - Modelling categories:</strong> stays a pill/chip group, but now shows all 13 options up front instead of six plus a "+7 more" that hid most of the list. Order: Fashion, Commercial, Editorial, Fitness, Lifestyle, Beauty, Lingerie, Swimwear, Plus-size, Petite, Parts (hands/feet), Hair, Promotional/Events. Fashion and Editorial stay selected as the example state.</li>
+      <li><strong>Revision 3 (Neil, 29/09) - Sections:</strong> "Where you'll work" is removed. Availability radius (now relabelled "How far you'll travel") moves to Your rates (screen 11), next to Travel costs, since both are travel-related pricing/logistics questions rather than profile attributes. Website and Instagram handle move into a new, final "Your links" section on this screen (both stay optional).</li>
       <li><strong>Wizard order (PM decision, 29/09):</strong> "Continue" now goes to Your rates (screen 11), not Your portfolio. Portfolio is the new last step, before Review &amp; submit.</li>
     </ul>
   </details>

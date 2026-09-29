@@ -70,6 +70,7 @@
         <dt>Day rate</dt><dd>£450</dd>
         <dt>Half-day rate</dt><dd>£260</dd>
         <dt>Travel costs</dt><dd>Included in rate</dd>
+        <dt>How far you'll travel</dt><dd>National</dd>
         <dt>Minimum booking notice</dt><dd>48 hours</dd>
       </dl>
     </div>
@@ -94,7 +95,7 @@
       <label class="rt-check">
         <input type="checkbox" checked>
         <span class="rt-check__box"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l2.5 2.5L10 3" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-        I confirm this information is accurate and the portfolio images are of me
+        <span>I confirm this information is accurate and the portfolio images are of me</span>
       </label>
     </div>
 
@@ -105,6 +106,14 @@
   </div>
 </main>
 
+<section class="container--editorial" style="padding: var(--space-2) var(--space-5) var(--space-9);">
+  <div class="state-label">If email not yet verified</div>
+  <div style="max-width:672px; margin:0 auto; display:flex; flex-direction:column; gap:var(--space-3); align-items:flex-start;">
+    <button class="rt-btn rt-btn--primary rt-btn--lg" type="button" disabled>Submit for approval</button>
+    <p style="font-size:var(--text-sm); color:var(--text-secondary); margin:0;">Verify your email to submit your profile. Check your inbox or <a href="#">resend the email</a>.</p>
+  </div>
+</section>
+
 <div class="notes-dock">
   <details class="design-notes">
     <summary>Design notes</summary>
@@ -113,9 +122,11 @@
       <li>"Submit for approval" replaces the old Stripe-gated "Publish listing" wording. Per the account-status-lifecycle spec, Gate B (Stripe) is explicitly not a prerequisite to submit for Gate A (quality review).</li>
       <li>The "what happens next" callout makes no promise about review turnaround time. We don't have data to back a number yet, and RT-FB-09 already flagged the cost of publishing unbacked claims.</li>
       <li>A single ownership/accuracy tick box sits just above the submit button, lightweight, but gives the model an explicit accountability moment for the portfolio images specifically (SAF-02 territory).</li>
+      <li><strong>Revision 3 (Neil, 29/09):</strong> fixed the same terms/privacy-style spacing issue as screens 02 and 03 on this checkbox's label - wrapped in a single <code>&lt;span&gt;</code> so <code>.rt-check</code>'s flex gap can't insert space where it shouldn't. This label has no links, so it wasn't visibly broken here, but the fix keeps every <code>.rt-check</code> label in the set built the same, safe way.</li>
+      <li><strong>Revision 3 (Neil, 29/09):</strong> added an alternate state below the main card for an unverified email - "Submit for approval" shown disabled, with a short notice and a "resend the email" link. This is the model-side half of the email-verification gate described on screen 04: verification is required before a model can submit for approval.</li>
+      <li><strong>Revision 3 (Neil, 29/09):</strong> "How far you'll travel" (the relabelled availability_radius field, now collected on screen 11) is included in the Rates review section above, alongside minimum booking notice.</li>
       <li><strong>RT-FB-10 (Neil, 28/09):</strong> there is no Availability section on this review screen any more. Models are available by default; every booking request still needs acceptance within a 48-hour window, and an accepted booking auto-blocks those dates, so there's no onboarding step needed to set this up. Models can optionally block out dates later from their dashboard: see the "Manage your calendar" link on screens 14 and 16.</li>
       <li><strong>Wizard order (PM decision, 29/09):</strong> the stepper and the review sections below both run in wizard order now: About you, Your profile, Rates, Portfolio. Rates and Portfolio have swapped places from the previous revision (Portfolio is step 4, the last step, not step 3). "Back" now returns to Your portfolio (screen 10).</li>
-      <li><strong>Minimum booking notice</strong> (new required field on Your rates, screen 11) is included in the Rates review section above.</li>
     </ul>
   </details>
 </div>

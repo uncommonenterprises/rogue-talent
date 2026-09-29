@@ -56,6 +56,7 @@
       <li>This is the already-agreed RT-FB-06 rework, carried into the new split layout: one headline with the name, one line showing the address, one clear primary button, one quiet help line. No stock fern background, no stray small print at the bottom.</li>
       <li>The primary button changes by role, since "what's next" genuinely differs. Shown below for both. This mockup defaults to the model variant above; the client variant is the second card.</li>
       <li>Resend / wrong-email / spam guidance stays merged into one quiet line under the button rather than three separate prompts. Typos and spam are the two real reasons verification fails, so it's kept, just de-emphasised.</li>
+      <li><strong>Revision 3 (Neil, 29/09):</strong> PM decision - both buttons stay, so people can keep moving straight into the product rather than being stopped here. Instead, the actions that actually matter are gated on verification: a model can start the profile wizard unverified, but can't submit their profile for approval until their email is verified (see screen 13's alternate state). A client can browse unverified, but can't send a booking request until their email is verified.</li>
     </ul>
   </details>
 </div>
@@ -70,14 +71,14 @@
         <h1 style="font-size:var(--text-xl);">Check your inbox, Jane</h1>
         <p>We've sent a verification link to <strong>jane.doe@example.com</strong></p>
         <button class="rt-btn rt-btn--primary" type="button">Start building your profile</button>
-        <p style="font-size:var(--text-xs);color:var(--text-muted);">You can verify your email any time before your profile goes live.</p>
+        <p style="font-size:var(--text-xs);color:var(--text-muted);">You'll need to verify your email before you can submit your profile for approval.</p>
       </div>
       <div class="status-card">
         <span class="rt-eyebrow rt-eyebrow--accent">Client account</span>
         <h1 style="font-size:var(--text-xl);">Check your inbox, Alex</h1>
         <p>We've sent a verification link to <strong>alex.chen@northside.studio</strong></p>
         <button class="rt-btn rt-btn--primary" type="button">Browse models</button>
-        <p style="font-size:var(--text-xs);color:var(--text-muted);">You'll need to verify your email before you can make a booking.</p>
+        <p style="font-size:var(--text-xs);color:var(--text-muted);">You'll need to verify your email before you can send a booking request.</p>
       </div>
     </div>
   </div>

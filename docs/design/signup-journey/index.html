@@ -32,13 +32,13 @@
     <h2>Account <span style="color:var(--text-muted); font-family:var(--font-sans); font-weight:600; font-size:var(--text-base);">- shared by both roles</span></h2>
     <p class="group-sub">Choosing a role, signing up, verifying email, logging in and recovering a password.</p>
     <div class="map-list">
-      <a class="map-card" href="01-choose-path.html"><span class="num">01</span><h3>Choose your path</h3><p>Two role cards ("I'm a model" / "I'm booking talent") replace the old dropdown.</p></a>
-      <a class="map-card" href="02-signup-model.html"><span class="num">02</span><h3>Sign up - model</h3><p>First/last name, email, password, phone, 18+ tick, terms.</p></a>
-      <a class="map-card" href="03-signup-client.html"><span class="num">03</span><h3>Sign up - client</h3><p>Adds company name; includes the one inline validation-error example.</p></a>
+      <a class="map-card" href="01-choose-path.html"><span class="num">01</span><h3>Choose your path</h3><p>Two role cards ("I'm a model" / "I'm booking talent") replace the old dropdown.</p><span class="rt-eyebrow rt-eyebrow--accent">Approved by Neil</span></a>
+      <a class="map-card" href="02-signup-model.html"><span class="num">02</span><h3>Sign up - model</h3><p>First/last name, email, password, 18+ tick, terms. Phone number removed; consent-line spacing bug fixed; tightened to fit an 800px viewport.</p></a>
+      <a class="map-card" href="03-signup-client.html"><span class="num">03</span><h3>Sign up - client</h3><p>Adds company name; includes the one inline validation-error example. Phone number removed (moves to Your business details, screen 18); same spacing fix and tightening as screen 02.</p></a>
       <a class="map-card" href="04-check-inbox.html"><span class="num">04</span><h3>Check your inbox</h3><p>RT-FB-06 best-practice rework, both model and client variants shown.</p></a>
       <a class="map-card" href="05-email-verified.html"><span class="num">05</span><h3>Email verified</h3><p>Confirmation-banner pattern for RT-FB-07/08, plus the no-session edge case.</p></a>
-      <a class="map-card" href="06-login.html"><span class="num">06</span><h3>Log in</h3><p>Same split shell, role-neutral copy.</p></a>
-      <a class="map-card" href="07-forgot-reset-password.html"><span class="num">07</span><h3>Forgot / reset password</h3><p>Both states of account recovery on one file.</p></a>
+      <a class="map-card" href="06-login.html"><span class="num">06</span><h3>Log in</h3><p>Same split shell, role-neutral copy.</p><span class="rt-eyebrow rt-eyebrow--accent">Approved by Neil</span></a>
+      <a class="map-card" href="07-forgot-reset-password.html"><span class="num">07</span><h3>Forgot / reset password</h3><p>Both states of account recovery on one file.</p><span class="rt-eyebrow rt-eyebrow--accent">Approved by Neil</span></a>
     </div>
   </section>
 
@@ -48,15 +48,15 @@
     <p style="font-size:var(--text-xs); color:var(--text-muted); margin:-8px 0 4px;">RT-FB-10 (Neil, 28/09): the wizard no longer has an availability step. Screen 12 has been removed.</p>
     <p style="font-size:var(--text-xs); color:var(--text-muted); margin:0 0 var(--space-5);">PM decision (29/09), matching the live product: the wizard order is now 1 About you, 2 Your profile, 3 Your rates (screen 11), 4 Your portfolio (screen 10). So "Continue" on screen 11 goes to Your portfolio, and "Continue" on screen 10 (now the last step) goes to Review &amp; submit. File names and screen numbers below are unchanged; the map cards stay in number order for reference, but this is the order a model actually walks through.</p>
     <div class="map-list">
-      <a class="map-card" href="08-model-about-you.html"><span class="num">08</span><h3>About you</h3><p>Display name + city. Step 1 of 4.</p></a>
-      <a class="map-card" href="09-model-profile.html"><span class="num">09</span><h3>Your profile</h3><p>Attributes grouped into Basics, Measurements, Style &amp; experience, Where you'll work.</p></a>
-      <a class="map-card" href="10-model-portfolio.html"><span class="num">10</span><h3>Your portfolio</h3><p>Empty upload state and a filled grid, no stock photography. Last step of the wizard.</p></a>
-      <a class="map-card" href="11-model-rates.html"><span class="num">11</span><h3>Your rates</h3><p>Day/half-day/hourly rate, travel costs, minimum booking notice, the flat-fee explainer.</p></a>
-      <a class="map-card" href="13-model-review-submit.html"><span class="num">13</span><h3>Review &amp; submit</h3><p>Per-section edit links; "Submit for approval", no Stripe gate.</p></a>
-      <a class="map-card" href="14-model-pending.html"><span class="num">14</span><h3>Pending approval</h3><p><code>rt-status</code> amber badge; verify-now callout; quiet "manage your calendar" link.</p></a>
-      <a class="map-card" href="15-model-approved-verify.html"><span class="num">15</span><h3>Approved - get verified</h3><p>Why it matters, what's needed, one button out to Stripe.</p></a>
-      <a class="map-card" href="16-model-verified.html"><span class="num">16</span><h3>Verified / you're live</h3><p>Restrained celebration; share profile, manage your calendar (optional).</p></a>
-      <a class="map-card" href="17-model-rejected.html"><span class="num">17</span><h3>Not approved</h3><p>Respectful, specific, resubmittable. Model and client variants shown.</p></a>
+      <a class="map-card" href="08-model-about-you.html"><span class="num">08</span><h3>About you</h3><p>Display name + city. Step 1 of 4.</p><span class="rt-eyebrow rt-eyebrow--accent">Approved by Neil</span></a>
+      <a class="map-card" href="09-model-profile.html"><span class="num">09</span><h3>Your profile</h3><p>Attributes grouped into Basics, Measurements, Style &amp; experience. Ethnicity is now a multi-select dropdown; modelling categories show all 13 options; new "Your links" section for website and Instagram (availability radius has moved to screen 11).</p></a>
+      <a class="map-card" href="10-model-portfolio.html"><span class="num">10</span><h3>Your portfolio</h3><p>Empty upload state and a filled grid, no stock photography. Last step of the wizard.</p><span class="rt-eyebrow rt-eyebrow--accent">Approved by Neil</span></a>
+      <a class="map-card" href="11-model-rates.html"><span class="num">11</span><h3>Your rates</h3><p>Day/half-day/hourly rate, travel costs, how far you'll travel, minimum booking notice, the flat-fee explainer.</p><span class="rt-eyebrow rt-eyebrow--accent">Approved by Neil</span></a>
+      <a class="map-card" href="13-model-review-submit.html"><span class="num">13</span><h3>Review &amp; submit</h3><p>Per-section edit links; "Submit for approval", no Stripe gate; an alternate disabled state for unverified email.</p><span class="rt-eyebrow rt-eyebrow--accent">Approved by Neil</span></a>
+      <a class="map-card" href="14-model-pending.html"><span class="num">14</span><h3>Pending approval</h3><p>A vertical progress tracker showing where you are in the journey (submitted, in review, verify with Stripe, live), replacing the old checklist; verify-now callout; quiet "manage your calendar" link.</p></a>
+      <a class="map-card" href="15-model-approved-verify.html"><span class="num">15</span><h3>Approved - get verified</h3><p>Why it matters, what's needed, one button out to Stripe.</p><span class="rt-eyebrow rt-eyebrow--accent">Approved by Neil</span></a>
+      <a class="map-card" href="16-model-verified.html"><span class="num">16</span><h3>Verified / you're live</h3><p>Restrained celebration; share profile, manage your calendar (optional).</p><span class="rt-eyebrow rt-eyebrow--accent">Approved by Neil</span></a>
+      <a class="map-card" href="17-model-rejected.html"><span class="num">17</span><h3>Not approved</h3><p>Respectful, specific, resubmittable. Model and client variants shown.</p><span class="rt-eyebrow rt-eyebrow--accent">Approved by Neil</span></a>
     </div>
   </section>
 
@@ -64,10 +64,10 @@
     <h2>Client journey</h2>
     <p class="group-sub">Business details, then the same lifecycle pattern with Stripe Identity instead of Connect.</p>
     <div class="map-list">
-      <a class="map-card" href="18-client-business-details.html"><span class="num">18</span><h3>Your business details</h3><p>Company registration number + enrichment fields, after sign-up.</p></a>
-      <a class="map-card" href="19-client-pending.html"><span class="num">19</span><h3>Pending approval</h3><p>Companies House / legitimacy review; browsing stays open.</p></a>
-      <a class="map-card" href="20-client-approved-verify.html"><span class="num">20</span><h3>Approved - verify identity</h3><p>Framed around the models' safety, via Stripe Identity.</p></a>
-      <a class="map-card" href="21-client-verified.html"><span class="num">21</span><h3>Verified - ready to book</h3><p>Closes the loop on the sign-up value proposition.</p></a>
+      <a class="map-card" href="18-client-business-details.html"><span class="num">18</span><h3>Your business details</h3><p>Business type (limited company or sole trader), company/business name, registration number or business address, business phone, plus optional industry/website. VAT and project types removed.</p></a>
+      <a class="map-card" href="19-client-pending.html"><span class="num">19</span><h3>Pending approval</h3><p>The same vertical progress tracker as screen 14 (submitted, business check, verify identity, ready to book); Companies House / legitimacy review; browsing stays open.</p></a>
+      <a class="map-card" href="20-client-approved-verify.html"><span class="num">20</span><h3>Approved - verify identity</h3><p>Framed around the models' safety, via Stripe Identity.</p><span class="rt-eyebrow rt-eyebrow--accent">Approved by Neil</span></a>
+      <a class="map-card" href="21-client-verified.html"><span class="num">21</span><h3>Verified - ready to book</h3><p>Closes the loop on the sign-up value proposition.</p><span class="rt-eyebrow rt-eyebrow--accent">Approved by Neil</span></a>
     </div>
   </section>
 
@@ -81,8 +81,21 @@
     <div><h3>Always a next step, never a dead end</h3><p>Pending, Approved and Rejected all carry one clear action: verify now, or fix and resubmit, instead of leaving the user waiting with nothing to do.</p></div>
     <div><h3>Honest trust signals</h3><p>Every claim in this journey (100% of rate, one flat 15% fee, ID/bank verification, manual review) is true today per <code>safety-framework-v1-scope.md</code> and the account-status-lifecycle spec. Nothing borrowed from a future roadmap, no invented stats (RT-FB-09).</p></div>
     <div><h3>No stock photography</h3><p>Every image slot uses the design-system diagonal-stripe placeholder, labelled, so it's unmistakable where real photography goes (RT-FB-01's fern-photo complaint, solved for good).</p></div>
-    <div><h3>One learned pattern, reused</h3><p>The split auth shell, the wizard stepper, and the status-card layout each appear multiple times with the same structure. A model and a client shown the same pattern once each need less onboarding of their own.</p></div>
+    <div><h3>One learned pattern, reused</h3><p>The split auth shell, the wizard stepper, the status-card layout and the progress tracker each appear multiple times with the same structure. A model and a client shown the same pattern once each need less onboarding of their own.</p></div>
   </div>
+</div>
+
+<div class="container--editorial" style="padding: 0 0 var(--space-7);">
+  <h2 style="font-family:var(--font-display); font-weight:800; font-size:var(--text-2xl); margin-bottom: var(--space-4);">Revision 3 (Neil's review, 29/09/2026)</h2>
+  <ul style="margin:0; padding-left:20px; display:flex; flex-direction:column; gap:var(--space-2); font-size:var(--text-sm); color:var(--text-secondary); line-height:1.5;">
+    <li><strong style="color:var(--text-primary);">A.</strong> Screens 02 and 03: removed the phone number field from both sign-up forms, fixed a spacing bug in the terms/privacy tick box caused by <code>.rt-check</code>'s flex gap (label text and links now wrapped in a single <code>&lt;span&gt;</code>), and tightened the forms so each fits a typical ~800px-tall laptop viewport without scrolling.</li>
+    <li><strong style="color:var(--text-primary);">B.</strong> Screen 04: kept the "Start building your profile" / "Browse models" buttons, but clarified that email verification gates the committed actions - submitting a profile for approval (models) and sending a booking request (clients). Screen 13 gets a new alternate state showing "Submit for approval" disabled with a "resend the email" link.</li>
+    <li><strong style="color:var(--text-primary);">C.</strong> Screen 05: added a dismiss ("x") button to the green success banner, in both role variants, with its own visible focus ring.</li>
+    <li><strong style="color:var(--text-primary);">D.</strong> Screen 09: ethnicity changed from pills to a full-width multi-select dropdown (with a labelled open-state example); modelling categories now show all 13 options with no "+7 more"; "Where you'll work" section removed, replaced by a new "Your links" section (website, Instagram).</li>
+    <li><strong style="color:var(--text-primary);">E.</strong> Screen 11: added "How far you'll travel" next to Travel costs - the same underlying <code>availability_radius</code> field, relabelled and moved from screen 09. Screen 13's Rates review section now includes it.</li>
+    <li><strong style="color:var(--text-primary);">F.</strong> Screens 14 and 19: replaced the tick/circle info-list with a clear vertical progress tracker (done / in progress / to do), with the search/booking visibility message moved to one short plain sentence underneath.</li>
+    <li><strong style="color:var(--text-primary);">G.</strong> Screen 18: added a required "Business type" choice (limited company / sole trader or self-employed) using <code>.rt-segmented</code>, split the form accordingly (registration number + registered office address for limited companies; business address + required website/social link for sole traders), added a required business phone number, and removed VAT number and Typical project types.</li>
+  </ul>
 </div>
 
 <div class="container--editorial" style="padding: 0 0 var(--space-9);">
@@ -90,7 +103,7 @@
   <div class="oq-list">
     <div class="oq-item">
       <h3>1. Company registration number moves off the client sign-up form</h3>
-      <p>Screens 03 + 18 design a split where only company name is asked at sign-up, and registration number (plus industry/website/VAT) moves to a new "Your business details" step straight after sign-up. Today's config (<code>configUser.js</code>) has <code>company_registration_number</code> set to show at sign-up already, so this is a real config change for the Developer, not just a new screen.</p>
+      <p>Screens 03 + 18 design a split where only company name is asked at sign-up, and registration number (plus industry/website) moves to a new "Your business details" step straight after sign-up. Today's config (<code>configUser.js</code>) has <code>company_registration_number</code> set to show at sign-up already, so this is a real config change for the Developer, not just a new screen.</p>
       <p class="oq-rec"><strong>Decided by Neil, 29/09/2026:</strong> approved.</p>
     </div>
     <div class="oq-item">
@@ -116,7 +129,7 @@
 </div>
 
 <footer class="map-foot">
-  <div class="container--editorial">Rogue Talent - design mockups for review only. Not built. ux-designer, 2026-09-28. Revision 1: em dashes removed throughout, the incorrect legal-entity suffix removed from the footer copy on screen 01, availability step retired per RT-FB-10. Revision 2: Neil's decisions applied, wizard order matches the live product, minimum booking notice added to Your rates, client Not approved variant added.</div>
+  <div class="container--editorial">Rogue Talent - design mockups for review only. Not built. ux-designer, 2026-09-28. Revision 1: em dashes removed throughout, the incorrect legal-entity suffix removed from the footer copy on screen 01, availability step retired per RT-FB-10. Revision 2: Neil's decisions applied, wizard order matches the live product, minimum booking notice added to Your rates, client Not approved variant added. Revision 3 (29/09/2026): Neil's screen-by-screen review applied - see the "Revision 3" list above for the full set of changes (screens 02, 03, 04, 05, 09, 11, 13, 14, 18, 19). Screens 01, 06, 07, 08, 10, 11, 13, 15, 16, 17, 20 and 21 are approved by Neil as of this review; the set as a whole is not yet signed off to build.</div>
 </footer>
 
 </body>
