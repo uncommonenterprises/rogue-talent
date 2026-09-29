@@ -16,7 +16,7 @@
 .finePrint {
   display: block;
   /* 44px tap target for the whole label row on mobile */
-  padding: 10px 0;
+  padding: 14px 0;
   font-family: var(--font-sans);
   font-size: var(--text-sm);
   line-height: var(--leading-snug);

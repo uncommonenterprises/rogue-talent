@@ -7,7 +7,15 @@ import { NamedLink, AuthFormHeader } from '../../../components';
 import css from './ChooseRole.module.css';
 
 const IconModel = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+  <svg
+    className={css.lineIcon}
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    aria-hidden="true"
+    focusable="false"
+  >
     <circle cx="12" cy="8" r="3.4" stroke="currentColor" strokeWidth="1.6" />
     <path
       d="M5 20c0-3.9 3.1-7 7-7s7 3.1 7 7"
@@ -19,14 +27,30 @@ const IconModel = () => (
 );
 
 const IconClient = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+  <svg
+    className={css.lineIcon}
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    aria-hidden="true"
+    focusable="false"
+  >
     <rect x="3" y="8" width="18" height="12" rx="2" stroke="currentColor" strokeWidth="1.6" />
     <path d="M8 8V6a2 2 0 012-2h4a2 2 0 012 2v2" stroke="currentColor" strokeWidth="1.6" />
   </svg>
 );
 
 const IconChevron = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" focusable="false">
+  <svg
+    className={css.lineIcon}
+    width="16"
+    height="16"
+    viewBox="0 0 16 16"
+    fill="none"
+    aria-hidden="true"
+    focusable="false"
+  >
     <path
       d="M6 4l4 4-4 4"
       stroke="currentColor"
@@ -38,10 +62,7 @@ const IconChevron = () => (
 );
 
 // The two roles on Rogue Talent, in the order the mockup shows them.
-const ROLES = [
-  { userType: 'model', Icon: IconModel },
-  { userType: 'client', Icon: IconClient },
-];
+const ROLES = [{ userType: 'model', Icon: IconModel }, { userType: 'client', Icon: IconClient }];
 
 /**
  * Screen 01 "Choose your path": two role cards replace the old user-type dropdown (RT-FB-01).

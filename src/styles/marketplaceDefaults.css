@@ -969,21 +969,9 @@ textarea {
   }
 }
 
-/* ================ Design system rt-field label + hint ================ */
+/* ================ Design system rt-field hint ================ */
 
-/* Field label and hint text from design-system/DESIGN_SYSTEM.md §Form field (rt-field__label,
-   rt-field__hint). Pass rtFieldLabel to a Field* component's labelClassName. */
-.rtFieldLabel {
-  display: block;
-  margin: 0 0 var(--space-2) 0;
-  padding: 0;
-  font-family: var(--font-sans);
-  font-weight: var(--weight-semibold);
-  font-size: var(--text-sm);
-  line-height: var(--leading-snug);
-  color: var(--text-primary);
-}
-
+/* Hint text under an input, from design-system/DESIGN_SYSTEM.md §Form field (rt-field__hint). */
 .rtFieldHint {
   margin: var(--space-2) 0 0 0;
   padding: 0;

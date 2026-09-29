@@ -159,6 +159,8 @@
 }
 
 .pointIcon {
+  /* sanitize.css sets svg { fill: currentColor }, which would fill this outline icon */
+  fill: none;
   flex-shrink: 0;
   margin-top: 2px;
   color: var(--accent-400);

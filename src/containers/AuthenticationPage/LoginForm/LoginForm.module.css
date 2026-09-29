@@ -23,7 +23,7 @@
 .recoveryLink {
   display: inline-block;
   /* 44px tap target on mobile */
-  padding: 13px 0;
+  padding: 14px 0;
   font-weight: var(--weight-semibold);
   color: var(--text-accent);
   text-decoration: none;

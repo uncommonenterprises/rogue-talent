@@ -7,7 +7,15 @@ import { NamedLink, InlineTextButton, AuthFormHeader } from '../../components';
 import css from './EmailVerificationInfo.module.css';
 
 const IconEnvelope = () => (
-  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+  <svg
+    className={css.lineIcon}
+    width="26"
+    height="26"
+    viewBox="0 0 24 24"
+    fill="none"
+    aria-hidden="true"
+    focusable="false"
+  >
     <rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" strokeWidth="1.6" />
     <path
       d="M4 7l8 6 8-6"

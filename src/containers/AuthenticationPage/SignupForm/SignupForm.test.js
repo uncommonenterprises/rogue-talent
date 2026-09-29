@@ -107,7 +107,10 @@ const TERMS_LABEL = /AuthenticationPage.termsAndConditionsAcceptText/i;
 const fillDefaultFields = async user => {
   await user.type(screen.getByRole('textbox', { name: /SignupForm.firstNameLabel/ }), 'Joe');
   await user.type(screen.getByRole('textbox', { name: /SignupForm.lastNameLabel/ }), 'Dunphy');
-  await user.type(screen.getByRole('textbox', { name: /SignupForm.emailLabel/ }), 'joe@example.com');
+  await user.type(
+    screen.getByRole('textbox', { name: /SignupForm.emailLabel/ }),
+    'joe@example.com'
+  );
   await user.type(screen.getByLabelText(/SignupForm.passwordLabel/), 'secret-password');
 };
 

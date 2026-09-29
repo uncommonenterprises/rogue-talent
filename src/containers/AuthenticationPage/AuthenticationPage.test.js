@@ -102,7 +102,9 @@ describe('AuthenticationPage sign-up journey (stage 1)', () => {
 
     expect(screen.getByRole('heading', { name: 'ChooseRole.title' })).toBeInTheDocument();
     const modelCard = screen.getByRole('heading', { name: 'ChooseRole.model.title' }).closest('a');
-    const clientCard = screen.getByRole('heading', { name: 'ChooseRole.client.title' }).closest('a');
+    const clientCard = screen
+      .getByRole('heading', { name: 'ChooseRole.client.title' })
+      .closest('a');
     expect(modelCard).toHaveAttribute('href', '/signup/model');
     expect(clientCard).toHaveAttribute('href', '/signup/client');
 
@@ -128,7 +130,9 @@ describe('AuthenticationPage sign-up journey (stage 1)', () => {
 
   it('shows the normal log in heading otherwise', () => {
     render(<AuthenticationPage {...props} />);
-    expect(screen.getByRole('heading', { name: 'AuthenticationPage.loginTitle' })).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { name: 'AuthenticationPage.loginTitle' })
+    ).toBeInTheDocument();
     expect(
       screen.queryByRole('heading', { name: 'AuthenticationPage.verifyLoginTitle' })
     ).not.toBeInTheDocument();

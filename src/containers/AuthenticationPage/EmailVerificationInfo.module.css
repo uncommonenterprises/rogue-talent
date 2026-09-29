@@ -68,6 +68,9 @@
 
 .helperLink {
   display: inline;
+  /* InlineTextButton renders a <button>: drop the default button chrome */
+  border: none;
+  background: none;
   margin: 0;
   padding: 0;
   font-family: var(--font-sans);
@@ -82,4 +85,9 @@
     color: var(--accent-700);
     text-decoration: underline;
   }
+}
+
+/* Line icons: sanitize.css sets svg { fill: currentColor }, which would fill these outlines. */
+.lineIcon {
+  fill: none;
 }

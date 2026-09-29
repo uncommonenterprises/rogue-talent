@@ -98,3 +98,8 @@
   line-height: var(--leading-snug);
   color: var(--text-accent);
 }
+
+/* Line icons: sanitize.css sets svg { fill: currentColor }, which would fill these outlines. */
+.lineIcon {
+  fill: none;
+}

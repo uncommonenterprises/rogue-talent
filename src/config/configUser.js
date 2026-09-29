@@ -63,6 +63,8 @@ export const userFields = [
     },
     saveConfig: {
       label: 'Company/Agency name',
+      // Sign-up screen 03 mockup placeholder (instead of the generic "Write description...")
+      placeholderMessage: 'e.g. Northside Studio',
       displayInSignUp: true,
       isRequired: false,
     },
