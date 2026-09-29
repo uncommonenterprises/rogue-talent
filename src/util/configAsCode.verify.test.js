@@ -96,9 +96,9 @@ describe('config-as-code (Option A) merge precedence', () => {
     expect(model.displayNameSettings.required).toBe(true);
   });
 
-  test('all 9 user fields resolve and are limited to correct user types', () => {
+  test('all 10 user fields resolve and are limited to correct user types', () => {
     const keys = merged.user.userFields.map(f => f.key);
-    expect(keys).toHaveLength(9);
+    expect(keys).toHaveLength(10);
     const dob = merged.user.userFields.find(f => f.key === 'date_of_birth');
     expect(dob.userTypeConfig.userTypeIds).toEqual(['model']);
     const company = merged.user.userFields.find(f => f.key === 'company_name');
@@ -111,8 +111,33 @@ describe('config-as-code (Option A) merge precedence', () => {
   });
 
   test('user fields are NOT force-required by the isRequired default', () => {
+    // company_name is the one deliberately required field (sign-up stage 3, Neil 29/09/2026).
     merged.user.userFields.forEach(f => {
-      expect(f.saveConfig.isRequired).toBe(false);
+      expect(f.saveConfig.isRequired).toBe(f.key === 'company_name');
+    });
+  });
+
+  test('sign-up stage 3: VAT number and typical project types are gone', () => {
+    const keys = merged.user.userFields.map(f => f.key);
+    expect(keys).not.toContain('vat_number');
+    expect(keys).not.toContain('typical_projects');
+  });
+
+  test('sign-up stage 3: company registration number is no longer asked at sign-up', () => {
+    const companyReg = merged.user.userFields.find(f => f.key === 'company_registration_number');
+    expect(companyReg.saveConfig.displayInSignUp).toBe(false);
+    const company = merged.user.userFields.find(f => f.key === 'company_name');
+    expect(company.saveConfig.displayInSignUp).toBe(true);
+  });
+
+  test('sign-up stage 3: business details fields are client-only and never public', () => {
+    const byKey = key => merged.user.userFields.find(f => f.key === key);
+    expect(byKey('business_type').scope).toEqual('protected');
+    expect(byKey('business_address').scope).toEqual('private');
+    expect(byKey('business_phone').scope).toEqual('private');
+    ['business_type', 'business_address', 'business_phone'].forEach(key => {
+      expect(byKey(key).userTypeConfig.userTypeIds).toEqual(['client']);
+      expect(byKey(key).saveConfig.displayInSignUp).toBe(false);
     });
   });
 

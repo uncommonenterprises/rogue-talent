@@ -66,18 +66,22 @@ export const userFields = [
       // Sign-up screen 03 mockup placeholder (instead of the generic "Write description...")
       placeholderMessage: 'e.g. Northside Studio',
       displayInSignUp: true,
-      isRequired: false,
+      // Sign-up stage 3 (Neil, 29/09/2026): required at sign-up (screen 03) and on the
+      // client "Your business details" step (screen 18).
+      isRequired: true,
+      requiredMessage: 'Please add your company or agency name.',
     },
   },
   {
     // Step 3 of the account-status lifecycle: the operator manually verifies a
     // client's business against Companies House during approval, and needs the
-    // registration number to do so. Paired with company_name (both public,
-    // both shown in signup) so the two business-identity fields sit together.
+    // registration number to do so. Paired with company_name (both public).
     // Public scope keeps it operator-readable in Console / Integration API and
     // matches company_name; a Companies House number is public-register data.
-    // Optional (isRequired: false) to match every other client field and avoid
-    // blocking existing/in-progress client accounts.
+    // Sign-up stage 3 (Neil, 29/09/2026): no longer asked at sign-up. It is collected on
+    // the client "Your business details" step (screen 18, BusinessDetailsPage), where it is
+    // required only for limited companies (sole traders have no Companies House number), so
+    // the config itself stays isRequired: false and the step enforces it per business type.
     key: 'company_registration_number',
     scope: 'public',
     schemaType: 'shortText',
@@ -94,7 +98,7 @@ export const userFields = [
       label: 'Company registration number',
       // RT-20260929-01: field-appropriate placeholder (was the generic "Write description...").
       placeholderMessage: 'e.g. 12345678',
-      displayInSignUp: true,
+      displayInSignUp: false,
       isRequired: false,
     },
   },
@@ -181,36 +185,42 @@ export const userFields = [
       isRequired: false,
     },
   },
+  // ---- Client "Your business details" step (sign-up stage 3, screen 18) ----------------
+  // Collected on BusinessDetailsPage, never at sign-up. The step enforces which are required
+  // per business type (see BusinessDetailsPage.helpers.js), so isRequired stays false here.
+  // Scopes are chosen so nothing here reaches another user:
+  //   - business_type: protected (only the client can read it; the operator sees it in
+  //     Console). Not shown on the public profile. Needed later for the sole-trader rule
+  //     (docs/safety-framework-v1-scope.md, SAF-06).
+  //   - business_address + business_phone: private (only the client and the operator can read
+  //     them; private data is never shared through a transaction). The phone hint promises
+  //     "Never shown to models", which private scope guarantees.
   {
-    key: 'typical_projects',
-    scope: 'public',
-    schemaType: 'multi-enum',
+    key: 'business_type',
+    scope: 'protected',
+    schemaType: 'enum',
     userTypeConfig: {
       limitToUserTypeIds: true,
       userTypeIds: ['client'],
     },
     enumOptions: [
-      { option: 'lookbook', label: 'Lookbook' },
-      { option: 'campaign', label: 'Campaign' },
-      { option: 'e-commerce', label: 'E-commerce' },
-      { option: 'editorial', label: 'Editorial' },
-      { option: 'events', label: 'Events' },
-      { option: 'social-content', label: 'Social content' },
-      { option: 'catalogue', label: 'Catalogue' },
-      { option: 'tfp', label: 'TFP' },
+      { option: 'limited_company', label: 'Limited company' },
+      { option: 'sole_trader', label: 'Sole trader or self-employed' },
     ],
     showConfig: {
-      label: 'Typical project types',
-      unselectedOptions: false,
+      label: 'Business type',
+      displayInProfile: false,
     },
     saveConfig: {
-      label: 'Typical project types',
+      label: 'Business type',
       displayInSignUp: false,
       isRequired: false,
     },
   },
   {
-    key: 'vat_number',
+    // One field for both paths: the registered office address (limited company) or the
+    // business address (sole trader). Stored as the formatted address string.
+    key: 'business_address',
     scope: 'private',
     schemaType: 'shortText',
     userTypeConfig: {
@@ -218,10 +228,29 @@ export const userFields = [
       userTypeIds: ['client'],
     },
     showConfig: {
-      label: 'VAT number',
+      label: 'Business address',
+      displayInProfile: false,
     },
     saveConfig: {
-      label: 'VAT number',
+      label: 'Business address',
+      displayInSignUp: false,
+      isRequired: false,
+    },
+  },
+  {
+    key: 'business_phone',
+    scope: 'private',
+    schemaType: 'shortText',
+    userTypeConfig: {
+      limitToUserTypeIds: true,
+      userTypeIds: ['client'],
+    },
+    showConfig: {
+      label: 'Business phone number',
+      displayInProfile: false,
+    },
+    saveConfig: {
+      label: 'Business phone number',
       displayInSignUp: false,
       isRequired: false,
     },
