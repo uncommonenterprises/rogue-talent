@@ -12,6 +12,10 @@ only, never chat.
 > step — Neil needs his passport**. RESUME HERE tomorrow: complete "Get verified" → enable Synthetic
 > Identity Protection → grab the secret key + register the Identity webhook → add the 3 Railway vars →
 > PM verifies. Then Stages B/C/D.
+>
+> **UPDATE 29/09 (Day 8):** Neil completed Stripe's "Verify your identity" (Identity application +
+> business details + account-owner verification all ticked). Stage A resumes at: Synthetic Identity
+> Protection -> TEST-mode secret key + restricted key + Identity webhook -> Railway vars -> PM verifies.
 
 ---
 
