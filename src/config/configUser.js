@@ -92,6 +92,8 @@ export const userFields = [
     },
     saveConfig: {
       label: 'Company registration number',
+      // RT-20260929-01: field-appropriate placeholder (was the generic "Write description...").
+      placeholderMessage: 'e.g. 12345678',
       displayInSignUp: true,
       isRequired: false,
     },
