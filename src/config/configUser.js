@@ -284,8 +284,10 @@ export const userTypes = [
       lastName: true,
       phoneNumber: true,
     },
+    // Sign-up redesign stage 1 (Neil, 29/09/2026): phone is not asked at sign-up.
+    // Models can still add one in account settings.
     phoneNumberSettings: {
-      displayInSignUp: true,
+      displayInSignUp: false,
       required: false,
     },
     displayNameSettings: {
@@ -317,9 +319,12 @@ export const userTypes = [
       lastName: true,
       phoneNumber: true,
     },
+    // Sign-up redesign stage 1 (Neil, 29/09/2026): phone is not asked at sign-up and is
+    // not required for now. Stage 3 adds a required business phone on the client
+    // "Your business details" step instead.
     phoneNumberSettings: {
-      displayInSignUp: true,
-      required: true,
+      displayInSignUp: false,
+      required: false,
     },
     displayNameSettings: {
       displayInSignUp: true,
