@@ -5,6 +5,8 @@ import Cookies from 'js-cookie';
 import classNames from 'classnames';
 
 import { useConfiguration } from '../../context/configurationContext';
+import { useRouteConfiguration } from '../../context/routeConfigurationContext';
+import { pathByRouteName } from '../../util/routes';
 import { camelize } from '../../util/string';
 import { FormattedMessage, useIntl } from '../../util/reactIntl';
 import { propTypes } from '../../util/types';
@@ -190,6 +192,7 @@ export const AuthenticationPageComponent = props => {
   const [mounted, setMounted] = useState(false);
 
   const config = useConfiguration();
+  const routeConfiguration = useRouteConfiguration();
   const intl = useIntl();
 
   useEffect(() => {
@@ -237,6 +240,13 @@ export const AuthenticationPageComponent = props => {
   const authinfoFrom = authInfo?.from || null;
   const from = locationFrom || authinfoFrom || null;
   const idp = authInfo ? authInfo.idpId.replace(/^./, str => str.toUpperCase()) : null;
+
+  // Screen 05 State B: the verify-email link was opened with no session, so the auth-only
+  // /verify-email route sent the user here with `from` = /verify-email?t=<token>. After log in,
+  // the redirect back to `from` completes the verification with that token automatically.
+  const verifyEmailPath = pathByRouteName('EmailVerificationPage', routeConfiguration);
+  const fromPathname = typeof from === 'string' ? from.split(/[?#]/)[0] : from?.pathname;
+  const isLoginToFinishVerifying = tab === 'login' && !!from && fromPathname === verifyEmailPath;
 
   const isConfirm = tab === 'confirm';
   const isLogin = tab === 'login';
@@ -379,10 +389,17 @@ export const AuthenticationPageComponent = props => {
       <AuthShell variant={shellVariant} switchLinkTo={fromOnlyState}>
         {showLoginForm ? (
           <div className={css.formCard}>
-            <AuthFormHeader
-              title={<FormattedMessage id="AuthenticationPage.loginTitle" />}
-              lede={<FormattedMessage id="AuthenticationPage.loginLede" />}
-            />
+            {isLoginToFinishVerifying ? (
+              <AuthFormHeader
+                title={<FormattedMessage id="AuthenticationPage.verifyLoginTitle" />}
+                lede={<FormattedMessage id="AuthenticationPage.verifyLoginLede" />}
+              />
+            ) : (
+              <AuthFormHeader
+                title={<FormattedMessage id="AuthenticationPage.loginTitle" />}
+                lede={<FormattedMessage id="AuthenticationPage.loginLede" />}
+              />
+            )}
             <AuthenticationFormErrorMessage
               isLogin={isLogin}
               idpAuthError={authError}
@@ -390,7 +407,16 @@ export const AuthenticationPageComponent = props => {
               signupError={signupError}
             />
             {socialLoginButtons}
-            <LoginForm className={css.loginForm} onSubmit={submitLogin} inProgress={authInProgress} />
+            <LoginForm
+              className={css.loginForm}
+              onSubmit={submitLogin}
+              inProgress={authInProgress}
+              submitButtonText={
+                isLoginToFinishVerifying ? (
+                  <FormattedMessage id="AuthenticationPage.verifyLoginSubmit" />
+                ) : null
+              }
+            />
             <FormFootPrompt
               messageId="AuthenticationPage.noAccountPrompt"
               linkMessageId="AuthenticationPage.signupLinkText"

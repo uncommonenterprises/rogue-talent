@@ -110,6 +110,29 @@ describe('AuthenticationPage sign-up journey (stage 1)', () => {
     expect(screen.queryByRole('combobox')).not.toBeInTheDocument();
     expect(screen.queryByLabelText('SignupForm.passwordLabel')).not.toBeInTheDocument();
   });
+
+  it('asks a user with no session to "Log in to finish verifying" (screen 05, State B)', () => {
+    render(
+      <AuthenticationPage {...props} location={{ state: { from: '/verify-email?t=abc123' } }} />
+    );
+
+    expect(
+      screen.getByRole('heading', { name: 'AuthenticationPage.verifyLoginTitle' })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'AuthenticationPage.verifyLoginSubmit' })
+    ).toBeInTheDocument();
+    // A normal email + password login: the email is never pre-filled from the URL
+    expect(screen.getByRole('textbox', { name: 'LoginForm.emailLabel' })).toHaveValue('');
+  });
+
+  it('shows the normal log in heading otherwise', () => {
+    render(<AuthenticationPage {...props} />);
+    expect(screen.getByRole('heading', { name: 'AuthenticationPage.loginTitle' })).toBeInTheDocument();
+    expect(
+      screen.queryByRole('heading', { name: 'AuthenticationPage.verifyLoginTitle' })
+    ).not.toBeInTheDocument();
+  });
 });
 
 describe('AuthenticationPage with SSO', () => {

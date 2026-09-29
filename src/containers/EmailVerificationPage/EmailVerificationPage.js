@@ -3,22 +3,13 @@ import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 
-import { useConfiguration } from '../../context/configurationContext';
 import { FormattedMessage, useIntl } from '../../util/reactIntl';
 import { propTypes } from '../../util/types';
 import { parse } from '../../util/urlHelpers';
 import { ensureCurrentUser } from '../../util/data';
 import { verify } from '../../ducks/emailVerification.duck';
 import { isScrollingDisabled } from '../../ducks/ui.duck';
-import {
-  Page,
-  ResponsiveBackgroundImageContainer,
-  NamedRedirect,
-  LayoutSingleColumn,
-} from '../../components';
-
-import TopbarContainer from '../../containers/TopbarContainer/TopbarContainer';
-import FooterContainer from '../../containers/FooterContainer/FooterContainer';
+import { Page, NamedRedirect, AuthShell } from '../../components';
 
 import EmailVerificationForm from './EmailVerificationForm/EmailVerificationForm';
 
@@ -47,6 +38,17 @@ const parseVerificationToken = search => {
 };
 
 /**
+ * Where a user lands straight after verifying their email (screen 05 / RT-FB-08): models continue
+ * into the profile wizard; clients go to Browse models (SearchPage), not the marketing homepage.
+ * The one-off "Your email is verified." banner is shown on arrival (see emailVerification.duck).
+ *
+ * @param {Object} user current user entity
+ * @returns {'NewListingPage'|'SearchPage'} route name
+ */
+export const getVerifiedDestinationRouteName = user =>
+  user?.attributes?.profile?.publicData?.userType === 'model' ? 'NewListingPage' : 'SearchPage';
+
+/**
  * The EmailVerificationPage component.
  *
  * @component
@@ -62,7 +64,6 @@ const parseVerificationToken = search => {
  * @returns {JSX.Element} email verification page component
  */
 export const EmailVerificationPageComponent = props => {
-  const config = useConfiguration();
   const intl = useIntl();
   const {
     currentUser,
@@ -83,10 +84,8 @@ export const EmailVerificationPageComponent = props => {
   // If the verify API call is successfull and the user has verified email
   // We can redirect user forward from email verification page.
   if (isVerified && user.attributes.emailVerified && user.attributes.pendingEmail == null) {
-    // Drop the user straight into the platform rather than a generic page: models
-    // continue to profile creation ("About you"); everyone else lands on the homepage.
-    const isModel = user.attributes.profile?.publicData?.userType === 'model';
-    return <NamedRedirect name={isModel ? 'NewListingPage' : 'LandingPage'} />;
+    // Drop the user straight into the platform rather than a generic page.
+    return <NamedRedirect name={getVerifiedDestinationRouteName(user)} />;
   }
 
   return (
@@ -97,34 +96,23 @@ export const EmailVerificationPageComponent = props => {
       scrollingDisabled={scrollingDisabled}
       referrer="origin"
     >
-      <LayoutSingleColumn
-        mainColumnClassName={css.layoutWrapperMain}
-        topbar={<TopbarContainer />}
-        footer={<FooterContainer />}
-      >
-        <ResponsiveBackgroundImageContainer
-          className={css.root}
-          childrenWrapperClassName={css.contentContainer}
-          as="section"
-          image={config.branding.brandImage}
-          sizes="100%"
-          useOverlay
-        >
-          <div className={css.content}>
-            {user.id ? (
-              <EmailVerificationForm
-                initialValues={initialValues}
-                onSubmit={submitVerification}
-                currentUser={user}
-                inProgress={emailVerificationInProgress}
-                verificationError={verificationError}
-              />
-            ) : (
+      <AuthShell variant="verify">
+        <div className={css.content}>
+          {user.id ? (
+            <EmailVerificationForm
+              initialValues={initialValues}
+              onSubmit={submitVerification}
+              currentUser={user}
+              inProgress={emailVerificationInProgress}
+              verificationError={verificationError}
+            />
+          ) : (
+            <p className={css.loading}>
               <FormattedMessage id="EmailVerificationPage.loadingUserInformation" />
-            )}
-          </div>
-        </ResponsiveBackgroundImageContainer>
-      </LayoutSingleColumn>
+            </p>
+          )}
+        </div>
+      </AuthShell>
     </Page>
   );
 };

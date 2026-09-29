@@ -7,6 +7,9 @@ import loadable from '@loadable/component';
 import { sendVerificationEmail, hasCurrentUserErrors } from '../../ducks/user.duck';
 import { logout, authenticationInProgress } from '../../ducks/auth.duck';
 import { manageDisableScrolling } from '../../ducks/ui.duck';
+import { dismissVerifiedNotice, showVerifiedNoticeOnPath } from '../../ducks/emailVerification.duck';
+
+import EmailVerifiedBanner from './EmailVerifiedBanner/EmailVerifiedBanner';
 
 const Topbar = loadable(() => import(/* webpackChunkName: "Topbar" */ './Topbar/Topbar'));
 
@@ -21,17 +24,30 @@ const Topbar = loadable(() => import(/* webpackChunkName: "Topbar" */ './Topbar/
  * @param {Object} props.sendVerificationEmailInProgress send verification email in progress
  * @param {Object} props.sendVerificationEmailError send verification email error
  * @param {boolean} props.hasGenericError has generic error
+ * @param {boolean} props.showEmailVerifiedNotice show the one-off "Your email is verified." banner
+ * @param {Function} props.onDismissEmailVerifiedNotice dismiss that banner
  * @returns {JSX.Element}
  */
 export const TopbarContainerComponent = props => {
-  const { notificationCount = 0, hasGenericError, ...rest } = props;
+  const {
+    notificationCount = 0,
+    hasGenericError,
+    showEmailVerifiedNotice = false,
+    onDismissEmailVerifiedNotice,
+    ...rest
+  } = props;
 
   return (
-    <Topbar notificationCount={notificationCount} showGenericError={hasGenericError} {...rest} />
+    <>
+      {showEmailVerifiedNotice ? (
+        <EmailVerifiedBanner onDismiss={onDismissEmailVerifiedNotice} />
+      ) : null}
+      <Topbar notificationCount={notificationCount} showGenericError={hasGenericError} {...rest} />
+    </>
   );
 };
 
-const mapStateToProps = state => {
+const mapStateToProps = (state, ownProps) => {
   // Topbar needs isAuthenticated and isLoggedInAs
   const { isAuthenticated, isLoggedInAs, logoutError, authScopes } = state.auth;
   // Topbar needs user info.
@@ -57,6 +73,8 @@ const mapStateToProps = state => {
     sendVerificationEmailInProgress,
     sendVerificationEmailError,
     hasGenericError,
+    // Screen 05: one-off banner on the page the user lands on right after verifying their email
+    showEmailVerifiedNotice: showVerifiedNoticeOnPath(state, ownProps.location?.pathname),
   };
 };
 
@@ -65,6 +83,7 @@ const mapDispatchToProps = dispatch => ({
   onManageDisableScrolling: (componentId, disableScrolling) =>
     dispatch(manageDisableScrolling(componentId, disableScrolling)),
   onResendVerificationEmail: () => dispatch(sendVerificationEmail()),
+  onDismissEmailVerifiedNotice: () => dispatch(dismissVerifiedNotice()),
 });
 
 // Note: it is important that the withRouter HOC is **outside** the

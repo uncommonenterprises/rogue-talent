@@ -1,0 +1,62 @@
+/* Screen 05 success banner (docs/design/signup-journey/05-email-verified.html ".banner").
+   The green tints are --status-success (#1e7f52) at the mockup's 10% / 25% / 14% alpha, the same
+   tint family as the approved rt-status--verified badge. */
+
+.root {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-1) var(--space-2) var(--space-1) var(--space-5);
+  background-color: rgba(30, 127, 82, 0.1);
+  border-bottom: var(--border-hair) solid rgba(30, 127, 82, 0.25);
+  color: var(--status-success);
+
+  @media (min-width: 768px) {
+    padding: var(--space-1) var(--space-4) var(--space-1) var(--space-5);
+  }
+}
+
+.text {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-sans);
+  font-weight: var(--weight-semibold);
+  font-size: var(--text-sm);
+  line-height: var(--leading-snug);
+  color: var(--status-success);
+}
+
+.icon {
+  flex-shrink: 0;
+}
+
+/* A real button with at least a 44x44px touch area; the icon itself stays small. */
+.dismiss {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--status-success);
+  cursor: pointer;
+
+  &:hover {
+    background-color: rgba(30, 127, 82, 0.14);
+  }
+
+  /* Its own green focus ring, since it sits on a green surface (not the page's cobalt ring). */
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--white), 0 0 0 4px var(--status-success);
+  }
+}

@@ -10,8 +10,11 @@
   }
 }
 
+/* Inside the split AuthShell the modal-sized gap above the button is too tall. */
 .bottomWrapper {
-  composes: marketplaceModalBottomWrapper from global;
+  margin-top: var(--space-6);
+  align-self: stretch;
+  text-align: center;
 }
 
 /* ================ Typography ================ */

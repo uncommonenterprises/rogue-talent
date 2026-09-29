@@ -1,25 +1,15 @@
-@import '../../styles/customMediaQueries.css';
-
-.layoutWrapperMain {
-  min-height: calc(100vh - var(--topbarHeight));
-
-  @media (--viewportMedium) {
-    min-height: calc(100vh - var(--topbarHeightDesktop));
-  }
-}
-
-.root {
-  flex-grow: 1;
-}
-
-.contentContainer {
-  composes: marketplaceModalRootStyles from global;
-}
+/* Email verification page, inside the split AuthShell ("verify" panel). */
 
 .content {
-  composes: marketplaceModalBaseStyles from global;
+  width: 100%;
+  max-width: 420px;
 }
 
-.error {
-  composes: marketplaceModalPasswordMargins from global;
+.loading {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  line-height: var(--leading-normal);
+  color: var(--text-secondary);
+  text-align: center;
 }
