@@ -7,8 +7,8 @@
   min-width: 0;
 }
 
+/* Uses the app's standard group label spacing (global legend element rules). */
 .legend {
-  padding: 0;
 }
 
 .list {

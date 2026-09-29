@@ -418,6 +418,7 @@ export const listingFields = [
     },
     saveConfig: {
       label: 'Website',
+      placeholderMessage: 'yourportfolio.com',
       isRequired: false,
     },
   },
@@ -435,7 +436,8 @@ export const listingFields = [
       label: 'Instagram Handle',
     },
     saveConfig: {
-      label: 'Instagram Handle',
+      label: 'Instagram handle',
+      placeholderMessage: '@yourhandle',
       isRequired: false,
     },
   },

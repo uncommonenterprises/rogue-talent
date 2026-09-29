@@ -161,8 +161,11 @@
   margin-top: var(--space-6);
 }
 
+/* The whole tick-box row is the touch target: the label stretches to at least 44px tall. */
 .confirmation {
-  padding-top: var(--space-1);
+  display: flex;
+  align-items: stretch;
+  min-height: 44px;
 }
 
 .confirmationText {

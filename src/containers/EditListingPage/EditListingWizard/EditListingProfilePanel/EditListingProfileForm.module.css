@@ -62,8 +62,10 @@
   pointer-events: none;
 }
 
+/* Line icon: sanitize.css sets svg { fill: currentColor }, which would fill the outline. */
 .pinSvg {
   display: block;
+  fill: none;
 }
 
 /* Suggestions: a white panel under the field (hairline, radius-lg, soft shadow). */

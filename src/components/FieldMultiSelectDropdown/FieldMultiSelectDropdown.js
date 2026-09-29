@@ -124,7 +124,7 @@ const FieldMultiSelectDropdownRenderer = props => {
 
   return (
     <OutsideClickHandler
-      className={classes}
+      rootClassName={classes}
       onOutsideClick={() => {
         if (isOpen) {
           close();

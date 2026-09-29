@@ -194,8 +194,10 @@
   border-color: var(--accent-500);
 }
 
+/* Line icon: sanitize.css sets svg { fill: currentColor }, which would fill the outline. */
 .stepTick {
   display: block;
+  fill: none;
 }
 
 .stepLabel {

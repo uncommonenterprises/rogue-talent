@@ -29,14 +29,21 @@
 
 .photoTile {
   position: relative;
+  display: block;
   margin: 0;
+  padding: 0;
+  line-height: 0;
   overflow: hidden;
   background-color: var(--ink-100);
   border: var(--border-hair) solid var(--border-hairline);
   border-radius: var(--radius-lg);
 }
 
-.thumbnail {
+/* No float inside the grid tile (ListingImage floats its root by default, which left a gap
+   above the photo). Doubled class to win over ListingImage's own root class. */
+.thumbnail.thumbnail {
+  float: none;
+  display: block;
   width: 100%;
   background-color: var(--ink-100);
 }
@@ -129,8 +136,10 @@
   text-align: center;
 }
 
+/* Line icons: sanitize.css sets svg { fill: currentColor }, which would fill the outlines. */
 .tileIcon {
   display: block;
+  fill: none;
   color: var(--ink-400);
 }
 
