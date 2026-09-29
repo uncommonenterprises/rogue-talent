@@ -1,0 +1,387 @@
+@import '../../../styles/customMediaQueries.css';
+
+/* Client "Your business details" (sign-up journey screen 18, journey.css "Wizard shell").
+   Design-system tokens only. */
+
+.root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--white);
+}
+
+/* ================ Top bar (wizard-nav) ================ */
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  width: 100%;
+  padding: var(--space-2) var(--space-5);
+  background: var(--white);
+  border-bottom: var(--border-hair) solid var(--border-hairline);
+
+  @media (min-width: 640px) {
+    padding: var(--space-2) var(--space-6);
+  }
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-family: var(--font-display);
+  font-weight: var(--weight-extrabold);
+  font-size: var(--text-xl);
+  letter-spacing: var(--tracking-tight);
+  line-height: var(--leading-none);
+  color: var(--ink-900);
+  text-decoration: none;
+
+  &:hover {
+    color: var(--ink-900);
+    text-decoration: none;
+  }
+}
+
+.brandDot {
+  color: var(--accent-500);
+}
+
+.exitButton {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  font-family: var(--font-sans);
+  font-weight: var(--weight-semibold);
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: color var(--dur-fast) var(--ease-standard);
+
+  &:hover {
+    color: var(--text-primary);
+  }
+
+  &:focus-visible {
+    outline: none;
+    border-radius: var(--radius-sm);
+    box-shadow: 0 0 0 2px var(--white), 0 0 0 4px var(--accent-500);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    color: var(--text-disabled);
+  }
+}
+
+/* ================ Main column (wizard-main) ================ */
+
+.main {
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: var(--space-6) var(--space-5) var(--space-9);
+
+  @media (min-width: 640px) {
+    padding: var(--space-7) var(--space-5) var(--space-9);
+  }
+}
+
+/* "Step 2 of 2 - Business details" (phones only, as in the mockup) */
+.stepperMobile {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-bottom: var(--space-6);
+
+  @media (min-width: 760px) {
+    display: none;
+  }
+}
+
+.stepperMobileLabel {
+  font-family: var(--font-sans);
+  font-weight: var(--weight-semibold);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+
+.stepperBar {
+  height: 4px;
+  background: var(--ink-100);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+}
+
+.stepperBarFill {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--accent-500);
+}
+
+/* ================ Heading ================ */
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0 0 var(--space-6) 0;
+}
+
+/* rt-eyebrow--accent */
+.eyebrow {
+  font-family: var(--font-sans);
+  font-weight: var(--weight-bold);
+  font-size: var(--text-2xs);
+  line-height: var(--leading-none);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--accent-600);
+}
+
+.title {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-display);
+  font-weight: var(--weight-extrabold);
+  font-size: var(--text-2xl);
+  line-height: var(--leading-snug);
+  letter-spacing: var(--tracking-tight);
+  color: var(--text-primary);
+
+  @media (min-width: 640px) {
+    font-size: var(--text-3xl);
+  }
+}
+
+.guidance {
+  max-width: 60ch;
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  line-height: var(--leading-normal);
+  color: var(--text-secondary);
+}
+
+/* ================ Fields ================ */
+
+.fields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+}
+
+/* rt-field__hint under the input */
+.hint {
+  composes: rtFieldHint from global;
+}
+
+.req {
+  color: var(--accent-500);
+}
+
+.optional {
+  font-weight: var(--weight-regular);
+  color: var(--text-muted);
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---- Business type: rt-segmented ---- */
+
+.fieldset {
+  margin: 0;
+  padding: 0;
+  border: none;
+  min-width: 0;
+}
+
+/* Same look as the global field label */
+.legend {
+  display: block;
+  margin: 0;
+  padding: 0 0 6px 0;
+  font-family: var(--font-sans);
+  font-weight: var(--fontWeightSemiBold);
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--text-primary);
+
+  @media (--viewportMedium) {
+    padding: 4px 0 12px 0;
+    line-height: 16px;
+  }
+}
+
+.segmented {
+  display: inline-flex;
+  max-width: 100%;
+  padding: 3px;
+  background: var(--ink-100);
+  border-radius: var(--radius-lg);
+
+  /* Mobile pass (29/09/2026): stack as two full-width rows below 480px. */
+  @media (max-width: 480px) {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+}
+
+.segment {
+  position: relative;
+  display: flex;
+}
+
+/* The radio itself is hidden; its label is the visible, clickable segment. */
+.segmentInput.segmentInput {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  padding: 0;
+  opacity: 0;
+  border: none;
+  appearance: none;
+}
+
+.segmentLabel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 44px;
+  margin: 0;
+  padding: 8px 18px;
+  font-family: var(--font-sans);
+  font-weight: var(--weight-semibold);
+  font-size: var(--text-sm);
+  line-height: var(--leading-snug);
+  color: var(--text-secondary);
+  text-align: center;
+  white-space: nowrap;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease-standard),
+    color var(--dur-fast) var(--ease-standard);
+
+  @media (--viewportMedium) {
+    min-height: 40px;
+    padding: 8px 18px;
+  }
+
+  @media (max-width: 480px) {
+    padding: 12px 16px;
+    white-space: normal;
+  }
+
+  &:hover {
+    color: var(--text-primary);
+  }
+}
+
+.segmentInput:checked + .segmentLabel {
+  background: var(--white);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-xs);
+}
+
+.segmentInput:focus-visible + .segmentLabel {
+  box-shadow: 0 0 0 2px var(--white), 0 0 0 4px var(--accent-500);
+}
+
+/* ---- Address autocomplete (same look as the city field on screen 08) ---- */
+
+.location {
+  position: relative;
+}
+
+.locationAutocompleteInput {
+  padding-left: 42px;
+}
+
+.locationAutocompleteInputIcon {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 14px;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  color: var(--ink-400);
+  pointer-events: none;
+}
+
+/* Line icon: sanitize.css sets svg { fill: currentColor }, which would fill the outline. */
+.pinSvg {
+  display: block;
+  fill: none;
+}
+
+.predictionsRoot {
+  position: absolute;
+  top: calc(100% + var(--space-1));
+  left: 0;
+  width: 100%;
+  z-index: calc(var(--zIndexPopup) + 1);
+  background-color: var(--white);
+  border: var(--border-hair) solid var(--ink-200);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+/* ================ Actions (wizard-actions) ================ */
+
+.error {
+  margin: var(--space-5) 0 0 0;
+  font-family: var(--font-sans);
+  font-weight: var(--weight-semibold);
+  font-size: var(--text-sm);
+  color: var(--status-error);
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: var(--space-6);
+  padding-top: var(--space-5);
+  border-top: var(--border-hair) solid var(--border-hairline);
+}
+
+/* rt-btn--primary rt-btn--lg, auto width. Doubled class for specificity over the Button
+   component's own (full-width) root class, whatever the stylesheet order. */
+.submitButton.submitButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  min-width: 140px;
+  min-height: 48px;
+  padding: 0 28px;
+  font-size: var(--text-base);
+  line-height: 1;
+}

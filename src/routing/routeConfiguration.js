@@ -13,6 +13,7 @@ import { NamedRedirect } from '../components';
 const pageDataLoadingAPI = getPageDataLoadingAPI();
 
 const AuthenticationPage = loadable(() => import(/* webpackChunkName: "AuthenticationPage" */ '../containers/AuthenticationPage/AuthenticationPage'));
+const BusinessDetailsPage = loadable(() => import(/* webpackChunkName: "BusinessDetailsPage" */ '../containers/BusinessDetailsPage/BusinessDetailsPage'));
 const CheckoutPage = loadable(() => import(/* webpackChunkName: "CheckoutPage" */ '../containers/CheckoutPage/CheckoutPage'));
 const ClientVerificationPage = loadable(() => import(/* webpackChunkName: "ClientVerificationPage" */ '../containers/ClientVerificationPage/ClientVerificationPage'));
 const CMSPage = loadable(() => import(/* webpackChunkName: "CMSPage" */ '../containers/CMSPage/CMSPage'));
@@ -452,6 +453,16 @@ const routeConfiguration = (layoutConfig, accessControlConfig) => {
       prioritizeLibraryLoading: {
         stripe: true,
       },
+    },
+    {
+      // Sign-up stage 3, screen 18: the client "Your business details" step. Live regardless
+      // of the account-status flag; its "Submit for approval" is the client's Gate A submission.
+      path: '/business-details',
+      name: 'BusinessDetailsPage',
+      auth: true,
+      authPage: 'LoginPage',
+      component: BusinessDetailsPage,
+      loadData: pageDataLoadingAPI.BusinessDetailsPage.loadData,
     },
     {
       path: '/styleguide',

@@ -1,0 +1,8 @@
+.loading {
+  margin: var(--space-7) auto;
+  padding: 0 var(--space-5);
+  max-width: 720px;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+}
