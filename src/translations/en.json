@@ -33,7 +33,7 @@
   "AuthenticationPage.signupFailed": "Signup failed. Please make sure all the information you entered is correct and try again.",
   "AuthenticationPage.signupFailedEmailAlreadyTaken": "An account with this email address already exists. Try logging in instead.",
   "AuthenticationPage.signupLinkText": "Sign up",
-  "AuthenticationPage.signupLede.client": "We'll ask a couple of business details next, then you can start browsing.",
+  "AuthenticationPage.signupLede.client": "Takes about a minute. Then you can start browsing models.",
   "AuthenticationPage.signupLede.default": "Takes about a minute.",
   "AuthenticationPage.signupLede.model": "Takes about a minute. You'll build your full profile next.",
   "AuthenticationPage.signupTitle.client": "Create your client account",
