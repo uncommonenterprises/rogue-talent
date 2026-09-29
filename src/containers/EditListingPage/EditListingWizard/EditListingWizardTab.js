@@ -18,6 +18,7 @@ import EditListingPhotosPanel from './EditListingPhotosPanel/EditListingPhotosPa
 import EditListingPricingPanel from './EditListingPricingPanel/EditListingPricingPanel';
 import EditListingPricingAndStockPanel from './EditListingPricingAndStockPanel/EditListingPricingAndStockPanel';
 import EditListingProfilePanel from './EditListingProfilePanel/EditListingProfilePanel';
+import EditListingReviewPanel from './EditListingReviewPanel/EditListingReviewPanel';
 import EditListingStylePanel from './EditListingStylePanel/EditListingStylePanel';
 
 import css from './EditListingWizardTab.module.css';
@@ -30,6 +31,7 @@ export const DELIVERY = 'delivery';
 export const LOCATION = 'location';
 export const AVAILABILITY = 'availability';
 export const PHOTOS = 'photos';
+export const REVIEW = 'review';
 export const STYLE = 'style';
 
 // EditListingWizardTab component supports these tabs
@@ -42,6 +44,7 @@ export const SUPPORTED_TABS = [
   LOCATION,
   AVAILABILITY,
   PHOTOS,
+  REVIEW,
   STYLE,
 ];
 
@@ -117,6 +120,10 @@ const EditListingWizardTab = props => {
     routeConfiguration,
     titleId,
     intl,
+    inOnboardingShell = false,
+    onResendVerificationEmail,
+    sendVerificationEmailInProgress,
+    sendVerificationEmailError,
   } = props;
 
   const { type } = params;
@@ -125,6 +132,24 @@ const EditListingWizardTab = props => {
   const isNewListingFlow = isNewURI || isDraftURI;
 
   const currentListing = ensureListing(listing);
+
+  // "Back" in the onboarding shell's action bar: a link to the previous step, if any.
+  const previousTab = marketplaceTabs[marketplaceTabs.indexOf(tab) - 1];
+  const backLinkProps =
+    inOnboardingShell && previousTab
+      ? { name: 'EditListingPage', params: { ...params, tab: previousTab } }
+      : null;
+  // The "Edit" link of each section on the review step goes back to that step.
+  const tabLinkPropsFor = targetTab => ({
+    name: 'EditListingPage',
+    params: { ...params, tab: targetTab },
+  });
+  const reviewSectionLinks = {
+    aboutYou: tabLinkPropsFor(PROFILE),
+    profile: tabLinkPropsFor(DETAILS),
+    rates: tabLinkPropsFor(PRICING),
+    portfolio: tabLinkPropsFor(PHOTOS),
+  };
 
   // New listing flow has automatic redirects to new tab on the wizard
   // and the last panel calls publishListing API endpoint.
@@ -195,7 +220,9 @@ const EditListingWizardTab = props => {
 
   const panelProps = tab => {
     return {
-      className: css.panel,
+      className: inOnboardingShell ? css.shellPanel : css.panel,
+      backLinkProps,
+      inOnboardingShell,
       errors,
       listing,
       panelUpdated: updatedTab === tab,
@@ -292,6 +319,19 @@ const EditListingWizardTab = props => {
           images={images}
           onImageUpload={onImageUpload}
           onRemoveImage={onRemoveImage}
+        />
+      );
+    }
+    case REVIEW: {
+      return (
+        <EditListingReviewPanel
+          {...panelProps(REVIEW)}
+          config={config}
+          currentUser={currentUser}
+          sectionLinks={reviewSectionLinks}
+          onResendVerificationEmail={onResendVerificationEmail}
+          sendVerificationEmailInProgress={sendVerificationEmailInProgress}
+          sendVerificationEmailError={sendVerificationEmailError}
         />
       );
     }

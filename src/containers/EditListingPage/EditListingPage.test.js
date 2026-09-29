@@ -1487,8 +1487,8 @@ describe('EditListingPage', () => {
   });
 
   // RT-FB-10: availability is not an onboarding step. A draft (new-listing flow) shows
-  // About you -> Your profile -> Your rates -> Your portfolio, and the portfolio step is the
-  // final "publish" step. The calendar tab only exists once the profile is past draft.
+  // About you -> Your profile -> Your rates -> Your portfolio -> Review & submit, and the
+  // review step is the final "publish" step. The calendar tab only exists once the profile is past draft.
   // Note: renderWithProviders merges getDefaultConfiguration() (testHelpers), whose
   // code-defined listing types are authoritative, so these use its 'rent-bicycles'
   // default-booking/day type (same process + unit as model-profile).
@@ -1498,7 +1498,7 @@ describe('EditListingPage', () => {
     unitType: 'day',
   };
 
-  it('Booking (day): new listing flow has no availability tab and ends on photos', async () => {
+  it('Booking (day): new listing flow has no availability tab; photos continues to review', async () => {
     const config = getConfig(listingTypesBookingDay, listingFieldsBooking);
     const routeConfiguration = getRouteConfiguration(config.layout);
     const listing = createOwnListing('listing-draft', {
@@ -1537,8 +1537,8 @@ describe('EditListingPage', () => {
       expect(getByText('EditListingWizard.tabLabelPhotos')).toBeInTheDocument();
       expect(queryByText('EditListingWizard.tabLabelAvailability')).not.toBeInTheDocument();
 
-      // The photos panel is reachable without an availability plan, and its submit is the
-      // new-flow publish CTA (last tab).
+      // The photos panel is reachable without an availability plan. It is no longer the
+      // publish step: its submit continues to "Review & submit" (sign-up journey stage 2).
       expect(getByText('EditListingPhotosPanel.createListingTitle')).toBeInTheDocument();
       expect(
         getByRole('button', { name: 'EditListingWizard.default-booking.new.savePhotos' })

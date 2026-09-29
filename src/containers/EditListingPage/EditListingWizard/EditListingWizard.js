@@ -59,9 +59,18 @@ import EditListingWizardTab, {
   LOCATION,
   AVAILABILITY,
   PHOTOS,
+  REVIEW,
   STYLE,
 } from './EditListingWizardTab';
 import { isPricingListingField } from './rateFields';
+import { hasMinimumPortfolio } from './portfolioRules';
+import {
+  STEP_CURRENT,
+  STEP_DONE,
+  STEP_TODO,
+  WizardStepper,
+  WizardTopbar,
+} from './WizardShell/WizardShell';
 import css from './EditListingWizard.module.css';
 
 // This is the initial tab on editlisting wizard.
@@ -99,6 +108,10 @@ export const tabsForListingType = (processName, listingTypeConfig, isNewListingF
   // so the availability step is NOT part of onboarding. After onboarding it's reachable as
   // the last tab ("Your calendar") so a model can block out dates they can't work.
   const calendarTabMaybe = isNewListingFlow ? [] : [AVAILABILITY];
+  // Sign-up journey screen 13: the new-listing (onboarding) flow ends on "Review & submit",
+  // which is where the profile is published ("Submit for approval"). Edit mode has no
+  // review step; it keeps the calendar as its last tab instead.
+  const reviewTabMaybe = isNewListingFlow ? [REVIEW] : [];
 
   // You can reorder these panels.
   // Note 1: You need to change save button translations for new listing flow
@@ -108,10 +121,17 @@ export const tabsForListingType = (processName, listingTypeConfig, isNewListingF
   //         Details tab asks for "title" and is therefore the first tab in the wizard flow.
   const tabs = {
     // Note: PROFILE ("About you") is intentionally the FIRST tab for the booking (model)
-    // flow — it collects the model's display name (which seeds the listing title and
-    // creates the draft), their city, and their profile attribute fields. All of it saves
-    // to the listing. The separate LOCATION tab is omitted; the city lives in PROFILE.
-    ['default-booking']: [PROFILE, DETAILS, PRICING, ...styleOrPhotosTab, ...calendarTabMaybe],
+    // flow - it collects the model's display name (which seeds the listing title and
+    // creates the draft) and their city. The separate LOCATION tab is omitted; the city
+    // lives in PROFILE.
+    ['default-booking']: [
+      PROFILE,
+      DETAILS,
+      PRICING,
+      ...styleOrPhotosTab,
+      ...reviewTabMaybe,
+      ...calendarTabMaybe,
+    ],
     ['default-purchase']: [DETAILS, PRICING_AND_STOCK, ...deliveryMaybe, ...styleOrPhotosTab],
     ['default-negotiation']: [DETAILS, ...locationMaybe, ...pricingMaybe, ...styleOrPhotosTab],
     ['default-inquiry']: [DETAILS, ...locationMaybe, ...pricingMaybe, ...styleOrPhotosTab],
@@ -167,14 +187,17 @@ const tabLabelAndSubmit = (
     submitButtonKey = `EditListingWizard.${processNameString}${newOrEdit}.saveAvailability`;
   } else if (tab === PHOTOS) {
     labelKey = 'EditListingWizard.tabLabelPhotos';
-    // Portfolio is the final step of the new model booking flow, so its submit button is the
-    // "publish the profile" CTA. When the step-2 account-status flow is ON, this submission no
-    // longer requires Stripe and sends the profile for manual review → reword to "Submit for
-    // approval". Flag OFF keeps the original per-process savePhotos wording untouched.
-    submitButtonKey =
-      accountStatusFlowEnabled && isNewListingFlow
-        ? 'EditListingWizard.submitForApproval'
-        : `EditListingWizard.${processNameString}${newOrEdit}.savePhotos`;
+    submitButtonKey = `EditListingWizard.${processNameString}${newOrEdit}.savePhotos`;
+  } else if (tab === REVIEW) {
+    labelKey = 'EditListingWizard.tabLabelReview';
+    // "Review & submit" is the final step of the new model booking flow, so its submit button
+    // is the "publish the profile" CTA (moved here from the portfolio step). When the step-2
+    // account-status flow is ON, this submission no longer requires Stripe and sends the
+    // profile for manual review: "Submit for approval". Flag OFF keeps the original
+    // "Submit for review" wording (the publish may still open the Stripe payout modal).
+    submitButtonKey = accountStatusFlowEnabled
+      ? 'EditListingWizard.submitForApproval'
+      : `EditListingWizard.${processNameString}${newOrEdit}.saveReview`;
   } else if (tab === STYLE) {
     labelKey = 'EditListingWizard.tabLabelStyle';
     submitButtonKey = `EditListingWizard.${processNameString}${newOrEdit}.saveStyle`;
@@ -305,8 +328,8 @@ const tabCompleted = (tab, listing, config) => {
       return !!(title && geolocation && publicData?.location?.address);
     case PRICING:
       // "Your rates" also collects the pricing-tab listing fields (half-day/hourly rates and
-      // the required travel fee policy + minimum booking notice), so validate those
-      // alongside the day-rate price.
+      // the required travel fee policy, how far you'll travel and minimum booking notice), so
+      // validate those alongside the day-rate price.
       return !!(
         price &&
         hasValidListingFieldsInExtendedData(publicData, privateData, config, isPricingListingField)
@@ -320,7 +343,11 @@ const tabCompleted = (tab, listing, config) => {
     case AVAILABILITY:
       return !!availabilityPlan;
     case PHOTOS:
-      return images && images.length > 0;
+      // A portfolio needs at least 3 photos (Neil, 29/09/2026) before "Review & submit".
+      return hasMinimumPortfolio(images);
+    case REVIEW:
+      // The review step is completed by publishing, which leaves the new-listing flow.
+      return false;
     case STYLE:
       return !!cardStyle;
     default:
@@ -416,6 +443,57 @@ const getListingTypeConfig = (listing, selectedListingType, config) => {
     : null;
   return listingTypeConfig;
 };
+
+/**
+ * Whether the wizard uses the model onboarding shell (sign-up journey screens 08 to 13): its
+ * own top bar ("Rogue." + "Save & exit"), a 4-step stepper and Back / Continue action bars,
+ * instead of the site topbar and the side tab navigation. That's the new-listing flow of the
+ * booking (model profile) listing type, i.e. the flow that starts on "About you". Edit mode and
+ * other listing flows keep the standard layout.
+ *
+ * EditListingPage uses this to leave out the site topbar; the wizard uses the same rule.
+ *
+ * @param {Object} params route params ({ type })
+ * @param {Object} listing the listing being edited (may be empty in the "new" flow)
+ * @param {Object} config marketplace config
+ * @returns {boolean}
+ */
+export const isOnboardingShellFlow = (params, listing, config) => {
+  const isNewListingFlow = [LISTING_PAGE_PARAM_TYPE_NEW, LISTING_PAGE_PARAM_TYPE_DRAFT].includes(
+    params?.type
+  );
+  if (!isNewListingFlow || !config?.listing?.listingTypes) {
+    return false;
+  }
+  const listingTypeConfig = getListingTypeConfig(listing, null, config);
+  if (!listingTypeConfig) {
+    return false;
+  }
+  const savedProcessAlias = listing?.attributes?.publicData?.transactionProcessAlias;
+  const processName = savedProcessAlias
+    ? savedProcessAlias.split('/')[0]
+    : listingTypeConfig.transactionType?.process;
+  return tabsForListingType(processName, listingTypeConfig, true).includes(PROFILE);
+};
+
+// The stepper's steps: every tab except the review step, each done / current / to-do.
+const getStepperSteps = (tabs, selectedTab, listing, config, tabsStatus, tabLink, labelFor) =>
+  tabs
+    .filter(tab => tab !== REVIEW)
+    .map(tab => {
+      const status =
+        tab === selectedTab
+          ? STEP_CURRENT
+          : tabCompleted(tab, listing, config)
+          ? STEP_DONE
+          : STEP_TODO;
+      return {
+        tab,
+        label: labelFor(tab),
+        status,
+        linkProps: tabsStatus[tab] ? tabLink(tab) : null,
+      };
+    });
 
 /**
  * EditListingWizard is a component that renders the tabs that update the different parts of the listing.
@@ -724,51 +802,83 @@ class EditListingWizard extends Component {
       return <NamedRedirect name="EditListingPage" params={pathParams} />;
     }
 
+    const tabTranslationsFor = tab =>
+      tabLabelAndSubmit(
+        intl,
+        tab,
+        isNewListingFlow,
+        isPriceDisabled,
+        resolveLatestProcessName(processName),
+        isAccountStatusFlowEnabled()
+      );
+
+    // Model onboarding shell (sign-up journey 08 to 13): new-listing flow of the model profile.
+    const useOnboardingShell = isNewListingFlow && tabs.includes(PROFILE);
+
+    const renderTab = (tab, shellProps = {}) => {
+      const tabTranslations = tabTranslationsFor(tab);
+      return (
+        <EditListingWizardTab
+          {...rest}
+          {...shellProps}
+          key={tab}
+          tabId={`${id}_${tab}`}
+          tabLabel={tabTranslations.label}
+          tabSubmitButtonText={tabTranslations.submitButton}
+          tabLinkProps={tabLink(tab)}
+          selected={selectedTab === tab}
+          disabled={isNewListingFlow && !tabsStatus[tab]}
+          tab={tab}
+          params={params}
+          listing={listing}
+          marketplaceTabs={tabs}
+          errors={errors}
+          handleCreateFlowTabScrolling={this.handleCreateFlowTabScrolling}
+          handlePublishListing={this.handlePublishListing}
+          fetchInProgress={fetchInProgress}
+          onListingTypeChange={selectedListingType => this.setState({ selectedListingType })}
+          onManageDisableScrolling={onManageDisableScrolling}
+          config={config}
+          currentUser={currentUser}
+          routeConfiguration={routeConfiguration}
+          intl={intl}
+        />
+      );
+    };
+
+    const navigation = useOnboardingShell ? (
+      <>
+        <WizardTopbar exitLinkProps={{ name: 'ManageListingsPage' }} />
+        <div className={css.shellMain}>
+          <WizardStepper
+            steps={getStepperSteps(
+              tabs,
+              selectedTab,
+              currentListing,
+              config,
+              tabsStatus,
+              tabLink,
+              tab => tabTranslationsFor(tab).label
+            )}
+            isComplete={selectedTab === REVIEW}
+          />
+          {renderTab(selectedTab, { inOnboardingShell: true })}
+        </div>
+      </>
+    ) : (
+      <Tabs
+        rootClassName={css.tabsContainer}
+        navRootClassName={css.nav}
+        tabRootClassName={css.tab}
+        ariaLabel={intl.formatMessage({ id: 'EditListingWizard.screenreader.tabNavigation' })}
+      >
+        {tabs.map(tab => renderTab(tab))}
+      </Tabs>
+    );
+
     return (
-      <div className={classes}>
-        <Tabs
-          rootClassName={css.tabsContainer}
-          navRootClassName={css.nav}
-          tabRootClassName={css.tab}
-          ariaLabel={intl.formatMessage({ id: 'EditListingWizard.screenreader.tabNavigation' })}
-        >
-          {tabs.map(tab => {
-            const tabTranslations = tabLabelAndSubmit(
-              intl,
-              tab,
-              isNewListingFlow,
-              isPriceDisabled,
-              resolveLatestProcessName(processName),
-              isAccountStatusFlowEnabled()
-            );
-            return (
-              <EditListingWizardTab
-                {...rest}
-                key={tab}
-                tabId={`${id}_${tab}`}
-                tabLabel={tabTranslations.label}
-                tabSubmitButtonText={tabTranslations.submitButton}
-                tabLinkProps={tabLink(tab)}
-                selected={selectedTab === tab}
-                disabled={isNewListingFlow && !tabsStatus[tab]}
-                tab={tab}
-                params={params}
-                listing={listing}
-                marketplaceTabs={tabs}
-                errors={errors}
-                handleCreateFlowTabScrolling={this.handleCreateFlowTabScrolling}
-                handlePublishListing={this.handlePublishListing}
-                fetchInProgress={fetchInProgress}
-                onListingTypeChange={selectedListingType => this.setState({ selectedListingType })}
-                onManageDisableScrolling={onManageDisableScrolling}
-                config={config}
-                currentUser={currentUser}
-                routeConfiguration={routeConfiguration}
-                intl={intl}
-              />
-            );
-          })}
-        </Tabs>
+      <div className={classNames(classes, { [css.shellRoot]: useOnboardingShell })}>
+        {navigation}
         <Modal
           id="EditListingWizard.payoutModal"
           isOpen={this.state.showPayoutDetails}

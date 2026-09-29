@@ -5,6 +5,7 @@ import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 
 // Import configs and util modules
+import { useConfiguration } from '../../context/configurationContext';
 import { intlShape, useIntl } from '../../util/reactIntl';
 import { types as sdkTypes } from '../../util/sdkLoader';
 import {
@@ -24,6 +25,7 @@ import { ensureOwnListing } from '../../util/data';
 import { hasPermissionToPostListings, isUserAuthorized } from '../../util/userHelpers';
 import { getMarketplaceEntities } from '../../ducks/marketplaceData.duck';
 import { manageDisableScrolling, isScrollingDisabled } from '../../ducks/ui.duck';
+import { sendVerificationEmail } from '../../ducks/user.duck';
 import { updateProfile } from '../ProfileSettingsPage/ProfileSettingsPage.duck';
 import {
   stripeAccountClearError,
@@ -33,6 +35,7 @@ import {
 // Import shared components
 import { NamedRedirect, Page } from '../../components';
 import TopbarContainer from '../../containers/TopbarContainer/TopbarContainer';
+import EmailVerifiedNotice from '../../containers/TopbarContainer/EmailVerifiedBanner/EmailVerifiedNotice';
 
 // Import modules from this directory
 import {
@@ -46,7 +49,7 @@ import {
   removeListingImage,
   savePayoutDetails,
 } from './EditListingPage.duck';
-import EditListingWizard from './EditListingWizard/EditListingWizard';
+import EditListingWizard, { isOnboardingShellFlow } from './EditListingWizard/EditListingWizard';
 import css from './EditListingPage.module.css';
 
 const STRIPE_ONBOARDING_RETURN_URL_SUCCESS = 'success';
@@ -126,10 +129,15 @@ const pickRenderableImages = (
  * @param {boolean} [props.stripeAccountFetched] - Whether the stripe account is fetched
  * @param {Object} [props.stripeAccount] - The stripe account object
  * @param {Object} [props.updateStripeAccountError] - The update stripe account error
+ * @param {Function} props.onResendVerificationEmail - Resends the email verification email
+ *   (used by the "Review & submit" email gate)
+ * @param {boolean} [props.sendVerificationEmailInProgress] - Whether a resend is in progress
+ * @param {Object} [props.sendVerificationEmailError] - The resend error
  * @returns {JSX.Element}
  */
 export const EditListingPageComponent = props => {
   const intl = useIntl();
+  const config = useConfiguration();
   const {
     currentUser,
     createStripeAccountError,
@@ -162,6 +170,9 @@ export const EditListingPageComponent = props => {
     stripeAccount,
     updateStripeAccountError,
     authScopes,
+    onResendVerificationEmail,
+    sendVerificationEmailInProgress,
+    sendVerificationEmailError,
   } = props;
 
   const { id, type, returnURLType } = params;
@@ -266,13 +277,22 @@ export const EditListingPageComponent = props => {
       ? 'EditListingPage.titleCreateListing'
       : 'EditListingPage.titleEditListing';
 
+    // The model onboarding wizard (sign-up journey 08 to 13) has its own slim top bar
+    // ("Rogue." + "Save & exit") instead of the site topbar. The one-off "email verified"
+    // banner (screen 05) still shows above it.
+    const inOnboardingShell = isOnboardingShellFlow(params, currentListing, config);
+
     return (
       <Page title={intl.formatMessage({ id: titleId })} scrollingDisabled={scrollingDisabled}>
-        <TopbarContainer
-          mobileRootClassName={css.mobileTopbar}
-          desktopClassName={css.desktopTopbar}
-          mobileClassName={css.mobileTopbar}
-        />
+        {inOnboardingShell ? (
+          <EmailVerifiedNotice />
+        ) : (
+          <TopbarContainer
+            mobileRootClassName={css.mobileTopbar}
+            desktopClassName={css.desktopTopbar}
+            mobileClassName={css.mobileTopbar}
+          />
+        )}
         <EditListingWizard
           id="EditListingWizard"
           className={css.wizard}
@@ -318,6 +338,9 @@ export const EditListingPageComponent = props => {
           stripeAccountLinkError={getAccountLinkError}
           authScopes={authScopes}
           titleId={titleId}
+          onResendVerificationEmail={onResendVerificationEmail}
+          sendVerificationEmailInProgress={sendVerificationEmailInProgress}
+          sendVerificationEmailError={sendVerificationEmailError}
         />
       </Page>
     );
@@ -363,6 +386,7 @@ const mapStateToProps = state => {
     updateInProgress: profileUpdateInProgress,
     updateProfileError,
   } = state.ProfileSettingsPage;
+  const { sendVerificationEmailInProgress, sendVerificationEmailError } = state.user;
 
   return {
     getAccountLinkInProgress,
@@ -380,6 +404,8 @@ const mapStateToProps = state => {
     updateProfileError,
     scrollingDisabled: isScrollingDisabled(state),
     authScopes,
+    sendVerificationEmailInProgress,
+    sendVerificationEmailError,
   };
 };
 
@@ -401,6 +427,7 @@ const mapDispatchToProps = dispatch => ({
     dispatch(savePayoutDetails(values, isUpdateCall)),
   onGetStripeConnectAccountLink: params => dispatch(getStripeConnectAccountLink(params)),
   onRemoveListingImage: imageId => dispatch(removeListingImage(imageId)),
+  onResendVerificationEmail: () => dispatch(sendVerificationEmail()),
 });
 
 // Note: it is important that the withRouter HOC is **outside** the

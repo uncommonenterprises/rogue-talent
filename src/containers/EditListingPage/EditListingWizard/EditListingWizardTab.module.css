@@ -1,5 +1,11 @@
 @import '../../../styles/customMediaQueries.css';
 
+/* In the model onboarding shell the panel sits in the shell's centred column (no side nav). */
+.shellPanel {
+  width: 100%;
+  padding: 0;
+}
+
 .panel {
   flex-grow: 1;
   padding: 11px 24px 0 24px;

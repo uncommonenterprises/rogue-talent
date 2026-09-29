@@ -11,6 +11,22 @@
   z-index: 0;
 }
 
+/* Model onboarding shell (sign-up journey 08 to 13): white page, one centred 720px column. */
+.shellRoot {
+  background-color: var(--surface-page);
+}
+
+.shellMain {
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: var(--space-6) var(--space-5) var(--space-9);
+
+  @media (min-width: 640px) {
+    padding: var(--space-7) var(--space-5) var(--space-9);
+  }
+}
+
 .tabsContainer {
   flex-grow: 1;
   /* Layout */

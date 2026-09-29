@@ -1,0 +1,309 @@
+@import '../../../../styles/customMediaQueries.css';
+
+/* Model onboarding wizard shell (sign-up journey mockups 08 to 13, journey.css "Wizard shell").
+   Design-system tokens only. The stepper switches between its compact and full forms at 760px,
+   as in the approved mockups. */
+
+/* ================ Top bar ================ */
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  width: 100%;
+  padding: var(--space-2) var(--space-5);
+  background: var(--white);
+  border-bottom: var(--border-hair) solid var(--border-hairline);
+
+  @media (min-width: 640px) {
+    padding: var(--space-2) var(--space-6);
+  }
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-family: var(--font-display);
+  font-weight: var(--weight-extrabold);
+  font-size: var(--text-xl);
+  letter-spacing: var(--tracking-tight);
+  line-height: var(--leading-none);
+  color: var(--ink-900);
+  text-decoration: none;
+
+  &:hover {
+    color: var(--ink-900);
+    text-decoration: none;
+  }
+}
+
+.brandDot {
+  color: var(--accent-500);
+}
+
+.exitLink {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-family: var(--font-sans);
+  font-weight: var(--weight-semibold);
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: color var(--dur-fast) var(--ease-standard);
+
+  &:hover {
+    color: var(--text-primary);
+    text-decoration: none;
+  }
+}
+
+/* ================ Stepper ================ */
+
+.stepperRoot {
+  margin: 0 0 var(--space-6) 0;
+
+  @media (min-width: 760px) {
+    margin: 0 0 var(--space-7) 0;
+  }
+}
+
+.stepperMobile {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+
+  @media (min-width: 760px) {
+    display: none;
+  }
+}
+
+.stepperMobileLabel {
+  font-family: var(--font-sans);
+  font-weight: var(--weight-semibold);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+
+.stepperBar {
+  height: 4px;
+  background: var(--ink-100);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+}
+
+.stepperBarFill {
+  display: block;
+  height: 100%;
+  background: var(--accent-500);
+}
+
+.stepper {
+  display: none;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  @media (min-width: 760px) {
+    display: flex;
+    justify-content: space-between;
+  }
+}
+
+.step {
+  position: relative;
+  flex: 1;
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  text-align: center;
+
+  /* Connector line from the previous step, drawn behind the dots. */
+  &::before {
+    content: '';
+    position: absolute;
+    top: 13px;
+    left: -50%;
+    width: 100%;
+    height: 1px;
+    background: var(--border-hairline);
+    z-index: 0;
+  }
+
+  &:first-child::before {
+    display: none;
+  }
+}
+
+.stepDone {
+  color: var(--text-secondary);
+
+  &::before {
+    background: var(--accent-500);
+  }
+}
+
+.stepCurrent {
+  color: var(--text-primary);
+  font-weight: var(--weight-semibold);
+}
+
+.stepLink {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  color: inherit;
+  text-decoration: none;
+
+  &:hover {
+    color: var(--text-primary);
+    text-decoration: none;
+  }
+}
+
+.stepDot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  font-family: var(--font-sans);
+  font-weight: var(--weight-bold);
+  font-size: var(--text-xs);
+  color: var(--ink-500);
+  background: var(--white);
+  border: var(--border-key) solid var(--ink-300);
+  border-radius: 50%;
+}
+
+.stepDone .stepDot {
+  color: var(--white);
+  background: var(--accent-500);
+  border-color: var(--accent-500);
+}
+
+.stepCurrent .stepDot {
+  color: var(--accent-600);
+  border-color: var(--accent-500);
+}
+
+.stepTick {
+  display: block;
+}
+
+.stepLabel {
+  line-height: var(--leading-snug);
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ================ Step heading ================ */
+
+.panelHeader {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0 0 var(--space-6) 0;
+}
+
+.panelTitle {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-display);
+  font-weight: var(--weight-extrabold);
+  font-size: var(--text-2xl);
+  line-height: var(--leading-snug);
+  letter-spacing: var(--tracking-tight);
+  color: var(--text-primary);
+
+  @media (min-width: 640px) {
+    font-size: var(--text-3xl);
+  }
+}
+
+.panelGuidance {
+  max-width: 60ch;
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  line-height: var(--leading-normal);
+  color: var(--text-secondary);
+}
+
+/* ================ Action bar ================ */
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-4);
+  row-gap: var(--space-3);
+  margin-top: var(--space-6);
+  padding-top: var(--space-5);
+  border-top: var(--border-hair) solid var(--border-hairline);
+}
+
+.primaryGroup {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  margin-left: auto;
+}
+
+.aside {
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+
+/* design-system rt-btn--secondary (as a link to the previous step) */
+.backLink {
+  composes: buttonSecondary from global;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  min-height: 48px;
+  padding: 0 20px;
+  font-size: var(--text-sm);
+  line-height: 1;
+
+  @media (--viewportMedium) {
+    padding: 0 20px;
+  }
+}
+
+/* design-system rt-btn--primary rt-btn--lg, auto width. Doubled class for specificity over
+   the Button component's own (full-width) root class, whatever the stylesheet order. */
+.primaryButton.primaryButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  min-width: 140px;
+  min-height: 48px;
+  padding: 0 28px;
+  font-size: var(--text-base);
+  line-height: 1;
+}
