@@ -30,3 +30,13 @@ Status: **Open** -> **Agreed** (fix approach confirmed) -> **Fixed** (merged + v
 
 ## Decision 28/09: pause the walkthrough, design first
 Neil: rather than walk current screens that will be redesigned, the ux-designer produces clickable mockups of EVERY sign-up + onboarding screen (model and client), reflecting the NEW account-status lifecycle, as ONE set. Neil approves, then we build, then Neil tests. Functional fixes (email domain, homepage stats, 18+ check) continue in parallel. RT-FB-01/06/08 design items fold into the mockups.
+
+---
+
+## Checks to fold into Neil's next full run-through
+Deferred by Neil 29/09 to his next full run-through (not blocking anything else):
+1. **RT-FB-07 proof:** fresh sign-up, click the verification email link; it must open the Railway site (not the old Sharetribe-hosted copy).
+2. **Client ID check end to end (cutover Stage A):** as a test client, try to book a model, get sent to "verify your identity", pick Stripe's sandbox "successful verification" option, come back, and the booking goes through to checkout (no need to pay). This is also the proof that the rolled `STRIPE_SECRET_KEY` works. PM then confirms the account shows ID-verified and 18+ passed.
+3. **RT-FB-10:** model onboarding shows 4 steps with no availability step; after submitting, the last tab reads "Your calendar" (if it says "Your availability", Console microcopy is overriding en.json).
+4. **Minimum booking notice** appears on "Your rates".
+Also pending from Neil when convenient: backfill dry run (`node scripts/ops/backfill-availability-plans.js`), delete the unused old "Restricted key" in the Stripe sandbox, and design feedback on the sign-up mockups (build waits for sign-off).
