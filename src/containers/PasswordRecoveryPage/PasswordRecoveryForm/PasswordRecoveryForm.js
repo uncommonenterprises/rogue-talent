@@ -110,24 +110,18 @@ class PasswordRecoveryForm extends Component {
                 customErrorText={emailTouched ? null : customErrorText}
               />
 
-              <div className={css.bottomWrapper}>
-                <p className={css.bottomWrapperText}>
-                  <span className={css.modalHelperText}>
-                    <FormattedMessage
-                      id="PasswordRecoveryForm.loginLinkInfo"
-                      values={{ loginLink }}
-                    />
-                  </span>
-                </p>
+              <PrimaryButton
+                className={css.submitButton}
+                type="submit"
+                inProgress={submitInProgress}
+                disabled={submitDisabled}
+              >
+                <FormattedMessage id="PasswordRecoveryForm.sendInstructions" />
+              </PrimaryButton>
 
-                <PrimaryButton
-                  type="submit"
-                  inProgress={submitInProgress}
-                  disabled={submitDisabled}
-                >
-                  <FormattedMessage id="PasswordRecoveryForm.sendInstructions" />
-                </PrimaryButton>
-              </div>
+              <p className={css.bottomWrapperText}>
+                <FormattedMessage id="PasswordRecoveryForm.loginLinkInfo" values={{ loginLink }} />
+              </p>
             </Form>
           );
         }}

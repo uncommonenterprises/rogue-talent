@@ -30,6 +30,8 @@ const PasswordResetForm = props => (
         handleSubmit,
         inProgress = false,
         invalid,
+        errors,
+        touched,
       } = fieldRenderProps;
 
       const intl = useIntl();
@@ -70,6 +72,8 @@ const PasswordResetForm = props => (
       );
 
       const classes = classNames(rootClassName || css.root, className);
+      // Same hint/error pattern as the sign-up password: the error replaces the hint.
+      const showPasswordError = !!(touched?.password && errors?.password);
 
       const submitInProgress = inProgress;
       const submitDisabled = invalid || submitInProgress;
@@ -90,7 +94,20 @@ const PasswordResetForm = props => (
               passwordMaxLength
             )}
           />
-          <PrimaryButton type="submit" inProgress={submitInProgress} disabled={submitDisabled}>
+          {showPasswordError ? null : (
+            <p className={css.passwordHint}>
+              <FormattedMessage
+                id="PasswordResetForm.passwordHint"
+                values={{ minLength: validators.PASSWORD_MIN_LENGTH }}
+              />
+            </p>
+          )}
+          <PrimaryButton
+            className={css.submitButton}
+            type="submit"
+            inProgress={submitInProgress}
+            disabled={submitDisabled}
+          >
             <FormattedMessage id="PasswordResetForm.submitButtonText" />
           </PrimaryButton>
         </Form>

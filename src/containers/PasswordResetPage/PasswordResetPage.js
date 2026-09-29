@@ -3,24 +3,12 @@ import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 
-import { useConfiguration } from '../../context/configurationContext';
 import { FormattedMessage, useIntl } from '../../util/reactIntl';
 import { propTypes } from '../../util/types';
 import { parse } from '../../util/urlHelpers';
 import { isScrollingDisabled } from '../../ducks/ui.duck';
 
-import {
-  Heading,
-  Page,
-  NamedLink,
-  IconKeys,
-  IconKeysSuccess,
-  ResponsiveBackgroundImageContainer,
-  LayoutSingleColumn,
-} from '../../components';
-
-import TopbarContainer from '../../containers/TopbarContainer/TopbarContainer';
-import FooterContainer from '../../containers/FooterContainer/FooterContainer';
+import { Page, NamedLink, AuthShell, AuthFormHeader } from '../../components';
 
 import PasswordResetForm from './PasswordResetForm/PasswordResetForm';
 
@@ -41,24 +29,28 @@ const ParamsMissingContent = () => {
   );
   return (
     <div className={css.content}>
-      <p>
+      <p className={css.message}>
         <FormattedMessage id="PasswordResetPage.invalidUrlParams" values={{ recoveryLink }} />
       </p>
     </div>
   );
 };
 
+// Screen 07, state 2: set a new password (arrived via the emailed link).
 const ResetFormContent = props => {
-  const { handleSubmit, resetPasswordInProgress, resetPasswordError } = props;
+  const { email, handleSubmit, resetPasswordInProgress, resetPasswordError } = props;
   return (
     <div className={css.content}>
-      <IconKeys className={css.modalIcon} />
-      <Heading as="h1" rootClassName={css.modalTitle}>
-        <FormattedMessage id="PasswordResetPage.mainHeading" />
-      </Heading>
-      <p className={css.modalMessage}>
-        <FormattedMessage id="PasswordResetPage.helpText" />
-      </p>
+      <AuthFormHeader
+        small
+        title={<FormattedMessage id="PasswordResetPage.mainHeading" />}
+        lede={
+          <FormattedMessage
+            id="PasswordResetPage.helpTextForEmail"
+            values={{ email: <strong className={css.email}>{email}</strong> }}
+          />
+        }
+      />
       {resetPasswordError ? (
         <p className={css.error}>
           <FormattedMessage id="PasswordResetPage.resetFailed" />
@@ -76,13 +68,11 @@ const ResetFormContent = props => {
 const ResetDoneContent = () => {
   return (
     <div className={css.content}>
-      <IconKeysSuccess className={css.modalIcon} />
-      <Heading as="h1" rootClassName={css.modalTitle}>
-        <FormattedMessage id="PasswordResetPage.passwordChangedHeading" />
-      </Heading>
-      <p className={css.modalMessage}>
-        <FormattedMessage id="PasswordResetPage.passwordChangedHelpText" />
-      </p>
+      <AuthFormHeader
+        small
+        title={<FormattedMessage id="PasswordResetPage.passwordChangedHeading" />}
+        lede={<FormattedMessage id="PasswordResetPage.passwordChangedHelpText" />}
+      />
       <NamedLink name="LoginPage" className={css.submitButton}>
         <FormattedMessage id="PasswordResetPage.loginButtonText" />
       </NamedLink>
@@ -104,7 +94,6 @@ const ResetDoneContent = () => {
  */
 export const PasswordResetPageComponent = props => {
   const [state, setState] = useState({ newPasswordSubmitted: false });
-  const config = useConfiguration();
   const intl = useIntl();
   const {
     scrollingDisabled,
@@ -134,32 +123,20 @@ export const PasswordResetPageComponent = props => {
       scrollingDisabled={scrollingDisabled}
       referrer="origin"
     >
-      <LayoutSingleColumn
-        mainColumnClassName={css.layoutWrapperMain}
-        topbar={<TopbarContainer />}
-        footer={<FooterContainer />}
-      >
-        <ResponsiveBackgroundImageContainer
-          className={css.root}
-          childrenWrapperClassName={css.contentContainer}
-          as="section"
-          image={config.branding.brandImage}
-          sizes="100%"
-          useOverlay
-        >
-          {!hasParams ? (
-            <ParamsMissingContent />
-          ) : isPasswordSubmitted ? (
-            <ResetDoneContent />
-          ) : (
-            <ResetFormContent
-              handleSubmit={handleSubmit}
-              resetPasswordInProgress={resetPasswordInProgress}
-              resetPasswordError={resetPasswordError}
-            />
-          )}
-        </ResponsiveBackgroundImageContainer>
-      </LayoutSingleColumn>
+      <AuthShell variant="recovery">
+        {!hasParams ? (
+          <ParamsMissingContent />
+        ) : isPasswordSubmitted ? (
+          <ResetDoneContent />
+        ) : (
+          <ResetFormContent
+            email={email}
+            handleSubmit={handleSubmit}
+            resetPasswordInProgress={resetPasswordInProgress}
+            resetPasswordError={resetPasswordError}
+          />
+        )}
+      </AuthShell>
     </Page>
   );
 };

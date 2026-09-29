@@ -3,23 +3,12 @@ import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 
-import { useConfiguration } from '../../context/configurationContext';
 import { FormattedMessage, useIntl } from '../../util/reactIntl';
 import { propTypes } from '../../util/types';
 import { isPasswordRecoveryEmailNotFoundError } from '../../util/errors';
 import { isScrollingDisabled } from '../../ducks/ui.duck';
 
-import {
-  Heading,
-  Page,
-  InlineTextButton,
-  IconKeys,
-  ResponsiveBackgroundImageContainer,
-  LayoutSingleColumn,
-} from '../../components';
-
-import TopbarContainer from '../../containers/TopbarContainer/TopbarContainer';
-import FooterContainer from '../../containers/FooterContainer/FooterContainer';
+import { Page, InlineTextButton, AuthShell, AuthFormHeader } from '../../components';
 
 import PasswordRecoveryForm from './PasswordRecoveryForm/PasswordRecoveryForm';
 
@@ -30,17 +19,37 @@ import {
 } from './PasswordRecoveryPage.duck';
 import css from './PasswordRecoveryPage.module.css';
 
+const IconEnvelope = () => (
+  <svg
+    className={css.lineIcon}
+    width="26"
+    height="26"
+    viewBox="0 0 24 24"
+    fill="none"
+    aria-hidden="true"
+    focusable="false"
+  >
+    <rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" strokeWidth="1.6" />
+    <path
+      d="M4 7l8 6 8-6"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+// Screen 07, state 1: request a reset link.
 const PasswordRecovery = props => {
   const { initialEmail, onChange, onSubmitEmail, recoveryInProgress, recoveryError } = props;
   return (
     <div className={css.submitEmailContent}>
-      <IconKeys className={css.modalIcon} />
-      <Heading as="h1" rootClassName={css.modalTitle}>
-        <FormattedMessage id="PasswordRecoveryPage.forgotPasswordTitle" />
-      </Heading>
-      <p className={css.modalMessage}>
-        <FormattedMessage id="PasswordRecoveryPage.forgotPasswordMessage" />
-      </p>
+      <AuthFormHeader
+        small
+        title={<FormattedMessage id="PasswordRecoveryPage.forgotPasswordTitle" />}
+        lede={<FormattedMessage id="PasswordRecoveryPage.forgotPasswordMessage" />}
+      />
       <PasswordRecoveryForm
         inProgress={recoveryInProgress}
         onChange={onChange}
@@ -55,13 +64,11 @@ const PasswordRecovery = props => {
 const GenericError = () => {
   return (
     <div className={css.genericErrorContent}>
-      <IconKeys className={css.modalIcon} />
-      <Heading as="h1" rootClassName={css.modalTitle}>
-        <FormattedMessage id="PasswordRecoveryPage.actionFailedTitle" />
-      </Heading>
-      <p className={css.modalMessage}>
-        <FormattedMessage id="PasswordRecoveryPage.actionFailedMessage" />
-      </p>
+      <AuthFormHeader
+        small
+        title={<FormattedMessage id="PasswordRecoveryPage.actionFailedTitle" />}
+        lede={<FormattedMessage id="PasswordRecoveryPage.actionFailedMessage" />}
+      />
     </div>
   );
 };
@@ -92,18 +99,23 @@ const EmailSubmittedContent = props => {
     </InlineTextButton>
   );
 
+  // Re-uses the screen 04 check-your-inbox pattern: headline, the address, a quiet resend note.
   return (
     <div className={css.emailSubmittedContent}>
-      <IconKeys className={css.modalIcon} />
-      <Heading as="h1" rootClassName={css.modalTitle}>
-        <FormattedMessage id="PasswordRecoveryPage.emailSubmittedTitle" />
-      </Heading>
-      <p className={css.modalMessage}>
-        <FormattedMessage
-          id="PasswordRecoveryPage.emailSubmittedMessage"
-          values={{ submittedEmailText }}
-        />
-      </p>
+      <span className={css.icon}>
+        <IconEnvelope />
+      </span>
+      <AuthFormHeader
+        centered
+        small
+        title={<FormattedMessage id="PasswordRecoveryPage.emailSubmittedTitle" />}
+        lede={
+          <FormattedMessage
+            id="PasswordRecoveryPage.emailSubmittedMessage"
+            values={{ submittedEmailText }}
+          />
+        }
+      />
       <div className={css.bottomWrapper}>
         <p className={css.helperText}>
           {recoveryInProgress ? (
@@ -139,7 +151,6 @@ const EmailSubmittedContent = props => {
  * @returns {JSX.Element} Password recovery page component
  */
 export const PasswordRecoveryPageComponent = props => {
-  const config = useConfiguration();
   const intl = useIntl();
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
@@ -175,37 +186,24 @@ export const PasswordRecoveryPageComponent = props => {
       })}
       scrollingDisabled={scrollingDisabled}
     >
-      <LayoutSingleColumn
-        mainColumnClassName={css.layoutWrapperMain}
-        topbar={<TopbarContainer />}
-        footer={<FooterContainer />}
-      >
-        <ResponsiveBackgroundImageContainer
-          className={css.root}
-          childrenWrapperClassName={css.contentContainer}
-          as="section"
-          image={config.branding.brandImage}
-          sizes="100%"
-          useOverlay
-        >
-          {isPasswordRecoveryEmailNotFoundError(recoveryError) ? (
-            showPasswordRecoveryForm
-          ) : recoveryError ? (
-            <GenericError />
-          ) : alreadyrequested ? (
-            <EmailSubmittedContent
-              passwordRequested={passwordRequested}
-              initialEmail={initialEmail}
-              submittedEmail={submittedEmail}
-              onRetypeEmail={onRetypeEmail}
-              onSubmitEmail={onSubmitEmail}
-              recoveryInProgress={recoveryInProgress}
-            />
-          ) : (
-            showPasswordRecoveryForm
-          )}
-        </ResponsiveBackgroundImageContainer>
-      </LayoutSingleColumn>
+      <AuthShell variant="recovery">
+        {isPasswordRecoveryEmailNotFoundError(recoveryError) ? (
+          showPasswordRecoveryForm
+        ) : recoveryError ? (
+          <GenericError />
+        ) : alreadyrequested ? (
+          <EmailSubmittedContent
+            passwordRequested={passwordRequested}
+            initialEmail={initialEmail}
+            submittedEmail={submittedEmail}
+            onRetypeEmail={onRetypeEmail}
+            onSubmitEmail={onSubmitEmail}
+            recoveryInProgress={recoveryInProgress}
+          />
+        ) : (
+          showPasswordRecoveryForm
+        )}
+      </AuthShell>
     </Page>
   );
 };
