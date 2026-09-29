@@ -1,0 +1,85 @@
+/* Screen 04 "Check your inbox" inside the split AuthShell. */
+
+.root {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-5);
+  width: 100%;
+  max-width: 420px;
+  text-align: center;
+}
+
+.icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-pill);
+  background-color: var(--accent-50);
+  color: var(--accent-600);
+}
+
+.nextStep {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  width: 100%;
+}
+
+.primaryAction {
+  composes: buttonPrimary from global;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 12px var(--space-5);
+  font-size: var(--text-base);
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: none;
+  }
+
+  @media (min-width: 768px) {
+    padding: 12px var(--space-5);
+  }
+}
+
+.note {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  line-height: var(--leading-normal);
+  color: var(--text-muted);
+}
+
+/* One quiet help line (spam / resend / different address). */
+.helpLine {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  line-height: var(--leading-normal);
+  color: var(--text-secondary);
+}
+
+.helperLink {
+  display: inline;
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-sans);
+  font-size: inherit;
+  font-weight: var(--weight-semibold);
+  line-height: inherit;
+  color: var(--text-accent);
+  text-decoration: none;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--accent-700);
+    text-decoration: underline;
+  }
+}

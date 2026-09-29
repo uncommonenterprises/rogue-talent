@@ -103,22 +103,7 @@
 
 /* ================ Email verification (screen 04) ================ */
 
-.content {
-  width: 100%;
-  max-width: 420px;
-}
-
-/* Title of the modal */
-.modalTitle {
-  composes: marketplaceModalTitleStyles from global;
-}
-
-/* Paragraph for the Modal */
-.modalMessage {
-  composes: marketplaceModalParagraphStyles from global;
-}
-
-/* Make the email pop */
+/* Make the email pop (the rest of screen 04 is styled in EmailVerificationInfo.module.css) */
 .email {
   font-weight: var(--fontWeightHighlightEmail);
   color: var(--text-primary);
@@ -128,44 +113,4 @@
   /* use break-word if available */
   word-break: break-word;
   hyphens: auto;
-}
-
-/* Helper links */
-.modalHelperLink {
-  composes: a from global;
-  composes: marketplaceModalHelperLink from global;
-}
-
-/* RT-FB-06: verify-email screen - one clear next step + a single quiet help line. */
-.verifyNextStep {
-  margin-top: var(--space-6);
-}
-
-.verifyPrimaryAction {
-  composes: buttonPrimary from global;
-  text-decoration: none;
-
-  &:hover {
-    text-decoration: none;
-  }
-}
-
-.verifyNote {
-  margin: var(--space-3) 0 0 0;
-  font-size: var(--text-sm);
-  line-height: var(--leading-normal);
-  color: var(--text-muted);
-}
-
-.verifyHelpLine {
-  margin: var(--space-6) 0 0 0;
-  padding-top: var(--space-4);
-  border-top: var(--border-hair) solid var(--border-hairline);
-  font-size: var(--text-sm);
-  line-height: var(--leading-normal);
-  color: var(--text-muted);
-}
-
-.modalIcon {
-  composes: marketplaceModalIconStyles from global;
 }
