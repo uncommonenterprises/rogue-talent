@@ -111,6 +111,7 @@
       <li>The first uploaded photo carries an "Ink" badge marked "Cover". Since Gate A review is specifically a portfolio-quality check (account-status-lifecycle §2), it's worth being explicit about which shot leads on the live card.</li>
       <li><strong>Decided by Neil, 29/09:</strong> a minimum of 3 photos is required before "Continue" is enabled. The empty state shows a "0 of 3 minimum" counter next to a disabled Continue button and a hint below the upload tile; once 3 or more photos are uploaded (five shown in the filled state above), Continue is enabled.</li>
       <li><strong>Wizard order (PM decision, 29/09):</strong> portfolio is now the last of the 4 wizard steps (previously step 3, now step 4), matching the live product. "Continue" here goes to Review &amp; submit; the step before it is Your rates (screen 11), not Your profile.</li>
+      <li><strong>Mobile pass (29/09/2026):</strong> the empty state's footer row (Back, plus a "0 of 3 minimum" hint next to the disabled Continue button) was tight at 375px. <code>.wizard-actions</code> now allows wrapping (<code>flex-wrap</code> + a row-gap) so, if it ever runs out of room on a narrow phone, it breaks cleanly onto two lines instead of crowding - no visible change at any width where it already fits, including desktop.</li>
     </ul>
   </details>
 </div>

@@ -91,6 +91,7 @@
 
       <button class="rt-btn rt-btn--primary rt-btn--block rt-btn--lg" type="submit">Create my model account</button>
       <p class="form-foot">Already have an account? <a href="06-login.html">Log in</a></p>
+      <p class="form-foot form-foot--secondary">Not a model? <a href="03-signup-client.html">Sign up as a client →</a></p>
     </form>
   </div>
 </main>
@@ -106,6 +107,7 @@
       <li><strong>Revision 3 (Neil, 29/09):</strong> with phone removed, the form is tightened with the <code>.form-card--compact</code> modifier (existing spacing tokens, one step down) so it fits a typical ~800px-tall laptop viewport without scrolling.</li>
       <li>One primary action (cobalt) on the page: "Create my model account". Google sign-in stays secondary/outline, consistent with the existing social auth pattern.</li>
       <li>The ink panel's claims are checkable today: 100% of rate, clients ID-verified before booking (Gate B, account-status-lifecycle spec), manual profile review (Gate A). Nothing about response times or member counts.</li>
+      <li><strong>Mobile pass (29/09/2026):</strong> below 900px the ink panel collapses to a slim header bar (brand + "For models" only), so this form now starts near the top of the screen instead of below a full-height marketing panel. The panel footer's "Not a model? Sign up as a client" link is duplicated under the form, next to "Already have an account?", so it isn't lost.</li>
     </ul>
   </details>
 </div>

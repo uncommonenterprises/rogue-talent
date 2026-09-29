@@ -98,6 +98,16 @@
   </ul>
 </div>
 
+<div class="container--editorial" style="padding: 0 0 var(--space-7);">
+  <h2 style="font-family:var(--font-display); font-weight:800; font-size:var(--text-2xl); margin-bottom: var(--space-4);">Mobile pass (29/09/2026)</h2>
+  <p style="font-size:var(--text-sm); color:var(--text-secondary); margin:0 0 var(--space-4); max-width:70ch;">Every screen was approved on desktop on 29/09/2026. These mockups are the spec for mobile too, so all 20 were checked at 375px. Nothing scrolled sideways, but two things needed fixing, plus one small defensive tweak found while checking the rest:</p>
+  <ul style="margin:0; padding-left:20px; display:flex; flex-direction:column; gap:var(--space-2); font-size:var(--text-sm); color:var(--text-secondary); line-height:1.5;">
+    <li><strong style="color:var(--text-primary);">H.</strong> Auth screens 01-07 (the split shell): below 900px the dark ink panel used to stack above the form at full height (headline, lede, three bullet points, footer), pushing the form below the fold. It now collapses to a slim ink header bar - the "Rogue." brand and a short eyebrow only - so the form starts near the top of the screen. Any useful panel-footer link (e.g. "Not a model? Sign up as a client") is duplicated under the form on screens 02, 03 and 06, next to the existing "Already have an account?" line, so no navigation is lost. Desktop (900px+) is unchanged.</li>
+    <li><strong style="color:var(--text-primary);">I.</strong> Screen 18, Business type: at 375px "Sole trader or self-employed" was wrapping onto two lines inside its half-width segment, making each option ~61px tall and cramped. Below 480px the segmented control now stacks as two full-width rows instead, on both cards on the screen. 480px and up is unchanged.</li>
+    <li><strong style="color:var(--text-primary);">J.</strong> Screen 10, Your portfolio: the empty state's footer (Back, plus a "0 of 3 minimum" hint next to the disabled Continue button) was tight at 375px. <code>.wizard-actions</code> now allows wrapping as a safety net, so it would break cleanly onto two lines rather than crowd if a phone ever runs short on room - no visible change anywhere it already fits.</li>
+  </ul>
+</div>
+
 <div class="container--editorial" style="padding: 0 0 var(--space-9);">
   <h2 style="font-family:var(--font-display); font-weight:800; font-size:var(--text-2xl); margin-bottom: var(--space-5);">Decisions (Neil, 29/09/2026)</h2>
   <div class="oq-list">
@@ -129,7 +139,7 @@
 </div>
 
 <footer class="map-foot">
-  <div class="container--editorial">Rogue Talent - design mockups for review only. Not built. ux-designer, 2026-09-28. Revision 1: em dashes removed throughout, the incorrect legal-entity suffix removed from the footer copy on screen 01, availability step retired per RT-FB-10. Revision 2: Neil's decisions applied, wizard order matches the live product, minimum booking notice added to Your rates, client Not approved variant added. Revision 3 (29/09/2026): Neil's screen-by-screen review applied - see the "Revision 3" list above for the full set of changes (screens 02, 03, 04, 05, 09, 11, 13, 14, 18, 19). Screens 01, 06, 07, 08, 10, 11, 13, 15, 16, 17, 20 and 21 are approved by Neil as of this review; the set as a whole is not yet signed off to build.</div>
+  <div class="container--editorial">Rogue Talent - design mockups for review only. Not built. ux-designer, 2026-09-28. Revision 1: em dashes removed throughout, the incorrect legal-entity suffix removed from the footer copy on screen 01, availability step retired per RT-FB-10. Revision 2: Neil's decisions applied, wizard order matches the live product, minimum booking notice added to Your rates, client Not approved variant added. Revision 3 (29/09/2026): Neil's screen-by-screen review applied - see the "Revision 3" list above for the full set of changes (screens 02, 03, 04, 05, 09, 11, 13, 14, 18, 19). Screens 01, 06, 07, 08, 10, 11, 13, 15, 16, 17, 20 and 21 are approved by Neil as of this review; the set as a whole is not yet signed off to build. Mobile pass (29/09/2026): all 20 screens checked at 375px against the same desktop-approved spec - see the "Mobile pass" section above for the auth-shell, Business type and Your portfolio fixes applied.</div>
 </footer>
 
 </body>

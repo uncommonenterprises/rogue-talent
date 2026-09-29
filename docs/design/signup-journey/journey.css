@@ -292,10 +292,20 @@ button { font: inherit; }
    SEGMENTED CONTROL - rt-segmented (design-system/DESIGN_SYSTEM.md §9, unchanged)
    Used on screen 18 for the "Business type" choice.
    --------------------------------------------------------------- */
-.rt-segmented { display: inline-flex; background: var(--ink-100); border-radius: var(--radius-lg); padding: 3px; }
+.rt-segmented { display: inline-flex; align-self: flex-start; max-width: 100%; background: var(--ink-100); border-radius: var(--radius-lg); padding: 3px; }
 .rt-segmented label { font-family: var(--font-sans); font-weight: var(--weight-semibold); font-size: var(--text-sm); color: var(--text-secondary); padding: 8px 18px; border-radius: var(--radius-md); cursor: pointer; transition: all var(--dur-fast); }
 .rt-segmented input { position: absolute; opacity: 0; width: 0; height: 0; }
 .rt-segmented input:checked + label { background: var(--white); color: var(--text-primary); box-shadow: var(--shadow-xs); }
+
+/* Mobile pass (29/09/2026): below ~480px "Sole trader or self-employed" wraps
+   onto two lines inside its half-width segment, making each segment ~61px
+   tall and cramped (screen 18). Stack the two options as full-width rows
+   instead so each is a single line with a comfortable tap target. Existing
+   tokens only; unchanged above 480px. */
+@media (max-width: 480px) {
+  .rt-segmented { flex-direction: column; width: 100%; }
+  .rt-segmented label { text-align: center; padding: 12px 16px; }
+}
 
 /* ---------------------------------------------------------------
    TAG / CHIP - rt-tag / rt-chip (Appendix B, unchanged)
@@ -374,6 +384,43 @@ button { font: inherit; }
 .panel-points svg { flex-shrink: 0; margin-top: 2px; color: var(--accent-400); }
 .panel-foot { font-size: var(--text-xs); color: var(--ink-500); }
 
+/* Mobile pass (29/09/2026): below 900px the ink panel used to stack ABOVE
+   the form at full height (headline, lede, bullets, footer), so the form
+   started below the fold. Collapse the panel into a slim header bar instead:
+   brand + a short eyebrow only. Lede, bullet points and the panel footer are
+   hidden here so the form starts near the top of the screen. 900px+ (desktop,
+   already approved) is completely unchanged - these rules only exist below
+   the breakpoint. Any useful panel-footer link is restored under the form
+   instead, see .form-foot--secondary below. */
+@media (max-width: 899px) {
+  .auth-shell__panel {
+    flex-direction: row;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-4) var(--space-5);
+  }
+  .auth-shell__panel .panel-body-group {
+    flex-direction: row;
+    align-items: center;
+    gap: var(--space-3);
+  }
+  .auth-shell__panel .panel-headline,
+  .auth-shell__panel .panel-lede,
+  .auth-shell__panel .panel-points,
+  .auth-shell__panel .panel-foot {
+    display: none;
+  }
+}
+
+/* Mobile pass (29/09/2026): duplicate a panel-footer's useful link (e.g.
+   "Not a model? Sign up as a client") under the form, next to the existing
+   "Already have an account?" line, since the real panel-foot is hidden below
+   900px (see above). Hidden on desktop, where the panel already shows it. */
+.form-foot--secondary { display: none; }
+@media (max-width: 899px) {
+  .form-foot--secondary { display: block; }
+}
+
 /* --- Role picker cards (choose-path) --- */
 .role-grid { display: flex; flex-direction: column; gap: var(--space-4); width: 100%; max-width: 640px; }
 @media (min-width: 620px) { .role-grid { flex-direction: row; } }
@@ -445,7 +492,7 @@ button { font: inherit; }
 .field-section { display: flex; flex-direction: column; gap: var(--space-4); padding-top: var(--space-5); border-top: var(--border-hair) solid var(--border-subtle); }
 .field-section:first-of-type { border-top: none; padding-top: 0; }
 .field-section h2 { font-family: var(--font-sans); font-weight: 700; font-size: var(--text-xs); letter-spacing: var(--tracking-wider); text-transform: uppercase; color: var(--text-muted); margin: 0; }
-.wizard-actions { display: flex; justify-content: space-between; align-items: center; gap: var(--space-4); padding-top: var(--space-5); border-top: var(--border-hair) solid var(--border-hairline); }
+.wizard-actions { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: var(--space-4); row-gap: var(--space-3); padding-top: var(--space-5); border-top: var(--border-hair) solid var(--border-hairline); }
 .chip-row { display: flex; flex-wrap: wrap; gap: 8px; }
 
 /* --- Photography placeholder stripe (no stock photos) --- */

@@ -73,7 +73,7 @@
         </div>
       </div>
 
-      <div class="field-row">
+      <div class="form-fields">
         <div class="rt-field">
           <label class="rt-field__label">Travel costs <span class="rt-req">*</span></label>
           <span class="rt-field__hint" style="margin-top:-4px;">Whether travel costs are included in your rate or charged separately.</span>
@@ -121,7 +121,7 @@
       <li>The fee-explainer callout is the one place on this step that states the commercial model plainly (100% to the model, one flat 15% fee to the client). It's the wedge, so it earns a moment of emphasis without becoming a second cobalt element (the callout uses a neutral surface, not accent fill).</li>
       <li>Guidance copy reused verbatim from the live <code>EditListingPricingPanel.guidance</code> string.</li>
       <li><strong>New field (PM decision, 29/09): Minimum booking notice.</strong> A required <code>rt-select</code>, example value "48 hours". This sets an expectation only, it does not claim the system blocks or filters booking requests that fall inside the window, because it doesn't: the model can still decline any request regardless of notice given. The hint says so explicitly.</li>
-      <li><strong>Revision 3 (Neil, 29/09) - How far you'll travel:</strong> moved here from screen 09's old "Where you'll work" section, and relabelled from "Availability radius" for clarity. Required, sits directly next to Travel costs in the same row since both are travel-related. Options: "Local only (25 miles)", "Regional (50 miles)", "National", "International"; example value shown is "National". Underlying field is unchanged - it's still <code>availability_radius</code> in Sharetribe. Only the label and its position in the wizard change; this is a Console label edit at build time, not a new field.</li>
+      <li><strong>Revision 3 (Neil, 29/09) - How far you'll travel:</strong> moved here from screen 09's old "Where you'll work" section, and relabelled from "Availability radius" for clarity. Required, sits directly below Travel costs since both are travel-related (stacked rather than side by side, per Neil 29/09, because one is a pill group and one a dropdown). Options: "Local only (25 miles)", "Regional (50 miles)", "National", "International"; example value shown is "National". Underlying field is unchanged - it's still <code>availability_radius</code> in Sharetribe. Only the label and its position in the wizard change; this is a Console label edit at build time, not a new field.</li>
       <li><strong>Wizard order (PM decision, 29/09):</strong> Rates is step 3 of 4 now, matching the live product. "Continue" goes to Your portfolio (screen 10), the new last step, not straight to Review &amp; submit. There is still no separate availability step; models are available by default and every booking request still needs their acceptance.</li>
     </ul>
   </details>

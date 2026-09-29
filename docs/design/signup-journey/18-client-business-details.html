@@ -38,7 +38,7 @@
     <div>
       <span class="rt-eyebrow rt-eyebrow--accent">Almost done</span>
       <h1 style="margin-top:8px;">Tell us about your business</h1>
-      <p class="wizard-guidance" style="margin-top:var(--space-2);">We manually check every business before approving an account. This keeps the marketplace safe for the models who book with you. It's a one-off, and most accounts are quick to review.</p>
+      <p class="wizard-guidance" style="margin-top:var(--space-2);">We manually check every business before approving an account. This keeps the marketplace safe for the models who book with you. It's a one-off check.</p>
     </div>
 
     <div class="form-fields">
@@ -159,6 +159,7 @@
       <li><strong>Revision 3 - Sole trader (variant card below):</strong> no registration number field. Company name becomes "Business or trading name", with the hint "The name you trade under." Adds Business address (required, same address-autocomplete look) and "Website or social media link" (required - our main legitimacy signal for a sole trader, since there's no company number to check against). Business phone number is required the same as the limited-company card. Industry stays optional.</li>
       <li><strong>Revision 3 - Removed:</strong> VAT number (PM decision: not used anywhere in the product) and Typical project types (nothing reads or displays it). Both are deleted from this screen and will need deleting from the Console listing/user field config at build time.</li>
       <li><strong>Build notes for the Developer:</strong> new Console fields needed - <code>business_type</code> (enum: limited_company / sole_trader), <code>business_address</code> (one address field serves both paths: registered office address for limited companies, business address for sole traders; there is no existing address field for clients today), and a business phone field (currently the client's phone was collected at sign-up - this replaces that, scoped as private/business data, not shown on any public profile). <code>company_registration_number</code> becomes conditionally required (only when <code>business_type</code> = limited company). VAT number and Typical project types fields are removed in Console.</li>
+      <li><strong>Mobile pass (29/09/2026):</strong> at 375px "Sole trader or self-employed" was wrapping onto two lines inside <code>.rt-segmented</code>'s half-width segment, making each option ~61px tall and cramped. Below 480px the control now stacks as two full-width rows instead, so each option reads on one line with a comfortable tap target - fixed in <code>journey.css</code>, applies to both cards on this screen. 480px and above (including this screen's own two-column desktop layout) is unchanged.</li>
     </ul>
   </details>
 </div>
