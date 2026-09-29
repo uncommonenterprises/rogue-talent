@@ -11,6 +11,8 @@ import { getPropsForCustomUserFieldInputs } from '../../../util/userHelpers';
 import { Form, PrimaryButton, FieldTextInput, CustomExtendedDataField } from '../../../components';
 
 import FieldSelectUserType from '../FieldSelectUserType';
+import FieldAgeConfirmation from '../FieldAgeConfirmation';
+import { omitSignupHiddenUserFields } from '../AuthenticationPage.helpers';
 import UserFieldDisplayName from '../UserFieldDisplayName';
 import UserFieldPhoneNumber from '../UserFieldPhoneNumber';
 
@@ -58,7 +60,10 @@ const ConfirmSignupFormComponent = props => (
 
       // Custom user fields. Since user types are not supported here,
       // only fields with no user type id limitation are selected.
-      const userFieldProps = getPropsForCustomUserFieldInputs(userFields, userType);
+      // Date of birth is never asked at sign-up (RT-FB-03).
+      const userFieldProps = omitSignupHiddenUserFields(
+        getPropsForCustomUserFieldInputs(userFields, userType)
+      );
 
       const noUserTypes = !userType && !(userTypes?.length > 0);
       const userTypeConfig = userTypes.find(config => config.userType === userType);
@@ -167,8 +172,15 @@ const ConfirmSignupFormComponent = props => (
           ) : null}
 
           <div className={css.bottomWrapper}>
+            {/* The same required 18+ tick box as the email sign-up form (RT-FB-03). */}
+            <FieldAgeConfirmation formId={formId} intl={intl} />
             {termsAndConditions}
-            <PrimaryButton type="submit" inProgress={submitInProgress} disabled={submitDisabled}>
+            <PrimaryButton
+              className={css.submitButton}
+              type="submit"
+              inProgress={submitInProgress}
+              disabled={submitDisabled}
+            >
               <FormattedMessage id="ConfirmSignupForm.signUp" values={{ idp: idp }} />
             </PrimaryButton>
           </div>

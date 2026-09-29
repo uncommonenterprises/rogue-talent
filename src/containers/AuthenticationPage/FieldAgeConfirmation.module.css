@@ -1,0 +1,22 @@
+/* Own root class (instead of FieldCheckboxGroup's) so the validation message sits in the flow
+   under the tick box rather than absolutely positioned over the terms tick box below it. */
+.root {
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+.label {
+  display: block;
+  /* 44px tap target for the whole label row on mobile */
+  padding: 10px 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  line-height: var(--leading-snug);
+  color: var(--text-primary);
+  cursor: pointer;
+
+  @media (min-width: 900px) {
+    padding: 2px 0;
+  }
+}

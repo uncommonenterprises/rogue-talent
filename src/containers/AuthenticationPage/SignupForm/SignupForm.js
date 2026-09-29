@@ -5,20 +5,34 @@ import classNames from 'classnames';
 
 import { FormattedMessage, useIntl } from '../../../util/reactIntl';
 import { propTypes } from '../../../util/types';
-import { stringifyDateToISO8601 } from '../../../util/dates';
 import * as validators from '../../../util/validators';
 import { getPropsForCustomUserFieldInputs } from '../../../util/userHelpers';
 
 import { Form, PrimaryButton, FieldTextInput, CustomExtendedDataField } from '../../../components';
 
 import FieldSelectUserType from '../FieldSelectUserType';
+import FieldAgeConfirmation from '../FieldAgeConfirmation';
+import { omitSignupHiddenUserFields } from '../AuthenticationPage.helpers';
 import UserFieldDisplayName from '../UserFieldDisplayName';
 import UserFieldPhoneNumber from '../UserFieldPhoneNumber';
 
 import css from './SignupForm.module.css';
 
-// SAF-38: Rogue Talent is 18+ only, no exceptions.
-const MIN_SIGNUP_AGE = 18;
+// Required-field label: design-system cobalt asterisk (as custom fields use), with a
+// visually-hidden word for screen readers.
+const requiredLabel = (text, intl) => (
+  <>
+    {text}{' '}
+    <span className={css.req} aria-hidden="true">
+      *
+    </span>
+    <span className={css.srOnly}>{intl.formatMessage({ id: 'SignupForm.requiredIndicator' })}</span>
+  </>
+);
+
+// Per-role copy where the mockups differ (client: "Work email", "Create my client account").
+const getRoleMessageId = (baseId, userType) =>
+  userType === 'model' ? `${baseId}Model` : userType === 'client' ? `${baseId}Client` : baseId;
 
 const getSoleUserTypeMaybe = userTypes =>
   Array.isArray(userTypes) && userTypes.length === 1 ? userTypes[0].userType : null;
@@ -106,29 +120,15 @@ const SignupFormComponent = props => (
         passwordMaxLength
       );
 
-      // date of birth (SAF-38 age gate) — stored to protectedData.date_of_birth
-      const dateOfBirthRequired = validators.required(
-        intl.formatMessage({
-          id: 'SignupForm.dateOfBirthRequired',
-        })
-      );
-      const dateOfBirthValid = validators.dateOfBirthAgeAtLeast(
-        intl.formatMessage({
-          id: 'SignupForm.dateOfBirthInvalid',
-        }),
-        intl.formatMessage({
-          id: 'SignupForm.dateOfBirthUnderage',
-        }),
-        MIN_SIGNUP_AGE
-      );
-      // Belt to the validator's brace: prevent picking a future date in the native picker.
-      const maxDateOfBirth = stringifyDateToISO8601(new Date());
-      // The under-18/invalid error replaces the hint once the field has been touched.
-      const showDateOfBirthError = !!(touched?.date_of_birth && errors?.date_of_birth);
+      // The password error replaces the hint once the field has been touched, so the two
+      // never overlap.
+      const showPasswordError = !!(touched?.password && errors?.password);
 
-      // Custom user fields. Since user types are not supported here,
-      // only fields with no user type id limitation are selected.
-      const userFieldProps = getPropsForCustomUserFieldInputs(userFields, userType);
+      // Custom user fields for the chosen user type (e.g. client company name). Date of birth is
+      // never asked at sign-up (RT-FB-03).
+      const userFieldProps = omitSignupHiddenUserFields(
+        getPropsForCustomUserFieldInputs(userFields, userType)
+      );
 
       const noUserTypes = !userType && !(userTypes?.length > 0);
       const userTypeConfig = userTypes.find(config => config.userType === userType);
@@ -148,31 +148,30 @@ const SignupFormComponent = props => (
             intl={intl}
           />
 
+          {/* Business identity first for clients (company name), as in the mockup. */}
+          {showCustomUserFields ? (
+            <div className={css.customFields}>
+              {userFieldProps.map(({ key, ...fieldProps }) => (
+                <CustomExtendedDataField key={key} {...fieldProps} formId={formId} />
+              ))}
+            </div>
+          ) : null}
+
           {showDefaultUserFields ? (
             <div className={css.defaultUserFields}>
-              <FieldTextInput
-                type="email"
-                id={formId ? `${formId}.email` : 'email'}
-                name="email"
-                autoComplete="email"
-                label={intl.formatMessage({
-                  id: 'SignupForm.emailLabel',
-                })}
-                placeholder={intl.formatMessage({
-                  id: 'SignupForm.emailPlaceholder',
-                })}
-                validate={validators.composeValidators(emailRequired, emailValid)}
-              />
               <div className={css.name}>
                 <FieldTextInput
-                  className={css.firstNameRoot}
+                  className={css.nameField}
                   type="text"
                   id={formId ? `${formId}.fname` : 'fname'}
                   name="fname"
                   autoComplete="given-name"
-                  label={intl.formatMessage({
-                    id: 'SignupForm.firstNameLabel',
-                  })}
+                  label={requiredLabel(
+                    intl.formatMessage({
+                      id: 'SignupForm.firstNameLabel',
+                    }),
+                    intl
+                  )}
                   placeholder={intl.formatMessage({
                     id: 'SignupForm.firstNamePlaceholder',
                   })}
@@ -183,14 +182,17 @@ const SignupFormComponent = props => (
                   )}
                 />
                 <FieldTextInput
-                  className={css.lastNameRoot}
+                  className={css.nameField}
                   type="text"
                   id={formId ? `${formId}.lname` : 'lname'}
                   name="lname"
                   autoComplete="family-name"
-                  label={intl.formatMessage({
-                    id: 'SignupForm.lastNameLabel',
-                  })}
+                  label={requiredLabel(
+                    intl.formatMessage({
+                      id: 'SignupForm.lastNameLabel',
+                    }),
+                    intl
+                  )}
                   placeholder={intl.formatMessage({
                     id: 'SignupForm.lastNamePlaceholder',
                   })}
@@ -210,25 +212,49 @@ const SignupFormComponent = props => (
               />
 
               <FieldTextInput
-                className={css.password}
-                type="password"
-                id={formId ? `${formId}.password` : 'password'}
-                name="password"
-                autoComplete="new-password"
-                label={intl.formatMessage({
-                  id: 'SignupForm.passwordLabel',
-                })}
+                className={css.row}
+                type="email"
+                id={formId ? `${formId}.email` : 'email'}
+                name="email"
+                autoComplete="email"
+                label={requiredLabel(
+                  intl.formatMessage({
+                    id: getRoleMessageId('SignupForm.emailLabel', userType),
+                  }),
+                  intl
+                )}
                 placeholder={intl.formatMessage({
-                  id: 'SignupForm.passwordPlaceholder',
+                  id: 'SignupForm.emailPlaceholder',
                 })}
-                validate={passwordValidators}
+                validate={validators.composeValidators(emailRequired, emailValid)}
               />
-              <p className={css.passwordHint}>
-                <FormattedMessage
-                  id="SignupForm.passwordHint"
-                  values={{ minLength: validators.PASSWORD_MIN_LENGTH }}
+
+              <div className={css.row}>
+                <FieldTextInput
+                  type="password"
+                  id={formId ? `${formId}.password` : 'password'}
+                  name="password"
+                  autoComplete="new-password"
+                  label={requiredLabel(
+                    intl.formatMessage({
+                      id: 'SignupForm.passwordLabel',
+                    }),
+                    intl
+                  )}
+                  placeholder={intl.formatMessage({
+                    id: 'SignupForm.passwordPlaceholder',
+                  })}
+                  validate={passwordValidators}
                 />
-              </p>
+                {showPasswordError ? null : (
+                  <p className={css.passwordHint}>
+                    <FormattedMessage
+                      id="SignupForm.passwordHint"
+                      values={{ minLength: validators.PASSWORD_MIN_LENGTH }}
+                    />
+                  </p>
+                )}
+              </div>
 
               <UserFieldPhoneNumber
                 formName="SignupForm"
@@ -236,44 +262,26 @@ const SignupFormComponent = props => (
                 userTypeConfig={userTypeConfig}
                 intl={intl}
               />
-
-              <FieldTextInput
-                className={css.dateOfBirth}
-                type="date"
-                id={formId ? `${formId}.date_of_birth` : 'date_of_birth'}
-                name="date_of_birth"
-                autoComplete="bday"
-                max={maxDateOfBirth}
-                label={intl.formatMessage({
-                  id: 'SignupForm.dateOfBirthLabel',
-                })}
-                validate={validators.composeValidators(dateOfBirthRequired, dateOfBirthValid)}
-              />
-              {showDateOfBirthError ? null : (
-                <p className={css.dateOfBirthHint}>
-                  <FormattedMessage id="SignupForm.dateOfBirthHint" />
-                </p>
-              )}
-            </div>
-          ) : null}
-
-          {showCustomUserFields ? (
-            <div className={css.customFields}>
-              {userFieldProps.map(({ key, ...fieldProps }) => (
-                <CustomExtendedDataField key={key} {...fieldProps} formId={formId} />
-              ))}
             </div>
           ) : null}
 
           <div className={css.bottomWrapper}>
-            {termsAndConditions}
+            <div className={css.consent}>
+              <FieldAgeConfirmation formId={formId} intl={intl} />
+              {termsAndConditions}
+            </div>
             {isPasswordUsedMoreThanOnce(values) ? (
               <div className={css.error}>
                 <FormattedMessage id="SignupForm.passwordRepeatedOnOtherFields" />
               </div>
             ) : null}
-            <PrimaryButton type="submit" inProgress={submitInProgress} disabled={submitDisabled}>
-              <FormattedMessage id="SignupForm.signUp" />
+            <PrimaryButton
+              className={css.submitButton}
+              type="submit"
+              inProgress={submitInProgress}
+              disabled={submitDisabled}
+            >
+              <FormattedMessage id={getRoleMessageId('SignupForm.signUp', userType)} />
             </PrimaryButton>
           </div>
         </Form>

@@ -4,6 +4,41 @@ import { isEmpty } from '../../util/common';
 import { pickUserFieldsData, addScopePrefix } from '../../util/userHelpers';
 import { pickReferralData } from '../../util/webStorageHelpers';
 
+// RT-FB-03 (decided 28/09/2026): date of birth is no longer asked at sign-up; the "I confirm I'm
+// 18 or over" tick box replaces it (SAF-38's real gate is the ID-verified 18+ check). These user
+// fields never render at sign-up (email or SSO), whatever their displayInSignUp setting in code
+// or Console.
+export const SIGNUP_HIDDEN_USER_FIELD_KEYS = ['date_of_birth'];
+
+/**
+ * Drops user fields that must never be asked at sign-up (see SIGNUP_HIDDEN_USER_FIELD_KEYS).
+ *
+ * @param {Array<{ fieldConfig: Object }>} userFieldProps - from getPropsForCustomUserFieldInputs
+ * @returns {Array<{ fieldConfig: Object }>}
+ */
+export const omitSignupHiddenUserFields = userFieldProps =>
+  (userFieldProps || []).filter(
+    ({ fieldConfig }) => !SIGNUP_HIDDEN_USER_FIELD_KEYS.includes(fieldConfig?.key)
+  );
+
+// The sign-up "I confirm I'm 18 or over" tick box (RT-FB-03): form field name + option key.
+export const AGE_CONFIRMATION_FIELD = 'ageConfirmation';
+export const AGE_CONFIRMATION_OPTION = 'confirmed-18-plus';
+
+/**
+ * Turns the sign-up age tick box into an audit record for the new user's protectedData:
+ * `ageConfirmed18Plus: true` plus the ISO timestamp of the confirmation. It is self-declared;
+ * the real 18+ gate is the ID-verified check at Stripe verification (SAF-38).
+ *
+ * @param {Array<string>|undefined} ageConfirmation - the tick box value (FieldCheckboxGroup array)
+ * @param {Date} [now] - time of confirmation (defaults to the moment of submit)
+ * @returns {{ ageConfirmed18Plus: true, ageConfirmed18PlusAt: string } | {}}
+ */
+export const getAgeConfirmationData = (ageConfirmation, now = new Date()) =>
+  Array.isArray(ageConfirmation) && ageConfirmation.includes(AGE_CONFIRMATION_OPTION)
+    ? { ageConfirmed18Plus: true, ageConfirmed18PlusAt: now.toISOString() }
+    : {};
+
 // Returns full userType config based on selected userType
 const getUserTypeConfig = (userType, userTypes) => {
   return userTypes.find(config => {
@@ -50,7 +85,7 @@ export const getNonUserFieldParams = (values, userFieldConfigs) => {
 export const getExtendedDataMaybe = (submitValues, userType, userFields, extraData) => {
   const { publicData, privateData, protectedData } = extraData;
 
-  return !isEmpty(submitValues)
+  return !isEmpty(submitValues) || !isEmpty(protectedData)
     ? {
         publicData: {
           ...publicData,
@@ -81,7 +116,16 @@ export const getExtendedDataMaybe = (submitValues, userType, userFields, extraDa
  * @returns {(values: Object) => void}
  */
 export const getHandleSubmitSignup = ({ submitSignup, userFields, userTypes }) => values => {
-  const { userType, email, password, fname, lname, displayName, ...rest } = values;
+  const {
+    userType,
+    email,
+    password,
+    fname,
+    lname,
+    displayName,
+    [AGE_CONFIRMATION_FIELD]: ageConfirmation,
+    ...rest
+  } = values;
   const displayNameMaybe = displayName ? { displayName: displayName.trim() } : {};
 
   // Set referral to user private data if it exists and is valid
@@ -96,6 +140,7 @@ export const getHandleSubmitSignup = ({ submitSignup, userFields, userTypes }) =
     ...displayNameMaybe,
     ...getExtendedDataMaybe(rest, userType, userFields, {
       privateData: extraPrivateData,
+      protectedData: getAgeConfirmationData(ageConfirmation),
     }),
   };
 
@@ -126,6 +171,7 @@ export const getHandleSubmitConfirm = ({
     firstName: newFirstName,
     lastName: newLastName,
     displayName,
+    [AGE_CONFIRMATION_FIELD]: ageConfirmation,
     ...rest
   } = values;
 
@@ -146,6 +192,7 @@ export const getHandleSubmitConfirm = ({
   // Pass other values as extended data according to user field configuration
   const extendedDataMaybe = getExtendedDataMaybe(rest, userType, userFields, {
     privateData: extraPrivateData,
+    protectedData: getAgeConfirmationData(ageConfirmation),
   });
 
   submitSingupWithIdp({

@@ -1,49 +1,51 @@
 @import '../../../styles/customMediaQueries.css';
 
+/* SSO confirm step, inside the split AuthShell (same rhythm as SignupForm). */
 .root {
-  composes: marketplaceModalFormRootStyles from global;
-
-  justify-content: flex-start;
-
-  @media (--viewportMedium) {
-    justify-content: space-between;
-  }
+  display: flex;
+  flex-direction: column;
+  width: 100%;
 }
 
 .defaultUserFields {
+  width: 100%;
 }
 
 .name {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 24px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-5);
+  margin-top: var(--space-5);
 
-  @media (--viewportMedium) {
-    margin-top: 32px;
+  @media (min-width: 481px) {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-3);
   }
 }
 
-.firstNameRoot {
-  width: calc(34% - 9px);
-}
-
+.firstNameRoot,
 .lastNameRoot {
-  width: calc(66% - 9px);
-}
-
-.password {
-  composes: marketplaceModalPasswordMargins from global;
+  min-width: 0;
 }
 
 .bottomWrapper {
-  composes: marketplaceModalBottomWrapper from global;
+  display: flex;
+  flex-direction: column;
+  margin-top: var(--space-4);
+}
+
+.submitButton {
+  min-height: 48px;
+  margin-top: var(--space-4);
+  padding: 12px 0;
+  font-size: var(--text-base);
+
+  @media (--viewportMedium) {
+    padding: 12px 0;
+  }
 }
 
 .row,
 .customFields {
-  margin-top: 24px;
-
-  @media (--viewportMedium) {
-    margin-top: 32px;
-  }
+  margin-top: var(--space-5);
 }

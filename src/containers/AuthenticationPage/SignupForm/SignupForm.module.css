@@ -1,84 +1,92 @@
 @import '../../../styles/customMediaQueries.css';
 
+/* Sign-up form (screens 02 + 03). Vertical rhythm is tightened so the model form fits a ~800px-tall
+   laptop viewport. Row spacing stays at --space-5 because field validation messages drop into
+   the gap below each input. */
+
 .root {
-  composes: marketplaceModalFormRootStyles from global;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
 
-  justify-content: flex-start;
-
-  @media (--viewportMedium) {
-    justify-content: space-between;
-  }
+.customFields {
+  margin-bottom: var(--space-5);
 }
 
 .defaultUserFields {
+  width: 100%;
 }
 
 .name {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 24px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-5);
 
-  @media (--viewportMedium) {
-    margin-top: 32px;
+  @media (min-width: 481px) {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-3);
   }
 }
 
-.row,
-.customFields {
-  margin-top: 24px;
-
-  @media (--viewportMedium) {
-    margin-top: 32px;
-  }
+.nameField {
+  min-width: 0;
 }
 
-.firstNameRoot {
-  width: calc(34% - 9px);
-}
-
-.lastNameRoot {
-  width: calc(66% - 9px);
-}
-
-.password {
-  composes: marketplaceModalPasswordMargins from global;
+.row {
+  margin-top: var(--space-5);
 }
 
 .passwordHint {
-  composes: textXSmall from global;
-  color: var(--text-muted);
-  /* Sit below the design-system input (taller than the stock field); matches .dateOfBirthHint. */
-  margin-top: 6px;
-  margin-bottom: 24px;
-}
-
-.dateOfBirth {
-  margin-top: 24px;
-
-  @media (--viewportMedium) {
-    margin-top: 32px;
-  }
-}
-
-.dateOfBirthHint {
-  composes: textXSmall from global;
-  color: var(--text-muted);
-  margin-top: 6px;
-  margin-bottom: 0;
+  composes: rtFieldHint from global;
 }
 
 .bottomWrapper {
-  composes: marketplaceModalBottomWrapper from global;
+  display: flex;
+  flex-direction: column;
+  margin-top: var(--space-4);
+}
+
+.consent {
+  display: flex;
+  flex-direction: column;
+}
+
+.submitButton {
+  min-height: 48px;
+  margin-top: var(--space-4);
+  padding: 12px 0;
+  font-size: var(--text-base);
+
+  @media (--viewportMedium) {
+    padding: 12px 0;
+  }
 }
 
 .error {
-  composes: textXSmall from global;
-  color: var(--colorFail);
-  font-weight: var(--fontWeightBold);
+  margin: var(--space-2) 0 0 0;
+  font-family: var(--font-sans);
+  font-weight: var(--weight-semibold);
+  font-size: var(--text-xs);
+  line-height: var(--leading-snug);
+  color: var(--status-error);
   text-align: left;
-  padding: 6px 0;
+}
 
-  @media (--viewportMedium) {
-    padding: 8px 0;
-  }
+/* Design-system cobalt required indicator (asterisk) after a required field's label. */
+.req {
+  color: var(--accent-500);
+}
+
+/* Visually-hidden text alternative for the required asterisk (screen readers). */
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }

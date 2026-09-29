@@ -154,11 +154,14 @@ describe('ConfirmSignupForm', () => {
     );
 
     // Type a value in the required text field
-    await user.type(screen.getByLabelText('Text Field'), 'Text value');
+    await user.type(screen.getByLabelText(/Text Field/), 'Text value');
 
     // Test that sign up button is still disabled before clicking the checkbox
     expect(screen.getByRole('button', { name: 'ConfirmSignupForm.signUp' })).toBeDisabled();
     fireEvent.click(screen.getByLabelText(/AuthenticationPage.termsAndConditionsAcceptText/i));
+    // The 18+ tick box is required as well (RT-FB-03)
+    expect(screen.getByRole('button', { name: 'ConfirmSignupForm.signUp' })).toBeDisabled();
+    fireEvent.click(screen.getByLabelText('AuthenticationPage.ageConfirmationLabel'));
 
     // Test that sign up button is enabled after typing the final value and selecting the checkbox
     expect(screen.getByRole('button', { name: 'ConfirmSignupForm.signUp' })).toBeEnabled();
@@ -185,14 +188,14 @@ describe('ConfirmSignupForm', () => {
     );
 
     // Show user fields that have not been limited to type and have displayInSignUp: true
-    expect(screen.getByText('Enum Field 1')).toBeInTheDocument();
-    expect(screen.getByText('Text Field')).toBeInTheDocument();
+    expect(screen.getByText(/Enum Field 1/)).toBeInTheDocument();
+    expect(screen.getByText(/Text Field/)).toBeInTheDocument();
 
     // Don't show user fields that have displayInSignUp: false
-    expect(screen.queryByText('Boolean Field')).toBeNull();
+    expect(screen.queryByText(/Boolean Field/)).toBeNull();
 
     // Don't show user fields that are limited to user types –
     // ConfirmSignupForm does not support user types yet!
-    expect(screen.queryByText('Enum Field 2')).toBeNull();
+    expect(screen.queryByText(/Enum Field 2/)).toBeNull();
   });
 });

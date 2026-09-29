@@ -1,28 +1,48 @@
-@import '../../../styles/customMediaQueries.css';
-
 .root {
-  composes: marketplaceModalBottomWrapperText from global;
-  padding-bottom: 6px;
-
-  @media (--viewportMedium) {
-    padding-bottom: 8px;
-  }
+  margin: 0;
+  padding: 0;
 }
 
+/* Own root class (instead of FieldCheckboxGroup's) so the validation message sits in the flow
+   under the tick box rather than absolutely positioned over the content below it. */
+.checkboxGroup {
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+/* The label text and its two links sit in ONE inline span (FieldCheckbox's text span), so the
+   sentence flows as normal text with no flex gaps between "the" and the links. */
 .finePrint {
-  composes: marketplaceModalHelperLink from global;
-  padding: 3px 0 5px 0;
+  display: block;
+  /* 44px tap target for the whole label row on mobile */
+  padding: 10px 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  line-height: var(--leading-snug);
   text-align: left;
+  color: var(--text-primary);
+  cursor: pointer;
+
+  @media (min-width: 900px) {
+    padding: 2px 0;
+  }
 }
 
 .privacyLink,
 .termsLink {
-  composes: marketplaceModalHelperLink from global;
-  color: var(--marketplaceColor);
+  color: var(--text-accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
 
   &:hover {
-    color: var(--marketplaceColorDark);
-    text-decoration: underline;
-    cursor: pointer;
+    color: var(--accent-700);
+  }
+
+  &:focus-visible {
+    outline: none;
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-focus);
   }
 }
