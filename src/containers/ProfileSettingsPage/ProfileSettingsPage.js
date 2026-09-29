@@ -24,7 +24,7 @@ import {
   LayoutSingleColumn,
 } from '../../components';
 
-import { getAccountStatus } from '../../util/accountStatus';
+import { getAccountStatus, isAccountStatusFlowEnabled } from '../../util/accountStatus';
 
 import TopbarContainer from '../../containers/TopbarContainer/TopbarContainer';
 import FooterContainer from '../../containers/FooterContainer/FooterContainer';
@@ -222,7 +222,14 @@ export const ProfileSettingsPageComponent = props => {
         <div className={css.content}>
           {accountStatus ? (
             <div className={css.statusRow}>
-              <AccountStatusBadge status={accountStatus} large />
+              {/* With the account-status lifecycle on, the badge links to the status page. */}
+              {isAccountStatusFlowEnabled() ? (
+                <NamedLink name="AccountStatusPage" className={css.statusLink}>
+                  <AccountStatusBadge status={accountStatus} large />
+                </NamedLink>
+              ) : (
+                <AccountStatusBadge status={accountStatus} large />
+              )}
             </div>
           ) : null}
           <div className={css.headingContainer}>

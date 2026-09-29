@@ -23,6 +23,7 @@ import { LISTING_STATE_DRAFT, LISTING_STATE_PENDING_APPROVAL, propTypes } from '
 import { isErrorNoPermissionToPostListings } from '../../util/errors';
 import { ensureOwnListing } from '../../util/data';
 import { hasPermissionToPostListings, isUserAuthorized } from '../../util/userHelpers';
+import { isAccountStatusFlowEnabled } from '../../util/accountStatus';
 import { getMarketplaceEntities } from '../../ducks/marketplaceData.duck';
 import { manageDisableScrolling, isScrollingDisabled } from '../../ducks/ui.duck';
 import { sendVerificationEmail } from '../../ducks/user.duck';
@@ -209,6 +210,10 @@ export const EditListingPageComponent = props => {
         params={{ missingAccessRight: NO_ACCESS_PAGE_POST_LISTINGS }}
       />
     );
+  } else if (shouldRedirectAfterPosting && isAccountStatusFlowEnabled()) {
+    // Account-status lifecycle (sign-up stage 3): after "Submit for approval" the model lands on
+    // their account-status page (screen 14, Pending approval). Flag off: unchanged below.
+    return <NamedRedirect name="AccountStatusPage" />;
   } else if (shouldRedirectAfterPosting) {
     const isPendingApproval =
       currentListing && currentListingState === LISTING_STATE_PENDING_APPROVAL;

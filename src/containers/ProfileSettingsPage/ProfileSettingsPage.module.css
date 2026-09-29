@@ -19,6 +19,18 @@
   margin-bottom: 12px;
 }
 
+/* The badge as a link to the account-status page (account-status flag on). */
+.statusLink {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: none;
+  }
+}
+
 .headingContainer {
   display: flex;
   flex-direction: row;
