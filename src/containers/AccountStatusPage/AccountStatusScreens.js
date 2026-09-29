@@ -129,11 +129,17 @@ const ApprovedScreen = props => {
       icon: <IconIdCard />,
       text: <FormattedMessage id="AccountStatusPage.needPhotoId" />,
     },
-    {
-      key: 'selfie',
-      icon: <IconSelfie />,
-      text: <FormattedMessage id="AccountStatusPage.needSelfie" />,
-    },
+    // Selfie is a Stripe Identity step (clients). Stripe Connect onboarding for models isn't
+    // confirmed to ask for one, so the line is client-only (PM, 30/09/2026).
+    ...(isModel
+      ? []
+      : [
+          {
+            key: 'selfie',
+            icon: <IconSelfie />,
+            text: <FormattedMessage id="AccountStatusPage.needSelfie" />,
+          },
+        ]),
     ...(isModel
       ? [
           {
