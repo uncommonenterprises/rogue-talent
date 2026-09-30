@@ -17,6 +17,8 @@ only, never chat.
 > business details + account-owner verification all ticked). Stage A resumes at: Synthetic Identity
 > Protection -> TEST-mode secret key + restricted key + Identity webhook -> Railway vars -> PM verifies.
 >
+> **UPDATE 30/09:** sign-up redesign stages 1-3 + the Gate A review-decision build are merged (dormant until the flag). support@roguetalent.co now exists (alias of hi@, set up by Neil 30/09). **Stage B deferred by Neil to a later session** - resume at Stage B below.
+>
 > **UPDATE 29/09 later:** Stage A PROVISIONED on test. Synthetic Identity Protection already on; branding
 > already applied; STRIPE_SECRET_KEY, STRIPE_IDENTITY_RESTRICTED_KEY, STRIPE_IDENTITY_WEBHOOK_SECRET,
 > REACT_APP_IDENTITY_VERIFICATION_ENABLED on the Rogue Talent Railway service (first added to the
