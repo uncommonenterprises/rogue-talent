@@ -416,7 +416,8 @@ const resolveUserForConnectAccount = (integrationSdk, event, accountId) => {
 
 /**
  * Reconcile from a Connect `account.updated` event: map the account to a Sharetribe
- * user, confirm Gate A (user active) via the Integration API, combine with the event's
+ * user, confirm Gate A (user active, plus metadata reviewDecision 'approved' when the
+ * account-status flag is on) via the Integration API, combine with the event's
  * Stripe flags (Gate B), and reconcile. Fail-safe; never throws.
  *
  * @param {Object} event - the parsed, signature-verified Stripe event

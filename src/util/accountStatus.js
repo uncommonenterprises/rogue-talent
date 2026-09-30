@@ -78,6 +78,12 @@ export const ACCOUNT_STATUSES = [
  * never do that. The flag exists so the code can merge/deploy safely and be cut over
  * deliberately once all three are true.
  *
+ * Amendment 30/09/2026: the server reads the same variable, and with it ON the server gates
+ * (reconcile, provider booking gate, client booking gate, verify nudge) also require the
+ * operator-set metadata reviewDecision === 'approved' (server/api-util/reviewDecision.js).
+ * Sharetribe's "approve users who want to join" stays OFF; the operator approves or declines
+ * by setting that metadata in Console.
+ *
  * @returns {boolean}
  */
 export const isAccountStatusFlowEnabled = () =>
