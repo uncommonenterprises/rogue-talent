@@ -145,22 +145,24 @@ export const getPendingTrackerSteps = ({ role, verified }) => {
 // ---- Screen 17: the reviewer note ------------------------------------------------------------
 
 /**
- * The operator-set note shown on the "Not approved" screen: the user's profile metadata key
- * `rejectionReason` (a plain string), set in Sharetribe Console on the user's extended data
- * (Metadata) or via the Integration API. Only the operator can write metadata, so the user can't
- * change it. Note: metadata is readable by anyone who can see the user, not just the user.
+ * The operator-set note shown on the "Not approved" screen: the user's profile PRIVATE data key
+ * `rejectionReason` (a plain string), set by the operator in Sharetribe Console on the user's
+ * extended data (Private data). Private data is visible only to the user and the operator, never
+ * to other users (spec amendment 30/09/2026). It deliberately does NOT read metadata, which is
+ * readable by anyone who can see the user.
  */
-export const REJECTION_REASON_METADATA_KEY = 'rejectionReason';
+export const REJECTION_REASON_PRIVATE_DATA_KEY = 'rejectionReason';
 
 /**
  * The reviewer note, or null when the operator didn't leave one (the screen then shows the
  * fallback line).
  *
- * @param {Object} currentUser - currentUser API entity
+ * @param {Object} currentUser - currentUser API entity (privateData is only present on the
+ *   current user's own entity)
  * @returns {string|null}
  */
 export const getRejectionReason = currentUser => {
-  const reason = currentUser?.attributes?.profile?.metadata?.[REJECTION_REASON_METADATA_KEY];
+  const reason = currentUser?.attributes?.profile?.privateData?.[REJECTION_REASON_PRIVATE_DATA_KEY];
   return typeof reason === 'string' && reason.trim().length > 0 ? reason.trim() : null;
 };
 

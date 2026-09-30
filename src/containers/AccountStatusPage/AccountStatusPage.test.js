@@ -17,7 +17,7 @@ import {
   TRACKER_DONE,
   TRACKER_CURRENT,
   TRACKER_TODO,
-  REJECTION_REASON_METADATA_KEY,
+  REJECTION_REASON_PRIVATE_DATA_KEY,
   getStatusView,
   getPendingTrackerSteps,
   getRejectionReason,
@@ -353,17 +353,23 @@ describe('AccountStatusPage: progress tracker (14 / 19)', () => {
 });
 
 describe('AccountStatusPage: 17 reviewer note', () => {
-  it('reads the operator-set metadata key', () => {
-    expect(REJECTION_REASON_METADATA_KEY).toEqual('rejectionReason');
+  it('reads the operator-set private data key (visible to the user and operator only)', () => {
+    expect(REJECTION_REASON_PRIVATE_DATA_KEY).toEqual('rejectionReason');
     expect(
-      getRejectionReason(makeUser({ metadata: { rejectionReason: '  Blurry photos.  ' } }))
+      getRejectionReason(makeUser({ privateData: { rejectionReason: '  Blurry photos.  ' } }))
     ).toEqual('Blurry photos.');
+  });
+
+  it('never reads the note from metadata (publicly readable)', () => {
+    expect(getRejectionReason(makeUser({ metadata: { rejectionReason: 'Blurry photos.' } }))).toBe(
+      null
+    );
   });
 
   it('falls back when no note was left (missing, empty, whitespace or not text)', () => {
     [{}, { rejectionReason: '' }, { rejectionReason: '   ' }, { rejectionReason: 42 }].forEach(
-      metadata => {
-        expect(getRejectionReason(makeUser({ metadata }))).toBeNull();
+      privateData => {
+        expect(getRejectionReason(makeUser({ privateData }))).toBeNull();
       }
     );
   });
