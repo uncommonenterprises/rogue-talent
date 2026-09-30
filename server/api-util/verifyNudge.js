@@ -19,12 +19,16 @@
  * IDENTIFYING "Approved-but-unverified" SERVER-SIDE (the Integration API has NO Stripe
  * endpoint — we cannot read a model's Stripe status directly, so we use proxies):
  *
- *   MODEL  Approved-unverified ⟺ user.state === 'active' (Gate A done) AND their
+ *   "Gate A done" = reviewDecision.isUserGateAPassed(user): with the account-status flag ON,
+ *          user.state === 'active' AND the operator-set metadata reviewDecision ===
+ *          'approved' (amendment 30/09/2026: every user is 'active' from sign-up, so the
+ *          state alone would nudge Pending and declined accounts); flag OFF = 'active' only.
+ *   MODEL  Approved-unverified ⟺ Gate A done AND their
  *          model-profile listing is NOT 'published'. The Step-2 reconcile keeps
- *          published ⟺ Verified, so a not-published listing for an active model means
- *          Gate B is incomplete. (A model with no listing at all is skipped — there is
+ *          published ⟺ Verified, so a not-published listing for an approved model means
+ *          Gate B is incomplete. (A model with no listing at all is skipped: there is
  *          nothing to nudge them to verify for yet.) Readable via Integration API.
- *   CLIENT Approved-unverified ⟺ user.state === 'active' AND
+ *   CLIENT Approved-unverified ⟺ Gate A done AND
  *          profile.metadata.identity_verified !== true. Readable via Integration API.
  *
  * ─────────────────────────────────────────────────────────────────────────────
@@ -61,6 +65,7 @@
 
 const flexIntegrationSdk = require('sharetribe-flex-integration-sdk');
 const { sendMail, isConfigured: isMailerConfigured } = require('./mailer');
+const { isUserGateAPassed } = require('./reviewDecision');
 const log = require('../log');
 
 const MODEL_LISTING_TYPE = 'model-profile';
@@ -68,7 +73,6 @@ const MODEL_USER_TYPE = 'model';
 const CLIENT_USER_TYPE = 'client';
 
 const LISTING_STATE_PUBLISHED = 'published';
-const USER_STATE_ACTIVE = 'active';
 
 // Dedup / cap defaults (overridable via the sweep options for tests).
 const DEFAULT_COOLDOWN_MS = 48 * 60 * 60 * 1000; // 48h between nudges
@@ -115,26 +119,24 @@ const getIntegrationSdk = () => {
 // ---- Pure predicates ---------------------------------------------------------
 
 /**
- * Is this CLIENT user Approved-but-unverified? active AND identity_verified !== true.
+ * Is this CLIENT user Approved-but-unverified? Gate A done AND identity_verified !== true.
  * @param {Object} user - an Integration API user resource
  * @returns {boolean}
  */
 const isClientApprovedUnverified = user => {
-  const state = user?.attributes?.state;
   const identityVerified = user?.attributes?.profile?.metadata?.identity_verified;
-  return state === USER_STATE_ACTIVE && identityVerified !== true;
+  return isUserGateAPassed(user) && identityVerified !== true;
 };
 
 /**
- * Is this MODEL user Approved-but-unverified? active AND has a model-profile listing whose
- * state is NOT 'published'. A model with no listing is NOT nudged (nothing to verify for).
+ * Is this MODEL user Approved-but-unverified? Gate A done AND has a model-profile listing
+ * whose state is NOT 'published'. A model with no listing is NOT nudged (nothing to verify for).
  * @param {Object} user - an Integration API user resource
  * @param {string|null} listingState - the model's model-profile listing state, or null
  * @returns {boolean}
  */
 const isModelApprovedUnverified = (user, listingState) => {
-  const state = user?.attributes?.state;
-  if (state !== USER_STATE_ACTIVE) {
+  if (!isUserGateAPassed(user)) {
     return false;
   }
   // No listing → not submitted / nothing to publish → don't nudge to verify yet.

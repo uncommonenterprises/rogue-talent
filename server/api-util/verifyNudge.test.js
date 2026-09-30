@@ -103,6 +103,53 @@ describe('isModelApprovedUnverified', () => {
 
 // ---- decideNudge (dedup / cap) -----------------------------------------------
 
+describe('Approved-unverified predicates: Gate A review decision (flag ON)', () => {
+  const FLAG = 'REACT_APP_ACCOUNT_STATUS_FLOW_ENABLED';
+  const original = process.env[FLAG];
+  beforeEach(() => {
+    process.env[FLAG] = 'true';
+  });
+  afterEach(() => {
+    if (original === undefined) {
+      delete process.env[FLAG];
+    } else {
+      process.env[FLAG] = original;
+    }
+  });
+
+  const withDecision = (u, reviewDecision) => {
+    u.attributes.profile.metadata = { ...u.attributes.profile.metadata, reviewDecision };
+    return u;
+  };
+
+  it('an active client with no decision (Pending) is NOT nudged as Approved', () => {
+    expect(isClientApprovedUnverified(user({ id: 'c1', userType: 'client' }))).toBe(false);
+  });
+  it('a declined client is NOT nudged', () => {
+    expect(
+      isClientApprovedUnverified(withDecision(user({ id: 'c1', userType: 'client' }), 'declined'))
+    ).toBe(false);
+  });
+  it('an approved, unverified client IS nudged', () => {
+    expect(
+      isClientApprovedUnverified(withDecision(user({ id: 'c1', userType: 'client' }), 'approved'))
+    ).toBe(true);
+  });
+  it('an active model with a pending listing but no decision is NOT nudged', () => {
+    expect(
+      isModelApprovedUnverified(user({ id: 'm1', userType: 'model' }), 'pendingApproval')
+    ).toBe(false);
+  });
+  it('an approved model with an unpublished listing IS nudged', () => {
+    expect(
+      isModelApprovedUnverified(
+        withDecision(user({ id: 'm1', userType: 'model' }), 'approved'),
+        'pendingApproval'
+      )
+    ).toBe(true);
+  });
+});
+
 describe('decideNudge', () => {
   const now = Date.parse('2026-09-22T12:00:00Z');
   const cooldownMs = 48 * 60 * 60 * 1000;
