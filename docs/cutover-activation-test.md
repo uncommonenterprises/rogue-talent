@@ -59,12 +59,44 @@ only, never chat.
   `X-Cron-Secret: <CRON_SECRET>` (Railway scheduled job or external). Test first with `?dryRun=true`.
 - **[N] Console → Access control: keep "approve users who want to join" OFF** (amendment 30/09: Gate A is the
   operator-set metadata `reviewDecision`, not the user state; turning user approval on would block models
-  from building profiles). Requires the review-decision build to be merged first.
+  from building profiles). Requires the review-decision build (branch `feature/gate-a-review-decision`)
+  to be merged first.
+- **[N] Before the flag: approve the existing test accounts you still want to use.** With the flag on,
+  every server gate requires `reviewDecision: "approved"`, so any account without it reads as Pending: it
+  can't book, can't be booked, and a published model profile is hidden on the next reconcile. Set
+  `{"reviewDecision": "approved"}` (see the operator steps below) on each test model and client that should
+  keep working. The first decision-email run will then email those accounts "approved" (fine on test; run
+  it with `?dryRun=true` first to see the count).
+- **[N] Schedule the decision-email cron** (same `CRON_SECRET`): **every 10 minutes**, a `POST` to
+  `https://rogue-talent-production.up.railway.app/api/cron/review-decision-emails` with header
+  `X-Cron-Secret: <CRON_SECRET>`. Test first with `?dryRun=true` (it reports how many approved / declined
+  emails are owed and sends nothing). It stays dormant (`configured: false`) until the flag, the Integration
+  creds, Postmark and `CRON_SECRET` are all set.
+
+### Operator steps: approving or declining an account (Console, after the flag is on)
+Console → Users → open the user → edit the user's **extended data**:
+- **Approve:** Metadata → `{"reviewDecision": "approved"}`.
+- **Decline:** first (optional) add the note the user will see, under **Private data** →
+  `{"rejectionReason": "Two portfolio photos are blurry. Please replace them."}`; then Metadata →
+  `{"reviewDecision": "declined"}`. Add the note BEFORE the decision: the email job runs every 10 minutes and
+  quotes whatever note is there when it sends.
+- Values are exact and lower case (`approved` / `declined`); anything else counts as no decision. Leave
+  `reviewDecisionEmailed` alone (the email job manages it). Keep other existing metadata keys as they are.
+- The user gets the matching email within about 10 minutes, once. Changing the decision sends the new email.
+- A declined user resubmits themselves (model: "Resubmit for approval" on their status page; client:
+  submitting their business details again). That clears the decision and the note, and they show as Pending.
+- To remove a bad actor, use **Ban** (Suspended) as before; that is separate from a review decline.
+
 - **[PM] Verify end-to-end:** model submits without Stripe → lands hidden (pendingApproval); operator
-  sets metadata `{"reviewDecision": "approved"}` on the user → shows **Approved** + approval email sent;
-  decline with `"declined"` + private note → "Not approved" screen, resubmit returns to Pending; model completes Stripe → reconcile **publishes** the listing →
+  sets metadata `{"reviewDecision": "approved"}` on the user → shows **Approved** + approval email sent
+  (once; a second cron run sends nothing);
+  decline with `"declined"` + private note → "Not approved" screen shows the note, the decline email quotes it;
+  resubmit returns to Pending; model completes Stripe → reconcile **publishes** the listing →
   **Verified** + discoverable/bookable; a non-Verified model is not in search + booking is refused;
-  verify-nudge dry-run classifies Approved-unverified accounts correctly.
+  **an active, Stripe-verified model with no decision stays hidden and can't be booked; an identity-verified
+  client with no decision can't book** (checkout says the account needs to be approved);
+  verify-nudge dry-run classifies Approved-unverified accounts correctly (only accounts with
+  `reviewDecision: "approved"`); decision-email dry-run counts match what was set.
 
 ## Stage C — Copy + gates that depend on the above
 - **[N] Console copy — Bucket B (verification wording):** now that client-ID is live, apply the held
@@ -86,4 +118,5 @@ only, never chat.
 - Residual-risk #1 (Connect webhook acct→model mapping) is already fixed (durable `publicData.stripeAccountId`
   stamp) — see the step-2 spec.
 - Order matters in Stage B: listing-approval ON + reconcile creds must both be in place before the flag,
-  or a submitted profile could sit hidden with nothing to publish it. Flag last.
+  or a submitted profile could sit hidden with nothing to publish it. Approve the test accounts you still
+  need (metadata `reviewDecision`) before the flag too. Flag last.
