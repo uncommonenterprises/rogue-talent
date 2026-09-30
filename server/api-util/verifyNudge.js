@@ -195,39 +195,39 @@ const buildNudgeEmail = ({ userType, firstName } = {}) => {
 
   if (userType === MODEL_USER_TYPE) {
     const verifyUrl = `${rootUrl}/account/payments`;
-    const subject = "You're approved — verify to get booked on Rogue Talent";
+    const subject = "You're approved. Verify to get booked on Rogue Talent";
     const textBody = [
       `Hi${greetingName},`,
       '',
-      'Great news — your Rogue Talent profile has passed review and been approved.',
+      'Great news: your Rogue Talent profile has passed review and been approved.',
       '',
       'One step is left before clients can find and book you: verify your identity and',
       'add your bank details. Until that is done, your profile stays hidden from search.',
       '',
       `Verify and add your bank: ${verifyUrl}`,
       '',
-      'Once you are verified you are visible in search, bookable, and paid directly —',
-      'you keep 100% of your rate.',
+      'Once you are verified you are visible in search, bookable, and paid directly.',
+      'You keep 100% of your rate.',
       '',
-      '— The Rogue Talent team',
+      'The Rogue Talent team',
     ].join('\n');
     return { subject, textBody, tag: 'verify-nudge-model' };
   }
 
   // Client (and any non-model fallback).
   const verifyUrl = `${rootUrl}/verify-identity`;
-  const subject = "You're approved — verify to make your first booking";
+  const subject = "You're approved. Verify to make your first booking";
   const textBody = [
     `Hi${greetingName},`,
     '',
-    'Good news — your Rogue Talent account has been approved.',
+    'Good news: your Rogue Talent account has been approved.',
     '',
-    'One step is left before you can book a model: verify your identity. It only takes',
-    'a minute, and it keeps every booking on Rogue Talent trusted on both sides.',
+    'One step is left before you can book a model: verify your identity. It takes a few',
+    'minutes, and it keeps every booking on Rogue Talent trusted on both sides.',
     '',
     `Verify your identity: ${verifyUrl}`,
     '',
-    '— The Rogue Talent team',
+    'The Rogue Talent team',
   ].join('\n');
   return { subject, textBody, tag: 'verify-nudge-client' };
 };
