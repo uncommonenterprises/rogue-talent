@@ -4,13 +4,44 @@ import { hasSubmittedBusinessDetails } from './clientBusinessDetails';
 
 /**
  * Account-status lifecycle — computed status for a single account.
- * See docs/specs/account-status-lifecycle.md (§4 status function, §6 per-side criteria).
+ * See docs/specs/account-status-lifecycle.md (§4 status function, §6 per-side criteria, and the
+ * "Amendment 30/09/2026" block: Gate A is an operator-set review decision).
  *
  * One lifecycle is shared by both user types (model / client). The status is a LIVE
- * computation from Sharetribe user-state + Gate B verification + a submission signal —
- * never a stored stamp (so e.g. a model whose Stripe payouts lapse drops out of Verified
- * automatically; see spec §4).
+ * computation from the operator's review decision + Gate B verification + a submission signal +
+ * the Sharetribe ban state, never a stored stamp (so e.g. a model whose Stripe payouts lapse
+ * drops out of Verified automatically; see spec §4).
  */
+
+// Gate A (manual review) since the 30/09/2026 amendment: an operator-only user metadata key.
+// Only the operator (Console) or our server (Integration API) can write metadata. The user's own
+// resubmit after a decline goes through a server endpoint that can only clear 'declined'.
+export const REVIEW_DECISION_METADATA_KEY = 'reviewDecision';
+export const REVIEW_DECISION_APPROVED = 'approved';
+export const REVIEW_DECISION_DECLINED = 'declined';
+
+/**
+ * The operator's review decision for an account: 'approved', 'declined', or null (no decision
+ * yet, or resubmitted since a decline). Any other stored value counts as no decision, so a typo
+ * in Console can never read as approved.
+ *
+ * @param {Object} currentUser - a user/currentUser API entity
+ * @returns {'approved'|'declined'|null}
+ */
+export const getReviewDecision = currentUser => {
+  const decision = currentUser?.attributes?.profile?.metadata?.[REVIEW_DECISION_METADATA_KEY];
+  return decision === REVIEW_DECISION_APPROVED || decision === REVIEW_DECISION_DECLINED
+    ? decision
+    : null;
+};
+
+/**
+ * Was the account declined at review (and not resubmitted since)?
+ * @param {Object} currentUser - a user/currentUser API entity
+ * @returns {boolean}
+ */
+export const isReviewDeclined = currentUser =>
+  getReviewDecision(currentUser) === REVIEW_DECISION_DECLINED;
 
 // The five lifecycle statuses (spec §3).
 export const ACCOUNT_STATUS_DRAFT = 'draft';
@@ -128,12 +159,16 @@ export const isAccountSubmitted = ({ currentUser, ownListing } = {}) => {
 };
 
 /**
- * Compute the account status (spec §4, review-first linear flow). Gate A (manual approval) is
- * sourced from the Sharetribe user state — the only home consistent across both user types since
- * clients have no listing (spec §10 leaning):
- *   - user.state === 'banned'  → Rejected/Suspended
- *   - user.state === 'active'  → Verified if Gate B done, else Approved
- *   - otherwise (pending-approval) → Pending approval if submitted, else Draft
+ * Compute the account status (spec §4, review-first linear flow). PURE: reads only its inputs.
+ *
+ * Gate A (manual review) is the operator-set user metadata `reviewDecision` (spec amendment
+ * 30/09/2026), NOT the Sharetribe user state: Sharetribe user approval stays off, so every user
+ * is 'active' from sign-up and 'active' on its own no longer means approved.
+ *   - user.state === 'banned'          → Rejected/Suspended (the operator removed the account)
+ *   - reviewDecision === 'declined'    → Rejected (not approved; resubmitting clears the decision)
+ *   - reviewDecision === 'approved'    → Verified if Gate B done, else Approved
+ *   - no decision                      → Pending approval if submitted, else Draft
+ *                                        (regardless of Gate B: verification is banked)
  *
  * @param {Object} params
  * @param {Object} params.currentUser - currentUser API entity
@@ -142,19 +177,23 @@ export const isAccountSubmitted = ({ currentUser, ownListing } = {}) => {
  * @returns {'draft'|'pending-approval'|'approved'|'verified'|'rejected'}
  */
 export const getAccountStatus = ({ currentUser, stripeAccount, ownListing } = {}) => {
-  const state = currentUser?.attributes?.state;
-
-  if (state === 'banned') {
+  if (currentUser?.attributes?.state === 'banned') {
     return ACCOUNT_STATUS_REJECTED;
   }
 
-  if (state === 'active') {
+  const decision = getReviewDecision(currentUser);
+
+  if (decision === REVIEW_DECISION_DECLINED) {
+    return ACCOUNT_STATUS_REJECTED;
+  }
+
+  if (decision === REVIEW_DECISION_APPROVED) {
     return isAccountVerified({ currentUser, stripeAccount })
       ? ACCOUNT_STATUS_VERIFIED
       : ACCOUNT_STATUS_APPROVED;
   }
 
-  // Pending approval (Gate A not yet complete) — or state undefined.
+  // No review decision yet (or resubmitted since a decline).
   return isAccountSubmitted({ currentUser, ownListing })
     ? ACCOUNT_STATUS_PENDING
     : ACCOUNT_STATUS_DRAFT;

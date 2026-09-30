@@ -73,6 +73,11 @@ const listing = state => ({
 
 const submittedClientData = { businessDetailsSubmittedAt: '2026-09-30T10:00:00.000Z' };
 
+// Gate A is the operator-set metadata reviewDecision (spec amendment 30/09/2026). Every user is
+// 'active' from sign-up, so 'active' alone must never select an Approved screen.
+const approved = { reviewDecision: 'approved' };
+const declined = { reviewDecision: 'declined' };
+
 const view = params =>
   getStatusView({ flagEnabled: true, ownListingFetched: true, ownListing: null, ...params });
 
@@ -163,28 +168,64 @@ describe('AccountStatusPage: flag ON, screen per derived state (models)', () => 
     expect(banked).toMatchObject({ screen: SCREEN_MODEL_PENDING, verified: true });
   });
 
-  it('15 Approved (Gate A done, Stripe incomplete)', () => {
+  it('14 Pending approval for an active model with no review decision (not Approved)', () => {
     expect(
       view({
-        currentUser: makeUser({ state: 'active', stripeAccount: incompleteStripe }),
+        currentUser: makeUser({ state: 'active', stripeAccount: completeStripe }),
+        ownListing: listing('pendingApproval'),
+      })
+    ).toMatchObject({ screen: SCREEN_MODEL_PENDING, verified: true });
+  });
+
+  it('15 Approved (review decision approved, Stripe incomplete)', () => {
+    expect(
+      view({
+        currentUser: makeUser({
+          state: 'active',
+          metadata: approved,
+          stripeAccount: incompleteStripe,
+        }),
         ownListing: listing('pendingApproval'),
       })
     ).toMatchObject({ screen: SCREEN_MODEL_APPROVED });
   });
 
-  it('16 Verified (Gate A and Stripe complete)', () => {
+  it('16 Verified (review decision approved and Stripe complete)', () => {
     expect(
       view({
-        currentUser: makeUser({ state: 'active', stripeAccount: completeStripe }),
+        currentUser: makeUser({
+          state: 'active',
+          metadata: approved,
+          stripeAccount: completeStripe,
+        }),
         ownListing: listing('published'),
       })
     ).toMatchObject({ screen: SCREEN_MODEL_VERIFIED });
   });
 
-  it('17 Not approved (model)', () => {
+  it('17 Not approved (model): declined at review, or suspended', () => {
+    expect(
+      view({
+        currentUser: makeUser({
+          state: 'active',
+          metadata: declined,
+          stripeAccount: completeStripe,
+        }),
+        ownListing: listing('pendingApproval'),
+      })
+    ).toMatchObject({ screen: SCREEN_MODEL_REJECTED });
     expect(view({ currentUser: makeUser({ state: 'banned' }) })).toMatchObject({
       screen: SCREEN_MODEL_REJECTED,
     });
+  });
+
+  it('back to 14 Pending once a declined model resubmits (decision cleared)', () => {
+    expect(
+      view({
+        currentUser: makeUser({ state: 'active', metadata: { reviewDecision: null } }),
+        ownListing: listing('pendingApproval'),
+      })
+    ).toMatchObject({ screen: SCREEN_MODEL_PENDING });
   });
 });
 
@@ -211,22 +252,52 @@ describe('AccountStatusPage: flag ON, screen per derived state (clients)', () =>
     ).toMatchObject({ screen: SCREEN_CLIENT_PENDING, verified: true });
   });
 
-  it('20 Approved and 21 Verified', () => {
-    expect(view({ currentUser: makeUser({ userType: 'client', state: 'active' }) })).toMatchObject({
-      screen: SCREEN_CLIENT_APPROVED,
-    });
+  it('19 Pending for an active, submitted client with no review decision (not Approved)', () => {
     expect(
       view({
         currentUser: makeUser({
           userType: 'client',
           state: 'active',
-          metadata: { identity_verified: true },
+          privateData: submittedClientData,
+        }),
+      })
+    ).toMatchObject({ screen: SCREEN_CLIENT_PENDING });
+  });
+
+  it('20 Approved and 21 Verified', () => {
+    expect(
+      view({
+        currentUser: makeUser({
+          userType: 'client',
+          state: 'active',
+          metadata: approved,
+          privateData: submittedClientData,
+        }),
+      })
+    ).toMatchObject({ screen: SCREEN_CLIENT_APPROVED });
+    expect(
+      view({
+        currentUser: makeUser({
+          userType: 'client',
+          state: 'active',
+          metadata: { ...approved, identity_verified: true },
+          privateData: submittedClientData,
         }),
       })
     ).toMatchObject({ screen: SCREEN_CLIENT_VERIFIED });
   });
 
-  it('17 Not approved (client variant)', () => {
+  it('17 Not approved (client variant): declined at review, or suspended', () => {
+    expect(
+      view({
+        currentUser: makeUser({
+          userType: 'client',
+          state: 'active',
+          metadata: declined,
+          privateData: submittedClientData,
+        }),
+      })
+    ).toMatchObject({ screen: SCREEN_CLIENT_REJECTED });
     expect(view({ currentUser: makeUser({ userType: 'client', state: 'banned' }) })).toMatchObject({
       screen: SCREEN_CLIENT_REJECTED,
     });
@@ -345,6 +416,7 @@ describe('AccountStatusPage: flag ON renders the status home', () => {
           currentUser={makeUser({
             state: 'active',
             userType: 'client',
+            metadata: approved,
             publicData: { company_name: 'Northside Studio' },
           })}
           ownListing={null}

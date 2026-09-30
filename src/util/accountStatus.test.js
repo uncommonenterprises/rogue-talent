@@ -10,16 +10,24 @@ import {
   isAccountSubmitted,
   getAccountStatus,
   isAccountStatusFlowEnabled,
+  getReviewDecision,
+  isReviewDeclined,
+  REVIEW_DECISION_METADATA_KEY,
+  REVIEW_DECISION_APPROVED,
+  REVIEW_DECISION_DECLINED,
 } from './accountStatus';
 
 // ---- Fixtures ----------------------------------------------------------------
 
-const user = ({ state = 'pending-approval', userType = 'model', identityVerified } = {}) => ({
+const user = ({ state = 'active', userType = 'model', identityVerified, reviewDecision } = {}) => ({
   attributes: {
     state,
     profile: {
       publicData: { userType },
-      metadata: identityVerified === undefined ? {} : { identity_verified: identityVerified },
+      metadata: {
+        ...(identityVerified === undefined ? {} : { identity_verified: identityVerified }),
+        ...(reviewDecision === undefined ? {} : { reviewDecision }),
+      },
     },
   },
 });
@@ -113,80 +121,185 @@ describe('isAccountSubmitted', () => {
   });
 });
 
-// ---- getAccountStatus truth table (spec §4) ----------------------------------
+// ---- Review decision (Gate A, amendment 30/09/2026) ---------------------------
+
+describe('getReviewDecision / isReviewDeclined', () => {
+  it('reads the operator-set metadata key', () => {
+    expect(REVIEW_DECISION_METADATA_KEY).toBe('reviewDecision');
+    expect(getReviewDecision(user({ reviewDecision: 'approved' }))).toBe(REVIEW_DECISION_APPROVED);
+    expect(getReviewDecision(user({ reviewDecision: 'declined' }))).toBe(REVIEW_DECISION_DECLINED);
+    expect(isReviewDeclined(user({ reviewDecision: 'declined' }))).toBe(true);
+    expect(isReviewDeclined(user({ reviewDecision: 'approved' }))).toBe(false);
+  });
+  it('treats a missing, null or unrecognised value as no decision (never approved)', () => {
+    [undefined, null, '', 'Approved', 'approved ', 'yes', true, 1].forEach(value => {
+      expect(getReviewDecision(user({ reviewDecision: value }))).toBe(null);
+    });
+    expect(getReviewDecision(undefined)).toBe(null);
+  });
+  it('does not read the decision from anywhere but metadata', () => {
+    const u = user();
+    u.attributes.profile.publicData.reviewDecision = 'approved';
+    u.attributes.profile.privateData = { reviewDecision: 'approved' };
+    u.attributes.profile.protectedData = { reviewDecision: 'approved' };
+    expect(getReviewDecision(u)).toBe(null);
+  });
+});
+
+// ---- getAccountStatus truth table (spec §4 + amendment 30/09/2026) ------------
 
 describe('getAccountStatus', () => {
-  it('banned → rejected (regardless of everything else)', () => {
-    expect(getAccountStatus({ currentUser: user({ state: 'banned' }) })).toBe(
-      ACCOUNT_STATUS_REJECTED
+  // Build a user for one row of the table. `verified` and `submitted` are expressed per user
+  // type with the real signals (model: Stripe + listing state; client: metadata + privateData).
+  const row = ({ state, userType, decision, verified, submitted }) => {
+    const u = user({
+      state,
+      userType,
+      reviewDecision: decision,
+      identityVerified: userType === 'client' ? verified : undefined,
+    });
+    if (userType === 'client' && submitted) {
+      u.attributes.profile.privateData = { businessDetailsSubmittedAt: '2026-09-30T10:00:00.000Z' };
+    }
+    return {
+      currentUser: u,
+      stripeAccount:
+        userType === 'model' ? (verified ? completeStripe : incompleteStripe) : undefined,
+      ownListing:
+        userType === 'model' ? listing(submitted ? 'pendingApproval' : 'draft') : undefined,
+    };
+  };
+
+  // The spec rows, written independently of the implementation.
+  const expected = ({ state, decision, verified, submitted }) => {
+    if (state === 'banned') return ACCOUNT_STATUS_REJECTED;
+    if (decision === 'declined') return ACCOUNT_STATUS_REJECTED;
+    if (decision === 'approved')
+      return verified ? ACCOUNT_STATUS_VERIFIED : ACCOUNT_STATUS_APPROVED;
+    return submitted ? ACCOUNT_STATUS_PENDING : ACCOUNT_STATUS_DRAFT;
+  };
+
+  const states = ['active', 'pending-approval', 'banned', undefined];
+  const userTypes = ['model', 'client'];
+  const decisions = [undefined, null, 'approved', 'declined', 'Approved'];
+  const bools = [true, false];
+
+  it('matches the spec for every combination of state, type, decision, Gate B and submission', () => {
+    let rows = 0;
+    states.forEach(state =>
+      userTypes.forEach(userType =>
+        decisions.forEach(decision =>
+          bools.forEach(verified =>
+            bools.forEach(submitted => {
+              const params = { state, userType, decision, verified, submitted };
+              const normalisedDecision =
+                decision === 'approved' || decision === 'declined' ? decision : null;
+              expect([params, getAccountStatus(row(params))]).toEqual([
+                params,
+                expected({ ...params, decision: normalisedDecision }),
+              ]);
+              rows += 1;
+            })
+          )
+        )
+      )
     );
-    expect(
-      getAccountStatus({
-        currentUser: user({ state: 'banned' }),
-        stripeAccount: completeStripe,
-        ownListing: listing('published'),
-      })
-    ).toBe(ACCOUNT_STATUS_REJECTED);
+    expect(rows).toBe(4 * 2 * 5 * 2 * 2);
   });
 
-  it('active + verified → verified (model)', () => {
-    expect(
-      getAccountStatus({ currentUser: user({ state: 'active' }), stripeAccount: completeStripe })
-    ).toBe(ACCOUNT_STATUS_VERIFIED);
+  it('active + no decision → Pending approval once submitted, NOT Approved (the amendment)', () => {
+    const model = row({ state: 'active', userType: 'model', verified: false, submitted: true });
+    expect(getAccountStatus(model)).toBe(ACCOUNT_STATUS_PENDING);
+    const client = row({ state: 'active', userType: 'client', verified: false, submitted: true });
+    expect(getAccountStatus(client)).toBe(ACCOUNT_STATUS_PENDING);
   });
 
-  it('active + not verified → approved (model)', () => {
-    expect(
-      getAccountStatus({ currentUser: user({ state: 'active' }), stripeAccount: incompleteStripe })
-    ).toBe(ACCOUNT_STATUS_APPROVED);
-    expect(getAccountStatus({ currentUser: user({ state: 'active' }) })).toBe(
-      ACCOUNT_STATUS_APPROVED
-    );
+  it('active + no decision + Gate B done → still Pending (verification is banked)', () => {
+    const model = row({ state: 'active', userType: 'model', verified: true, submitted: true });
+    expect(getAccountStatus(model)).toBe(ACCOUNT_STATUS_PENDING);
+    const client = row({ state: 'active', userType: 'client', verified: true, submitted: true });
+    expect(getAccountStatus(client)).toBe(ACCOUNT_STATUS_PENDING);
   });
 
-  it('active + verified → verified (client via identity metadata)', () => {
-    expect(
-      getAccountStatus({
-        currentUser: user({ state: 'active', userType: 'client', identityVerified: true }),
-      })
-    ).toBe(ACCOUNT_STATUS_VERIFIED);
-  });
-
-  it('active + not verified → approved (client)', () => {
-    expect(
-      getAccountStatus({
-        currentUser: user({ state: 'active', userType: 'client', identityVerified: false }),
-      })
-    ).toBe(ACCOUNT_STATUS_APPROVED);
-  });
-
-  it('pending-approval + submitted → pending-approval (regardless of verified)', () => {
-    expect(
-      getAccountStatus({
-        currentUser: user({ state: 'pending-approval' }),
-        ownListing: listing('pendingApproval'),
-      })
-    ).toBe(ACCOUNT_STATUS_PENDING);
-    // Verified-while-waiting (Gate B banked) still reads Pending until Gate A completes.
-    expect(
-      getAccountStatus({
-        currentUser: user({ state: 'pending-approval' }),
-        stripeAccount: completeStripe,
-        ownListing: listing('published'),
-      })
-    ).toBe(ACCOUNT_STATUS_PENDING);
-  });
-
-  it('pending-approval + not submitted → draft', () => {
-    expect(
-      getAccountStatus({
-        currentUser: user({ state: 'pending-approval' }),
-        ownListing: listing('draft'),
-      })
-    ).toBe(ACCOUNT_STATUS_DRAFT);
-    expect(getAccountStatus({ currentUser: user({ state: 'pending-approval' }) })).toBe(
+  it('active + no decision + not submitted → Draft', () => {
+    expect(getAccountStatus(row({ state: 'active', userType: 'model', submitted: false }))).toBe(
       ACCOUNT_STATUS_DRAFT
     );
+    expect(getAccountStatus(row({ state: 'active', userType: 'client', submitted: false }))).toBe(
+      ACCOUNT_STATUS_DRAFT
+    );
+  });
+
+  it('approved → Approved until Gate B, then Verified (model: Stripe; client: identity)', () => {
+    const base = { state: 'active', decision: 'approved', submitted: true };
+    expect(getAccountStatus(row({ ...base, userType: 'model', verified: false }))).toBe(
+      ACCOUNT_STATUS_APPROVED
+    );
+    expect(getAccountStatus(row({ ...base, userType: 'model', verified: true }))).toBe(
+      ACCOUNT_STATUS_VERIFIED
+    );
+    expect(getAccountStatus(row({ ...base, userType: 'client', verified: false }))).toBe(
+      ACCOUNT_STATUS_APPROVED
+    );
+    expect(getAccountStatus(row({ ...base, userType: 'client', verified: true }))).toBe(
+      ACCOUNT_STATUS_VERIFIED
+    );
+  });
+
+  it('approved + Gate B lapses → drops back to Approved (live computation)', () => {
+    const lapsed = row({
+      state: 'active',
+      userType: 'model',
+      decision: 'approved',
+      verified: false,
+    });
+    lapsed.ownListing = listing('closed');
+    expect(getAccountStatus(lapsed)).toBe(ACCOUNT_STATUS_APPROVED);
+  });
+
+  it('declined → Rejected, even when verified and submitted', () => {
+    const declined = row({
+      state: 'active',
+      userType: 'model',
+      decision: 'declined',
+      verified: true,
+      submitted: true,
+    });
+    expect(getAccountStatus(declined)).toBe(ACCOUNT_STATUS_REJECTED);
+  });
+
+  it('declined then resubmitted (decision cleared) → Pending approval', () => {
+    const resubmitted = row({
+      state: 'active',
+      userType: 'client',
+      decision: null,
+      submitted: true,
+    });
+    expect(getAccountStatus(resubmitted)).toBe(ACCOUNT_STATUS_PENDING);
+  });
+
+  it('banned → Rejected/Suspended, even when approved and verified', () => {
+    const banned = row({
+      state: 'banned',
+      userType: 'model',
+      decision: 'approved',
+      verified: true,
+      submitted: true,
+    });
+    expect(getAccountStatus(banned)).toBe(ACCOUNT_STATUS_REJECTED);
+  });
+
+  it('keeps the existing client 18+ input: an under-18 flag without identity_verified is not Verified', () => {
+    const u = user({ state: 'active', userType: 'client', reviewDecision: 'approved' });
+    u.attributes.profile.metadata.age_check_failed = true;
+    expect(getAccountStatus({ currentUser: u })).toBe(ACCOUNT_STATUS_APPROVED);
+  });
+
+  it('is pure: the same input always gives the same output and is not mutated', () => {
+    const input = row({ state: 'active', userType: 'model', decision: 'approved', verified: true });
+    const snapshot = JSON.stringify(input);
+    expect(getAccountStatus(input)).toBe(getAccountStatus(input));
+    expect(JSON.stringify(input)).toBe(snapshot);
   });
 
   it('undefined / empty input → draft (safe default)', () => {
