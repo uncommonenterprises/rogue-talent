@@ -21,6 +21,7 @@ const createIdentitySession = require('./api/create-identity-session');
 const reconcileOwnListing = require('./api/reconcile-own-listing');
 const verifyNudge = require('./api/verify-nudge');
 const resubmitForReview = require('./api/resubmit-for-review');
+const reviewDecisionEmails = require('./api/review-decision-emails');
 
 const createUserWithIdp = require('./api/auth/createUserWithIdp');
 
@@ -85,6 +86,11 @@ router.post('/cron/verify-nudge', verifyNudge);
 // account only; can only clear a 'declined' metadata reviewDecision, never approve
 // (see server/api/resubmit-for-review.js).
 router.post('/resubmit-for-review', resubmitForReview);
+
+// Gate A amendment 30/09/2026: approved / not-approved emails, sent once per decision. A
+// scheduled cron (every 10 minutes) pings this with the CRON_SECRET. Dormant + fail-safe until
+// provisioned (see server/api/review-decision-emails.js).
+router.post('/cron/review-decision-emails', reviewDecisionEmails);
 
 // Create user with identity provider (e.g. Facebook or Google)
 // This endpoint is called to create a new user after user has confirmed
