@@ -8,6 +8,15 @@ Owner: PM. Design (colours/badge): ux-designer. Origin: Neil's 2026-09-21 propos
 
 > **Amendment 28/09/2026 (Neil's RT-FB-03 decision):** the sign-up date-of-birth field is replaced by an "I confirm I'm 18 or over" tick box, so **Verified now also requires an 18+ check against the date of birth on the Stripe-verified ID** (clients: Stripe Identity - merged, dormant until client-ID goes live; models: Stripe Connect KYC - built, held pending a data check at cutover). Fails closed; the DOB itself is never stored. An account flagged under-18 stays blocked for operator review.
 
+> **Amendment 30/09/2026 (Neil approved in chat: "Happy to proceed with your recommendation"): Gate A is an operator-set review decision, NOT the Sharetribe user state.** Found in the stage 3 build: Sharetribe's "approve users who want to join" can't be Gate A. ON: pending users can't create draft listings, so a model can't build the profile we're meant to review. OFF (current): every user is `active` at sign-up, so "approved" would be untrue. Declining via ban locks the user out, so they'd never see "Not approved" or resubmit. New mapping:
+> - Sharetribe user approval stays **OFF**; everyone is `active` and can build their profile / business details.
+> - `manuallyApproved` = operator-only user **metadata** `reviewDecision === 'approved'`; `declined` = `reviewDecision === 'declined'`. Only the operator (Console) or our server can write metadata. Optional decline note: `privateData.rejectionReason` (visible to the user + operator only).
+> - `rejected` (§4) = `reviewDecision === 'declined'` and not resubmitted since. Resubmitting (model: resubmit profile; client: resubmit business details) goes through a server endpoint that can ONLY move `declined` back to pending (clears the decision), never to approved.
+> - Ban (`state: banned`) remains for removing bad actors (Suspended), separate from a review decline.
+> - Server-side gates (model visibility/publish via the reconcile, the provider-Verified booking gate, the client booking gate) require `reviewDecision === 'approved'` + Gate B + the 18+ check. Changing these is safety-critical: human developer review before real users.
+> - Emails: approved / not approved emails are sent automatically when the decision changes (server job; idempotent, no manual emails). They replace Sharetribe's native user-approval email, which can't fire with user approval off.
+> - Operator workflow: Console > Users > user > Metadata: `{"reviewDecision": "approved"}` or `"declined"` (+ optional private note). A one-click admin tool can replace this if volume grows.
+
 ## 1. Purpose
 Make each account's onboarding stage explicit, consistent, and visible — one lifecycle shared by both
 user types, so "where am I / why can't I do X yet" is always answerable. Replaces today's implicit

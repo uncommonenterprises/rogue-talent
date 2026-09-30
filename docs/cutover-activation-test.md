@@ -57,8 +57,12 @@ only, never chat.
   (`openssl rand -hex 32`) for the verify-nudge endpoint. Redeploy.
 - **[N] Schedule the nudge cron:** a daily `POST` to `/api/cron/verify-nudge` with header
   `X-Cron-Secret: <CRON_SECRET>` (Railway scheduled job or external). Test first with `?dryRun=true`.
+- **[N] Console → Access control: keep "approve users who want to join" OFF** (amendment 30/09: Gate A is the
+  operator-set metadata `reviewDecision`, not the user state; turning user approval on would block models
+  from building profiles). Requires the review-decision build to be merged first.
 - **[PM] Verify end-to-end:** model submits without Stripe → lands hidden (pendingApproval); operator
-  approves the user → shows **Approved**; model completes Stripe → reconcile **publishes** the listing →
+  sets metadata `{"reviewDecision": "approved"}` on the user → shows **Approved** + approval email sent;
+  decline with `"declined"` + private note → "Not approved" screen, resubmit returns to Pending; model completes Stripe → reconcile **publishes** the listing →
   **Verified** + discoverable/bookable; a non-Verified model is not in search + booking is refused;
   verify-nudge dry-run classifies Approved-unverified accounts correctly.
 
