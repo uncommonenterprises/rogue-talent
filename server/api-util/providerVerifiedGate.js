@@ -11,7 +11,10 @@
  * opaque error. This gate blocks earlier with a clean, generic "not available" message.
  *
  * WHAT THIS GATE CAN ASSERT SERVER-SIDE (and what it layers with):
- *   - Provider user.state === 'active' (Gate A) — read via the Integration API.
+ *   - Gate A, read via the Integration API (api-util/reviewDecision.js isGateAPassed): with
+ *     the account-status flag ON, provider user.state === 'active' AND the operator-set
+ *     metadata reviewDecision === 'approved' (amendment 30/09/2026); with the flag OFF,
+ *     user.state === 'active' only (unchanged).
  *   - The listing is 'published' (visible) — the reconcile function maintains
  *     published ⟺ Verified, so a published listing is the reconcile's assertion that
  *     Gate B (Stripe) is complete too.
@@ -31,6 +34,7 @@
 
 const flexIntegrationSdk = require('sharetribe-flex-integration-sdk');
 const { BOOKING_UNAVAILABLE_CODE } = require('./residenceBoundary');
+const { isGateAPassed, getReviewDecision } = require('./reviewDecision');
 const log = require('../log');
 
 const MODEL_USER_TYPE = 'model';
@@ -124,16 +128,20 @@ const enforceProviderVerified = ({ listing, isSpeculative }) => {
         return undefined;
       }
 
-      // Gate A: provider must be active. (Gate B / Stripe is enforced by reconcile keeping
-      // the listing hidden unless Verified, and by Stripe at capture — see module header.)
-      if (userState === 'active') {
+      // Gate A: flag ON = provider active AND reviewDecision 'approved' (amendment
+      // 30/09/2026); flag OFF = active only. A Stripe-verified provider without an approved
+      // review decision is refused here even if their listing is somehow published. (Gate B /
+      // Stripe is enforced by reconcile keeping the listing hidden unless Verified, and by
+      // Stripe at capture; see module header.)
+      const reviewDecision = getReviewDecision(user);
+      if (isGateAPassed({ userState, reviewDecision })) {
         return undefined;
       }
 
       log.error(
-        new Error('Provider-Verified gate blocked: provider not active'),
+        new Error('Provider-Verified gate blocked: provider has not passed Gate A'),
         'provider-verified-blocked',
-        { providerId, userState }
+        { providerId, userState, reviewDecision }
       );
       return Promise.reject(providerUnavailableError());
     })
