@@ -20,6 +20,7 @@ const safetyReport = require('./api/safety-report');
 const createIdentitySession = require('./api/create-identity-session');
 const reconcileOwnListing = require('./api/reconcile-own-listing');
 const verifyNudge = require('./api/verify-nudge');
+const resubmitForReview = require('./api/resubmit-for-review');
 
 const createUserWithIdp = require('./api/auth/createUserWithIdp');
 
@@ -79,6 +80,11 @@ router.post('/reconcile-own-listing', reconcileOwnListing);
 // (models via listing-state, clients via metadata) and sends spaced/capped Postmark
 // nudges. Dormant + fail-safe until provisioned (see server/api/verify-nudge.js).
 router.post('/cron/verify-nudge', verifyNudge);
+
+// Gate A amendment 30/09/2026: a declined user resubmits for review. Logged-in user's own
+// account only; can only clear a 'declined' metadata reviewDecision, never approve
+// (see server/api/resubmit-for-review.js).
+router.post('/resubmit-for-review', resubmitForReview);
 
 // Create user with identity provider (e.g. Facebook or Google)
 // This endpoint is called to create a new user after user has confirmed
