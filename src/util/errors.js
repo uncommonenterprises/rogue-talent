@@ -155,6 +155,15 @@ export const isIdentityVerificationRequiredError = error =>
   hasErrorWithCode(error, 'identity-verification-required');
 
 /**
+ * Account-status Gate A (amendment 30/09/2026): check if a booking was blocked because the
+ * requesting client has not been approved at manual review (metadata reviewDecision). The server
+ * (server/api-util/clientIdentityGate.js, account-status flag on) returns the code
+ * `account-approval-required`; the checkout links to the account-status page.
+ */
+export const isAccountApprovalRequiredError = error =>
+  hasErrorWithCode(error, 'account-approval-required');
+
+/**
  * Check if the given API error (from `sdk.transaction.initiate()` or
  * `sdk.transaction.initiateSpeculative()`) is due to insufficient stock.
  */

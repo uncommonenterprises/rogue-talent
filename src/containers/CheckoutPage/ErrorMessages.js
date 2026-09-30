@@ -3,6 +3,7 @@ import React from 'react';
 import { FormattedMessage } from '../../util/reactIntl';
 import { NamedLink } from '../../components';
 import {
+  isAccountApprovalRequiredError,
   isBookingUnavailableError,
   isIdentityVerificationRequiredError,
   isTransactionInitiateAmountTooLowError,
@@ -42,6 +43,20 @@ export const getErrorMessages = (
   } else if (isBookingUnavailableError(initiateOrderError)) {
     // SAF-14: generic, reason-free "not available" message. Never reveals the boundary.
     initiateOrderErrorMessage = <FormattedMessage id="CheckoutPage.bookingUnavailableMessage" />;
+  } else if (isAccountApprovalRequiredError(initiateOrderError)) {
+    // Gate A: the client's account hasn't been approved at review yet. Link to their status.
+    initiateOrderErrorMessage = (
+      <FormattedMessage
+        id="CheckoutPage.accountApprovalRequired"
+        values={{
+          statusLink: (
+            <NamedLink name="AccountStatusPage">
+              <FormattedMessage id="CheckoutPage.accountApprovalLinkText" />
+            </NamedLink>
+          ),
+        }}
+      />
+    );
   } else if (isIdentityVerificationRequiredError(initiateOrderError)) {
     // SAF-03: the client must verify their identity before booking. Link to the flow.
     initiateOrderErrorMessage = (

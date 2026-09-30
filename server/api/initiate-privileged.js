@@ -84,9 +84,12 @@ module.exports = (req, res) => {
       //   2. SAF-03: block a real booking by a CLIENT who is not identity-verified
       //      (Stripe Identity). Speculative previews are allowed; the gate only engages
       //      when the feature is configured (fails OPEN otherwise — see clientIdentityGate).
+      //      With the account-status flag ON it also requires the client to be
+      //      review-approved (metadata reviewDecision 'approved', amendment 30/09/2026).
       //   3. Account-status: block a real booking whose PROVIDER (model) is not Verified,
       //      with a neutral message (don't rely only on the implicit Stripe-charge failure).
       //      Speculative allowed; engages only when configured (fails OPEN otherwise).
+      //      With the flag ON, Gate A includes reviewDecision 'approved' (providerVerifiedGate).
       return enforceResidenceBoundary({ listing, orderData, bodyParams })
         .then(() => enforceClientIdentityVerification({ sdk, isSpeculative }))
         .then(() => enforceProviderVerified({ listing, isSpeculative }))
