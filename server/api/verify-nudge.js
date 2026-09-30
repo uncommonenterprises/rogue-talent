@@ -28,39 +28,14 @@
  * daily cron at:  POST {ROOT_URL}/api/cron/verify-nudge  with header  X-Cron-Secret: <CRON_SECRET>.
  */
 
-const crypto = require('crypto');
 const { runVerifyNudgeSweep } = require('../api-util/verifyNudge');
+const {
+  getCronSecret,
+  extractProvidedSecret,
+  secretsMatch,
+  isDryRun,
+} = require('../api-util/cronAuth');
 const log = require('../log');
-
-const getCronSecret = () => process.env.CRON_SECRET;
-
-// Extract the caller-supplied secret from any of the accepted locations.
-const extractProvidedSecret = req => {
-  const header = req.get ? req.get('X-Cron-Secret') : req.headers?.['x-cron-secret'];
-  if (header) {
-    return header;
-  }
-  const auth = req.get ? req.get('Authorization') : req.headers?.authorization;
-  if (auth && /^Bearer\s+/i.test(auth)) {
-    return auth.replace(/^Bearer\s+/i, '').trim();
-  }
-  const q = req.query?.secret;
-  return typeof q === 'string' ? q : null;
-};
-
-// Constant-time comparison that is also safe when the two strings differ in length
-// (timingSafeEqual throws on unequal-length buffers). Returns false on any mismatch.
-const secretsMatch = (a, b) => {
-  if (typeof a !== 'string' || typeof b !== 'string') {
-    return false;
-  }
-  const bufA = Buffer.from(a);
-  const bufB = Buffer.from(b);
-  if (bufA.length !== bufB.length) {
-    return false;
-  }
-  return crypto.timingSafeEqual(bufA, bufB);
-};
 
 module.exports = (req, res) => {
   const respond = (status, payload) => {
@@ -87,7 +62,7 @@ module.exports = (req, res) => {
     return respond(401, { error: 'unauthorized' });
   }
 
-  const dryRun = req.query?.dryRun === 'true' || req.query?.dryRun === '1';
+  const dryRun = isDryRun(req);
 
   return runVerifyNudgeSweep({ dryRun })
     .then(summary => respond(200, { ok: true, ...summary }))
