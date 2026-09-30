@@ -379,6 +379,142 @@ describe('reconcileFromConnectEvent', () => {
   });
 });
 
+// ---- Gate A amendment 30/09/2026: review decision ----------------------------
+//
+// With REACT_APP_ACCOUNT_STATUS_FLOW_ENABLED on, Gate A is the operator-set metadata
+// reviewDecision === 'approved' (plus user state active). An unapproved but fully
+// Stripe-verified model must never be published.
+
+describe('Gate A review decision (flag ON)', () => {
+  const FLAG = 'REACT_APP_ACCOUNT_STATUS_FLOW_ENABLED';
+  const original = process.env[FLAG];
+  beforeEach(() => {
+    process.env[FLAG] = 'true';
+  });
+  afterEach(() => {
+    if (original === undefined) {
+      delete process.env[FLAG];
+    } else {
+      process.env[FLAG] = original;
+    }
+  });
+
+  const stripeComplete = { charges_enabled: true, payouts_enabled: true };
+  const modelUser = metadata => ({
+    data: {
+      data: {
+        attributes: { state: 'active', profile: { publicData: { userType: 'model' }, metadata } },
+      },
+    },
+  });
+
+  it('computeModelVerified: active + Stripe complete but NO decision is not Verified', () => {
+    expect(computeModelVerified({ userState: 'active', stripeAccountData: stripeComplete })).toBe(
+      false
+    );
+    expect(
+      computeModelVerified({
+        userState: 'active',
+        reviewDecision: null,
+        stripeAccountData: stripeComplete,
+      })
+    ).toBe(false);
+  });
+
+  it('computeModelVerified: declined is not Verified, even with Stripe complete', () => {
+    expect(
+      computeModelVerified({
+        userState: 'active',
+        reviewDecision: 'declined',
+        stripeAccountData: stripeComplete,
+      })
+    ).toBe(false);
+  });
+
+  it('computeModelVerified: approved + active + Stripe complete is Verified', () => {
+    expect(
+      computeModelVerified({
+        userState: 'active',
+        reviewDecision: 'approved',
+        stripeAccountData: stripeComplete,
+      })
+    ).toBe(true);
+  });
+
+  it('computeModelVerified: approved but Stripe incomplete, or banned, is not Verified', () => {
+    expect(
+      computeModelVerified({
+        userState: 'active',
+        reviewDecision: 'approved',
+        stripeAccountData: { charges_enabled: true, payouts_enabled: false },
+      })
+    ).toBe(false);
+    expect(
+      computeModelVerified({
+        userState: 'banned',
+        reviewDecision: 'approved',
+        stripeAccountData: stripeComplete,
+      })
+    ).toBe(false);
+  });
+
+  it('flag OFF keeps the pre-amendment rule (active + Stripe), decision ignored', () => {
+    expect(
+      computeModelVerified({
+        userState: 'active',
+        stripeAccountData: stripeComplete,
+        flowEnabled: false,
+      })
+    ).toBe(true);
+  });
+
+  it('Connect webhook: an unapproved, Stripe-verified model is NOT published', async () => {
+    mockSdk.listings.query.mockResolvedValue(
+      modelListing('pendingApproval', {
+        authorId: 'u1',
+        publicData: { stripeAccountId: 'acct_1' },
+      })
+    );
+    mockSdk.users.show.mockResolvedValue(modelUser({}));
+    const result = await reconcileFromConnectEvent({
+      account: 'acct_1',
+      data: { object: { metadata: {}, ...stripeComplete } },
+    });
+    expect(mockSdk.listings.approve).not.toHaveBeenCalled();
+    expect(mockSdk.listings.open).not.toHaveBeenCalled();
+    expect(result).toMatchObject({ reconciled: false, verified: false });
+  });
+
+  it('Connect webhook: a declined model that was published is hidden (closed)', async () => {
+    mockSdk.listings.query.mockResolvedValue(
+      modelListing('published', { authorId: 'u1', publicData: { stripeAccountId: 'acct_1' } })
+    );
+    mockSdk.users.show.mockResolvedValue(modelUser({ reviewDecision: 'declined' }));
+    const result = await reconcileFromConnectEvent({
+      account: 'acct_1',
+      data: { object: { metadata: {}, ...stripeComplete } },
+    });
+    expect(mockSdk.listings.close).toHaveBeenCalledWith({ id: 'listing-1' });
+    expect(result).toMatchObject({ reconciled: true, action: 'close' });
+  });
+
+  it('Connect webhook: an approved, Stripe-verified model is published', async () => {
+    mockSdk.listings.query.mockResolvedValue(
+      modelListing('pendingApproval', {
+        authorId: 'u1',
+        publicData: { stripeAccountId: 'acct_1' },
+      })
+    );
+    mockSdk.users.show.mockResolvedValue(modelUser({ reviewDecision: 'approved' }));
+    const result = await reconcileFromConnectEvent({
+      account: 'acct_1',
+      data: { object: { metadata: {}, ...stripeComplete } },
+    });
+    expect(mockSdk.listings.approve).toHaveBeenCalledWith({ id: 'listing-1' });
+    expect(result).toMatchObject({ reconciled: true, action: 'approve' });
+  });
+});
+
 // ---- fail-safe: reconcile inactive without Integration creds ------------------
 
 describe('reconcile when Integration creds are absent', () => {

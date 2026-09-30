@@ -4,10 +4,14 @@
  * Account-status Step 2 — model listing visibility reconcile (SAFETY CORE).
  *
  * A model profile is DISCOVERABLE (in search) and BOOKABLE only when the account is
- * **Verified** — i.e. the user is `active` (Gate A / manual review passed) AND their
- * Stripe Connect account can both take charges and pay out (`charges_enabled` &&
- * `payouts_enabled`, Gate B). See docs/specs/account-status-lifecycle.md §4/§6 and
+ * **Verified**, i.e. Gate A (manual review) is passed AND their Stripe Connect account can
+ * both take charges and pay out (`charges_enabled` && `payouts_enabled`, Gate B). See
+ * docs/specs/account-status-lifecycle.md §4/§6 and
  * account-status-step2-onboarding-and-visibility.md §3.
+ *
+ * GATE A (amendment 30/09/2026, see api-util/reviewDecision.js): with the account-status flag
+ * ON, Gate A = user `active` AND the operator-set metadata `reviewDecision === 'approved'`.
+ * With the flag OFF it stays the pre-amendment `active` check, unchanged.
  *
  * This module owns the mapping "Verified ⟺ listing published (visible)":
  *   - Verified   → publish the profile (pendingApproval → published, or reopen closed).
@@ -18,8 +22,8 @@
  *
  * WHY A SERVER RECONCILE (not manual Console publish): Sharetribe has no native
  * "quality-approved but hidden pending verification" listing state. So the operator
- * approves the USER (Gate A) and this function — not a human — owns listing publish
- * state, driven by the live Verified computation.
+ * approves the USER (Gate A: metadata reviewDecision) and this function, not a human, owns
+ * listing publish state, driven by the live Verified computation.
  *
  * ACCT → MODEL MAPPING (Connect webhook): the connected Stripe account id is stamped onto
  * the model's listing publicData (`pub_stripeAccountId`) during the own-session reconcile,
@@ -46,10 +50,10 @@
  *       authenticity); the authenticated own-session reconcile still works.
  *
  * NOTE ON THE VERIFIED PREDICATE: the client computes the same thing via
- * src/util/accountStatus.js (isStripeAccountComplete + user.state active). That module
+ * src/util/accountStatus.js (isStripeAccountComplete + the review decision). That module
  * is ES-module frontend code and cannot be `require`d from this CommonJS server
- * runtime, so the two-flag Stripe check + active-state check are mirrored here.
- * Keep them in lockstep if the definition ever changes.
+ * runtime, so the two-flag Stripe check is mirrored here and Gate A comes from
+ * api-util/reviewDecision.js. Keep them in lockstep if the definition ever changes.
  *
  * ⚠️ TEST MARKETPLACE ONLY (ndstealth1-test). Reconcile issues Integration-API writes
  * at runtime — that is the feature; no manual flex-cli/Console writes are involved.
@@ -57,6 +61,7 @@
 
 const flexIntegrationSdk = require('sharetribe-flex-integration-sdk');
 const stripeIdentity = require('./stripeIdentity');
+const { isGateAPassed, getReviewDecision } = require('./reviewDecision');
 const log = require('../log');
 
 const MODEL_LISTING_TYPE = 'model-profile';
@@ -106,17 +111,34 @@ const getIntegrationSdk = () => {
 
 /**
  * The Verified predicate for a model (Gate A + Gate B), computed from raw fields.
- * Mirrors src/util/accountStatus.js (isStripeAccountComplete + active-state); see the
+ * Mirrors src/util/accountStatus.js (review decision + isStripeAccountComplete); see the
  * module header note on why it is not shared directly.
  *
+ * SAFETY: this decides whether a model is published (discoverable + bookable). Gate A comes
+ * from reviewDecision.isGateAPassed: flag ON requires `active` AND reviewDecision ===
+ * 'approved' (a Stripe-verified model with no decision, or a declined one, stays hidden);
+ * flag OFF keeps the pre-amendment `active` check. Gate B is unchanged.
+ *
  * @param {Object} params
- * @param {string} [params.userState] - the Sharetribe user's state ('active' when Gate A done)
+ * @param {string} [params.userState] - the Sharetribe user's state
+ * @param {string|null} [params.reviewDecision] - the operator's review decision
+ *   (reviewDecision.getReviewDecision(user)); required for Gate A when the flag is ON
  * @param {Object} [params.stripeAccountData] - the raw Stripe Account object
  *   (charges_enabled / payouts_enabled)
+ * @param {boolean} [params.flowEnabled] - override the account-status flag (tests)
  * @returns {boolean}
  */
-const computeModelVerified = ({ userState, stripeAccountData } = {}) => {
-  const gateA = userState === 'active';
+const computeModelVerified = ({
+  userState,
+  reviewDecision,
+  stripeAccountData,
+  flowEnabled,
+} = {}) => {
+  const gateA = isGateAPassed({
+    userState,
+    reviewDecision,
+    ...(flowEnabled === undefined ? {} : { flowEnabled }),
+  });
   const gateB = !!(
     stripeAccountData &&
     stripeAccountData.charges_enabled === true &&
@@ -427,7 +449,8 @@ const reconcileFromConnectEvent = event => {
       return Promise.resolve({ reconciled: false, skipped: true, why: 'no-user-mapping' });
     }
 
-    // Gate A (user state) is not in the Stripe event — look it up authoritatively.
+    // Gate A (user state + review decision) is not in the Stripe event: look it up
+    // authoritatively via the Integration API (which returns the user's metadata).
     return integrationSdk.users
       .show({ id: userId })
       .then(res => {
@@ -438,7 +461,11 @@ const reconcileFromConnectEvent = event => {
         if (userType && userType !== MODEL_USER_TYPE) {
           return { reconciled: false, skipped: true, why: 'not-a-model' };
         }
-        const verified = computeModelVerified({ userState, stripeAccountData: account });
+        const verified = computeModelVerified({
+          userState,
+          reviewDecision: getReviewDecision(user),
+          stripeAccountData: account,
+        });
         // Pass the account id so the listing stays stamped (idempotent no-op via the
         // listing path; a real stamp if we resolved via the metadata fallback).
         return reconcileModelListingVisibility({

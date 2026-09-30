@@ -3,7 +3,8 @@
  * ---------------------------------------------------------------------------
  * Account-status Step 2 — authenticated own-session reconcile trigger.
  *
- * Console operator approval (Gate A: pending-approval → active) has NO webhook, and a
+ * Console operator approval (Gate A: the operator sets user metadata reviewDecision to
+ * 'approved', amendment 30/09/2026) has NO webhook, and a
  * model returning from Stripe onboarding may not fire a Connect webhook we can map. So
  * the model's OWN authenticated session is the reliable trigger: whenever they load
  * their dashboard/profile the frontend pings this endpoint, and we reconcile their
@@ -22,6 +23,7 @@
 
 const { getSdk } = require('../api-util/sdk');
 const modelVisibility = require('../api-util/modelVisibility');
+const { getReviewDecision } = require('../api-util/reviewDecision');
 const log = require('../log');
 
 const MODEL_USER_TYPE = 'model';
@@ -76,7 +78,13 @@ module.exports = (req, res) => {
 
       const stripeAccountData = getStripeAccountData(showResponse);
       const stripeAccountId = getStripeAccountId(showResponse);
-      const verified = modelVisibility.computeModelVerified({ userState, stripeAccountData });
+      // Gate A reads the operator's review decision from the user's own metadata (the
+      // Marketplace API returns profile.metadata on currentUser; only the operator can write it).
+      const verified = modelVisibility.computeModelVerified({
+        userState,
+        reviewDecision: getReviewDecision(user),
+        stripeAccountData,
+      });
 
       // Passing stripeAccountId stamps the durable acct→listing link (idempotent, only when
       // missing/changed) so the Connect webhook can later map the account back to this model.
