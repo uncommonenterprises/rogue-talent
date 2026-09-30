@@ -3,7 +3,7 @@ import { denormalisedResponseEntities } from '../../util/data';
 import { storableError } from '../../util/errors';
 import { LISTING_STATE_DRAFT } from '../../util/types';
 import { isAccountStatusFlowEnabled, isModelUser } from '../../util/accountStatus';
-import { reconcileOwnListing } from '../../util/api';
+import { reconcileOwnListing, resubmitForReview as resubmitForReviewApi } from '../../util/api';
 import { fetchCurrentUser } from '../../ducks/user.duck';
 
 // ================ Async Thunks ================ //
@@ -34,6 +34,29 @@ export const fetchOwnListing = () => dispatch => {
   return dispatch(fetchOwnListingThunk());
 };
 
+//////////////////////////////////////////
+// Resubmit for approval after a decline //
+//////////////////////////////////////////
+// Screen 17 (model): "Resubmit for approval". The server clears the user's own 'declined'
+// review decision (it can never approve), then currentUser is re-fetched so the page moves to
+// Pending approval (screen 14). A failed re-fetch doesn't fail the resubmission.
+export const resubmitForReviewThunk = createAsyncThunk(
+  'AccountStatusPage/resubmitForReview',
+  (_, { dispatch, rejectWithValue }) => {
+    return resubmitForReviewApi()
+      .then(response =>
+        dispatch(fetchCurrentUser({ enforce: true }))
+          .catch(() => null)
+          .then(() => response)
+      )
+      .catch(e => rejectWithValue(storableError(e)));
+  }
+);
+// Backward compatible wrapper for the thunk
+export const resubmitForReview = () => dispatch => {
+  return dispatch(resubmitForReviewThunk()).unwrap();
+};
+
 // ================ Slice ================ //
 
 const accountStatusPageSlice = createSlice({
@@ -41,10 +64,23 @@ const accountStatusPageSlice = createSlice({
   initialState: {
     ownListing: null,
     ownListingFetched: false,
+    resubmitInProgress: false,
+    resubmitError: null,
   },
   reducers: {},
   extraReducers: builder => {
     builder
+      .addCase(resubmitForReviewThunk.pending, state => {
+        state.resubmitInProgress = true;
+        state.resubmitError = null;
+      })
+      .addCase(resubmitForReviewThunk.fulfilled, state => {
+        state.resubmitInProgress = false;
+      })
+      .addCase(resubmitForReviewThunk.rejected, (state, action) => {
+        state.resubmitInProgress = false;
+        state.resubmitError = action.payload || null;
+      })
       .addCase(fetchOwnListingThunk.pending, state => {
         state.ownListingFetched = false;
       })

@@ -25,7 +25,7 @@ import {
 import AccountStatusScreen from './AccountStatusScreens';
 import { AccountStatusPageComponent } from './AccountStatusPage';
 
-const { screen } = testingLibrary;
+const { screen, userEvent } = testingLibrary;
 
 // ---- Fixtures -------------------------------------------------------------------------------
 
@@ -409,6 +409,84 @@ describe('AccountStatusPage: 17 reviewer note', () => {
       )
     ).toBeInTheDocument();
     expect(screen.getByText('Or email us at support@roguetalent.co')).toBeInTheDocument();
+  });
+});
+
+describe('AccountStatusPage: 17 resubmit for approval (amendment 30/09/2026)', () => {
+  const prevFlag = process.env.REACT_APP_ACCOUNT_STATUS_FLOW_ENABLED;
+  beforeEach(() => {
+    process.env.REACT_APP_ACCOUNT_STATUS_FLOW_ENABLED = 'true';
+  });
+  afterEach(() => {
+    if (prevFlag === undefined) {
+      delete process.env.REACT_APP_ACCOUNT_STATUS_FLOW_ENABLED;
+    } else {
+      process.env.REACT_APP_ACCOUNT_STATUS_FLOW_ENABLED = prevFlag;
+    }
+  });
+
+  const renderPage = (currentUser, props = {}) =>
+    render(
+      <AccountStatusPageComponent
+        currentUser={currentUser}
+        ownListing={listing('pendingApproval')}
+        ownListingFetched
+        scrollingDisabled={false}
+        {...props}
+      />,
+      { messages: enMessages }
+    );
+
+  it('a declined model can resubmit from screen 17; the edit link stays the primary action', async () => {
+    const onResubmit = jest.fn(() => Promise.resolve());
+    renderPage(makeUser({ state: 'active', metadata: declined }), { onResubmit });
+    expect(screen.getByText('Edit your profile').closest('a')).toBeInTheDocument();
+    expect(
+      screen.getByText("Made your changes? Resubmit and we'll review your profile again.")
+    ).toBeInTheDocument();
+    await userEvent.setup().click(screen.getByRole('button', { name: 'Resubmit for approval' }));
+    expect(onResubmit).toHaveBeenCalledTimes(1);
+  });
+
+  it('shows a retry message when the resubmission failed', () => {
+    renderPage(makeUser({ state: 'active', metadata: declined }), {
+      onResubmit: jest.fn(() => Promise.resolve()),
+      resubmitError: { type: 'error', status: 500 },
+    });
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      "We couldn't resubmit your profile. Please try again, or contact us."
+    );
+  });
+
+  it('disables the button while the resubmission is in flight', () => {
+    renderPage(makeUser({ state: 'active', metadata: declined }), {
+      onResubmit: jest.fn(() => Promise.resolve()),
+      resubmitInProgress: true,
+    });
+    expect(screen.getByRole('button', { name: 'Resubmitting…' })).toBeDisabled();
+  });
+
+  it('no resubmit button for a suspended (banned) model: that is not a review decline', () => {
+    renderPage(makeUser({ state: 'banned' }), { onResubmit: jest.fn() });
+    expect(screen.getByText("Your profile wasn't approved this time")).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Resubmit for approval' })).toBeNull();
+  });
+
+  it('no resubmit button for a declined client: they resubmit by updating business details', () => {
+    renderPage(
+      makeUser({
+        userType: 'client',
+        state: 'active',
+        metadata: declined,
+        privateData: submittedClientData,
+      }),
+      { onResubmit: jest.fn() }
+    );
+    expect(screen.getByRole('link', { name: 'Update your business details' })).toHaveAttribute(
+      'href',
+      '/business-details'
+    );
+    expect(screen.queryByRole('button', { name: 'Resubmit for approval' })).toBeNull();
   });
 });
 

@@ -44,6 +44,16 @@
   text-align: center;
 }
 
+.resubmitError {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-weight: var(--weight-semibold);
+  font-size: var(--text-sm);
+  line-height: var(--leading-normal);
+  color: var(--status-error);
+  text-align: center;
+}
+
 .reviewerNote {
   color: var(--text-primary);
 }

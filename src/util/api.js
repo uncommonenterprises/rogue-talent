@@ -180,3 +180,13 @@ export const createIdentitySession = () => {
 export const reconcileOwnListing = () => {
   return post('/api/reconcile-own-listing', {});
 };
+
+// Account-status Gate A (amendment 30/09/2026): a declined user resubmits for review. The server
+// resolves the user from the session cookie and can only clear their own 'declined' review
+// decision (back to Pending approval), never approve. Resolves with
+// { ok, resubmitted, reviewDecision: null }; rejects on 401/409/5xx. No body required.
+//
+// See `server/api/resubmit-for-review.js`.
+export const resubmitForReview = () => {
+  return post('/api/resubmit-for-review', {});
+};

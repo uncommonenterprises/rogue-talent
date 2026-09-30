@@ -325,8 +325,50 @@ const ClientVerifiedScreen = props => {
 
 // ---- 17: Not approved (model and client variants) ----------------------------------------------
 
+// Screen 17 (model only): after editing the profile, send it back for review. The server can only
+// clear the 'declined' decision (back to Pending approval), never approve. Clients resubmit by
+// submitting their business details again (BusinessDetailsPage), so they don't get this button.
+// A secondary keyline button: "Edit your profile" stays the one cobalt action on the screen.
+const ResubmitForApproval = props => {
+  const { onResubmit, inProgress, error } = props;
+  return (
+    <>
+      <button
+        type="button"
+        className={css.secondaryButtonBlock}
+        onClick={() => onResubmit().catch(() => null)}
+        disabled={inProgress}
+      >
+        <FormattedMessage
+          id={
+            inProgress
+              ? 'AccountStatusPage.model.rejected.resubmitting'
+              : 'AccountStatusPage.model.rejected.resubmitCta'
+          }
+        />
+      </button>
+      {error ? (
+        <p className={css.resubmitError} role="alert">
+          <FormattedMessage id="AccountStatusPage.model.rejected.resubmitFailed" />
+        </p>
+      ) : (
+        <p className={css.smallPrint}>
+          <FormattedMessage id="AccountStatusPage.model.rejected.resubmitHint" />
+        </p>
+      )}
+    </>
+  );
+};
+
 const RejectedScreen = props => {
-  const { role, ownListing, rejectionReason } = props;
+  const {
+    role,
+    ownListing,
+    rejectionReason,
+    onResubmit,
+    resubmitInProgress = false,
+    resubmitError = null,
+  } = props;
   const isModel = role === ROLE_MODEL;
   const prefix = `AccountStatusPage.${role}.rejected`;
 
@@ -379,6 +421,13 @@ const RejectedScreen = props => {
         <NamedLink {...editLinkProps} className={css.primaryButtonBlock}>
           <FormattedMessage id={`${prefix}.editCta`} />
         </NamedLink>
+        {isModel && onResubmit ? (
+          <ResubmitForApproval
+            onResubmit={onResubmit}
+            inProgress={resubmitInProgress}
+            error={resubmitError}
+          />
+        ) : null}
         <a href={`mailto:${SUPPORT_EMAIL}`} className={css.ghostButtonBlock}>
           <FormattedMessage id="AccountStatusPage.rejected.contactUs" />
         </a>
@@ -404,6 +453,9 @@ const RejectedScreen = props => {
  * @param {Object} props.currentUser
  * @param {Object} [props.ownListing] - models only
  * @param {string|null} [props.rejectionReason]
+ * @param {Function} [props.onResubmit] - screen 17 (model): resubmit for approval
+ * @param {boolean} [props.resubmitInProgress]
+ * @param {Object} [props.resubmitError]
  * @returns {JSX.Element|null}
  */
 const AccountStatusScreen = props => {

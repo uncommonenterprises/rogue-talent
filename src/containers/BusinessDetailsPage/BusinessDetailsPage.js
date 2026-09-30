@@ -9,7 +9,7 @@ import { useRouteConfiguration } from '../../context/routeConfigurationContext';
 import { FormattedMessage, useIntl } from '../../util/reactIntl';
 import { pathByRouteName } from '../../util/routes';
 import { isClientUser } from '../../util/userHelpers';
-import { isAccountStatusFlowEnabled } from '../../util/accountStatus';
+import { isAccountStatusFlowEnabled, isReviewDeclined } from '../../util/accountStatus';
 import { isScrollingDisabled } from '../../ducks/ui.duck';
 
 // Import shared components
@@ -42,9 +42,23 @@ export const getAfterSubmitRouteName = flagEnabled =>
 export const SAVE_AND_EXIT_ROUTE_NAME = 'SearchPage';
 
 /**
+ * Is "Submit for approval" a resubmission after a decline (screen 17, client variant)? Only
+ * with the account-status lifecycle on, and only while the client's review decision is
+ * 'declined'. The server clears the decision; it can never approve.
+ *
+ * @param {boolean} flagEnabled - isAccountStatusFlowEnabled()
+ * @param {Object} currentUser - currentUser API entity
+ * @returns {boolean}
+ */
+export const isResubmission = (flagEnabled, currentUser) =>
+  !!flagEnabled && isReviewDeclined(currentUser);
+
+/**
  * Client "Your business details" step (sign-up journey screen 18). Live regardless of the
  * account-status flag. "Submit for approval" is the client's Gate A submission: it saves the
  * details and records privateData.businessDetailsSubmittedAt (see util/clientBusinessDetails.js).
+ * After a decline (account-status flag on), submitting again is also the resubmission: the
+ * server clears the 'declined' review decision, so the account returns to Pending approval.
  *
  * Only clients use this page; anyone else is sent to the homepage.
  *
@@ -54,7 +68,8 @@ export const SAVE_AND_EXIT_ROUTE_NAME = 'SearchPage';
  * @param {boolean} props.scrollingDisabled
  * @param {boolean} props.saveInProgress
  * @param {propTypes.error} [props.saveError]
- * @param {Function} props.onSaveBusinessDetails - resolves when saved
+ * @param {Function} props.onSaveBusinessDetails - (payload, { resubmit }) => resolves when saved
+ *   (and, for a resubmission after a decline, once the decision is cleared)
  * @returns {JSX.Element}
  */
 export const BusinessDetailsPageComponent = props => {
@@ -81,12 +96,16 @@ export const BusinessDetailsPageComponent = props => {
 
   const goTo = routeName => history.push(pathByRouteName(routeName, routeConfiguration, {}));
 
-  const handleSubmit = values =>
-    onSaveBusinessDetails(getBusinessDetailsPayload(values, { submit: true }))
-      .then(() => goTo(getAfterSubmitRouteName(isAccountStatusFlowEnabled())))
+  const handleSubmit = values => {
+    const flagEnabled = isAccountStatusFlowEnabled();
+    return onSaveBusinessDetails(getBusinessDetailsPayload(values, { submit: true }), {
+      resubmit: isResubmission(flagEnabled, currentUser),
+    })
+      .then(() => goTo(getAfterSubmitRouteName(flagEnabled)))
       .catch(() => {
         // The error is shown by the form (saveError); stay on the page.
       });
+  };
 
   const handleSaveAndExit = values =>
     onSaveBusinessDetails(getBusinessDetailsPayload(values, { submit: false }))
@@ -129,7 +148,7 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = dispatch => ({
-  onSaveBusinessDetails: payload => dispatch(saveBusinessDetails(payload)),
+  onSaveBusinessDetails: (payload, options) => dispatch(saveBusinessDetails(payload, options)),
 });
 
 const BusinessDetailsPage = compose(

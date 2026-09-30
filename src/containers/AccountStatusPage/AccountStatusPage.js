@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 
 // Import contexts and util modules
 import { FormattedMessage, useIntl } from '../../util/reactIntl';
-import { isAccountStatusFlowEnabled } from '../../util/accountStatus';
+import { isAccountStatusFlowEnabled, isReviewDeclined } from '../../util/accountStatus';
 import { isScrollingDisabled } from '../../ducks/ui.duck';
 
 // Import shared components
@@ -17,6 +17,7 @@ import FooterContainer from '../FooterContainer/FooterContainer';
 // Import modules from this directory
 import AccountStatusScreen from './AccountStatusScreens';
 import { getStatusView, getRejectionReason } from './AccountStatusPage.helpers';
+import { resubmitForReview } from './AccountStatusPage.duck';
 import css from './AccountStatusPage.module.css';
 
 /**
@@ -35,11 +36,22 @@ import css from './AccountStatusPage.module.css';
  * @param {Object} [props.ownListing] - the model's own profile listing
  * @param {boolean} props.ownListingFetched - whether the own-listing query has finished
  * @param {boolean} props.scrollingDisabled
+ * @param {boolean} [props.resubmitInProgress] - screen 17 (model) resubmission in flight
+ * @param {Object} [props.resubmitError] - screen 17 (model) resubmission error
+ * @param {Function} [props.onResubmit] - screen 17 (model): resubmit for approval
  * @returns {JSX.Element}
  */
 export const AccountStatusPageComponent = props => {
   const intl = useIntl();
-  const { currentUser, ownListing, ownListingFetched, scrollingDisabled } = props;
+  const {
+    currentUser,
+    ownListing,
+    ownListingFetched,
+    scrollingDisabled,
+    resubmitInProgress = false,
+    resubmitError = null,
+    onResubmit,
+  } = props;
 
   const view = getStatusView({
     flagEnabled: isAccountStatusFlowEnabled(),
@@ -53,6 +65,8 @@ export const AccountStatusPageComponent = props => {
   }
 
   const isScreen = view.kind === 'screen';
+  // Resubmitting only applies to a review decline, not a suspension (ban).
+  const canResubmit = isReviewDeclined(currentUser);
   const title = intl.formatMessage({ id: 'AccountStatusPage.title' });
 
   return (
@@ -70,6 +84,9 @@ export const AccountStatusPageComponent = props => {
               currentUser={currentUser}
               ownListing={ownListing}
               rejectionReason={getRejectionReason(currentUser)}
+              onResubmit={canResubmit ? onResubmit : null}
+              resubmitInProgress={resubmitInProgress}
+              resubmitError={resubmitError}
             />
           ) : (
             <p className={css.loading}>
@@ -84,15 +101,31 @@ export const AccountStatusPageComponent = props => {
 
 const mapStateToProps = state => {
   const { currentUser } = state.user;
-  const { ownListing, ownListingFetched } = state.AccountStatusPage;
+  const {
+    ownListing,
+    ownListingFetched,
+    resubmitInProgress,
+    resubmitError,
+  } = state.AccountStatusPage;
   return {
     currentUser,
     ownListing,
     ownListingFetched,
+    resubmitInProgress,
+    resubmitError,
     scrollingDisabled: isScrollingDisabled(state),
   };
 };
 
-const AccountStatusPage = compose(connect(mapStateToProps))(AccountStatusPageComponent);
+const mapDispatchToProps = dispatch => ({
+  onResubmit: () => dispatch(resubmitForReview()),
+});
+
+const AccountStatusPage = compose(
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )
+)(AccountStatusPageComponent);
 
 export default AccountStatusPage;

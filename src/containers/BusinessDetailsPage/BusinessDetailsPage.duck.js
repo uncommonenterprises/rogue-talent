@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { storableError } from '../../util/errors';
+import { resubmitForReview } from '../../util/api';
 import { fetchCurrentUser } from '../../ducks/user.duck';
 
 // ================ Async Thunks ================ //
@@ -11,11 +12,17 @@ import { fetchCurrentUser } from '../../ducks/user.duck';
 // protectedData and privateData; see BusinessDetailsPage.helpers.js for which key goes where),
 // then re-fetches currentUser with its usual includes so the store never holds a currentUser
 // without its permission set / Stripe account. A failed re-fetch doesn't fail the save.
+//
+// resubmit: true (a declined client submitting again, account-status flag on) also asks the
+// server to clear the 'declined' review decision AFTER the details are saved, so the account
+// returns to Pending approval with the updated details. If that call fails the save still
+// stands, the error is shown, and submitting again retries both.
 export const saveBusinessDetailsThunk = createAsyncThunk(
   'BusinessDetailsPage/saveBusinessDetails',
-  (payload, { dispatch, rejectWithValue, extra: sdk }) => {
+  ({ payload, resubmit = false }, { dispatch, rejectWithValue, extra: sdk }) => {
     return sdk.currentUser
       .updateProfile(payload)
+      .then(response => (resubmit ? resubmitForReview().then(() => response) : response))
       .then(response =>
         dispatch(fetchCurrentUser({ enforce: true }))
           .catch(() => null)
@@ -25,8 +32,8 @@ export const saveBusinessDetailsThunk = createAsyncThunk(
   }
 );
 // Backward compatible wrapper for the thunk
-export const saveBusinessDetails = payload => dispatch => {
-  return dispatch(saveBusinessDetailsThunk(payload)).unwrap();
+export const saveBusinessDetails = (payload, { resubmit = false } = {}) => dispatch => {
+  return dispatch(saveBusinessDetailsThunk({ payload, resubmit })).unwrap();
 };
 
 // ================ Slice ================ //
