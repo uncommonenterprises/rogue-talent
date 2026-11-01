@@ -626,6 +626,7 @@
   "EditListingPhotosForm.addImagesTip": "Tip: Upload your full portfolio, the more high-quality shots the better. Include headshots and a range of looks (editorial, commercial, full-length). There's no limit, so show your best work.",
   "EditListingPhotosForm.addMore": "Add more",
   "EditListingPhotosForm.chooseImage": "Drag photos here, or click to upload",
+  "EditListingPhotosForm.chooseImageTouch": "Tap to add photos",
   "EditListingPhotosForm.coverBadge": "Cover",
   "EditListingPhotosForm.imageRequired": "Add at least {minimum} photos to continue.",
   "EditListingPhotosForm.imageTypes": ".JPG or .PNG. Max. 20 MB",

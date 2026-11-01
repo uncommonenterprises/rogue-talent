@@ -45,8 +45,19 @@ exports[`EditListingDeliveryForm matches snapshot 1`] = `
           <span
             class="chooseImage"
           >
-            <span>
-              EditListingPhotosForm.chooseImage
+            <span
+              class="pointerOnlyText"
+            >
+              <span>
+                EditListingPhotosForm.chooseImage
+              </span>
+            </span>
+            <span
+              class="touchOnlyText"
+            >
+              <span>
+                EditListingPhotosForm.chooseImageTouch
+              </span>
             </span>
           </span>
           <span
