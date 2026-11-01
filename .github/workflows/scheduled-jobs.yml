@@ -16,10 +16,13 @@
 name: Scheduled jobs
 
 on:
-  # Enabled 01/11/2026 after both manual dry runs succeeded (cutover Stage B).
-  schedule:
-    - cron: '*/10 * * * *'
-    - cron: '0 9 * * *'
+  # Schedules are OFF here (01/11/2026): GitHub does not run scheduled workflows on a fork, so the
+  # jobs are scheduled on cron-job.org instead (decision emails every 10 min, verify reminder 09:00
+  # Europe/London). Keep this workflow for manual runs. After the move to a private standalone repo,
+  # choose ONE scheduler (re-enable these OR keep cron-job.org), never both, or emails send twice.
+  # schedule:
+  #   - cron: '*/10 * * * *'
+  #   - cron: '0 9 * * *'
   workflow_dispatch:
     inputs:
       job:
