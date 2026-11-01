@@ -1,0 +1,393 @@
+@import '../../../styles/customMediaQueries.css';
+
+/* B08: the model's incoming request. Tokens only. */
+
+.eyebrow {
+  font-family: var(--font-sans);
+  font-weight: var(--weight-bold);
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.muted {
+  margin: 0;
+  padding: 0;
+  font-size: var(--text-sm);
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+/* ---- Header ---- */
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-3);
+  font-family: var(--font-sans);
+}
+
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 44px;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--text-secondary);
+  text-decoration: none;
+
+  &:hover {
+    color: var(--text-primary);
+    text-decoration: none;
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--shadow-focus);
+    border-radius: var(--radius-sm);
+  }
+}
+
+.title {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-display);
+  font-weight: var(--weight-extrabold);
+  font-size: var(--text-2xl);
+  letter-spacing: var(--tracking-tight);
+  line-height: 1.15;
+  color: var(--text-primary);
+
+  @media (min-width: 640px) {
+    font-size: var(--text-3xl);
+  }
+}
+
+.company {
+  margin: 0;
+  padding: 0;
+  font-size: var(--text-base);
+  color: var(--text-secondary);
+}
+
+.deadline {
+  display: flex;
+  gap: var(--space-3);
+  align-self: stretch;
+  margin-top: var(--space-2);
+  padding: var(--space-4);
+  border-radius: var(--radius-lg);
+  background: var(--amber-50);
+  border: var(--border-hair) solid var(--amber-100);
+  color: var(--amber-700);
+}
+
+.deadlineIcon {
+  margin-top: 2px;
+}
+
+.deadlineText {
+  min-width: 0;
+
+  & b {
+    display: block;
+    font-size: var(--text-base);
+    line-height: 1.3;
+    color: var(--ink-900);
+  }
+
+  & span {
+    display: block;
+    margin-top: 2px;
+    font-size: var(--text-sm);
+    line-height: 1.5;
+    color: var(--ink-700);
+  }
+}
+
+/* ---- Earnings ---- */
+.earnCard {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-self: stretch;
+  padding: var(--space-4) var(--space-5);
+  border-radius: var(--radius-lg);
+  background: var(--surface-subtle);
+  font-family: var(--font-sans);
+}
+
+.earnAmount {
+  font-family: var(--font-display);
+  font-weight: var(--weight-extrabold);
+  font-size: var(--text-3xl);
+  letter-spacing: var(--tracking-tighter);
+  line-height: 1.05;
+  color: var(--text-primary);
+}
+
+.earnNote {
+  font-size: var(--text-sm);
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+/* Phones see the earnings first (in the header); desktop sees them in the reply column. */
+.earnPhone {
+  margin-top: var(--space-2);
+
+  @media (--viewportLarge) {
+    display: none;
+  }
+}
+
+/* ---- Detail cards ---- */
+.details {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  margin: var(--space-5) 24px 0 24px;
+
+  @media (--viewportLarge) {
+    margin: var(--space-5) 0 0 0;
+  }
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  background: var(--white);
+  border: var(--border-hair) solid var(--border-hairline);
+  border-radius: var(--radius-lg);
+  font-family: var(--font-sans);
+}
+
+.cardTitle {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-display);
+  font-weight: var(--weight-extrabold);
+  font-size: var(--text-lg);
+  letter-spacing: var(--tracking-tight);
+  line-height: 1.2;
+  color: var(--text-primary);
+}
+
+.kvRows {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+}
+
+.kvRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-4);
+  padding: var(--space-3) 0;
+  border-top: var(--border-hair) solid var(--border-subtle);
+  font-size: var(--text-sm);
+
+  &:first-child {
+    border-top: 0;
+  }
+
+  & dt {
+    flex: none;
+    color: var(--text-secondary);
+  }
+
+  & dd {
+    min-width: 0;
+    margin: 0;
+    font-weight: var(--weight-semibold);
+    text-align: right;
+    color: var(--text-primary);
+    overflow-wrap: anywhere;
+  }
+
+  & dd small {
+    display: block;
+    font-weight: var(--weight-regular);
+    font-size: var(--text-xs);
+    line-height: 1.5;
+    color: var(--text-muted);
+  }
+}
+
+.textBlock {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+
+  & p {
+    margin: 0;
+    padding: 0;
+    font-size: var(--text-sm);
+    line-height: 1.6;
+    color: var(--text-primary);
+    white-space: pre-line;
+    overflow-wrap: anywhere;
+  }
+}
+
+.trustLine {
+  display: flex;
+  gap: var(--space-2);
+  align-items: flex-start;
+  margin: 0;
+  padding: 0;
+  font-size: var(--text-sm);
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.trustIcon {
+  margin-top: 2px;
+  color: var(--ink-900);
+}
+
+/* SAF-11 note, B08 style: calm, an ink keyline on the left, not an alert. */
+.advisory {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5);
+  background: var(--white);
+  border: var(--border-hair) solid var(--border-hairline);
+  border-left: var(--border-bold) solid var(--ink-900);
+  border-radius: var(--radius-lg);
+  font-family: var(--font-sans);
+
+  & h3 {
+    margin: 0;
+    padding: 0;
+    font-weight: var(--weight-bold);
+    font-size: var(--text-sm);
+    line-height: 1.4;
+    color: var(--text-primary);
+  }
+
+  & p,
+  & li {
+    margin: 0;
+    font-size: var(--text-sm);
+    line-height: 1.55;
+    color: var(--text-secondary);
+  }
+
+  & ul {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    margin: 0;
+    padding-left: 18px;
+  }
+}
+
+/* ---- Reply column ---- */
+.replyCard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  background: var(--white);
+  border: var(--border-hair) solid var(--border-hairline);
+  border-radius: var(--radius-lg);
+  font-family: var(--font-sans);
+}
+
+/* On phones the reply card follows the detail, before the messages. */
+.replyMobile {
+  margin: var(--space-5) 24px 0 24px;
+
+  @media (--viewportLarge) {
+    display: none;
+  }
+}
+
+.replyDesktop {
+  display: none;
+
+  @media (--viewportLarge) {
+    display: flex;
+  }
+}
+
+.earnDesktop {
+  display: none;
+
+  @media (--viewportLarge) {
+    display: flex;
+  }
+}
+
+.rule {
+  width: 100%;
+  margin: 0;
+  border: 0;
+  border-top: var(--border-hair) solid var(--border-hairline);
+}
+
+.agreeLine {
+  margin: 0;
+  padding: 0;
+  font-size: var(--text-sm);
+  line-height: 1.5;
+  color: var(--text-primary);
+}
+
+.error {
+  margin: 0;
+  padding: 0;
+  font-size: var(--text-sm);
+  line-height: 1.5;
+  color: var(--status-error);
+}
+
+.replyActions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.acceptButton,
+.declineButton {
+  min-height: 48px;
+}
+
+.fine {
+  margin: 0;
+  padding: 0;
+  font-size: var(--text-xs);
+  line-height: 1.5;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.ghostLink {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 var(--space-4);
+  font-weight: var(--weight-bold);
+  font-size: var(--text-sm);
+  color: var(--accent-600);
+  border-radius: var(--radius-lg);
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: none;
+    background: var(--accent-50);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--shadow-focus);
+  }
+}

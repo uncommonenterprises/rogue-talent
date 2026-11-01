@@ -496,6 +496,33 @@ describe('TransactionPage', () => {
         render(<TransactionPageComponent {...props} />);
       });
 
+      // B08: while Requested, the model sees the request page: deadline, earnings (phone and
+      // desktop cards), the shoot, who is booking, the draft licence summary, and one reply card
+      // per layout with Accept and Decline (no template action buttons, no template heading).
+      if (tr === 'transition/confirm-payment') {
+        expect(screen.getByText('ModelRequest.title')).toBeInTheDocument();
+        expect(screen.getByText('BookingStatus.requested')).toBeInTheDocument();
+        expect(screen.getByText('ModelRequest.replyBy')).toBeInTheDocument();
+        expect(screen.getAllByText('ModelRequest.earnEyebrow')).toHaveLength(2);
+        expect(screen.getByText('ModelRequest.shootTitle')).toBeInTheDocument();
+        expect(screen.getByText('ModelRequest.whoTitle')).toBeInTheDocument();
+        expect(screen.getByText('ModelRequest.trustLine')).toBeInTheDocument();
+        expect(screen.getByText('ModelRequest.licenceTitle')).toBeInTheDocument();
+        expect(screen.getAllByText(/LicenceSummary\.model\.point/)).toHaveLength(4);
+        expect(screen.getByText('StripePaymentForm.licenceDraftNotice')).toBeInTheDocument();
+        expect(screen.getAllByText('ModelRequest.acceptAgreesLicence')).toHaveLength(2);
+        expect(screen.getAllByRole('button', { name: 'ModelRequest.accept' })).toHaveLength(2);
+        expect(screen.getAllByRole('button', { name: 'ModelRequest.decline' })).toHaveLength(2);
+        expect(screen.getAllByText('TransactionPanel.reportSafetyConcern')).toHaveLength(2);
+        expect(
+          screen.queryByText(
+            'TransactionPage.default-booking.provider.transition-accept.actionButton'
+          )
+        ).not.toBeInTheDocument();
+        expect(screen.getByText('TransactionPanel.activityHeading')).toBeInTheDocument();
+        return;
+      }
+
       // B09: daily bookings show the status banner (one label for both sides), the dates in the
       // booking summary and the B05 breakdown. Refunds keep the detailed receipt.
       const state = stateData.processState;
@@ -1586,5 +1613,105 @@ describe('TransactionPage', () => {
         expect(screen.queryByText('OrderPanel.ctaButtonMessagePurchase')).toBeNull();
       });
     });
+  });
+});
+
+describe('B08 model request: the reply', () => {
+  const provider = createUser('provider');
+  const customer = createUser('customer', {
+    profile: { publicData: { company_name: 'Northside Test Studio' } },
+  });
+  const transitions = getProcess('default-booking').transitions;
+  const dayItem = {
+    code: LINE_ITEM_DAY,
+    includeFor: ['customer', 'provider'],
+    quantity: new Decimal(2),
+    unitPrice: new Money(45000, 'GBP'),
+    lineTotal: new Money(90000, 'GBP'),
+    reversal: false,
+  };
+  const requestTx = createTransaction({
+    id: 'tx-b08',
+    customer,
+    provider,
+    listing: createListing('listing-b08', {
+      publicData: {
+        listingType: 'rent-bikes',
+        transactionProcessAlias: 'default-booking/release-1',
+        unitType: 'day',
+      },
+    }),
+    booking: createBooking('booking-b08', {
+      start: new Date(Date.UTC(2026, 10, 25)),
+      end: new Date(Date.UTC(2026, 10, 27)),
+    }),
+    processName: 'default-booking',
+    lastTransition: transitions.CONFIRM_PAYMENT,
+    lineItems: [dayItem],
+  });
+
+  const renderRequest = onTransition =>
+    render(
+      <TransactionPageComponent
+        currentUser={createCurrentUser('provider')}
+        transactionRole={TX_TRANSITION_ACTOR_PROVIDER}
+        transaction={requestTx}
+        params={{ id: 'tx-b08' }}
+        totalMessagePages={1}
+        oldestMessagePageFetched={1}
+        messages={[
+          createMessage(
+            'note',
+            { content: 'Call time is 9am.', createdAt: new Date(Date.UTC(2026, 10, 1)) },
+            { sender: customer }
+          ),
+        ]}
+        history={{ push: noop, block: () => noop }}
+        location={{ search: '' }}
+        scrollingDisabled={false}
+        onManageDisableScrolling={noop}
+        onSendMessage={noop}
+        onSendReview={noop}
+        onShowMoreMessages={noop}
+        onTransition={onTransition}
+        onFetchTimeSlots={noop}
+        callSetInitialValues={noop}
+        onInitializeCardPaymentData={noop}
+        onFetchTransactionLineItems={noop}
+        monthlyTimeSlots={{}}
+        timeSlotsForDate={{}}
+      />,
+      { withPortals: true }
+    );
+
+  it('shows the client, their company and their note before the model decides', async () => {
+    await act(async () => {
+      renderRequest(jest.fn());
+    });
+    expect(screen.getAllByText('Northside Test Studio').length).toBeGreaterThan(0);
+    expect(screen.getByText('ModelRequest.clientNoteLabel')).toBeInTheDocument();
+    expect(screen.getAllByText('Call time is 9am.').length).toBeGreaterThan(0);
+  });
+
+  it('accept fires straight away; decline asks first, then fires', async () => {
+    const onTransition = jest.fn(() => Promise.resolve({ meta: { requestStatus: 'fulfilled' } }));
+    await act(async () => {
+      renderRequest(onTransition);
+    });
+    const { userEvent } = testingLibrary;
+
+    await userEvent.click(screen.getAllByRole('button', { name: 'ModelRequest.decline' })[0]);
+    // Nothing happens until the model confirms.
+    expect(onTransition).not.toHaveBeenCalled();
+    const title = await screen.findByText('ModelRequest.declineTitle');
+    expect(screen.getByText('ModelRequest.declineBody')).toBeInTheDocument();
+
+    const dialog = title.closest('h2').parentElement;
+    await userEvent.click(within(dialog).getByRole('button', { name: 'ModelRequest.decline' }));
+    expect(onTransition).toHaveBeenCalledWith(requestTx.id, transitions.DECLINE, {});
+
+    onTransition.mockClear();
+    await userEvent.click(screen.getAllByRole('button', { name: 'ModelRequest.accept' })[0]);
+    expect(onTransition).toHaveBeenCalledWith(requestTx.id, transitions.ACCEPT, {});
   });
 });

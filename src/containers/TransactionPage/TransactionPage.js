@@ -91,6 +91,13 @@ import TransactionPanel from './TransactionPanel/TransactionPanel';
 import RequestSentCard from './RequestSent/RequestSentCard';
 import BookingSummaryRows from './RequestSent/BookingSummaryRows';
 import BookingStatusBanner from './BookingStatus/BookingStatusBanner';
+import ConfirmActionModal from './ConfirmActionModal/ConfirmActionModal';
+import {
+  EarnCard,
+  ModelReplyCard,
+  ModelRequestDetails,
+  ModelRequestHeader,
+} from './ModelRequest/ModelRequest';
 
 import {
   makeTransition,
@@ -329,6 +336,7 @@ export const TransactionPageComponent = props => {
   const [changeRequestSubmitted, setChangeRequestSubmitted] = useState(false);
   const [isMakeCounterOfferModalOpen, setMakeCounterOfferModalOpen] = useState(false);
   const [counterOfferSubmitted, setCounterOfferSubmitted] = useState(false);
+  const [isDeclineModalOpen, setDeclineModalOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -1074,6 +1082,103 @@ export const TransactionPageComponent = props => {
     />
   );
 
+  // B08: the model's incoming request (daily booking, Requested, model's side). Needs the
+  // accept/decline actions; if they're unavailable (e.g. a banned client) the template page shows.
+  const acceptProps = stateData?.primaryButtonProps;
+  const declineProps = stateData?.secondaryButtonProps;
+  const isModelRequest =
+    isProviderRole &&
+    bookingStatus?.status === 'requested' &&
+    !!acceptProps?.onAction &&
+    !!declineProps?.onAction;
+  const clientName = userDisplayNameAsString(customer, '');
+  const clientCompany = customer?.attributes?.profile?.publicData?.company_name;
+  const allMessagesLoaded = !(totalMessagePages > oldestMessagePageFetched);
+  const firstMessage =
+    isModelRequest && allMessagesLoaded && messages?.length > 0
+      ? [...messages].sort(
+          (a, b) => (a.attributes?.createdAt || 0) - (b.attributes?.createdAt || 0)
+        )[0]
+      : null;
+  // The client's note is the message they sent with the request (the first message).
+  const clientNote =
+    firstMessage && firstMessage.sender?.id?.uuid === customer?.id?.uuid
+      ? firstMessage.attributes?.content
+      : null;
+  const modelReplyBy = isModelRequest ? getReplyByDeadline(transaction) : null;
+  const earnNumbers = isModelRequest ? breakdownNumbers : null;
+  const earnCardProps = earnNumbers
+    ? {
+        amount: formatMoneyCompact(intl, earnNumbers.total),
+        rateLabel: intl.formatMessage(
+          { id: 'OrderBreakdown.baseUnitDay' },
+          {
+            unitPrice: formatMoneyCompact(intl, earnNumbers.unitPrice),
+            quantity: earnNumbers.quantity,
+          }
+        ),
+        // The client's fee only appears on the client's line items; 15% is the configured fee.
+        feePercentage:
+          getBreakdownData(transaction?.attributes?.lineItems, 'customer')?.feePercentage ?? 15,
+      }
+    : null;
+  const dayCountLabel = dailyRange
+    ? intl.formatMessage({ id: 'BookingCheckout.dayCount' }, { dayCount: dailyRange.dayCount })
+    : null;
+  const modelSafetyReportSearch = `?${new URLSearchParams({
+    tx: transaction?.id?.uuid || '',
+    role: transactionRole || '',
+    party: clientName || '',
+  }).toString()}`;
+  const declineInProgress = !!declineProps?.inProgress;
+  const modelReplyCardProps = isModelRequest
+    ? {
+        acceptProps,
+        onDecline: () => setDeclineModalOpen(true),
+        declineInProgress,
+        datesLabel,
+        safetyReportSearch: modelSafetyReportSearch,
+      }
+    : null;
+  const modelRequestHeader = isModelRequest ? (
+    <ModelRequestHeader
+      clientName={clientName}
+      clientCompany={clientCompany}
+      deadline={modelReplyBy?.deadline}
+      deadlineLabel={modelReplyBy ? formatDayTime(intl, modelReplyBy.deadline, timeZone) : null}
+      earnCard={earnCardProps ? <EarnCard {...earnCardProps} placement="phone" /> : null}
+    />
+  ) : null;
+  const modelRequestDetails = isModelRequest ? (
+    <ModelRequestDetails
+      showResidenceAdvisory={showResidenceAdvisory}
+      datesLabel={datesLabel}
+      dayCountLabel={dayCountLabel}
+      shootTypeLabel={shootTypeLabel}
+      locationTypeLabel={locationTypeLabel}
+      shootAddress={transaction?.attributes?.protectedData?.shoot_address}
+      description={transaction?.attributes?.protectedData?.shoot_description}
+      clientNote={clientNote}
+      clientName={clientName}
+      clientCompany={clientCompany}
+      transactionId={transaction?.id?.uuid}
+    />
+  ) : null;
+  const replyCard = variant =>
+    isModelRequest ? (
+      <ModelReplyCard
+        {...modelReplyCardProps}
+        placement={variant}
+        earnCard={
+          variant === 'desktop' && earnCardProps ? (
+            <EarnCard {...earnCardProps} placement="desktop" />
+          ) : null
+        }
+      />
+    ) : null;
+  // B08 replaces the action buttons with its own reply card.
+  const panelStateData = isModelRequest ? { ...stateData, showActionButtons: false } : stateData;
+
   const customTransactionFieldProps = (role = 'customer', isOfferOrRequest = false) => ({
     protectedData: transaction?.attributes.protectedData,
     intl,
@@ -1107,22 +1212,25 @@ export const TransactionPageComponent = props => {
       savePaymentMethodFailed={savePaymentMethodFailed}
       fetchMessagesError={fetchMessagesError}
       onOpenDisputeModal={onOpenDisputeModal}
-      stateData={stateData}
+      stateData={panelStateData}
       transactionRole={transactionRole}
       showBookingLocation={showBookingLocation}
       hasViewingRights={hasViewingRights}
       showListingImage={showListingImage}
-      showResidenceAdvisory={showResidenceAdvisory}
+      showResidenceAdvisory={showResidenceAdvisory && !isModelRequest}
       showShootSummary={showShootSummary}
       booking={booking}
       timeZone={timeZone}
       lineItemUnitType={lineItemUnitType}
       shootTypeLabel={shootTypeLabel}
       usageLicence={usageLicence}
-      statusHeader={requestSentCard || bookingStatusBanner}
-      hideTransactionFields={!!requestSentCard}
+      statusHeader={requestSentCard || modelRequestHeader || bookingStatusBanner}
+      hideTransactionFields={!!requestSentCard || isModelRequest}
       hideUsageLicence={!!requestSentCard || isDailyBookingTx}
-      bookingSummaryRows={bookingSummaryRows}
+      bookingSummaryRows={isModelRequest ? null : bookingSummaryRows}
+      bookingDetails={modelRequestDetails}
+      replyCardMobile={replyCard('mobile')}
+      replyCardDesktop={replyCard('desktop')}
       sendMessageForm={
         showSendMessageForm ? (
           <SendMessageForm
@@ -1210,7 +1318,7 @@ export const TransactionPageComponent = props => {
       }
       isInquiryProcess={processName === INQUIRY_PROCESS_NAME}
       config={config}
-      {...orderBreakdownMaybe}
+      {...(isModelRequest ? {} : orderBreakdownMaybe)}
       orderPanel={
         <OrderPanel
           className={classNames(css.orderPanel, {
@@ -1363,6 +1471,27 @@ export const TransactionPageComponent = props => {
             changeRequestSubmitted={changeRequestSubmitted}
             changeRequestInProgress={transitionInProgress === process.transitions.REQUEST_CHANGES}
             changeRequestError={transitionError}
+          />
+        ) : null}
+        {isModelRequest || isDeclineModalOpen ? (
+          <ConfirmActionModal
+            id="DeclineRequestModal"
+            isOpen={isDeclineModalOpen}
+            onClose={() => setDeclineModalOpen(false)}
+            onManageDisableScrolling={onManageDisableScrolling}
+            onConfirm={() => declineProps?.onAction?.()}
+            inProgress={declineInProgress}
+            hasError={!!declineProps?.error}
+            title={<FormattedMessage id="ModelRequest.declineTitle" />}
+            body={
+              <FormattedMessage
+                id="ModelRequest.declineBody"
+                values={{ name: clientName, dates: datesLabel || '' }}
+              />
+            }
+            confirmLabel={<FormattedMessage id="ModelRequest.decline" />}
+            cancelLabel={<FormattedMessage id="ModelRequest.keepRequest" />}
+            errorMessage={declineProps?.errorText}
           />
         ) : null}
         {showMakeCounterOfferModal ? (
