@@ -337,6 +337,7 @@ export const TransactionPageComponent = props => {
   const [isMakeCounterOfferModalOpen, setMakeCounterOfferModalOpen] = useState(false);
   const [counterOfferSubmitted, setCounterOfferSubmitted] = useState(false);
   const [isDeclineModalOpen, setDeclineModalOpen] = useState(false);
+  const [isWithdrawModalOpen, setWithdrawModalOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -940,8 +941,20 @@ export const TransactionPageComponent = props => {
   // B07: the client's "request sent" card with the real reply-by deadline, and what was agreed.
   const replyBy = isRequestedForCustomer ? getReplyByDeadline(transaction) : null;
   const sentAt = isRequestedForCustomer ? getRequestSentAt(transaction) : null;
+  // Q9: the client can withdraw while Requested, but only on a process version that has the
+  // transition (the API lists it as a next step). Older bookings, and every booking until the
+  // new process version is live, simply don't show the link.
+  const withdrawTransition = process?.transitions?.CUSTOMER_WITHDRAW;
+  const canWithdraw =
+    isRequestedForCustomer &&
+    !!withdrawTransition &&
+    (nextTransitions || []).some(t => t?.attributes?.name === withdrawTransition);
+  const withdrawInProgress = !!withdrawTransition && transitionInProgress === withdrawTransition;
+  const onWithdrawRequest = () => onTransition(transaction?.id, withdrawTransition, {});
+
   const requestSentCard = isRequestedForCustomer ? (
     <RequestSentCard
+      onWithdraw={canWithdraw ? () => setWithdrawModalOpen(true) : null}
       modelName={modelFirstName}
       deadlineLabel={replyBy ? formatDayTime(intl, replyBy.deadline, timeZone) : null}
       deadlineKind={replyBy?.kind}
@@ -1492,6 +1505,26 @@ export const TransactionPageComponent = props => {
             confirmLabel={<FormattedMessage id="ModelRequest.decline" />}
             cancelLabel={<FormattedMessage id="ModelRequest.keepRequest" />}
             errorMessage={declineProps?.errorText}
+          />
+        ) : null}
+        {canWithdraw || isWithdrawModalOpen ? (
+          <ConfirmActionModal
+            id="WithdrawRequestModal"
+            isOpen={isWithdrawModalOpen}
+            onClose={() => setWithdrawModalOpen(false)}
+            onManageDisableScrolling={onManageDisableScrolling}
+            onConfirm={onWithdrawRequest}
+            inProgress={withdrawInProgress}
+            hasError={!!transitionError && isWithdrawModalOpen && !withdrawInProgress}
+            title={<FormattedMessage id="RequestSent.withdrawTitle" />}
+            body={
+              <FormattedMessage id="RequestSent.withdrawBody" values={{ name: modelFirstName }} />
+            }
+            confirmLabel={<FormattedMessage id="RequestSent.withdraw" />}
+            cancelLabel={<FormattedMessage id="RequestSent.keepRequest" />}
+            errorMessage={
+              <FormattedMessage id="RequestSent.withdrawFailed" values={{ name: modelFirstName }} />
+            }
           />
         ) : null}
         {showMakeCounterOfferModal ? (

@@ -9,8 +9,8 @@ import css from './RequestSent.module.css';
 
 /**
  * The client's "request sent" card (B07): did it go through, the real reply-by deadline, and
- * what happens next. Shown while the booking is Requested (state/preauthorized). No withdraw
- * link in stage 2 (open question 9 is stage 3).
+ * what happens next. Shown while the booking is Requested (state/preauthorized). Q9: the client
+ * can withdraw the request (with a confirmation), once the process version allows it.
  *
  * @component
  * @param {Object} props
@@ -18,10 +18,12 @@ import css from './RequestSent.module.css';
  * @param {string} [props.deadlineLabel] "Tue 3 Nov, 16:20"
  * @param {'window'|'shootStart'} [props.deadlineKind]
  * @param {string} [props.sentAtLabel] "Sun 1 Nov, 16:20"
+ * @param {Function} [props.onWithdraw] opens the withdraw confirmation; omitted = no link (the
+ *   booking's process version has no withdraw transition)
  * @returns {JSX.Element}
  */
 const RequestSentCard = props => {
-  const { modelName, deadlineLabel, deadlineKind = 'window', sentAtLabel } = props;
+  const { modelName, deadlineLabel, deadlineKind = 'window', sentAtLabel, onWithdraw } = props;
   const strong = text => <strong>{text}</strong>;
 
   return (
@@ -107,6 +109,11 @@ const RequestSentCard = props => {
         <NamedLink name="SearchPage" className={css.secondaryLink}>
           <FormattedMessage id="RequestSent.browseMore" />
         </NamedLink>
+        {onWithdraw ? (
+          <button type="button" className={css.withdrawButton} onClick={onWithdraw}>
+            <FormattedMessage id="RequestSent.withdraw" />
+          </button>
+        ) : null}
       </div>
     </section>
   );

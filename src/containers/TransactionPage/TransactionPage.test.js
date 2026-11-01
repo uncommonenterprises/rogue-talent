@@ -1715,3 +1715,129 @@ describe('B08 model request: the reply', () => {
     expect(onTransition).toHaveBeenCalledWith(requestTx.id, transitions.ACCEPT, {});
   });
 });
+
+describe('Q9 withdraw request (client, while Requested)', () => {
+  const provider = createUser('provider');
+  const customer = createUser('customer');
+  const transitions = getProcess('default-booking').transitions;
+  const requestTx = createTransaction({
+    id: 'tx-q9',
+    customer,
+    provider,
+    listing: createListing('listing-q9', {
+      publicData: {
+        listingType: 'rent-bikes',
+        transactionProcessAlias: 'default-booking/release-1',
+        unitType: 'day',
+      },
+    }),
+    booking: createBooking('booking-q9', {
+      start: new Date(Date.UTC(2026, 10, 25)),
+      end: new Date(Date.UTC(2026, 10, 27)),
+    }),
+    processName: 'default-booking',
+    lastTransition: transitions.CONFIRM_PAYMENT,
+    lineItems: [
+      {
+        code: LINE_ITEM_DAY,
+        includeFor: ['customer', 'provider'],
+        quantity: new Decimal(2),
+        unitPrice: new Money(45000, 'GBP'),
+        lineTotal: new Money(90000, 'GBP'),
+        reversal: false,
+      },
+    ],
+  });
+  const next = names => names.map(name => ({ id: new UUID(name), attributes: { name } }));
+
+  const renderRequested = (onTransition, nextTransitions) =>
+    render(
+      <TransactionPageComponent
+        currentUser={createCurrentUser('customer')}
+        transactionRole={TX_TRANSITION_ACTOR_CUSTOMER}
+        transaction={requestTx}
+        params={{ id: 'tx-q9' }}
+        totalMessagePages={1}
+        oldestMessagePageFetched={1}
+        messages={[]}
+        nextTransitions={nextTransitions}
+        history={{ push: noop, block: () => noop }}
+        location={{ search: '' }}
+        scrollingDisabled={false}
+        onManageDisableScrolling={noop}
+        onSendMessage={noop}
+        onSendReview={noop}
+        onShowMoreMessages={noop}
+        onTransition={onTransition}
+        onFetchTimeSlots={noop}
+        callSetInitialValues={noop}
+        onInitializeCardPaymentData={noop}
+        onFetchTransactionLineItems={noop}
+        monthlyTimeSlots={{}}
+        timeSlotsForDate={{}}
+      />,
+      { withPortals: true }
+    );
+
+  it('is hidden until the booking’s process version has the withdraw transition', async () => {
+    await act(async () => {
+      renderRequested(jest.fn(), next([transitions.EXPIRE]));
+    });
+    expect(screen.getByText('RequestSent.title')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'RequestSent.withdraw' })).not.toBeInTheDocument();
+  });
+
+  it('asks first, then withdraws (full release of the card hold)', async () => {
+    const onTransition = jest.fn(() => Promise.resolve({ meta: { requestStatus: 'fulfilled' } }));
+    await act(async () => {
+      renderRequested(onTransition, next([transitions.CUSTOMER_WITHDRAW, transitions.EXPIRE]));
+    });
+    const { userEvent } = testingLibrary;
+
+    // The dialog is mounted (closed) from the start, so the card's button is the first one.
+    await userEvent.click(screen.getAllByRole('button', { name: 'RequestSent.withdraw' })[0]);
+    expect(onTransition).not.toHaveBeenCalled();
+    const title = await screen.findByText('RequestSent.withdrawTitle');
+    expect(screen.getByText('RequestSent.withdrawBody')).toBeInTheDocument();
+
+    const dialog = title.closest('h2').parentElement;
+    await userEvent.click(within(dialog).getByRole('button', { name: 'RequestSent.withdraw' }));
+    expect(onTransition).toHaveBeenCalledWith(requestTx.id, transitions.CUSTOMER_WITHDRAW, {});
+  });
+
+  it('a withdrawn request reads Cancelled on both sides, with who withdrew and no charge', async () => {
+    const withdrawnTx = { ...requestTx, attributes: { ...requestTx.attributes } };
+    withdrawnTx.attributes.lastTransition = transitions.CUSTOMER_WITHDRAW;
+    await act(async () => {
+      render(
+        <TransactionPageComponent
+          currentUser={createCurrentUser('provider')}
+          transactionRole={TX_TRANSITION_ACTOR_PROVIDER}
+          transaction={withdrawnTx}
+          params={{ id: 'tx-q9' }}
+          totalMessagePages={1}
+          oldestMessagePageFetched={1}
+          messages={[]}
+          history={{ push: noop, block: () => noop }}
+          location={{ search: '' }}
+          scrollingDisabled={false}
+          onManageDisableScrolling={noop}
+          onSendMessage={noop}
+          onSendReview={noop}
+          onShowMoreMessages={noop}
+          onTransition={noop}
+          onFetchTimeSlots={noop}
+          callSetInitialValues={noop}
+          onInitializeCardPaymentData={noop}
+          onFetchTransactionLineItems={noop}
+          monthlyTimeSlots={{}}
+          timeSlotsForDate={{}}
+        />
+      );
+    });
+    expect(screen.getByText('BookingStatus.cancelled')).toBeInTheDocument();
+    expect(screen.getByText('BookingStatus.banner.provider.withdrawn.title')).toBeInTheDocument();
+    expect(screen.getByText('BookingStatus.banner.provider.withdrawn.body')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'ModelRequest.accept' })).not.toBeInTheDocument();
+  });
+});
