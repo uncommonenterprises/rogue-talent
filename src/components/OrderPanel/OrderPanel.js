@@ -25,6 +25,7 @@ import {
 import { formatMoney } from '../../util/currency';
 import { createSlug, parse, stringify } from '../../util/urlHelpers';
 import { userDisplayNameAsString } from '../../util/data';
+import { getModelFirstName } from '../../util/modelProfile';
 import {
   OFFER,
   REQUEST,
@@ -39,6 +40,8 @@ import {
 import { ModalInMobile, PrimaryButton, AvatarSmall, H1, H2 } from '../../components';
 import PriceVariantPicker from './PriceVariantPicker/PriceVariantPicker';
 import SubmitFinePrint from './SubmitFinePrint/SubmitFinePrint';
+import BookingPanel from './BookingPanel/BookingPanel';
+import { getBookingPanelState } from './bookingPanelState';
 
 import css from './OrderPanel.module.css';
 
@@ -76,6 +79,7 @@ const NegotiationRequestQuoteForm = loadable(() =>
 const MODAL_BREAKPOINT = 1023;
 const TODAY = new Date();
 const ORDER_PANEL_SUBMIT_BUTTON_ID = 'orderPanelSubmitButton';
+const BOOKING_DATES_FORM_ID = 'OrderPanelBookingDatesForm';
 
 const isPublishedListing = listing => {
   return listing.attributes.state === LISTING_STATE_PUBLISHED;
@@ -305,6 +309,9 @@ const OrderPanel = props => {
     fetchLineItemsError,
     payoutDetailsWarning,
     showListingImage,
+    currentUser,
+    isAuthenticated = false,
+    editParams,
   } = props;
 
   const publicData = listing?.attributes?.publicData || {};
@@ -426,6 +433,53 @@ const OrderPanel = props => {
   const classes = classNames(rootClassName || css.root, className);
   const titleClasses = classNames(titleClassName || css.orderTitle);
 
+  // Rogue Talent model profile (B03/B04): daily bookings use the booking panel (sticky panel on
+  // desktop, bottom bar + dates sheet on phones) with its account-aware states.
+  if (shouldHaveBookingDates && !showPriceMissing && !showInvalidCurrency) {
+    const panelState = getBookingPanelState({
+      isAuthenticated,
+      currentUser,
+      isOwnListing,
+      isClosed,
+    });
+    const modelName = getModelFirstName(author, listing?.attributes?.title);
+    const renderBookingForm = (layout, onDatesChange) =>
+      showBookingDatesForm ? (
+        <BookingDatesForm
+          seatsEnabled={false}
+          formId={BOOKING_DATES_FORM_ID}
+          layout={layout}
+          modelName={modelName}
+          minNoticeKey={publicData?.min_booking_notice}
+          onDatesChange={onDatesChange}
+          dayCountAvailableForBooking={dayCountAvailableForBooking}
+          monthlyTimeSlots={monthlyTimeSlots}
+          onFetchTimeSlots={onFetchTimeSlots}
+          timeZone={timeZone}
+          {...priceVariantsMaybe}
+          {...sharedProps}
+        />
+      ) : null;
+
+    return (
+      <BookingPanel
+        className={classes}
+        panelState={panelState}
+        price={price}
+        marketplaceCurrency={marketplaceCurrency}
+        modelName={modelName}
+        renderBookingForm={renderBookingForm}
+        formId={BOOKING_DATES_FORM_ID}
+        isSheetOpen={isOrderOpen}
+        onOpenSheet={() => openOrderModal(isOwnListing, isClosed, history, location)}
+        onCloseSheet={() => closeOrderModal(history, location)}
+        onManageDisableScrolling={onManageDisableScrolling}
+        editParams={editParams}
+        fromPath={`${location.pathname}${location.search}`}
+      />
+    );
+  }
+
   return (
     <div className={classes}>
       <ModalInMobile
@@ -511,7 +565,7 @@ const OrderPanel = props => {
           <BookingDatesForm
             seatsEnabled={seatsEnabled}
             className={css.bookingForm}
-            formId="OrderPanelBookingDatesForm"
+            formId={BOOKING_DATES_FORM_ID}
             dayCountAvailableForBooking={dayCountAvailableForBooking}
             monthlyTimeSlots={monthlyTimeSlots}
             onFetchTimeSlots={onFetchTimeSlots}

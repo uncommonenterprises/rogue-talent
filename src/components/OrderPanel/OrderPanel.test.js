@@ -2,7 +2,13 @@ import React from 'react';
 import '@testing-library/jest-dom';
 
 import { types as sdkTypes } from '../../util/sdkLoader';
-import { createListing, createStock, createUser, fakeIntl } from '../../util/testData';
+import {
+  createCurrentUser,
+  createListing,
+  createStock,
+  createUser,
+  fakeIntl,
+} from '../../util/testData';
 import {
   renderWithProviders as render,
   testingLibrary,
@@ -267,17 +273,63 @@ describe('OrderPanel', () => {
       routeConfiguration,
     });
     await waitFor(() => {
-      expect(queryAllByText('title!')).toHaveLength(2);
-      expect(queryAllByText('OrderPanel.price')).toHaveLength(1);
-      expect(queryAllByText('OrderPanel.priceInMobileCTA')).toHaveLength(1);
-      expect(queryAllByText('OrderPanel.perUnit')).toHaveLength(1);
-      expect(queryAllByText('OrderPanel.author')).toHaveLength(2);
-      expect(getByText('BookingDatesForm.bookingStartTitle')).toBeInTheDocument();
-      expect(getByText('BookingDatesForm.bookingEndTitle')).toBeInTheDocument();
-      expect(getByText('BookingDatesForm.requestToBook')).toBeInTheDocument();
-      expect(getByText('OrderPanel.youWontBeChargedInfo')).toBeInTheDocument();
-      expect(getByText('OrderPanel.ctaButtonMessageBooking')).toBeInTheDocument();
+      // B03: logged out, the panel and the phone bar both offer "Log in to book"
+      expect(queryAllByText('OrderPanel.perDayShort')).toHaveLength(1);
+      expect(queryAllByText('OrderPanel.perDayLong')).toHaveLength(1);
+      expect(getByText('OrderPanel.loggedOutLede')).toBeInTheDocument();
+      expect(queryAllByText('OrderPanel.logInToBook')).toHaveLength(2);
+      expect(getByText('OrderPanel.createClientAccount')).toBeInTheDocument();
+      // No author line or contact before a request exists (open question 7)
+      expect(queryAllByText('OrderPanel.author')).toHaveLength(0);
     });
+  });
+
+  it('Booking: daily, logged-in client on desktop sees the dates and "Select dates"', async () => {
+    const originalMatchMedia = window.matchMedia;
+    window.matchMedia = query => ({
+      matches: false,
+      media: query,
+      addEventListener: () => {},
+      removeEventListener: () => {},
+    });
+    const listing = createListing('listing-day-2', {
+      title: 'the listing',
+      price: new Money(1000, 'USD'),
+      availabilityPlan: { type: 'availability-plan/day', timezone: 'Etc/UTC', entries: [] },
+      publicData: {
+        listingType: 'rent-bicycles-daily',
+        transactionProcessAlias: 'default-booking/release-1',
+        unitType: 'day',
+      },
+    });
+    const currentUser = createCurrentUser('client', {
+      profile: {
+        displayName: 'Ben C',
+        abbreviatedName: 'BC',
+        publicData: { userType: 'client' },
+      },
+    });
+    const props = {
+      ...commonProps,
+      listing,
+      isOwnListing: false,
+      validListingTypes,
+      isAuthenticated: true,
+      currentUser,
+    };
+    const { getByText, queryAllByText } = render(<OrderPanel {...props} />, {
+      config,
+      routeConfiguration,
+    });
+    await waitFor(() => {
+      expect(getByText('BookingDatesForm.startLabel')).toBeInTheDocument();
+      expect(getByText('BookingDatesForm.endLabel')).toBeInTheDocument();
+      // Panel CTA + phone bar CTA
+      expect(queryAllByText('BookingDatesForm.selectDates')).toHaveLength(2);
+      expect(getByText('BookingDatesForm.finePrint')).toBeInTheDocument();
+      expect(queryAllByText('OrderPanel.logInToBook')).toHaveLength(0);
+    });
+    window.matchMedia = originalMatchMedia;
   });
 
   it('Booking: nightly', async () => {
@@ -317,16 +369,14 @@ describe('OrderPanel', () => {
       routeConfiguration,
     });
     await waitFor(() => {
-      expect(queryAllByText('title!')).toHaveLength(2);
-      expect(queryAllByText('OrderPanel.price')).toHaveLength(1);
-      expect(queryAllByText('OrderPanel.priceInMobileCTA')).toHaveLength(1);
-      expect(queryAllByText('OrderPanel.perUnit')).toHaveLength(1);
-      expect(queryAllByText('OrderPanel.author')).toHaveLength(2);
-      expect(getByText('BookingDatesForm.bookingStartTitle')).toBeInTheDocument();
-      expect(getByText('BookingDatesForm.bookingEndTitle')).toBeInTheDocument();
-      expect(getByText('BookingDatesForm.requestToBook')).toBeInTheDocument();
-      expect(getByText('OrderPanel.youWontBeChargedInfo')).toBeInTheDocument();
-      expect(getByText('OrderPanel.ctaButtonMessageBooking')).toBeInTheDocument();
+      // B03: logged out, the panel and the phone bar both offer "Log in to book"
+      expect(queryAllByText('OrderPanel.perDayShort')).toHaveLength(1);
+      expect(queryAllByText('OrderPanel.perDayLong')).toHaveLength(1);
+      expect(getByText('OrderPanel.loggedOutLede')).toBeInTheDocument();
+      expect(queryAllByText('OrderPanel.logInToBook')).toHaveLength(2);
+      expect(getByText('OrderPanel.createClientAccount')).toBeInTheDocument();
+      // No author line or contact before a request exists (open question 7)
+      expect(queryAllByText('OrderPanel.author')).toHaveLength(0);
     });
   });
 
