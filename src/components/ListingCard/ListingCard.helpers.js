@@ -1,5 +1,6 @@
 import { displayPrice, isPriceVariationsEnabled } from '../../util/configHelpers';
-import { formatMoney } from '../../util/currency';
+import { formatMoney, formatMoneyCompact } from '../../util/currency';
+import { getModelCity } from '../../util/modelProfile';
 import { richText } from '../../util/richText';
 import { isBookingProcessAlias } from '../../transactions/transaction';
 
@@ -112,7 +113,7 @@ const enumLabel = (fieldConfig, value) =>
 
 /**
  * Extract the model-attribute data shown on the talent card (rt-talent): the model's
- * location, a short meta line (gender · height · experience), their categories, and the
+ * city, a short meta line (gender · height · experience), their categories, and the
  * formatted day rate. Reads the attributes off the listing's publicData (config maps enum
  * values to labels).
  *
@@ -123,12 +124,13 @@ const enumLabel = (fieldConfig, value) =>
  */
 export const getTalentCardData = (listing, config, intl) => {
   const { price, publicData } = listing?.attributes || {};
-  const location = publicData?.location?.address || null;
+  // City only ("Manchester"), never the rest of the address (B01).
+  const location = getModelCity(publicData);
 
   const gender = publicData?.gender
     ? enumLabel(findListingField(config, 'gender'), publicData.gender)
     : null;
-  const height = typeof publicData?.height_cm === 'number' ? `${publicData.height_cm}cm` : null;
+  const height = typeof publicData?.height_cm === 'number' ? `${publicData.height_cm} cm` : null;
   // Card meta wants the short label. The experience_level enum labels carry a
   // "(longer description)" suffix that's fine on the listing detail page but too long
   // for a compact card line — strip it here (card-only).
@@ -143,7 +145,11 @@ export const getTalentCardData = (listing, config, intl) => {
     ? publicData.modelling_categories.map(v => enumLabel(catField, v)).filter(Boolean)
     : [];
 
-  const { formattedPrice } = priceData(price, config.currency, intl);
+  // Whole pounds without ".00" (B01: "£450 / day").
+  const formattedPrice =
+    price && price.currency === config.currency
+      ? formatMoneyCompact(intl, price)
+      : priceData(price, config.currency, intl).formattedPrice;
 
   return {
     author: listing?.author,

@@ -48,7 +48,7 @@ describe('ListingCard', () => {
     expect(tree.asFragment().firstChild).toMatchSnapshot();
   });
 
-  describe('Verified badge (account-status lifecycle §9)', () => {
+  describe('Verified badge (retired, B01 / open question 1)', () => {
     const verifiedAuthor = createUser('user1', {
       profile: {
         displayName: 'user1 display name',
@@ -66,16 +66,47 @@ describe('ListingCard', () => {
       }
     });
 
-    it('renders the Verified badge for a verified model when the flow flag is OFF (today)', () => {
+    it('never renders the per-card Verified badge, whatever the flow flag', () => {
       delete process.env.REACT_APP_ACCOUNT_STATUS_FLOW_ENABLED;
-      const { queryByText } = render(<ListingCard listing={verifiedListing} intl={fakeIntl} />);
-      expect(queryByText('VerifiedBadge.label')).toBeInTheDocument();
+      const off = render(<ListingCard listing={verifiedListing} intl={fakeIntl} />);
+      expect(off.queryByText('VerifiedBadge.label')).not.toBeInTheDocument();
+      off.unmount();
+      process.env.REACT_APP_ACCOUNT_STATUS_FLOW_ENABLED = 'true';
+      const on = render(<ListingCard listing={verifiedListing} intl={fakeIntl} />);
+      expect(on.queryByText('VerifiedBadge.label')).not.toBeInTheDocument();
+    });
+  });
+
+  describe('search variant (B01)', () => {
+    const listing = createListing(
+      'listing1',
+      {
+        publicData: {
+          location: { address: 'Manchester, UK' },
+          modelling_categories: ['fashion', 'editorial', 'commercial', 'beauty'],
+        },
+      },
+      { author: createUser('user1') }
+    );
+
+    it('shows the city only and two categories plus a count', () => {
+      const { getByText, queryByText } = render(
+        <ListingCard listing={listing} intl={fakeIntl} variant="search" />
+      );
+      expect(getByText('Manchester')).toBeInTheDocument();
+      expect(queryByText('Manchester, UK')).not.toBeInTheDocument();
+      expect(getByText('ListingCard.moreCategories')).toBeInTheDocument();
     });
 
-    it('does NOT render the Verified badge when the flow flag is ON (Verified-only visibility)', () => {
-      process.env.REACT_APP_ACCOUNT_STATUS_FLOW_ENABLED = 'true';
-      const { queryByText } = render(<ListingCard listing={verifiedListing} intl={fakeIntl} />);
-      expect(queryByText('VerifiedBadge.label')).not.toBeInTheDocument();
+    it('shows "free on your dates" only when asked to', () => {
+      const without = render(<ListingCard listing={listing} intl={fakeIntl} variant="search" />);
+      expect(without.queryByText('ListingCard.freeOnYourDates')).not.toBeInTheDocument();
+      without.unmount();
+      const withDates = render(
+        <ListingCard listing={listing} intl={fakeIntl} variant="search" showAvailability />
+      );
+      expect(withDates.getByText('ListingCard.freeOnYourDates')).toBeInTheDocument();
+      expect(withDates.getByText('ListingCard.free')).toBeInTheDocument();
     });
   });
 });
