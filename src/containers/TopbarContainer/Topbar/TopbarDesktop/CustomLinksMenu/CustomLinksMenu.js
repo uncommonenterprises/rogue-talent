@@ -5,11 +5,11 @@ import LinksMenu from './LinksMenu';
 
 import css from './CustomLinksMenu.module.css';
 
-const createListingLinkConfigMaybe = (intl, showLink, currentUser, currentUserHasListings) => {
+const createListingLinkConfigMaybe = (intl, showLink, primaryLink) => {
   if (!showLink) {
     return [];
   }
-  const { name, params, labelId } = primaryActionLink(currentUser, currentUserHasListings);
+  const { name, params, labelId } = primaryLink || primaryActionLink();
   return [
     {
       group: 'primary',
@@ -17,9 +17,22 @@ const createListingLinkConfigMaybe = (intl, showLink, currentUser, currentUserHa
       type: 'internal',
       route: { name, params },
       highlight: true,
+      isPrimaryAction: true,
     },
   ];
 };
+
+// The link list is measured once, but the primary action changes when the model's profile is
+// looked up ("Create your profile" -> "Your profile"). Keep its text and target current without
+// re-measuring.
+const withCurrentPrimaryAction = (links, primaryLinkConfig) =>
+  primaryLinkConfig && Array.isArray(links)
+    ? links.map(l =>
+        l?.isPrimaryAction
+          ? { ...l, text: primaryLinkConfig.text, route: primaryLinkConfig.route }
+          : l
+      )
+    : links;
 
 /**
  * Group links to 2 groups:
@@ -110,21 +123,26 @@ const CustomLinksMenu = ({
   hasClientSideContentReady,
   intl,
   showCreateListingsLink,
-  currentUser,
-  currentUserHasListings,
+  primaryLink,
 }) => {
   const containerRef = useRef(null);
   const observer = useRef(null);
   const [mounted, setMounted] = useState(false);
   const [moreLabelWidth, setMoreLabelWidth] = useState(0);
-  const [links, setLinks] = useState([
-    ...createListingLinkConfigMaybe(intl, showCreateListingsLink, currentUser, currentUserHasListings),
+  const [measuredLinks, setLinks] = useState([
+    ...createListingLinkConfigMaybe(intl, showCreateListingsLink, primaryLink),
     ...customLinks,
   ]);
+  const [currentPrimaryLinkConfig] = createListingLinkConfigMaybe(
+    intl,
+    showCreateListingsLink,
+    primaryLink
+  );
+  const links = withCurrentPrimaryAction(measuredLinks, currentPrimaryLinkConfig);
 
   const [layoutData, setLayoutData] = useState({
-    priorityLinks: links,
-    menuLinks: links,
+    priorityLinks: measuredLinks,
+    menuLinks: measuredLinks,
     containerWidth: 0,
   });
 
@@ -155,7 +173,11 @@ const CustomLinksMenu = ({
             const availableContainerWidth = calculateContainerWidth(target, bodyOffsetWidth);
 
             // The groupedLinks variable contains { priorityLinks, menuLinks }
-            const groupedLinks = groupMeasuredLinks(links, availableContainerWidth, moreLabelWidth);
+            const groupedLinks = groupMeasuredLinks(
+              measuredLinks,
+              availableContainerWidth,
+              moreLabelWidth
+            );
             // The setLayoutData call affects the UI. This pushes the painting to the next frame.
             animationFrameId = window.requestAnimationFrame(() => {
               if (container) {
@@ -189,17 +211,21 @@ const CustomLinksMenu = ({
         window.cancelAnimationFrame(animationFrameId);
       }
     };
-  }, [containerRef, hasClientSideContentReady, moreLabelWidth, links]);
+  }, [containerRef, hasClientSideContentReady, moreLabelWidth, measuredLinks]);
 
-  const { priorityLinks, menuLinks, containerWidth } = layoutData;
+  const priorityLinks = withCurrentPrimaryAction(
+    layoutData.priorityLinks,
+    currentPrimaryLinkConfig
+  );
+  const menuLinks = withCurrentPrimaryAction(layoutData.menuLinks, currentPrimaryLinkConfig);
+  const { containerWidth } = layoutData;
 
   // If there are no custom links, just render the single primary action link.
   if (customLinks?.length === 0 && showCreateListingsLink) {
     return (
       <CreateListingMenuLink
         customLinksMenuClass={css.createListingLinkOnly}
-        currentUser={currentUser}
-        currentUserHasListings={currentUserHasListings}
+        primaryLink={primaryLink}
       />
     );
   }

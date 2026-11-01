@@ -57,7 +57,14 @@ const InboxLink = ({ notificationCount, inboxTab, inboxLabelId }) => {
   );
 };
 
-const ProfileMenu = ({ currentPage, currentUser, onLogout, showManageListingsLink, intl }) => {
+const ProfileMenu = ({
+  currentPage,
+  currentUser,
+  onLogout,
+  showManageListingsLink,
+  showAccountStatusLink,
+  intl,
+}) => {
   const currentPageClass = page => {
     const isAccountSettingsPage =
       page === 'AccountSettingsPage' && ACCOUNT_SETTINGS_PAGES.includes(currentPage);
@@ -75,6 +82,17 @@ const ProfileMenu = ({ currentPage, currentUser, onLogout, showManageListingsLin
         <Avatar className={css.avatar} user={currentUser} disableProfileLink />
       </MenuLabel>
       <MenuContent className={css.profileMenuContent}>
+        {showAccountStatusLink ? (
+          <MenuItem key="AccountStatusPage">
+            <NamedLink
+              className={classNames(css.menuLink, currentPageClass('AccountStatusPage'))}
+              name="AccountStatusPage"
+            >
+              <span className={css.menuItemBorder} />
+              <FormattedMessage id="TopbarDesktop.accountStatusLink" />
+            </NamedLink>
+          </MenuItem>
+        ) : null}
         {showManageListingsLink ? (
           <MenuItem key="ManageListingsPage">
             <NamedLink
@@ -136,6 +154,8 @@ const ProfileMenu = ({ currentPage, currentUser, onLogout, showManageListingsLin
  * @param {string} props.inboxTab
  * @param {string?} props.accountStatus the user's account-status lifecycle status, when the page
  *   shows it (the account-status page does); renders the compact rt-status chip, linked to it
+ * @param {Object} props.primaryLink the primary provider action (see primaryActionLink)
+ * @param {boolean} props.showAccountStatusLink add "Account status" to the profile menu
  * @returns {JSX.Element} search icon
  */
 const TopbarDesktop = props => {
@@ -144,7 +164,6 @@ const TopbarDesktop = props => {
     config,
     customLinks,
     currentUser,
-    currentUserHasListings,
     currentPage,
     rootClassName,
     notificationCount = 0,
@@ -159,6 +178,8 @@ const TopbarDesktop = props => {
     showCreateListingsLink,
     inboxTab,
     accountStatus,
+    primaryLink,
+    showAccountStatusLink = false,
   } = props;
   const [mounted, setMounted] = useState(false);
 
@@ -207,6 +228,7 @@ const TopbarDesktop = props => {
       currentUser={currentUser}
       onLogout={onLogout}
       showManageListingsLink={showCreateListingsLink}
+      showAccountStatusLink={showAccountStatusLink}
       intl={intl}
     />
   ) : null;
@@ -250,8 +272,7 @@ const TopbarDesktop = props => {
         intl={intl}
         hasClientSideContentReady={authenticatedOnClientSide || !isAuthenticatedOrJustHydrated}
         showCreateListingsLink={showCreateListingsLink}
-        currentUser={currentUser}
-        currentUserHasListings={currentUserHasListings}
+        primaryLink={primaryLink}
       />
 
       {accountStatusMaybe}

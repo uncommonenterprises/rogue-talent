@@ -71,6 +71,8 @@ const CustomLinkComponent = ({ linkConfig, currentPage }) => {
  * @param {number} props.notificationCount
  * @param {Array<Object>} props.customLinks Contains object like { group, text, type, href, route }
  * @param {Function} props.onLogout
+ * @param {Object} props.primaryLink the primary provider action (see primaryActionLink)
+ * @param {boolean} props.showAccountStatusLink add the "Account status" link
  * @returns {JSX.Element} search icon
  */
 const TopbarMobileMenu = props => {
@@ -79,13 +81,14 @@ const TopbarMobileMenu = props => {
     currentPage,
     inboxTab,
     currentUser,
-    currentUserHasListings,
     isProvider,
     isCustomer,
     notificationCount = 0,
     customLinks,
     onLogout,
     showCreateListingsLink,
+    primaryLink: primaryLinkProp,
+    showAccountStatusLink = false,
   } = props;
 
   const user = ensureCurrentUser(currentUser);
@@ -107,17 +110,19 @@ const TopbarMobileMenu = props => {
     );
   });
 
-  // Model who already has a profile links to it ("My profile"); otherwise invite to create one.
-  const primaryLink = primaryActionLink(currentUser, currentUserHasListings);
-  const createListingsLinkMaybe = showCreateListingsLink ? (
-    <NamedLink
-      className={css.createNewListingLink}
-      name={primaryLink.name}
-      params={primaryLink.params}
-    >
-      <FormattedMessage id={primaryLink.labelId} />
-    </NamedLink>
-  ) : null;
+  // Run-through finding 2 (M3): a model who already has a profile gets "Your profile" in the
+  // list below (to their draft or the dashboard) and no big "Create your profile" button.
+  const primaryLink = primaryLinkProp || primaryActionLink();
+  const createListingsLinkMaybe =
+    showCreateListingsLink && !primaryLink.hasProfile ? (
+      <NamedLink
+        className={css.createNewListingLink}
+        name={primaryLink.name}
+        params={primaryLink.params}
+      >
+        <FormattedMessage id={primaryLink.labelId} />
+      </NamedLink>
+    ) : null;
 
   if (!isAuthenticated) {
     const signup = (
@@ -172,10 +177,21 @@ const TopbarMobileMenu = props => {
     return currentPage === page || isAccountSettingsPage || isInboxPage ? css.currentPage : null;
   };
 
+  const yourProfileLink = primaryLink.hasProfile
+    ? { name: primaryLink.name, params: primaryLink.params }
+    : { name: 'ManageListingsPage', params: {} };
   const manageListingsLinkMaybe = showCreateListingsLink ? (
-    <li className={classNames(css.navigationLink, currentPageClass('ManageListingsPage'))}>
-      <NamedLink name="ManageListingsPage">
+    <li className={classNames(css.navigationLink, currentPageClass(yourProfileLink.name))}>
+      <NamedLink name={yourProfileLink.name} params={yourProfileLink.params}>
         <FormattedMessage id="TopbarMobileMenu.yourListingsLink" />
+      </NamedLink>
+    </li>
+  ) : null;
+
+  const accountStatusLinkMaybe = showAccountStatusLink ? (
+    <li className={classNames(css.navigationLink, currentPageClass('AccountStatusPage'))}>
+      <NamedLink name="AccountStatusPage">
+        <FormattedMessage id="TopbarMobileMenu.accountStatusLink" />
       </NamedLink>
     </li>
   ) : null;
@@ -198,6 +214,7 @@ const TopbarMobileMenu = props => {
               {notificationCountBadge}
             </NamedLink>
           </li>
+          {accountStatusLinkMaybe}
           {manageListingsLinkMaybe}
           <li className={classNames(css.navigationLink, currentPageClass('ProfileSettingsPage'))}>
             <NamedLink name="ProfileSettingsPage">
