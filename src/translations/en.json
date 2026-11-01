@@ -315,7 +315,7 @@
   "BookingStatus.banner.provider.refunded.title": "This booking was refunded.",
   "BookingStatus.banner.provider.underReview.body": "We've paused this payment while our team reviews the booking. We'll be in touch as soon as we can.",
   "BookingStatus.banner.provider.underReview.title": "We're reviewing this booking.",
-  "BookingStatus.banner.provider.withdrawn.body": "The request has ended and the client wasn't charged. Your calendar hasn't changed.",
+  "BookingStatus.banner.provider.withdrawn.body": "The request has ended and the client wasn't charged. The dates stay open on your calendar.",
   "BookingStatus.banner.provider.withdrawn.title": "{client} withdrew this request.",
   "BookingStatus.cancelled": "Cancelled",
   "BookingStatus.completed": "Completed",
