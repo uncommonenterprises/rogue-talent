@@ -105,13 +105,18 @@
 
 /* Make the email pop (the rest of screen 04 is styled in EmailVerificationInfo.module.css) */
 .email {
+  /* On its own line inside the "Check your inbox" text (finding 13). */
+  display: block;
+  margin: var(--space-1) 0;
   font-weight: var(--fontWeightHighlightEmail);
   color: var(--text-primary);
-
-  /* fallback option */
-  word-break: break-all;
-  /* use break-word if available */
-  word-break: break-word;
   /* Never insert a hyphen into an email address when it wraps (it reads as part of the address) */
   hyphens: manual;
+}
+
+/* Each part of the address wraps as a whole; only a part wider than the line breaks inside. */
+.emailPart {
+  display: inline-block;
+  max-width: 100%;
+  overflow-wrap: anywhere;
 }

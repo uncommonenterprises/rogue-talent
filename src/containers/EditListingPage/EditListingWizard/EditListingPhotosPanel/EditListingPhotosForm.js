@@ -305,13 +305,21 @@ export const EditListingPhotosForm = props => {
               <span className={css.chooseImageText}>
                 {isEmptyState ? <IconUpload /> : <IconAdd />}
                 <span className={css.chooseImage}>
-                  <FormattedMessage
-                    id={
-                      isEmptyState
-                        ? 'EditListingPhotosForm.chooseImage'
-                        : 'EditListingPhotosForm.addMore'
-                    }
-                  />
+                  {isEmptyState ? (
+                    // Run-through M8: phones and tablets can't drag files, so touch screens
+                    // get "Tap to add photos". Chosen in CSS (pointer / hover media queries),
+                    // so the server and browser render the same markup.
+                    <>
+                      <span className={css.pointerOnlyText}>
+                        <FormattedMessage id="EditListingPhotosForm.chooseImage" />
+                      </span>
+                      <span className={css.touchOnlyText}>
+                        <FormattedMessage id="EditListingPhotosForm.chooseImageTouch" />
+                      </span>
+                    </>
+                  ) : (
+                    <FormattedMessage id="EditListingPhotosForm.addMore" />
+                  )}
                 </span>
                 {isEmptyState ? (
                   <span className={css.imageTypes}>

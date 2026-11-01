@@ -31,6 +31,39 @@ const getTouchCoordinates = nativeEvent => {
   return touch ? { x: touch.screenX, y: touch.screenY } : null;
 };
 
+// Run-through 01/11/2026, M1: on phones the on-screen keyboard covers the lower half of the
+// screen, so a field near the bottom shows its suggestions underneath it. Fields that opt in
+// (scrollIntoViewOnFocus) are scrolled near the top of the viewport when focused, leaving room
+// for the suggestion list above the keyboard.
+const SCROLL_ON_FOCUS_MAX_WIDTH = 767;
+const SCROLL_ON_FOCUS_TOP_GAP = 96; // clears a sticky top bar and keeps the label in view
+const SCROLL_ON_FOCUS_DELAY = 300; // let the keyboard open (and iOS's own scroll) first
+
+const isPhoneWidth = () =>
+  typeof window !== 'undefined' &&
+  !!window.matchMedia &&
+  window.matchMedia(`(max-width: ${SCROLL_ON_FOCUS_MAX_WIDTH}px)`).matches;
+
+// Short pages (e.g. "About you") can't scroll far enough to lift the field, so while the field
+// has focus the page gets temporary bottom room of one screen height. Returns a function that
+// removes it again.
+const addScrollRoom = () => {
+  const body = document.body;
+  const previous = body.style.paddingBottom;
+  body.style.paddingBottom = `${window.innerHeight}px`;
+  return () => {
+    body.style.paddingBottom = previous;
+  };
+};
+
+const scrollFieldNearTop = element => {
+  if (!element || !isPhoneWidth()) {
+    return;
+  }
+  const top = element.getBoundingClientRect().top + window.scrollY - SCROLL_ON_FOCUS_TOP_GAP;
+  window.scrollTo({ top: Math.max(top, 0), behavior: 'smooth' });
+};
+
 // Get correct geocoding variant: geocoderGoogleMaps or geocoderMapbox
 const getGeocoderVariant = mapProvider => {
   const isGoogleMapsInUse = mapProvider === 'googleMaps';
@@ -174,7 +207,17 @@ class LocationAutocompleteInputImplementation extends Component {
 
   componentWillUnmount() {
     window.clearTimeout(this.shortQueryTimeout);
+    window.clearTimeout(this.scrollOnFocusTimeout);
+    this.releaseScrollRoom();
     this._isMounted = false;
+  }
+
+  // Undo the temporary bottom room added on focus (scrollIntoViewOnFocus).
+  releaseScrollRoom() {
+    if (this.removeScrollRoom) {
+      this.removeScrollRoom();
+      this.removeScrollRoom = null;
+    }
   }
 
   getGeocoder() {
@@ -364,7 +407,12 @@ class LocationAutocompleteInputImplementation extends Component {
     this.setState({ fetchingPredictions: true });
 
     return this.getGeocoder()
-      .getPlacePredictions(search, config.maps.search.countryLimit, config.localization.locale)
+      .getPlacePredictions(
+        search,
+        config.maps.search.countryLimit,
+        config.localization.locale,
+        this.props.placeTypes
+      )
       .then(results => {
         const { search: currentSearch } = currentValue(this.props);
         this.setState({ fetchingPredictions: false });
@@ -397,11 +445,18 @@ class LocationAutocompleteInputImplementation extends Component {
   }
 
   finalizeSelection() {
+    window.clearTimeout(this.scrollOnFocusTimeout);
+    this.releaseScrollRoom();
     this.setState({ inputHasFocus: false, highlightedIndex: -1 });
     this.props.input.onBlur(currentValue(this.props));
   }
 
   handleOnBlur() {
+    if (!this.state.selectionInProgress) {
+      // Leaving the field (or picking a suggestion) gives the page its normal height back.
+      window.clearTimeout(this.scrollOnFocusTimeout);
+      this.releaseScrollRoom();
+    }
     if (this.props.closeOnBlur && !this.state.selectionInProgress) {
       this.finalizeSelection();
     }
@@ -479,6 +534,17 @@ class LocationAutocompleteInputImplementation extends Component {
     const handleOnFocus = e => {
       this.setState({ inputHasFocus: true });
       onFocus(e);
+      if (this.props.scrollIntoViewOnFocus && isPhoneWidth()) {
+        const element = e.target;
+        if (!this.removeScrollRoom) {
+          this.removeScrollRoom = addScrollRoom();
+        }
+        window.clearTimeout(this.scrollOnFocusTimeout);
+        this.scrollOnFocusTimeout = window.setTimeout(
+          () => scrollFieldNearTop(element),
+          SCROLL_ON_FOCUS_DELAY
+        );
+      }
     };
 
     const rootClass = classNames(rootClassName || css.root, className);
@@ -628,6 +694,10 @@ class LocationAutocompleteInputImplementation extends Component {
  * @param {boolean} props.meta.touched
  * @param {Function | RefHook} props.inputRef
  * @param {ReactNode} props.CustomIcon override the default icon
+ * @param {Array<string>?} props.placeTypes restrict suggestions to these place types, e.g.
+ *   ['(cities)'] for towns and cities only (Google Places type collection)
+ * @param {boolean?} props.scrollIntoViewOnFocus on phones, scroll the field near the top when
+ *   focused so the suggestions aren't hidden by the keyboard
  * @returns {JSX.Element} LocationAutocompleteInputImpl component
  */
 const LocationAutocompleteInputImpl = props => {

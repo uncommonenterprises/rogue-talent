@@ -9,7 +9,9 @@ import css from './AuthShell.module.css';
 
 // Panel copy per auth screen (sign-up journey mockups 01 to 07). Each variant reads its copy from
 // en.json under `AuthShell.<variant>.*`. `points` is the number of tick points the panel shows and
-// `switchLink` is the optional link in the panel footer (duplicated under the form on mobile).
+// `switchLink` is the optional link in the panel footer, repeated under the form on mobile unless
+// `repeatOnMobile` is false: the login form already has its own "Don't have an account? Sign up"
+// line, so repeating "New here? Create an account" there duplicated it (run-through M10).
 const VARIANTS = {
   join: { points: 3, switchLink: null },
   model: {
@@ -21,7 +23,7 @@ const VARIANTS = {
     switchLink: { name: 'SignupForUserTypePage', params: { userType: 'model' } },
   },
   verify: { points: 0, switchLink: null },
-  login: { points: 0, switchLink: { name: 'SignupPage', params: {} } },
+  login: { points: 0, switchLink: { name: 'SignupPage', params: {} }, repeatOnMobile: false },
   recovery: { points: 0, switchLink: null },
 };
 
@@ -103,7 +105,7 @@ export const AuthFormHeader = props => {
 const AuthShell = props => {
   const { variant: variantProp, switchLinkTo, contentClassName, children } = props;
   const variant = VARIANTS[variantProp] ? variantProp : 'join';
-  const { points, switchLink } = VARIANTS[variant];
+  const { points, switchLink, repeatOnMobile = true } = VARIANTS[variant];
   const pointNumbers = Array.from({ length: points }, (_, i) => i + 1);
 
   return (
@@ -153,7 +155,7 @@ const AuthShell = props => {
       <main id="main-content" className={classNames(css.content, contentClassName)}>
         <div className={css.contentInner}>
           {children}
-          {switchLink ? (
+          {switchLink && repeatOnMobile ? (
             <p className={css.mobileSwitch}>
               <PanelFoot
                 variant={variant}

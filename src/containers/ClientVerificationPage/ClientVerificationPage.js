@@ -1,31 +1,74 @@
 import React, { useState } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
+import classNames from 'classnames';
 
 import { useConfiguration } from '../../context/configurationContext';
 import { FormattedMessage, useIntl } from '../../util/reactIntl';
 import { propTypes } from '../../util/types';
 import { ensureCurrentUser } from '../../util/data';
 import { isClientIdentityVerified } from '../../util/userHelpers';
+import {
+  ACCOUNT_STATUS_REJECTED,
+  REVIEW_DECISION_APPROVED,
+  getAccountStatus,
+  getReviewDecision,
+  isAccountStatusFlowEnabled,
+} from '../../util/accountStatus';
 import { isScrollingDisabled } from '../../ducks/ui.duck';
 import { fetchCurrentUser } from '../../ducks/user.duck';
 
-import {
-  Heading,
-  Page,
-  LayoutSingleColumn,
-  PrimaryButton,
-  NamedLink,
-  IconSpinner,
-} from '../../components';
+import { Page, LayoutSingleColumn, PrimaryButton, NamedLink } from '../../components';
 
 import TopbarContainer from '../TopbarContainer/TopbarContainer';
 import FooterContainer from '../FooterContainer/FooterContainer';
+import {
+  InfoList,
+  IconCheck,
+  IconClock,
+  IconIdCard,
+  IconShield,
+} from '../AccountStatusPage/StatusCard/StatusCard';
 
 import { createSession } from './ClientVerificationPage.duck';
 import css from './ClientVerificationPage.module.css';
 
 const NOT_CONFIGURED_CODE = 'identity-verification-not-configured';
+
+// 16px line icon for the privacy point (matches the info-list icons).
+const IconLock = () => (
+  <svg className={css.infoIcon} width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
+    <rect x="3" y="7" width="10" height="7" rx="1.5" stroke="currentColor" strokeWidth="1.3" />
+    <path d="M5.5 7V5a2.5 2.5 0 015 0v2" stroke="currentColor" strokeWidth="1.3" />
+  </svg>
+);
+
+/**
+ * The status-card look used on /account-status (journey.css .status-card): a round line icon,
+ * the Bricolage headline and a lede, then the step's content.
+ *
+ * @component
+ * @param {Object} props
+ * @param {ReactNode} props.icon
+ * @param {string} props.iconClassName colour variant for the icon circle
+ * @param {ReactNode} props.title
+ * @param {ReactNode} props.lede
+ * @param {ReactNode} props.children
+ * @returns {JSX.Element}
+ */
+const VerificationCard = props => {
+  const { icon, iconClassName, title, lede, children } = props;
+  return (
+    <section className={css.card}>
+      <div className={css.head}>
+        <div className={classNames(css.icon, iconClassName)}>{icon}</div>
+        <h1 className={css.title}>{title}</h1>
+        <p className={css.lede}>{lede}</p>
+      </div>
+      {children}
+    </section>
+  );
+};
 
 /**
  * SAF-03 — Client identity verification page (`/verify-identity`).
@@ -122,55 +165,90 @@ export const ClientVerificationPageComponent = props => {
 
   const title = intl.formatMessage({ id: 'ClientVerificationPage.title' });
 
-  const renderBody = () => {
-    if (isVerified) {
+  // Run-through 01/11/2026, finding 5: "You can now book models" is only true once the account
+  // is also review-approved (account status Verified). Read-only use of the lifecycle helpers;
+  // the booking gates themselves are unchanged. With the account-status flow off there is no
+  // review step, so verified means ready to book, as before.
+  const flagEnabled = isAccountStatusFlowEnabled();
+  const reviewApproved = getReviewDecision(user) === REVIEW_DECISION_APPROVED;
+  const reviewDeclined = getAccountStatus({ currentUser: user }) === ACCOUNT_STATUS_REJECTED;
+  const canBook = !flagEnabled || reviewApproved;
+
+  const renderCard = () => {
+    if (isVerified && canBook) {
       return (
-        <div className={css.panel}>
-          <Heading as="h2" rootClassName={css.panelTitle}>
-            <FormattedMessage id="ClientVerificationPage.verifiedTitle" />
-          </Heading>
-          <p className={css.paragraph}>
-            <FormattedMessage id="ClientVerificationPage.verifiedBody" />
-          </p>
-          <NamedLink name="SearchPage" className={css.primaryLink}>
+        <VerificationCard
+          icon={<IconCheck />}
+          iconClassName={css.iconVerified}
+          title={<FormattedMessage id="ClientVerificationPage.verifiedTitle" />}
+          lede={<FormattedMessage id="ClientVerificationPage.verifiedBody" />}
+        >
+          <NamedLink name="SearchPage" className={css.primaryButtonBlock}>
             <FormattedMessage id="ClientVerificationPage.browseModels" />
           </NamedLink>
-        </div>
+        </VerificationCard>
+      );
+    }
+
+    if (isVerified) {
+      return (
+        <VerificationCard
+          icon={<IconCheck />}
+          iconClassName={css.iconVerified}
+          title={<FormattedMessage id="ClientVerificationPage.verifiedNotApprovedTitle" />}
+          lede={
+            <FormattedMessage
+              id={
+                reviewDeclined
+                  ? 'ClientVerificationPage.verifiedDeclinedBody'
+                  : 'ClientVerificationPage.verifiedNotApprovedBody'
+              }
+            />
+          }
+        >
+          <NamedLink name="AccountStatusPage" className={css.primaryButtonBlock}>
+            <FormattedMessage id="ClientVerificationPage.accountStatusLink" />
+          </NamedLink>
+        </VerificationCard>
       );
     }
 
     if (stage === 'processing') {
       return (
-        <div className={css.panel}>
-          <Heading as="h2" rootClassName={css.panelTitle}>
-            <FormattedMessage id="ClientVerificationPage.processingTitle" />
-          </Heading>
-          <p className={css.paragraph}>
-            <FormattedMessage id="ClientVerificationPage.processingBody" />
-          </p>
-          <PrimaryButton type="button" onClick={() => onRefreshUser()}>
+        <VerificationCard
+          icon={<IconClock />}
+          iconClassName={css.iconPending}
+          title={<FormattedMessage id="ClientVerificationPage.processingTitle" />}
+          lede={<FormattedMessage id="ClientVerificationPage.processingBody" />}
+        >
+          <PrimaryButton type="button" className={css.buttonBlock} onClick={() => onRefreshUser()}>
             <FormattedMessage id="ClientVerificationPage.refreshStatus" />
           </PrimaryButton>
-        </div>
+        </VerificationCard>
       );
     }
 
     return (
-      <div className={css.panel}>
-        <p className={css.intro}>
-          <FormattedMessage id="ClientVerificationPage.intro" />
-        </p>
-        <ul className={css.points}>
-          <li className={css.point}>
-            <FormattedMessage id="ClientVerificationPage.pointTime" />
-          </li>
-          <li className={css.point}>
-            <FormattedMessage id="ClientVerificationPage.pointStripe" />
-          </li>
-          <li className={css.point}>
-            <FormattedMessage id="ClientVerificationPage.pointPrivacy" />
-          </li>
-        </ul>
+      <VerificationCard
+        icon={<IconShield />}
+        iconClassName={css.iconStart}
+        title={<FormattedMessage id="ClientVerificationPage.heading" />}
+        lede={<FormattedMessage id="ClientVerificationPage.intro" />}
+      >
+        <InfoList
+          items={[
+            {
+              key: 'stripe',
+              icon: <IconIdCard />,
+              text: <FormattedMessage id="ClientVerificationPage.pointStripe" />,
+            },
+            {
+              key: 'privacy',
+              icon: <IconLock />,
+              text: <FormattedMessage id="ClientVerificationPage.pointPrivacy" />,
+            },
+          ]}
+        />
 
         {notConfigured ? (
           <p className={css.error}>
@@ -190,33 +268,20 @@ export const ClientVerificationPageComponent = props => {
 
         <PrimaryButton
           type="button"
+          className={css.buttonBlock}
           inProgress={createSessionInProgress}
           onClick={handleVerify}
         >
           <FormattedMessage id="ClientVerificationPage.verifyButton" />
         </PrimaryButton>
-        {createSessionInProgress ? (
-          <span className={css.spinner}>
-            <IconSpinner />
-          </span>
-        ) : null}
-      </div>
+      </VerificationCard>
     );
   };
 
   return (
     <Page title={title} scrollingDisabled={scrollingDisabled}>
-      <LayoutSingleColumn
-        mainColumnClassName={css.layoutWrapperMain}
-        topbar={<TopbarContainer />}
-        footer={<FooterContainer />}
-      >
-        <div className={css.content}>
-          <Heading as="h1" rootClassName={css.title}>
-            <FormattedMessage id="ClientVerificationPage.heading" />
-          </Heading>
-          {renderBody()}
-        </div>
+      <LayoutSingleColumn topbar={<TopbarContainer />} footer={<FooterContainer />}>
+        <div className={css.shell}>{renderCard()}</div>
       </LayoutSingleColumn>
     </Page>
   );

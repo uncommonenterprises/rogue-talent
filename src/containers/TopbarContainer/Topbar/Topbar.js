@@ -10,6 +10,8 @@ import { FormattedMessage, useIntl } from '../../../util/reactIntl';
 import { isMainSearchTypeKeywords, isOriginInUse } from '../../../util/search';
 import { parse, stringify } from '../../../util/urlHelpers';
 import { createResourceLocatorString, matchPathname, pathByRouteName } from '../../../util/routes';
+import { isAccountStatusFlowEnabled, isModelUser } from '../../../util/accountStatus';
+import { isClientUser } from '../../../util/userHelpers';
 import {
   AccountStatusBadge,
   Button,
@@ -27,6 +29,7 @@ import SearchIcon from './SearchIcon';
 import TopbarSearchForm from './TopbarSearchForm/TopbarSearchForm';
 import TopbarMobileMenu from './TopbarMobileMenu/TopbarMobileMenu';
 import TopbarDesktop from './TopbarDesktop/TopbarDesktop';
+import { primaryActionLink } from './TopbarDesktop/CustomLinksMenu/PriorityLinks';
 
 import css from './Topbar.module.css';
 import { getCurrentUserTypeRoles, showCreateListingLinkForUser } from '../../../util/userHelpers';
@@ -146,6 +149,7 @@ const TopbarComponent = props => {
     currentUser,
     currentUserHasListings,
     currentUserHasOrders,
+    currentUserProfileListing,
     currentPage,
     notificationCount = 0,
     intl,
@@ -212,6 +216,17 @@ const TopbarComponent = props => {
   };
 
   const showCreateListingsLink = showCreateListingLinkForUser(config, currentUser);
+  // "Create your profile" or, once the model has one, "Your profile" (run-through finding 2).
+  const primaryLink = primaryActionLink({
+    currentUserHasListings,
+    profileListing: currentUserProfileListing,
+    config,
+  });
+  // The account-status page exists for models and clients while the lifecycle flow is on.
+  const showAccountStatusLink =
+    isAuthenticated &&
+    isAccountStatusFlowEnabled() &&
+    (isModelUser(currentUser) || isClientUser(currentUser));
   const { customer: isCustomer, provider: isProvider } = getCurrentUserTypeRoles(
     config,
     currentUser
@@ -263,6 +278,8 @@ const TopbarComponent = props => {
       customLinks={customLinks}
       showCreateListingsLink={showCreateListingsLink}
       inboxTab={topbarInboxTab}
+      primaryLink={primaryLink}
+      showAccountStatusLink={showAccountStatusLink}
     />
   );
 
@@ -367,6 +384,7 @@ const TopbarComponent = props => {
         <LinkedLogo
           id="logo-topbar-mobile"
           layout={'mobile'}
+          logoImageClassName={css.mobileLogoImage}
           alt={intl.formatMessage({ id: 'Topbar.logoIcon' })}
           linkToExternalSite={config?.topbar?.logoLink}
         />
@@ -403,6 +421,8 @@ const TopbarComponent = props => {
           showCreateListingsLink={showCreateListingsLink}
           inboxTab={topbarInboxTab}
           accountStatus={accountStatus}
+          primaryLink={primaryLink}
+          showAccountStatusLink={showAccountStatusLink}
         />
       </div>
       <Modal
@@ -470,6 +490,7 @@ const TopbarComponent = props => {
  * @param {Object} props.currentUser
  * @param {boolean} props.currentUserHasListings
  * @param {boolean} props.currentUserHasOrders
+ * @param {Object?} props.currentUserProfileListing a model's own profile listing (any state)
  * @param {string} props.currentPage
  * @param {number} props.notificationCount
  * @param {Function} props.onLogout

@@ -12,6 +12,8 @@ import { FormattedMessage, useIntl } from '../../util/reactIntl';
 import { propTypes } from '../../util/types';
 import { ensureCurrentUser, getFeaturedListingsProps } from '../../util/data';
 import { clientNeedsBusinessDetails } from '../../util/clientBusinessDetails';
+import { isModelUser } from '../../util/accountStatus';
+import { isUserAuthorized } from '../../util/userHelpers';
 import {
   isSignupEmailTakenError,
   isTooManyEmailVerificationRequestsError,
@@ -41,6 +43,7 @@ import { TermsOfServiceContent } from '../../containers/TermsOfServicePage/Terms
 // We need to get PrivacyPolicy asset and get it rendered for the modal on this page.
 import { PrivacyPolicyContent } from '../../containers/PrivacyPolicyPage/PrivacyPolicyPage';
 import NotFoundPage from '../../containers/NotFoundPage/NotFoundPage';
+import { getModelProfileRoute } from '../../containers/EditListingPage/modelProfileRoute';
 
 import {
   getAuthInfoFromCookies,
@@ -71,6 +74,23 @@ const getShellVariant = ({ showEmailVerification, isLogin, userType }) => {
     return 'login';
   }
   return ['model', 'client'].includes(userType) ? userType : 'join';
+};
+
+// "Check your inbox" (run-through 01/11/2026, finding 13): the address sits on its own line, as
+// two units (the part before the @, then "@domain") that each wrap whole, so a long address never
+// breaks at a hyphen in the middle of its first part. A part only breaks inside itself if it is
+// wider than the screen.
+const EmailAddress = ({ email }) => {
+  const address = email || '';
+  const at = address.lastIndexOf('@');
+  const localPart = at > 0 ? address.slice(0, at) : address;
+  const domainPart = at > 0 ? address.slice(at) : '';
+  return (
+    <span className={css.email}>
+      <span className={css.emailPart}>{localPart}</span>
+      {domainPart ? <span className={css.emailPart}>{domainPart}</span> : null}
+    </span>
+  );
 };
 
 // The "Already have an account? Log in" / "Don't have an account? Sign up" line under a form.
@@ -232,6 +252,8 @@ export const AuthenticationPageComponent = props => {
     pageAssetsFetchInProgress,
     pageAssetsFetchError,
     staticContext,
+    profileListing = null,
+    profileListingReady = true,
   } = props;
 
   // History API has potentially state tied to this route
@@ -313,14 +335,27 @@ export const AuthenticationPageComponent = props => {
     return <Redirect to={from} />;
   } else if (shouldRedirectToLandingPage) {
     if (isModel) {
-      // New models are guided to create their profile; returning models (logging in)
-      // land on their own profile page — their storefront — rather than the client
-      // landing page.
-      return isLogin && user.id ? (
-        <NamedRedirect name="ProfilePage" params={{ id: user.id.uuid }} />
-      ) : (
-        <NamedRedirect name="NewListingPage" />
-      );
+      // Returning models (logging in) land on their own profile page, their storefront,
+      // rather than the client landing page.
+      if (isLogin && user.id) {
+        return <NamedRedirect name="ProfilePage" params={{ id: user.id.uuid }} />;
+      }
+      // A logged-in model on /signup goes to their profile (run-through 01/11/2026, finding 1):
+      // a new profile only when they have none, otherwise their draft or their account status.
+      // Wait until their own listing has been looked up rather than guessing "no profile".
+      const waitForProfileListing =
+        isModelUser(user) && isUserAuthorized(user) && !profileListingReady;
+      if (waitForProfileListing) {
+        return (
+          <BlankPage
+            schemaTitle={schemaTitle}
+            schemaDescription={schemaDescription}
+            topbarClasses={topbarClasses}
+          />
+        );
+      }
+      const modelRoute = getModelProfileRoute({ profileListing, config });
+      return <NamedRedirect name={modelRoute.name} params={modelRoute.params} />;
     }
     if (clientNeedsBusinessDetails(user)) {
       // Sign-up stage 3: a client who hasn't submitted "Your business details" (screen 18) is
@@ -523,7 +558,7 @@ export const AuthenticationPageComponent = props => {
         {showEmailVerification ? (
           <EmailVerificationInfo
             name={user.attributes.profile.firstName}
-            email={<span className={css.email}>{user.attributes.email}</span>}
+            email={<EmailAddress email={user.attributes.email} />}
             isModel={isModel}
             closeLinkName={isModel ? 'NewListingPage' : 'SearchPage'}
             onResendVerificationEmail={onResendVerificationEmail}
@@ -599,6 +634,13 @@ const AuthenticationPage = props => {
     state => state.user?.sendVerificationEmailInProgress
   );
   const sendVerificationEmailError = useSelector(state => state.user?.sendVerificationEmailError);
+  // A logged-in model's own profile listing decides where /signup sends them.
+  const profileListing = useSelector(state => state.user?.currentUserProfileListing || null);
+  const profileListingReady = useSelector(
+    state =>
+      !!state.user?.currentUserProfileListingFetched &&
+      !state.user?.currentUserProfileListingInProgress
+  );
 
   const hostedAssets = useSelector(state => state.hostedAssets || {});
   const pageAssetsData = hostedAssets.pageAssetsData;
@@ -655,6 +697,8 @@ const AuthenticationPage = props => {
       featuredListingData={featuredListingData}
       getListingEntitiesById={getListingEntitiesById}
       onFetchFeaturedListings={onFetchFeaturedListings}
+      profileListing={profileListing}
+      profileListingReady={profileListingReady}
     />
   );
 };

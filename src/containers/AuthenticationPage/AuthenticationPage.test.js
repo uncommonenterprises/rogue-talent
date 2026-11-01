@@ -1,8 +1,14 @@
 import React, { act } from 'react';
 import '@testing-library/jest-dom';
+import { Route } from 'react-router-dom';
 
 import { renderWithProviders as render, testingLibrary } from '../../util/testHelpers';
-import { fakeIntl } from '../../util/testData';
+import { createCurrentUser, createOwnListing, fakeIntl } from '../../util/testData';
+import {
+  LISTING_STATE_DRAFT,
+  LISTING_STATE_PENDING_APPROVAL,
+  LISTING_STATE_PUBLISHED,
+} from '../../util/types';
 
 import AuthenticationPage from './AuthenticationPage';
 
@@ -136,6 +142,84 @@ describe('AuthenticationPage sign-up journey (stage 1)', () => {
     expect(
       screen.queryByRole('heading', { name: 'AuthenticationPage.verifyLoginTitle' })
     ).not.toBeInTheDocument();
+  });
+});
+
+// Run-through 01/11/2026, finding 1: a logged-in model who opens /signup must go to their
+// existing profile, never a blank new one.
+describe('AuthenticationPage: a logged-in model visiting /signup', () => {
+  const originalFlag = process.env.REACT_APP_ACCOUNT_STATUS_FLOW_ENABLED;
+
+  beforeEach(() => {
+    window.scrollTo = jest.fn();
+    process.env = Object.assign(process.env, { REACT_APP_FACEBOOK_APP_ID: '' });
+    process.env = Object.assign(process.env, { REACT_APP_GOOGLE_CLIENT_ID: '' });
+  });
+
+  afterEach(() => {
+    process.env.REACT_APP_ACCOUNT_STATUS_FLOW_ENABLED = originalFlag;
+  });
+
+  const model = () => {
+    const user = createCurrentUser('model-1');
+    return {
+      ...user,
+      attributes: {
+        ...user.attributes,
+        profile: { ...user.attributes.profile, publicData: { userType: 'model' } },
+      },
+    };
+  };
+
+  const LocationProbe = () => (
+    <Route render={({ location }) => <p data-testid="location">{location.pathname}</p>} />
+  );
+
+  const renderSignup = (profileListing, { fetched = true, inProgress = false } = {}) =>
+    render(
+      <>
+        <AuthenticationPage {...props} tab="signup" location={{ state: {} }} params={{}} />
+        <LocationProbe />
+      </>,
+      {
+        initialState: {
+          auth: { isAuthenticated: true },
+          user: {
+            currentUser: model(),
+            currentUserProfileListing: profileListing,
+            currentUserProfileListingFetched: fetched,
+            currentUserProfileListingInProgress: inProgress,
+          },
+        },
+      }
+    );
+
+  it('no listing: goes to create a new profile', () => {
+    renderSignup(null);
+    expect(screen.getByTestId('location')).toHaveTextContent('/l/new');
+  });
+
+  it('draft: goes back to that draft', () => {
+    const draft = createOwnListing('draft-1', { state: LISTING_STATE_DRAFT, title: 'Ava C' });
+    renderSignup(draft);
+    expect(screen.getByTestId('location').textContent).toMatch(/^\/l\/ava-c\/draft-1\/draft\//);
+  });
+
+  it('submitted: goes to account status with the flag on', () => {
+    process.env.REACT_APP_ACCOUNT_STATUS_FLOW_ENABLED = 'true';
+    renderSignup(createOwnListing('l1', { state: LISTING_STATE_PENDING_APPROVAL }));
+    expect(screen.getByTestId('location')).toHaveTextContent('/account-status');
+  });
+
+  it('published: goes to the Your profile dashboard with the flag off', () => {
+    process.env.REACT_APP_ACCOUNT_STATUS_FLOW_ENABLED = 'false';
+    renderSignup(createOwnListing('l1', { state: LISTING_STATE_PUBLISHED }));
+    expect(screen.getByTestId('location')).toHaveTextContent('/listings');
+  });
+
+  it('waits rather than guessing while the listing is still being looked up', () => {
+    renderSignup(null, { fetched: false });
+    expect(screen.getByTestId('location').textContent).toBe('/');
   });
 });
 

@@ -21,7 +21,7 @@ import css from './StatusCard.module.css';
 
 // ---- Icons (line icons from the mockups; sanitize.css fills svg, so fill is reset in CSS) ----
 
-const IconClock = () => (
+export const IconClock = () => (
   <svg className={css.lineIcon} width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
     <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.6" />
     <path
@@ -34,7 +34,7 @@ const IconClock = () => (
   </svg>
 );
 
-const IconShield = () => (
+export const IconShield = () => (
   <svg className={css.lineIcon} width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
     <path
       d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z"
@@ -45,7 +45,7 @@ const IconShield = () => (
   </svg>
 );
 
-const IconCheck = () => (
+export const IconCheck = () => (
   <svg className={css.lineIcon} width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
     <path
       d="M20 6L9 17l-5-5"

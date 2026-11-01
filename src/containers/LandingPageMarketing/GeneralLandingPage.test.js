@@ -51,8 +51,22 @@ describe('GeneralLandingPage', () => {
     });
     expect(screen.queryByRole('link', { name: 'Sign in' })).not.toBeInTheDocument();
     expect(screen.queryByRole('link', { name: 'Join Rogue Talent' })).not.toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'TopbarDesktop.inboxRequests' })).toBeInTheDocument();
+    // The inbox appears twice: the nav link (tablet and up) and inside the phone account menu.
+    const inboxLinks = screen.getAllByRole('link', { name: 'TopbarDesktop.inboxRequests' });
+    expect(inboxLinks).toHaveLength(2);
+    inboxLinks.forEach(link => expect(link).toHaveAttribute('href', '/inbox/sales'));
     expect(screen.getByRole('link', { name: 'MarketingNav.yourProfile' })).toBeInTheDocument();
+    // Run-through M4: the phone account menu reaches settings and log out.
+    expect(
+      screen.getByRole('button', { name: 'TopbarDesktop.screenreader.profileMenu' })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('link', { name: 'TopbarDesktop.profileSettingsLink' })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('link', { name: 'TopbarDesktop.accountSettingsLink' })
+    ).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'TopbarDesktop.logout' })).toBeInTheDocument();
     expect(screen.queryByRole('link', { name: 'Join as talent' })).not.toBeInTheDocument();
     expect(screen.queryByRole('link', { name: 'Join as business' })).not.toBeInTheDocument();
   });
@@ -64,7 +78,9 @@ describe('GeneralLandingPage', () => {
     render(<GeneralLandingPage />, {
       initialState: { ...authState(true), user: { currentUser: client } },
     });
-    expect(screen.getByRole('link', { name: 'TopbarDesktop.inboxBookings' })).toBeInTheDocument();
+    const inboxLinks = screen.getAllByRole('link', { name: 'TopbarDesktop.inboxBookings' });
+    expect(inboxLinks).toHaveLength(2);
+    inboxLinks.forEach(link => expect(link).toHaveAttribute('href', '/inbox/orders'));
     expect(screen.getByRole('link', { name: 'MarketingNav.browseTalent' })).toBeInTheDocument();
   });
 });

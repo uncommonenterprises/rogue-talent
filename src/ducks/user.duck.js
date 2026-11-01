@@ -5,6 +5,7 @@ import * as log from '../util/log';
 import { LISTING_STATE_DRAFT } from '../util/types';
 import { storableError } from '../util/errors';
 import { isUserAuthorized } from '../util/userHelpers';
+import { isModelUser } from '../util/accountStatus';
 import {
   getStatesNeedingProviderAttention,
   getStatesNeedingCustomerAttention,
@@ -72,6 +73,82 @@ export const fetchCurrentUserHasListingsThunk = createAsyncThunk(
 // Backward compatible wrapper for the thunk
 export const fetchCurrentUserHasListings = () => (dispatch, getState, sdk) => {
   return dispatch(fetchCurrentUserHasListingsThunk()).unwrap();
+};
+
+///////////////////////////////////////////////////////////////////
+// Fetch the model's own profile listing (draft or submitted)    //
+///////////////////////////////////////////////////////////////////
+
+// Run 01/11/2026 finding 1: a model who already has a draft or submitted profile must never be
+// sent to a blank new profile. The template's currentUserHasListings only counts published
+// listings, so this keeps the model's own profile listing (any state) for the places that decide
+// where a model goes: the email-verification and sign-up redirects, the new-profile guard and the
+// topbar "Your profile" link. Images are included because the resume step depends on the
+// portfolio minimum (see EditListingWizard/wizardSteps.js).
+const PROFILE_LISTING_QUERY_PARAMS = {
+  include: ['images'],
+  'fields.image': ['variants.square-small'],
+  page: 1,
+  perPage: 10,
+};
+
+/**
+ * One profile per model: prefer a submitted (non-draft) listing so a stray draft can't mask a
+ * submission, otherwise the first listing, otherwise null.
+ *
+ * @param {Array<Object>} listings own listing entities
+ * @returns {Object|null}
+ */
+export const pickProfileListing = listings => {
+  const list = Array.isArray(listings) ? listings : [];
+  const submitted = list.find(l => l?.attributes?.state !== LISTING_STATE_DRAFT);
+  return submitted || list[0] || null;
+};
+
+// The argument is an optional user: fetchCurrentUser passes the user it has just fetched, because
+// it isn't in the store yet at that point. It's only read by the condition below.
+const fetchCurrentUserProfileListingPayloadCreator = (userMaybe, thunkAPI) => {
+  const { extra: sdk, rejectWithValue } = thunkAPI;
+  return sdk.ownListings
+    .query(PROFILE_LISTING_QUERY_PARAMS)
+    .then(response => pickProfileListing(denormalisedResponseEntities(response)))
+    .catch(e => rejectWithValue(storableError(e)));
+};
+
+export const fetchCurrentUserProfileListingThunk = createAsyncThunk(
+  'user/fetchCurrentUserProfileListing',
+  fetchCurrentUserProfileListingPayloadCreator,
+  {
+    // Only for a known model. Skipping (rather than resolving null) matters: a "fetched, no
+    // listing" result for a user who simply wasn't loaded yet would send a model with a draft
+    // to a blank new profile.
+    condition: (userMaybe, { getState }) =>
+      isModelUser(userMaybe || getState().user?.currentUser),
+  }
+);
+
+/**
+ * Fetch the current model's own profile listing into state.user.currentUserProfileListing.
+ * Resolves with the listing (or null). Never rejects: on failure (or when the user isn't a known
+ * model, so nothing is fetched) the previously known state is kept.
+ *
+ * @param {Object} [currentUser] the user to fetch for; defaults to state.user.currentUser
+ */
+export const fetchCurrentUserProfileListing = currentUser => (dispatch, getState, sdk) => {
+  return dispatch(fetchCurrentUserProfileListingThunk(currentUser))
+    .unwrap()
+    .catch(() => null);
+};
+
+// Once a model's profile is submitted, where they go (and the topbar link) no longer changes, so
+// the listing is only re-fetched while there is none yet or it's still a draft.
+const shouldRefreshProfileListing = state => {
+  const { currentUserProfileListing, currentUserProfileListingFetched } = state.user || {};
+  return (
+    !currentUserProfileListingFetched ||
+    !currentUserProfileListing ||
+    currentUserProfileListing.attributes?.state === LISTING_STATE_DRAFT
+  );
 };
 
 ///////////////////////////////////////////////////////////
@@ -224,6 +301,13 @@ const fetchCurrentUserPayloadCreator = (options, thunkAPI) => {
           dispatch(fetchCurrentUserHasListings());
         }
 
+        // Browser only: on the server the page render doesn't wait for this call, so its result
+        // could never reach the client. The pages that need it fetch it in their own loadData.
+        const isBrowser = typeof window !== 'undefined';
+        if (isBrowser && isModelUser(currentUser) && shouldRefreshProfileListing(getState())) {
+          dispatch(fetchCurrentUserProfileListing(currentUser));
+        }
+
         if (updateNotifications !== false) {
           dispatch(fetchCurrentUserNotifications());
         }
@@ -299,6 +383,11 @@ const userSlice = createSlice({
     currentUserShowError: null,
     currentUserHasListings: false,
     currentUserHasListingsError: null,
+    // The model's own profile listing (any state), null if none; see
+    // fetchCurrentUserProfileListing. Fetched = the query has finished at least once.
+    currentUserProfileListing: null,
+    currentUserProfileListingFetched: false,
+    currentUserProfileListingInProgress: false,
     currentUserSaleNotificationCount: 0,
     currentUserOrderNotificationCount: 0,
     currentUserNotificationCountError: null,
@@ -313,6 +402,9 @@ const userSlice = createSlice({
       state.currentUserShowError = null;
       state.currentUserHasListings = false;
       state.currentUserHasListingsError = null;
+      state.currentUserProfileListing = null;
+      state.currentUserProfileListingFetched = false;
+      state.currentUserProfileListingInProgress = false;
       state.currentUserSaleNotificationCount = 0;
       state.currentUserOrderNotificationCount = 0;
 
@@ -349,6 +441,20 @@ const userSlice = createSlice({
       .addCase(fetchCurrentUserHasListingsThunk.rejected, (state, action) => {
         console.error(action.payload);
         state.currentUserHasListingsError = action.payload;
+      })
+      // fetchCurrentUserProfileListing
+      .addCase(fetchCurrentUserProfileListingThunk.pending, state => {
+        state.currentUserProfileListingInProgress = true;
+      })
+      .addCase(fetchCurrentUserProfileListingThunk.fulfilled, (state, action) => {
+        state.currentUserProfileListing = action.payload;
+        state.currentUserProfileListingFetched = true;
+        state.currentUserProfileListingInProgress = false;
+      })
+      .addCase(fetchCurrentUserProfileListingThunk.rejected, state => {
+        // Keep whatever was known before; a failed refresh shouldn't hide an existing profile.
+        state.currentUserProfileListingFetched = true;
+        state.currentUserProfileListingInProgress = false;
       })
       // fetchCurrentUserNotifications
       .addCase(fetchCurrentUserNotificationsThunk.pending, state => {

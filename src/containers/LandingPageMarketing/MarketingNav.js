@@ -1,16 +1,83 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import classNames from 'classnames';
 
-import { FormattedMessage } from '../../util/reactIntl';
-import { isModelUser } from '../../util/accountStatus';
-import { NamedLink } from '../../components';
+import { useRouteConfiguration } from '../../context/routeConfigurationContext';
+import { FormattedMessage, useIntl } from '../../util/reactIntl';
+import { pathByRouteName } from '../../util/routes';
+import { isAccountStatusFlowEnabled, isModelUser } from '../../util/accountStatus';
+import { isClientUser } from '../../util/userHelpers';
+import { logout } from '../../ducks/auth.duck';
+import {
+  Avatar,
+  InlineTextButton,
+  Menu,
+  MenuContent,
+  MenuItem,
+  MenuLabel,
+  NamedLink,
+} from '../../components';
 
 import css from './MarketingNav.module.css';
 
 // Logged-in actions (sign-up journey stage 1 follow-up): the site topbar's role-aware inbox
 // link, plus a primary link to where the user works from. Models go to their profile; clients
 // (and anyone whose role isn't known yet) go to browse talent.
+// Run-through M4: on phones the marketing nav had no way to reach account status, settings or
+// log out. A compact avatar menu (the same links as the site topbar's profile menu) replaces the
+// inbox text link there, which moves into the menu.
+const AccountMenu = ({ currentUser, isModel, inboxLabelId }) => {
+  const intl = useIntl();
+  const dispatch = useDispatch();
+  const routeConfiguration = useRouteConfiguration();
+  const showAccountStatus = isAccountStatusFlowEnabled() && (isModel || isClientUser(currentUser));
+
+  const handleLogout = () => {
+    dispatch(logout()).then(() => {
+      // As in the site topbar: a full page load so no signed-in data stays in memory.
+      if (typeof window !== 'undefined') {
+        window.location = pathByRouteName('LandingPage', routeConfiguration);
+      }
+    });
+  };
+
+  const item = (key, name, labelId, params) => (
+    <MenuItem key={key}>
+      <NamedLink className={css.menuLink} name={name} params={params}>
+        <FormattedMessage id={labelId} />
+      </NamedLink>
+    </MenuItem>
+  );
+
+  return (
+    <div className={css.accountMenu}>
+      <Menu contentPlacementOffset={0}>
+        <MenuLabel
+          className={css.accountMenuLabel}
+          ariaLabel={intl.formatMessage({ id: 'TopbarDesktop.screenreader.profileMenu' })}
+        >
+          <Avatar className={css.avatar} user={currentUser} disableProfileLink />
+        </MenuLabel>
+        <MenuContent className={css.accountMenuContent}>
+          {[
+            ...(showAccountStatus
+              ? [item('status', 'AccountStatusPage', 'TopbarMobileMenu.accountStatusLink')]
+              : []),
+            item('inbox', 'InboxPage', inboxLabelId, { tab: isModel ? 'sales' : 'orders' }),
+            item('profile', 'ProfileSettingsPage', 'TopbarDesktop.profileSettingsLink'),
+            item('account', 'AccountSettingsPage', 'TopbarDesktop.accountSettingsLink'),
+            <MenuItem key="logout">
+              <InlineTextButton rootClassName={css.menuLink} onClick={handleLogout}>
+                <FormattedMessage id="TopbarDesktop.logout" />
+              </InlineTextButton>
+            </MenuItem>,
+          ]}
+        </MenuContent>
+      </Menu>
+    </div>
+  );
+};
+
 const LoggedInActions = ({ currentUser }) => {
   const isModel = isModelUser(currentUser);
   const inboxLabelId = isModel ? 'TopbarDesktop.inboxRequests' : 'TopbarDesktop.inboxBookings';
@@ -19,7 +86,7 @@ const LoggedInActions = ({ currentUser }) => {
       <NamedLink
         name="InboxPage"
         params={{ tab: isModel ? 'sales' : 'orders' }}
-        className={css.signin}
+        className={classNames(css.signin, css.inboxLink)}
       >
         <FormattedMessage id={inboxLabelId} />
       </NamedLink>
@@ -32,6 +99,7 @@ const LoggedInActions = ({ currentUser }) => {
           <FormattedMessage id="MarketingNav.browseTalent" />
         </NamedLink>
       )}
+      <AccountMenu currentUser={currentUser} isModel={isModel} inboxLabelId={inboxLabelId} />
     </>
   );
 };

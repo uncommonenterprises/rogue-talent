@@ -310,13 +310,25 @@
   }
 }
 
-/* Sign-up stage 3: the compact status chip in the mobile nav (account-status page only). */
+/* Run-through M2: the phone logo matches the marketing header's "Rogue." (about 24px tall)
+   instead of the 48px Console logo height. A fixed height wins over the logo height class. */
+.mobileLogoImage {
+  height: 26px;
+  width: auto;
+  max-width: min(calc(100vw - 132px), 100%, 370px);
+  object-fit: contain;
+  object-position: center;
+}
+
+/* Sign-up stage 3: the compact status chip in the mobile nav (account-status page only).
+   Right padding matches the menu button's 24px on the left (run-through M2). */
 .accountStatusMobile {
   display: inline-flex;
   align-items: center;
   justify-content: flex-end;
+  flex-shrink: 0;
   min-height: 44px;
-  padding: 0 16px 0 8px;
+  padding: 0 24px 0 8px;
   text-decoration: none;
 
   &:hover {
