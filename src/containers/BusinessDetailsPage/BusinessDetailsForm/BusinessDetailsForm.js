@@ -292,6 +292,7 @@ const BusinessDetailsForm = props => {
                     CustomIcon={IconPin}
                     predictionsClassName={css.predictionsRoot}
                     useDarkText
+                    scrollIntoViewOnFocus
                     name={FIELD_BUSINESS_ADDRESS}
                     id={`${formId}.businessAddress`}
                     label={

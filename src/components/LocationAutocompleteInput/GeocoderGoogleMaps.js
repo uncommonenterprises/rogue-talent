@@ -39,21 +39,33 @@ class GeocoderGoogleMaps {
    * Search places with the given name.
    *
    * @param {String} search query for place names
+   * @param {Array<String>} [countryLimit] ISO country codes to limit results to
+   * @param {String} [locale] not used by Google (kept for the shared geocoder signature)
+   * @param {Array<String>} [placeTypes] Google place types, e.g. ['(cities)']
    *
    * @return {Promise<{ search: String, predictions: Array<Object>}>}
    * results of the geocoding, should have the original search query
    * and an array of predictions. The format of the predictions is
    * only relevant for the `getPlaceDetails` function below.
    */
-  getPlacePredictions(search, countryLimit) {
+  getPlacePredictions(search, countryLimit, locale, placeTypes) {
     const limitCountriesMaybe = countryLimit
       ? {
           includedRegionCodes: countryLimit,
         }
       : {};
+    // e.g. ['(cities)'] for towns and cities only. Google allows a type collection only on its
+    // own, never mixed with other types.
+    const placeTypesMaybe =
+      Array.isArray(placeTypes) && placeTypes.length > 0
+        ? { includedPrimaryTypes: placeTypes }
+        : {};
 
     return googleMapsUtil
-      .getPlacePredictions(search, this.getSessionToken(), limitCountriesMaybe)
+      .getPlacePredictions(search, this.getSessionToken(), {
+        ...limitCountriesMaybe,
+        ...placeTypesMaybe,
+      })
       .then(results => {
         return {
           search,

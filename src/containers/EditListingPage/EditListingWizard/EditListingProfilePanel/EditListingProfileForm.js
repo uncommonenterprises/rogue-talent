@@ -28,6 +28,9 @@ import { WizardActions, wizardPrimaryButtonClassName } from '../WizardShell/Wiza
 import css from './EditListingProfileForm.module.css';
 
 const identity = v => v;
+// "About you" asks for the city the model is based in: towns and cities only, no airports,
+// stations or street addresses (run-through 01/11/2026, finding 4).
+const CITY_PLACE_TYPES = ['(cities)'];
 const DISPLAY_NAME_MAX_LENGTH = 60;
 
 const ErrorMessages = props => {
@@ -182,6 +185,8 @@ export const EditListingProfileForm = props => (
               label={<RequiredLabel labelId="EditListingProfileForm.cityLabel" />}
               placeholder={intl.formatMessage({ id: 'EditListingProfileForm.cityPlaceholder' })}
               useDefaultPredictions={false}
+              placeTypes={CITY_PLACE_TYPES}
+              scrollIntoViewOnFocus
               format={identity}
               valueFromForm={values.location}
               validate={composeValidators(
