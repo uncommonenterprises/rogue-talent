@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>B07 · Request sent - Rogue Talent booking mockups</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Hanken+Grotesk:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="journey.css">
+</head>
+<body>
+
+<div class="mock-toolbar">
+  <span class="tag">Mock</span>
+  <a href="index.html">Journey map</a>
+  <span class="divider">·</span>
+  <span class="title">Client · B07 · Request sent</span>
+  <span class="mock-flag">Example data</span>
+  <span class="spacer"></span>
+  <a href="B06-checkout.html">← Prev</a>
+  <a href="B08-model-request.html">Next: Model request →</a>
+</div>
+
+<header class="app-nav">
+  <a class="rt-nav__brand" href="index.html">Rogue<span>.</span></a>
+  <nav class="app-nav__links" aria-label="Main">
+    <a href="B01-search-results.html">Browse models</a>
+    <a class="is-active" href="B09-booking-status.html">Your bookings</a>
+  </nav>
+  <div class="app-nav__actions">
+    <span class="rt-status rt-status--verified app-nav__status"><span class="rt-status__dot"></span>Verified</span>
+    <a class="icon-btn" href="#" aria-label="Account menu"><span class="rt-avatar rt-avatar--sm">B</span></a>
+  </div>
+</header>
+
+<main class="page">
+  <div class="confirm-grid">
+
+    <div>
+      <div class="card card--roomy">
+        <div style="display:flex;align-items:center;gap:var(--space-3);flex-wrap:wrap;">
+          <div class="status-icon status-icon--pending"><i class="ico ico-clock ico--lg"></i></div>
+          <span class="rt-status rt-status--lg rt-status--requested"><span class="rt-status__dot"></span>Requested</span>
+        </div>
+        <h1>Request sent to Ava.</h1>
+        <p class="lede">Ava has until <strong>Tue 3 Nov, 16:20</strong> to accept or decline. We'll email you the moment they reply.</p>
+
+        <ol class="progress-tracker">
+          <li class="progress-tracker__step is-done">
+            <span class="progress-tracker__marker"><i class="ico ico-check ico--sm"></i></span>
+            <div class="progress-tracker__body"><span class="progress-tracker__title">Request sent</span><span class="progress-tracker__sub">Sun 1 Nov, 16:20. Your card details are with Stripe; nothing has been charged.</span></div>
+          </li>
+          <li class="progress-tracker__step is-current">
+            <span class="progress-tracker__marker">2</span>
+            <div class="progress-tracker__body"><span class="progress-tracker__title">Waiting for Ava</span><span class="progress-tracker__status">In progress</span><span class="progress-tracker__sub">Ava has 48 hours to reply.</span></div>
+          </li>
+        </ol>
+
+        <div class="callout callout--muted">
+          <h3>Then, one of two things</h3>
+          <p><strong>If Ava accepts:</strong> your card is charged, the dates are confirmed and blocked on their calendar, and we email you the shoot details.</p>
+          <p><strong>If Ava declines, or doesn't reply in time:</strong> the request ends and you aren't charged. You can then request another model or other dates.</p>
+        </div>
+
+        <div class="action-row">
+          <a class="rt-btn rt-btn--primary rt-btn--lg rt-btn--block" href="B09-booking-status.html">Go to your bookings</a>
+          <a class="rt-btn rt-btn--secondary rt-btn--block" href="B01-search-results.html" style="min-height:48px;">Browse more models</a>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:var(--space-5);">
+        <h2>Messages with Ava</h2>
+        <p class="small muted">No messages yet. You can ask Ava about this booking here, such as call time or travel.</p>
+        <div class="rt-field">
+          <label class="rt-field__label" for="msg">Message</label>
+          <textarea class="rt-textarea" id="msg" style="min-height:84px;" placeholder="Write a message to Ava"></textarea>
+        </div>
+        <button class="rt-btn rt-btn--secondary" type="button" style="min-height:48px;align-self:flex-start;">Send message</button>
+      </div>
+    </div>
+
+    <aside>
+      <div class="summary-card">
+        <div class="summary-card__who">
+          <span class="thumb"><span class="photo-stripe"></span></span>
+          <div><b>Ava C.</b><span>Manchester</span></div>
+        </div>
+        <dl class="kv-rows kv-rows--wide">
+          <div class="kv-row"><dt>Dates</dt><dd>Wed 25 Nov to Thu 26 Nov<small>2 full days</small></dd></div>
+          <div class="kv-row"><dt>Shoot</dt><dd>Lookbook</dd></div>
+          <div class="kv-row"><dt>Where</dt><dd>Professional studio<small>Unit 4, Mill Street, Manchester M4 1AA</small></dd></div>
+          <div class="kv-row"><dt>Content licence</dt><dd>Agreed Sun 1 Nov<small><a href="#">View the licence</a></small></dd></div>
+        </dl>
+        <dl class="breakdown">
+          <div class="breakdown__row"><dt>£450 x 2 days</dt><dd>£900</dd></div>
+          <div class="breakdown__row"><dt>Booking fee (15%)</dt><dd>£135</dd></div>
+          <div class="breakdown__row breakdown__row--total"><dt>Total</dt><dd>£1,035</dd></div>
+        </dl>
+        <p class="breakdown__note">Not charged unless Ava accepts. The booking fee is how Rogue Talent is paid. Ava keeps 100% of the day rate (£900).</p>
+      </div>
+    </aside>
+
+  </div>
+</main>
+
+<div class="notes-dock">
+  <details class="design-notes">
+    <summary>Design notes</summary>
+    <ul>
+      <li><strong>Answers three questions in this order:</strong> did it go through (title and status chip), what happens now (the 48-hour window with the actual deadline, "Tue 3 Nov, 16:20"), and what happens next (accept or decline, in plain terms). The deadline is real: the process expires a request at the earlier of 48 hours after payment authorisation and the start of the shoot, so the page can show it exactly. Nothing here is a promise about how quickly a model replies.</li>
+      <li><strong>Where to track it.</strong> The one cobalt action is "Go to your bookings" (B09). The same page is reachable later from Your bookings and from the email, and then the top card is replaced by the status banner for whatever state it is in (B09), so the "just sent" celebration does not stick around.</li>
+      <li><strong>Honest about money.</strong> "Nothing has been charged" and "Not charged unless Ava accepts" both appear; the amount is shown so the client knows what will be taken if Ava accepts.</li>
+      <li><strong>No withdraw link.</strong> The current booking process has no way for a client to cancel before the model replies, so this page does not offer one. That is a gap worth closing before launch (open question 9).</li>
+      <li><strong>Summary shows what was agreed:</strong> dates, shoot type, location type and address, and a link to the licence the client agreed to (the agreement is recorded at checkout). The shoot address is shown only to the client and the model.</li>
+      <li><strong>Messages</strong> use the existing booking conversation. No promise about reply times appears anywhere.</li>
+    </ul>
+  </details>
+</div>
+<div class="container--editorial"><div class="mock-pager"><a href="B06-checkout.html">← B06 Checkout</a><a href="B08-model-request.html">Next: Model request →</a></div></div>
+
+<script src="booking.js"></script>
+</body>
+</html>

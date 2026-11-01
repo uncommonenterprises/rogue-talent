@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>B01 · Search results - Rogue Talent booking mockups</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Hanken+Grotesk:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="journey.css">
+</head>
+<body data-search="true" data-start="2026-11-25" data-end="2026-11-26">
+
+<div class="mock-toolbar">
+  <span class="tag">Mock</span>
+  <a href="index.html">Journey map</a>
+  <span class="divider">·</span>
+  <span class="title">Client · B01 · Search results</span>
+  <span class="mock-flag">Example data</span>
+  <span class="spacer"></span>
+  <a href="B02-filters.html">Next: Filters →</a>
+</div>
+
+<header class="app-nav">
+  <a class="rt-nav__brand" href="index.html">Rogue<span>.</span></a>
+  <nav class="app-nav__links" aria-label="Main">
+    <a class="is-active" href="B01-search-results.html">Browse models</a>
+    <a href="B09-booking-status.html">Your bookings</a>
+  </nav>
+  <div class="app-nav__actions">
+    <span class="rt-status rt-status--verified app-nav__status"><span class="rt-status__dot"></span>Verified</span>
+    <a class="icon-btn" href="#" aria-label="Account menu"><span class="rt-avatar rt-avatar--sm">B</span></a>
+  </div>
+</header>
+
+<main class="page">
+
+  <section class="search-head search-head--results" aria-label="Search">
+    <h1 class="page-title">Find your <span class="accent">model.</span></h1>
+    <p class="trust-line"><i class="ico ico-check"></i><span>Every model here is reviewed by our team and ID and bank verified.</span></p>
+    <div class="search-head__controls">
+      <div class="rt-search">
+        <span class="rt-search__icon"><i class="ico ico-search"></i></span>
+        <input class="rt-input" type="text" value="Manchester" aria-label="City" placeholder="City">
+      </div>
+      <div style="position:relative;">
+        <button class="date-trigger" type="button" data-open-calendar aria-label="Choose dates">
+          <i class="ico ico-calendar"></i>
+          <span class="grow" data-show-when="dates" data-bind="dates">Wed 25 Nov to Thu 26 Nov</span>
+          <span class="grow date-trigger--empty" data-show-when="nodates" hidden>Add dates</span>
+        </button>
+        <div class="popover" id="cal-popover" role="dialog" aria-label="Choose dates">
+          <div data-cal data-layout="single"></div>
+          <div class="cal__legend"><span><i class="sel"></i>Selected</span><span><i class="rng"></i>In your range</span></div>
+          <div class="cal-summary"><span class="cal-summary__main" data-bind="summaryMain"></span><span class="cal-summary__sub" data-bind="summarySub"></span></div>
+          <div style="display:flex;justify-content:space-between;gap:8px;">
+            <button class="rt-btn rt-btn--ghost" type="button" data-clear-dates style="min-height:44px;">Clear dates</button>
+            <button class="rt-btn rt-btn--secondary" type="button" data-close-popover style="min-height:44px;">Done</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="search-layout">
+
+    <!-- Filter panel: sidebar at 900px and up, full-height sheet below (see B02) -->
+    <aside class="filter-panel" id="filters" aria-label="Filters">
+      <div class="filter-panel__head">
+        <h2 class="filter-panel__title">Filters</h2>
+        <div style="display:flex;align-items:center;gap:4px;">
+          <button class="clear-link" type="button">Clear all</button>
+          <button class="icon-btn filter-panel__close" type="button" data-close-sheet aria-label="Close filters"><i class="ico ico-close"></i></button>
+        </div>
+      </div>
+      <div class="filter-panel__body">
+
+        <details class="fgroup" open>
+          <summary><span>Modelling categories</span><span class="fgroup__meta"><span class="count-badge">2</span><i class="ico ico-chev-down chev"></i></span></summary>
+          <div class="fgroup__body">
+            <div class="chip-row chip-row--touch" data-chip-group="multi">
+              <button type="button" class="rt-chip rt-chip--selected" data-chip aria-pressed="true">Fashion</button>
+              <button type="button" class="rt-chip" data-chip aria-pressed="false">Commercial</button>
+              <button type="button" class="rt-chip rt-chip--selected" data-chip aria-pressed="true">Editorial</button>
+              <button type="button" class="rt-chip" data-chip aria-pressed="false">Fitness</button>
+              <button type="button" class="rt-chip" data-chip aria-pressed="false">Lifestyle</button>
+              <button type="button" class="rt-chip" data-chip aria-pressed="false">Beauty</button>
+              <button type="button" class="rt-chip" data-chip aria-pressed="false">Lingerie</button>
+              <button type="button" class="rt-chip" data-chip aria-pressed="false">Swimwear</button>
+              <button type="button" class="rt-chip" data-chip aria-pressed="false">Plus-size</button>
+              <button type="button" class="rt-chip" data-chip aria-pressed="false">Petite</button>
+              <button type="button" class="rt-chip" data-chip aria-pressed="false">Parts (hands/feet)</button>
+              <button type="button" class="rt-chip" data-chip aria-pressed="false">Hair</button>
+              <button type="button" class="rt-chip" data-chip aria-pressed="false">Promotional/Events</button>
+            </div>
+            <p class="filter-note">Shows models who do any of the categories you pick.</p>
+          </div>
+        </details>
+
+        <details class="fgroup" open>
+          <summary><span>Day rate</span><span class="fgroup__meta"><span class="count-badge">1</span><i class="ico ico-chev-down chev"></i></span></summary>
+          <div class="fgroup__body">
+            <div class="range-row">
+              <div class="rt-field"><label class="rt-field__label" for="rate-min">Min</label><div class="input-prefix"><span>£</span><input id="rate-min" class="rt-input" inputmode="numeric" placeholder="0"></div></div>
+              <div class="rt-field"><label class="rt-field__label" for="rate-max">Max</label><div class="input-prefix"><span>£</span><input id="rate-max" class="rt-input" inputmode="numeric" value="500"></div></div>
+            </div>
+          </div>
+        </details>
+
+        <details class="fgroup" open>
+          <summary><span>Gender</span><span class="fgroup__meta"><span class="count-badge">1</span><i class="ico ico-chev-down chev"></i></span></summary>
+          <div class="fgroup__body">
+            <div class="chip-row chip-row--touch" data-chip-group="single">
+              <button type="button" class="rt-chip rt-chip--selected" data-chip aria-pressed="true">Female</button>
+              <button type="button" class="rt-chip" data-chip aria-pressed="false">Male</button>
+              <button type="button" class="rt-chip" data-chip aria-pressed="false">Non-binary</button>
+            </div>
+          </div>
+        </details>
+
+        <details class="fgroup">
+          <summary><span>Experience level</span><span class="fgroup__meta"><i class="ico ico-chev-down chev"></i></span></summary>
+          <div class="fgroup__body">
+            <div class="chip-row chip-row--touch" data-chip-group="single">
+              <button type="button" class="rt-chip" data-chip aria-pressed="false">New face</button>
+              <button type="button" class="rt-chip" data-chip aria-pressed="false">Some experience</button>
+              <button type="button" class="rt-chip" data-chip aria-pressed="false">Experienced</button>
+              <button type="button" class="rt-chip" data-chip aria-pressed="false">Professional</button>
+            </div>
+          </div>
+        </details>
+
+        <details class="fgroup">
+          <summary><span>Height</span><span class="fgroup__meta"><i class="ico ico-chev-down chev"></i></span></summary>
+          <div class="fgroup__body">
+            <div class="range-row">
+              <div class="rt-field"><label class="rt-field__label" for="h-min">Min (cm)</label><input id="h-min" class="rt-input" inputmode="numeric" placeholder="100"></div>
+              <div class="rt-field"><label class="rt-field__label" for="h-max">Max (cm)</label><input id="h-max" class="rt-input" inputmode="numeric" placeholder="250"></div>
+            </div>
+          </div>
+        </details>
+
+        <details class="fgroup">
+          <summary><span>Hair colour</span><span class="fgroup__meta"><i class="ico ico-chev-down chev"></i></span></summary>
+          <div class="fgroup__body">
+            <div class="chip-row chip-row--touch" data-chip-group="single">
+              <button type="button" class="rt-chip" data-chip aria-pressed="false">Black</button>
+              <button type="button" class="rt-chip" data-chip aria-pressed="false">Brown</button>
+              <button type="button" class="rt-chip" data-chip aria-pressed="false">Blonde</button>
+              <button type="button" class="rt-chip" data-chip aria-pressed="false">Red</button>
+              <button type="button" class="rt-chip" data-chip aria-pressed="false">Auburn</button>
+              <button type="button" class="rt-chip" data-chip aria-pressed="false">Grey/White</button>
+              <button type="button" class="rt-chip" data-chip aria-pressed="false">Other</button>
+            </div>
+          </div>
+        </details>
+
+        <details class="fgroup">
+          <summary><span>Eye colour</span><span class="fgroup__meta"><i class="ico ico-chev-down chev"></i></span></summary>
+          <div class="fgroup__body">
+            <div class="chip-row chip-row--touch" data-chip-group="single">
+              <button type="button" class="rt-chip" data-chip aria-pressed="false">Brown</button>
+              <button type="button" class="rt-chip" data-chip aria-pressed="false">Blue</button>
+              <button type="button" class="rt-chip" data-chip aria-pressed="false">Green</button>
+              <button type="button" class="rt-chip" data-chip aria-pressed="false">Hazel</button>
+              <button type="button" class="rt-chip" data-chip aria-pressed="false">Grey</button>
+              <button type="button" class="rt-chip" data-chip aria-pressed="false">Other</button>
+            </div>
+          </div>
+        </details>
+
+        <details class="fgroup">
+          <summary><span>How far they'll travel</span><span class="fgroup__meta"><i class="ico ico-chev-down chev"></i></span></summary>
+          <div class="fgroup__body">
+            <div class="opt-list">
+              <label class="rt-check"><input type="checkbox"><span class="rt-check__box"><i class="ico ico-check"></i></span><span>Local only (25 miles)</span></label>
+              <label class="rt-check"><input type="checkbox"><span class="rt-check__box"><i class="ico ico-check"></i></span><span>Regional (50 miles)</span></label>
+              <label class="rt-check"><input type="checkbox"><span class="rt-check__box"><i class="ico ico-check"></i></span><span>National</span></label>
+              <label class="rt-check"><input type="checkbox"><span class="rt-check__box"><i class="ico ico-check"></i></span><span>International</span></label>
+            </div>
+            <p class="filter-note">Tick every range you'd accept. A model who travels nationally can also cover a regional shoot.</p>
+          </div>
+        </details>
+
+        <details class="fgroup">
+          <summary><span>Ethnicity</span><span class="fgroup__meta"><i class="ico ico-chev-down chev"></i></span></summary>
+          <div class="fgroup__body">
+            <div class="opt-list">
+              <label class="rt-check"><input type="checkbox"><span class="rt-check__box"><i class="ico ico-check"></i></span><span>Asian</span></label>
+              <label class="rt-check"><input type="checkbox"><span class="rt-check__box"><i class="ico ico-check"></i></span><span>Black</span></label>
+              <label class="rt-check"><input type="checkbox"><span class="rt-check__box"><i class="ico ico-check"></i></span><span>Hispanic/Latino</span></label>
+              <label class="rt-check"><input type="checkbox"><span class="rt-check__box"><i class="ico ico-check"></i></span><span>Middle Eastern</span></label>
+              <label class="rt-check"><input type="checkbox"><span class="rt-check__box"><i class="ico ico-check"></i></span><span>Mixed</span></label>
+              <label class="rt-check"><input type="checkbox"><span class="rt-check__box"><i class="ico ico-check"></i></span><span>White</span></label>
+              <label class="rt-check"><input type="checkbox"><span class="rt-check__box"><i class="ico ico-check"></i></span><span>Other</span></label>
+            </div>
+          </div>
+        </details>
+
+      </div>
+      <div class="filter-panel__foot">
+        <button class="rt-btn rt-btn--primary" type="button" data-close-sheet>Show 24 models</button>
+      </div>
+    </aside>
+
+    <section aria-label="Results">
+
+      <div class="mobile-filterbar">
+        <button class="rt-btn rt-btn--secondary" type="button" data-open-sheet="filters"><i class="ico ico-sliders"></i>Filters <span class="count-badge">4</span></button>
+        <select class="rt-select sort-select" aria-label="Sort by">
+          <option>Newest</option>
+          <option>Lowest price</option>
+          <option>Highest price</option>
+        </select>
+      </div>
+
+      <div class="results-bar">
+        <p class="results-bar__count">24 models available for your dates</p>
+        <select class="rt-select sort-select" aria-label="Sort by">
+          <option>Sort: Newest</option>
+          <option>Sort: Lowest price</option>
+          <option>Sort: Highest price</option>
+        </select>
+      </div>
+
+      <div class="active-chips" aria-label="Active filters">
+        <button type="button" class="rt-chip rt-chip--selected">Fashion <i class="ico ico-close ico--sm"></i></button>
+        <button type="button" class="rt-chip rt-chip--selected">Editorial <i class="ico ico-close ico--sm"></i></button>
+        <button type="button" class="rt-chip rt-chip--selected">Up to £500 <i class="ico ico-close ico--sm"></i></button>
+        <button type="button" class="rt-chip rt-chip--selected">Female <i class="ico ico-close ico--sm"></i></button>
+        <button type="button" class="clear-link">Clear all</button>
+      </div>
+
+      <div class="talent-grid">
+
+        <a class="rt-talent" href="B03-model-profile.html">
+          <div class="rt-talent__photo"><span class="rt-ph">Portfolio photo</span></div>
+          <div class="rt-talent__body">
+            <div class="rt-talent__loc"><span class="rt-eyebrow">Manchester</span><span class="avail"><i class="rt-dot rt-dot--available"></i><span class="full">Free on your dates</span><span class="short">Free</span></span></div>
+            <h3 class="rt-talent__name">Ava C.</h3>
+            <p class="rt-talent__meta">Female · 178 cm<span class="more"> · Professional</span></p>
+            <div class="rt-talent__tags"><span class="rt-tag">Fashion</span><span class="rt-tag">Editorial</span><span class="rt-tag rt-tag--outline">+2</span></div>
+            <div class="rt-talent__rule"></div>
+            <div class="rt-talent__foot"><span class="rt-talent__rate">£450 <small>/ day</small></span><span class="rt-btn rt-btn--secondary rt-btn--sm rt-talent__cta">View</span></div>
+          </div>
+        </a>
+
+        <a class="rt-talent" href="B03-model-profile.html">
+          <div class="rt-talent__photo"><span class="rt-ph">Portfolio photo</span></div>
+          <div class="rt-talent__body">
+            <div class="rt-talent__loc"><span class="rt-eyebrow">London</span><span class="avail"><i class="rt-dot rt-dot--available"></i><span class="full">Free on your dates</span><span class="short">Free</span></span></div>
+            <h3 class="rt-talent__name">Mia R.</h3>
+            <p class="rt-talent__meta">Female · 172 cm<span class="more"> · Experienced</span></p>
+            <div class="rt-talent__tags"><span class="rt-tag">Fashion</span><span class="rt-tag">Commercial</span><span class="rt-tag rt-tag--outline">+1</span></div>
+            <div class="rt-talent__rule"></div>
+            <div class="rt-talent__foot"><span class="rt-talent__rate">£380 <small>/ day</small></span><span class="rt-btn rt-btn--secondary rt-btn--sm rt-talent__cta">View</span></div>
+          </div>
+        </a>
+
+        <a class="rt-talent" href="B03-model-profile.html">
+          <div class="rt-talent__photo"><span class="rt-ph">Portfolio photo</span></div>
+          <div class="rt-talent__body">
+            <div class="rt-talent__loc"><span class="rt-eyebrow">Leeds</span><span class="avail"><i class="rt-dot rt-dot--available"></i><span class="full">Free on your dates</span><span class="short">Free</span></span></div>
+            <h3 class="rt-talent__name">Zara K.</h3>
+            <p class="rt-talent__meta">Female · 176 cm<span class="more"> · Experienced</span></p>
+            <div class="rt-talent__tags"><span class="rt-tag">Editorial</span><span class="rt-tag">Beauty</span></div>
+            <div class="rt-talent__rule"></div>
+            <div class="rt-talent__foot"><span class="rt-talent__rate">£320 <small>/ day</small></span><span class="rt-btn rt-btn--secondary rt-btn--sm rt-talent__cta">View</span></div>
+          </div>
+        </a>
+
+        <a class="rt-talent" href="B03-model-profile.html">
+          <div class="rt-talent__photo"><span class="rt-ph">Portfolio photo</span></div>
+          <div class="rt-talent__body">
+            <div class="rt-talent__loc"><span class="rt-eyebrow">Birmingham</span><span class="avail"><i class="rt-dot rt-dot--available"></i><span class="full">Free on your dates</span><span class="short">Free</span></span></div>
+            <h3 class="rt-talent__name">Noor A.</h3>
+            <p class="rt-talent__meta">Female · 169 cm<span class="more"> · Some experience</span></p>
+            <div class="rt-talent__tags"><span class="rt-tag">Fashion</span><span class="rt-tag">Hair</span></div>
+            <div class="rt-talent__rule"></div>
+            <div class="rt-talent__foot"><span class="rt-talent__rate">£250 <small>/ day</small></span><span class="rt-btn rt-btn--secondary rt-btn--sm rt-talent__cta">View</span></div>
+          </div>
+        </a>
+
+        <a class="rt-talent" href="B03-model-profile.html">
+          <div class="rt-talent__photo"><span class="rt-ph">Portfolio photo</span></div>
+          <div class="rt-talent__body">
+            <div class="rt-talent__loc"><span class="rt-eyebrow">Bristol</span><span class="avail"><i class="rt-dot rt-dot--available"></i><span class="full">Free on your dates</span><span class="short">Free</span></span></div>
+            <h3 class="rt-talent__name">Isla M.</h3>
+            <p class="rt-talent__meta">Female · 175 cm<span class="more"> · New face</span></p>
+            <div class="rt-talent__tags"><span class="rt-tag">Fashion</span><span class="rt-tag">Lifestyle</span></div>
+            <div class="rt-talent__rule"></div>
+            <div class="rt-talent__foot"><span class="rt-talent__rate">£180 <small>/ day</small></span><span class="rt-btn rt-btn--secondary rt-btn--sm rt-talent__cta">View</span></div>
+          </div>
+        </a>
+
+        <a class="rt-talent" href="B03-model-profile.html">
+          <div class="rt-talent__photo"><span class="rt-ph">Portfolio photo</span></div>
+          <div class="rt-talent__body">
+            <div class="rt-talent__loc"><span class="rt-eyebrow">Glasgow</span><span class="avail"><i class="rt-dot rt-dot--available"></i><span class="full">Free on your dates</span><span class="short">Free</span></span></div>
+            <h3 class="rt-talent__name">Priya S.</h3>
+            <p class="rt-talent__meta">Female · 160 cm<span class="more"> · Experienced</span></p>
+            <div class="rt-talent__tags"><span class="rt-tag">Petite</span><span class="rt-tag">Editorial</span></div>
+            <div class="rt-talent__rule"></div>
+            <div class="rt-talent__foot"><span class="rt-talent__rate">£350 <small>/ day</small></span><span class="rt-btn rt-btn--secondary rt-btn--sm rt-talent__cta">View</span></div>
+          </div>
+        </a>
+
+        <a class="rt-talent" href="B03-model-profile.html">
+          <div class="rt-talent__photo"><span class="rt-ph">Portfolio photo</span></div>
+          <div class="rt-talent__body">
+            <div class="rt-talent__loc"><span class="rt-eyebrow">London</span><span class="avail"><i class="rt-dot rt-dot--available"></i><span class="full">Free on your dates</span><span class="short">Free</span></span></div>
+            <h3 class="rt-talent__name">Esme T.</h3>
+            <p class="rt-talent__meta">Female · 181 cm<span class="more"> · Professional</span></p>
+            <div class="rt-talent__tags"><span class="rt-tag">Editorial</span><span class="rt-tag">Fashion</span></div>
+            <div class="rt-talent__rule"></div>
+            <div class="rt-talent__foot"><span class="rt-talent__rate">£500 <small>/ day</small></span><span class="rt-btn rt-btn--secondary rt-btn--sm rt-talent__cta">View</span></div>
+          </div>
+        </a>
+
+        <a class="rt-talent" href="B03-model-profile.html">
+          <div class="rt-talent__photo"><span class="rt-ph">Portfolio photo</span></div>
+          <div class="rt-talent__body">
+            <div class="rt-talent__loc"><span class="rt-eyebrow">Manchester</span><span class="avail"><i class="rt-dot rt-dot--available"></i><span class="full">Free on your dates</span><span class="short">Free</span></span></div>
+            <h3 class="rt-talent__name">Rosa D.</h3>
+            <p class="rt-talent__meta">Female · 170 cm<span class="more"> · Experienced</span></p>
+            <div class="rt-talent__tags"><span class="rt-tag">Fashion</span><span class="rt-tag">Beauty</span></div>
+            <div class="rt-talent__rule"></div>
+            <div class="rt-talent__foot"><span class="rt-talent__rate">£300 <small>/ day</small></span><span class="rt-btn rt-btn--secondary rt-btn--sm rt-talent__cta">View</span></div>
+          </div>
+        </a>
+
+      </div>
+
+      <nav class="pager" aria-label="Pagination">
+        <a class="is-current" href="#" aria-current="page">1</a>
+        <a href="#">2</a>
+        <a href="#">3</a>
+        <a href="#" aria-label="Next page"><i class="ico ico-chev-right"></i></a>
+      </nav>
+
+    </section>
+  </div>
+
+  <div class="state-label">State · no results</div>
+  <section class="empty-state" aria-label="No results example" style="margin-bottom:var(--space-7);">
+    <span class="rt-eyebrow">No matches</span>
+    <h2>No models match all of those filters.</h2>
+    <p>Try widening your dates, raising the day rate, or removing a filter. Your other filters stay as they are.</p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;">
+      <button class="rt-btn rt-btn--secondary" type="button" style="min-height:44px;">Clear filters</button>
+    </div>
+  </section>
+
+</main>
+
+<!-- Mobile dates sheet (the calendar, full height on phones) -->
+<div class="sheet-root sheet-root--mobile" id="sheet-dates" role="dialog" aria-modal="true" aria-labelledby="sd-title">
+  <div class="sheet-backdrop"></div>
+  <div class="sheet">
+    <div class="sheet__head"><h2 class="sheet__title" id="sd-title">Choose your dates</h2><button class="icon-btn" type="button" data-close-sheet aria-label="Close"><i class="ico ico-close"></i></button></div>
+    <div class="sheet__body">
+      <div data-cal data-layout="stack" data-months="4"></div>
+      <div class="cal-summary"><span class="cal-summary__main" data-bind="summaryMain"></span><span class="cal-summary__sub" data-bind="summarySub"></span></div>
+    </div>
+    <div class="sheet__foot">
+      <button class="rt-btn rt-btn--primary rt-btn--block" type="button" data-close-sheet>Apply dates</button>
+      <button class="rt-btn rt-btn--ghost rt-btn--block" type="button" data-clear-dates>Clear dates</button>
+    </div>
+  </div>
+</div>
+
+<div class="notes-dock">
+  <details class="design-notes">
+    <summary>Design notes</summary>
+    <ul>
+      <li><strong>Phone fix (run-through M5).</strong> Below 900px the grid is 2-up with a compact card: photo, city, name, day rate and one meta line. Tags, the hairline rule and the "View" button are hidden, and the whole card is the tap target. At 375px two rows fit on one screen, where the old full card showed one model per screen. From 600px it is 3-up (still compact); from 900px the sidebar appears and the full <code>rt-talent</code> card returns, 2-up then 3-up from 1180px.</li>
+      <li><strong>The Verified badge stays retired from cards.</strong> The lifecycle spec (account-status-lifecycle section 9) retired it because every visible model is Verified, so a badge on every card says nothing and implies some models are not. Replacement: one line under the heading (the trust line) stating the standard once, in wording already used on the approved client "ready to book" screen. See open question 1 on the index.</li>
+      <li><strong>Search criteria that matter most are always visible.</strong> City and dates sit above the results on every screen size, not inside the filter panel. Dates use the same range calendar as the booking panel (B04), with the end date counting as a full day. The green availability dot only appears on a card when a date range is set, because without dates "free" would be meaningless: models are available by default.</li>
+      <li><strong>Filters.</strong> Sidebar on desktop, full-height sheet on phones (B02). The "Filters" button shows the number of active filter values; active filters repeat as removable chips under the results count so a client can always see why a list is short. Sorting follows the configured options (Newest, Lowest price, Highest price). "Oldest" is not shown; it has no use for a client (config change, see index dependencies).</li>
+      <li><strong>One cobalt action.</strong> There is none on this screen apart from the cobalt word in the heading and the period in the wordmark. Cards use a secondary "View" button on desktop; the filter sheet and date sheet each have a single cobalt apply button when they are open.</li>
+      <li><strong>Tap targets.</strong> Chips in the filter sheet and the active filter chips are 44px tall on phones. The date and city inputs are 48px. Page does not scroll sideways at 375px.</li>
+      <li>Names, cities, counts and prices on this page are example data. No stats or response times are shown, because the system does not produce them.</li>
+    </ul>
+  </details>
+</div>
+<div class="container--editorial"><div class="mock-pager"><a href="index.html">← Journey map</a><a href="B02-filters.html">Next: Filters →</a></div></div>
+
+<script src="booking.js"></script>
+</body>
+</html>

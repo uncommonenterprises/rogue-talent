@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>B08 · Incoming booking request (model) - Rogue Talent booking mockups</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Hanken+Grotesk:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="journey.css">
+</head>
+<body>
+
+<div class="mock-toolbar">
+  <span class="tag">Mock</span>
+  <a href="index.html">Journey map</a>
+  <span class="divider">·</span>
+  <span class="title">Model · B08 · Incoming booking request</span>
+  <span class="mock-flag">Example data</span>
+  <span class="spacer"></span>
+  <a href="B07-request-sent.html">← Prev</a>
+  <a href="B09-booking-status.html">Next: Booking status →</a>
+</div>
+
+<header class="app-nav">
+  <a class="rt-nav__brand" href="index.html">Rogue<span>.</span></a>
+  <nav class="app-nav__links" aria-label="Main">
+    <a href="#">Your profile</a>
+    <a class="is-active" href="B09-booking-status.html">Booking requests</a>
+    <a href="#">Calendar</a>
+  </nav>
+  <div class="app-nav__actions">
+    <span class="rt-status rt-status--verified app-nav__status"><span class="rt-status__dot"></span>Verified</span>
+    <a class="icon-btn" href="#" aria-label="Account menu"><span class="rt-avatar rt-avatar--sm">A</span></a>
+  </div>
+</header>
+
+<main class="page">
+  <div class="confirm-grid">
+
+    <div>
+      <a class="back-link" href="B09-booking-status.html"><i class="ico ico-arrow-left"></i>Booking requests</a>
+
+      <div class="stack" style="padding-top:var(--space-2);">
+        <span class="rt-status rt-status--lg rt-status--requested" style="align-self:flex-start;"><span class="rt-status__dot"></span>Requested</span>
+        <h1 class="page-title">Booking request from Ben C.</h1>
+        <p class="muted">Northside Test Studio</p>
+      </div>
+
+      <div class="deadline" style="margin-top:var(--space-5);">
+        <i class="ico ico-clock ico--lg"></i>
+        <div>
+          <b>Reply by Tue 3 Nov, 16:20</b>
+          <span>47 hours left. If you don't reply in time the request expires and the client isn't charged.</span>
+        </div>
+      </div>
+
+      <!-- Phone only: earnings first, so the decision-maker sees the money before the detail -->
+      <div class="earn-card only-mobile" style="margin-top:var(--space-4);">
+        <span class="rt-eyebrow">You'll earn</span>
+        <b>£900</b>
+        <span>100% of your rate: £450 x 2 days. The client pays the booking fee on top.</span>
+      </div>
+
+      <div class="card" style="margin-top:var(--space-5);">
+        <h2>The shoot</h2>
+        <dl class="kv-rows kv-rows--wide">
+          <div class="kv-row"><dt>Dates</dt><dd>Wed 25 Nov to Thu 26 Nov<small>2 full days</small></dd></div>
+          <div class="kv-row"><dt>Shoot type</dt><dd>Lookbook</dd></div>
+          <div class="kv-row"><dt>Where</dt><dd>Professional studio</dd></div>
+          <div class="kv-row"><dt>Address</dt><dd>Unit 4, Mill Street, Manchester M4 1AA</dd></div>
+        </dl>
+        <div class="stack stack--sm">
+          <span class="rt-eyebrow">What they're shooting</span>
+          <p class="small" style="color:var(--text-primary);line-height:1.6;">Autumn lookbook, six looks, studio set. Hair and make-up provided by us. Wardrobe is supplied.</p>
+        </div>
+        <div class="stack stack--sm">
+          <span class="rt-eyebrow">A note from the client</span>
+          <p class="small" style="color:var(--text-primary);line-height:1.6;">Call time is 9am. There's free parking behind the building.</p>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:var(--space-5);">
+        <h2>Who is booking</h2>
+        <dl class="kv-rows">
+          <div class="kv-row"><dt>Name</dt><dd>Ben Carter</dd></div>
+          <div class="kv-row"><dt>Company</dt><dd>Northside Test Studio</dd></div>
+        </dl>
+        <p class="trust-line"><i class="ico ico-check"></i><span>Clients are reviewed by our team and ID verified before they can send a request. This name and company are the ones we verified.</span></p>
+      </div>
+
+      <div class="card" style="margin-top:var(--space-5);">
+        <h2>What you're agreeing to</h2>
+        <p class="small muted">Every booking uses the same standard Content Licence &amp; Model Release. If you accept, you agree to it for this booking.</p>
+        <div class="licence-box">
+          <span class="mock-flag" style="align-self:flex-start;">Mock note: draft wording, pending legal review</span>
+          <ul>
+            <li><i class="ico ico-check"></i><span><strong>One fee, no usage fees.</strong> Your day rate is your whole payment for the shoot and the licence. The licence doesn't expire.</span></li>
+            <li><i class="ico ico-check"></i><span><strong>The client can use the content</strong> for any lawful commercial purpose, in any media, worldwide. They can't sell it on or pass it to another company for their own use.</span></li>
+            <li><i class="ico ico-check"></i><span><strong>You're protected.</strong> No unlawful, demeaning or misleading use, no AI training and no synthetic versions of you without your separate consent.</span></li>
+            <li><i class="ico ico-check"></i><span><strong>You keep your portfolio rights</strong> and can ask to be credited.</span></li>
+          </ul>
+          <a class="licence-link" href="#" target="_blank" rel="noopener">Read the full licence</a>
+        </div>
+      </div>
+    </div>
+
+    <aside>
+      <div class="summary-card" style="position:sticky;top:var(--space-5);">
+        <div class="earn-card only-desktop">
+          <span class="rt-eyebrow">You'll earn</span>
+          <b>£900</b>
+          <span>100% of your rate: £450 x 2 days. The client pays the 15% booking fee on top.</span>
+        </div>
+        <p class="small muted">You're paid usually the next working day after the shoot, always within five working days.</p>
+        <hr>
+        <p class="small" style="color:var(--text-primary);">By accepting, you agree to the Content Licence &amp; Model Release for this booking.</p>
+        <div class="action-row">
+          <a class="rt-btn rt-btn--primary rt-btn--lg rt-btn--block" href="B09-booking-status.html">Accept request</a>
+          <button class="rt-btn rt-btn--secondary rt-btn--block" type="button" data-open-sheet="sheet-decline" style="min-height:48px;">Decline request</button>
+        </div>
+        <p class="panel__fine">Accepting blocks Wed 25 Nov to Thu 26 Nov on your calendar. Declining doesn't charge the client, and you don't need to give a reason.</p>
+        <a class="rt-btn rt-btn--ghost rt-btn--block" href="#" style="min-height:44px;">Report a safety concern</a>
+      </div>
+    </aside>
+
+  </div>
+
+  <div class="state-label">State · private-residence request (adds the safety note above "The shoot")</div>
+  <div class="stack" style="max-width:640px;">
+    <div class="stack stack--sm">
+      <span class="rt-eyebrow">Where</span>
+      <p class="small" style="color:var(--text-primary);">Private residence · 12 Alder Close, Altrincham WA14 2PQ</p>
+    </div>
+    <section class="advisory" aria-label="Safety note">
+      <h3>A quick safety note for this shoot</h3>
+      <p>This booking is at a private residence. Most residence shoots are completely fine. Think of this as a practical checklist, not a warning about this client.</p>
+      <ul>
+        <li>Tell someone you trust where you'll be and when you expect to finish. Once the booking is confirmed you can use "Share these shoot details" to send them everything at once.</li>
+        <li>Keep your phone charged and on you, and arrange your own transport so you can leave whenever you want.</li>
+        <li>Trust your instincts. You're free to decline this booking, or to leave the shoot at any point, for any reason.</li>
+      </ul>
+      <p>Rogue Talent isn't a monitored emergency service. If you ever feel unsafe or are in immediate danger, call 999.</p>
+    </section>
+    <p class="xs muted">Existing SAF-11 copy, with the two dashes replaced by full stops. Advisory only; it never blocks the request and is never shown to the client. The Accept button is unchanged.</p>
+  </div>
+
+  <div class="state-label">State · after accepting (the shareable summary appears)</div>
+  <div class="stack" style="max-width:640px;margin-bottom:var(--space-7);">
+    <div class="card">
+      <span class="rt-status rt-status--lg rt-status--accepted" style="align-self:flex-start;"><span class="rt-status__dot"></span>Accepted</span>
+      <h2 style="font-size:var(--text-2xl);">You're booked: Wed 25 Nov to Thu 26 Nov.</h2>
+      <p class="small muted">Those dates are blocked on your calendar. Ben C. has been charged and you'll be paid usually the next working day after the shoot, always within five working days.</p>
+      <div class="advisory">
+        <h3>Let someone know where you'll be</h3>
+        <p>Send the full details of this shoot to a friend or family member so someone knows where you'll be. This shares from your own phone. Rogue Talent doesn't monitor shoots or contact anyone for you.</p>
+        <button class="rt-btn rt-btn--secondary" type="button" style="min-height:48px;align-self:flex-start;">Share these shoot details</button>
+      </div>
+    </div>
+    <p class="xs muted">Existing SAF-17 feature. One em dash in the intro copy is replaced by a full stop. The wording keeps its honest limit: Rogue Talent is not the channel and does not monitor.</p>
+  </div>
+
+</main>
+
+<!-- Decline: confirmation -->
+<div class="sheet-root sheet-root--dialog" id="sheet-decline" role="dialog" aria-modal="true" aria-labelledby="dc-title">
+  <div class="sheet-backdrop"></div>
+  <div class="sheet sheet--auto">
+    <div class="sheet__head"><h2 class="sheet__title" id="dc-title">Decline this request?</h2><button class="icon-btn" type="button" data-close-sheet aria-label="Close"><i class="ico ico-close"></i></button></div>
+    <div class="sheet__body">
+      <p class="small" style="color:var(--text-secondary);line-height:1.6;">Ben C. won't be charged and will be told you've declined. Wed 25 Nov to Thu 26 Nov stays open on your calendar. You don't need to give a reason, and you can't undo this.</p>
+    </div>
+    <div class="sheet__foot">
+      <a class="rt-btn rt-btn--secondary rt-btn--block" href="B09-booking-status.html">Decline request</a>
+      <button class="rt-btn rt-btn--ghost rt-btn--block" type="button" data-close-sheet style="min-height:44px;">Keep the request</button>
+    </div>
+  </div>
+</div>
+
+<div class="notes-dock">
+  <details class="design-notes">
+    <summary>Design notes</summary>
+    <ul>
+      <li><strong>The deadline is the first thing under the title.</strong> "Reply by Tue 3 Nov, 16:20" with the time left, in the amber of the Requested status. It is a real, system-enforced time (48 hours after the request landed, or the shoot start if sooner), so showing it is honest and creates urgency without nagging. The consequence of missing it is stated once, neutrally: the request expires and the client isn't charged. Nothing says missing it counts against the model, because nothing in the process says that.</li>
+      <li><strong>Earnings are 100% of the rate and shown first on phones.</strong> The money is the main decision input, so a phone shows the earnings card before the detail; on desktop it is the first thing in the sticky reply column. The payout wording is the approved promise. The model never sees the 15% as a deduction.</li>
+      <li><strong>Everything the model needs to decide is on one page:</strong> dates, shoot type, description, where, the address, the client's note, and who is booking. The client is shown by their verified name and company, which is the same information the shareable shoot summary uses. No client rating or history is shown because none exists to show yet.</li>
+      <li><strong>Accepting is a contract moment.</strong> Under the draft licence the model accepts it by accepting the booking (clause 12). The sentence "By accepting, you agree to the Content Licence &amp; Model Release for this booking" sits directly above the button, with the plain-English summary and the full text on the same page. This is a legal surface: wording and whether it is sufficient go to the solicitor (open question 10).</li>
+      <li><strong>Accept is the one cobalt action; Decline is secondary, not red.</strong> Declining is a normal, allowed choice, not a danger. A short confirmation says what happens and that no reason is needed, because the process captures none. After accepting, the dates are blocked and the shareable summary appears (state shown above).</li>
+      <li><strong>Private residence.</strong> The existing safety note appears above the shoot details, calm in tone, advisory only. The model's own "I don't accept private-residence shoots" setting (profile settings) is applied before a request ever reaches them, silently, so they never see these requests at all.</li>
+      <li><strong>Safety is one quiet link,</strong> "Report a safety concern", at the foot of the reply column (SAF-29 exists). It is visible without being alarming, and there is no panic button because the product has none (safety framework v1).</li>
+      <li>Phone: one column, 48px buttons, 44px close and link rows. Order is status, title, deadline, earnings, shoot, who is booking, licence, then the reply card.</li>
+    </ul>
+  </details>
+</div>
+<div class="container--editorial"><div class="mock-pager"><a href="B07-request-sent.html">← B07 Request sent</a><a href="B09-booking-status.html">Next: Booking status →</a></div></div>
+
+<script src="booking.js"></script>
+</body>
+</html>

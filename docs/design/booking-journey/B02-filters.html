@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>B02 · Filters - Rogue Talent booking mockups</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Hanken+Grotesk:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="journey.css">
+</head>
+<body data-search="true" data-start="2026-11-25" data-end="2026-11-26">
+
+<div class="mock-toolbar">
+  <span class="tag">Mock</span>
+  <a href="index.html">Journey map</a>
+  <span class="divider">·</span>
+  <span class="title">Client · B02 · Filters</span>
+  <span class="mock-flag">Example data</span>
+  <span class="spacer"></span>
+  <a href="B01-search-results.html">← Prev</a>
+  <a href="B03-model-profile.html">Next: Model profile →</a>
+</div>
+
+<header class="app-nav">
+  <a class="rt-nav__brand" href="index.html">Rogue<span>.</span></a>
+  <nav class="app-nav__links" aria-label="Main">
+    <a class="is-active" href="B01-search-results.html">Browse models</a>
+    <a href="B09-booking-status.html">Your bookings</a>
+  </nav>
+  <div class="app-nav__actions">
+    <span class="rt-status rt-status--verified app-nav__status"><span class="rt-status__dot"></span>Verified</span>
+    <a class="icon-btn" href="#" aria-label="Account menu"><span class="rt-avatar rt-avatar--sm">B</span></a>
+  </div>
+</header>
+
+<main class="page">
+
+  <section class="search-head search-head--results" aria-label="Search">
+    <h1 class="page-title">Filters, <span class="accent">open.</span></h1>
+    <p class="trust-line"><i class="ico ico-info"></i><span>On a phone this opens as a full-height sheet over the results. It is open now; close it with the cross to see the page behind. On a desktop it is the sidebar, shown here with every group open.</span></p>
+  </section>
+
+  <div class="search-layout">
+
+    <aside class="filter-panel is-open" id="filters" aria-label="Filters">
+      <div class="filter-panel__head">
+        <h2 class="filter-panel__title">Filters</h2>
+        <div style="display:flex;align-items:center;gap:4px;">
+          <button class="clear-link" type="button">Clear all</button>
+          <button class="icon-btn filter-panel__close" type="button" data-close-sheet aria-label="Close filters"><i class="ico ico-close"></i></button>
+        </div>
+      </div>
+      <div class="filter-panel__body">
+
+        <details class="fgroup" open>
+          <summary><span>Modelling categories</span><span class="fgroup__meta"><span class="count-badge">2</span><i class="ico ico-chev-down chev"></i></span></summary>
+          <div class="fgroup__body">
+            <div class="chip-row chip-row--touch" data-chip-group="multi">
+              <button type="button" class="rt-chip rt-chip--selected" data-chip aria-pressed="true">Fashion</button>
+              <button type="button" class="rt-chip" data-chip aria-pressed="false">Commercial</button>
+              <button type="button" class="rt-chip rt-chip--selected" data-chip aria-pressed="true">Editorial</button>
+              <button type="button" class="rt-chip" data-chip aria-pressed="false">Fitness</button>
+              <button type="button" class="rt-chip" data-chip aria-pressed="false">Lifestyle</button>
+              <button type="button" class="rt-chip" data-chip aria-pressed="false">Beauty</button>
+              <button type="button" class="rt-chip" data-chip aria-pressed="false">Lingerie</button>
+              <button type="button" class="rt-chip" data-chip aria-pressed="false">Swimwear</button>
+              <button type="button" class="rt-chip" data-chip aria-pressed="false">Plus-size</button>
+              <button type="button" class="rt-chip" data-chip aria-pressed="false">Petite</button>
+              <button type="button" class="rt-chip" data-chip aria-pressed="false">Parts (hands/feet)</button>
+              <button type="button" class="rt-chip" data-chip aria-pressed="false">Hair</button>
+              <button type="button" class="rt-chip" data-chip aria-pressed="false">Promotional/Events</button>
+            </div>
+            <p class="filter-note">Shows models who do any of the categories you pick.</p>
+          </div>
+        </details>
+
+        <details class="fgroup" open>
+          <summary><span>Day rate</span><span class="fgroup__meta"><span class="count-badge">1</span><i class="ico ico-chev-down chev"></i></span></summary>
+          <div class="fgroup__body">
+            <div class="range-row">
+              <div class="rt-field"><label class="rt-field__label" for="rate-min">Min</label><div class="input-prefix"><span>£</span><input id="rate-min" class="rt-input" inputmode="numeric" placeholder="0"></div></div>
+              <div class="rt-field"><label class="rt-field__label" for="rate-max">Max</label><div class="input-prefix"><span>£</span><input id="rate-max" class="rt-input" inputmode="numeric" value="500"></div></div>
+            </div>
+            <p class="filter-note">This is the day rate before the 15% booking fee.</p>
+          </div>
+        </details>
+
+        <details class="fgroup" open>
+          <summary><span>Gender</span><span class="fgroup__meta"><span class="count-badge">1</span><i class="ico ico-chev-down chev"></i></span></summary>
+          <div class="fgroup__body">
+            <div class="chip-row chip-row--touch" data-chip-group="single">
+              <button type="button" class="rt-chip rt-chip--selected" data-chip aria-pressed="true">Female</button>
+              <button type="button" class="rt-chip" data-chip aria-pressed="false">Male</button>
+              <button type="button" class="rt-chip" data-chip aria-pressed="false">Non-binary</button>
+            </div>
+          </div>
+        </details>
+
+        <details class="fgroup" open>
+          <summary><span>Experience level</span><span class="fgroup__meta"><i class="ico ico-chev-down chev"></i></span></summary>
+          <div class="fgroup__body">
+            <div class="chip-row chip-row--touch" data-chip-group="single">
+              <button type="button" class="rt-chip" data-chip aria-pressed="false">New face</button>
+              <button type="button" class="rt-chip" data-chip aria-pressed="false">Some experience</button>
+              <button type="button" class="rt-chip" data-chip aria-pressed="false">Experienced</button>
+              <button type="button" class="rt-chip" data-chip aria-pressed="false">Professional</button>
+            </div>
+          </div>
+        </details>
+
+        <details class="fgroup" open>
+          <summary><span>Height</span><span class="fgroup__meta"><span class="count-badge">1</span><i class="ico ico-chev-down chev"></i></span></summary>
+          <div class="fgroup__body">
+            <div class="range-row">
+              <div class="rt-field"><label class="rt-field__label" for="h-min">Min (cm)</label><input id="h-min" class="rt-input" inputmode="numeric" value="170"></div>
+              <div class="rt-field"><label class="rt-field__label" for="h-max">Max (cm)</label><input id="h-max" class="rt-input" inputmode="numeric" placeholder="250"></div>
+            </div>
+          </div>
+        </details>
+
+        <details class="fgroup" open>
+          <summary><span>Hair colour</span><span class="fgroup__meta"><i class="ico ico-chev-down chev"></i></span></summary>
+          <div class="fgroup__body">
+            <div class="chip-row chip-row--touch" data-chip-group="single">
+              <button type="button" class="rt-chip" data-chip aria-pressed="false">Black</button>
+              <button type="button" class="rt-chip" data-chip aria-pressed="false">Brown</button>
+              <button type="button" class="rt-chip" data-chip aria-pressed="false">Blonde</button>
+              <button type="button" class="rt-chip" data-chip aria-pressed="false">Red</button>
+              <button type="button" class="rt-chip" data-chip aria-pressed="false">Auburn</button>
+              <button type="button" class="rt-chip" data-chip aria-pressed="false">Grey/White</button>
+              <button type="button" class="rt-chip" data-chip aria-pressed="false">Other</button>
+            </div>
+          </div>
+        </details>
+
+        <details class="fgroup" open>
+          <summary><span>Eye colour</span><span class="fgroup__meta"><i class="ico ico-chev-down chev"></i></span></summary>
+          <div class="fgroup__body">
+            <div class="chip-row chip-row--touch" data-chip-group="single">
+              <button type="button" class="rt-chip" data-chip aria-pressed="false">Brown</button>
+              <button type="button" class="rt-chip" data-chip aria-pressed="false">Blue</button>
+              <button type="button" class="rt-chip" data-chip aria-pressed="false">Green</button>
+              <button type="button" class="rt-chip" data-chip aria-pressed="false">Hazel</button>
+              <button type="button" class="rt-chip" data-chip aria-pressed="false">Grey</button>
+              <button type="button" class="rt-chip" data-chip aria-pressed="false">Other</button>
+            </div>
+          </div>
+        </details>
+
+        <details class="fgroup" open>
+          <summary><span>How far they'll travel</span><span class="fgroup__meta"><i class="ico ico-chev-down chev"></i></span></summary>
+          <div class="fgroup__body">
+            <div class="opt-list">
+              <label class="rt-check"><input type="checkbox"><span class="rt-check__box"><i class="ico ico-check"></i></span><span>Local only (25 miles)</span></label>
+              <label class="rt-check"><input type="checkbox"><span class="rt-check__box"><i class="ico ico-check"></i></span><span>Regional (50 miles)</span></label>
+              <label class="rt-check"><input type="checkbox"><span class="rt-check__box"><i class="ico ico-check"></i></span><span>National</span></label>
+              <label class="rt-check"><input type="checkbox"><span class="rt-check__box"><i class="ico ico-check"></i></span><span>International</span></label>
+            </div>
+            <p class="filter-note">Tick every range you'd accept. A model who travels nationally can also cover a regional shoot.</p>
+          </div>
+        </details>
+
+        <details class="fgroup" open>
+          <summary><span>Ethnicity</span><span class="fgroup__meta"><i class="ico ico-chev-down chev"></i></span></summary>
+          <div class="fgroup__body">
+            <div class="opt-list">
+              <label class="rt-check"><input type="checkbox"><span class="rt-check__box"><i class="ico ico-check"></i></span><span>Asian</span></label>
+              <label class="rt-check"><input type="checkbox"><span class="rt-check__box"><i class="ico ico-check"></i></span><span>Black</span></label>
+              <label class="rt-check"><input type="checkbox"><span class="rt-check__box"><i class="ico ico-check"></i></span><span>Hispanic/Latino</span></label>
+              <label class="rt-check"><input type="checkbox"><span class="rt-check__box"><i class="ico ico-check"></i></span><span>Middle Eastern</span></label>
+              <label class="rt-check"><input type="checkbox"><span class="rt-check__box"><i class="ico ico-check"></i></span><span>Mixed</span></label>
+              <label class="rt-check"><input type="checkbox"><span class="rt-check__box"><i class="ico ico-check"></i></span><span>White</span></label>
+              <label class="rt-check"><input type="checkbox"><span class="rt-check__box"><i class="ico ico-check"></i></span><span>Other</span></label>
+            </div>
+          </div>
+        </details>
+
+      </div>
+      <div class="filter-panel__foot">
+        <button class="rt-btn rt-btn--primary" type="button" data-close-sheet>Show 9 models</button>
+      </div>
+    </aside>
+
+    <section aria-label="Filter inventory">
+      <div class="mobile-filterbar">
+        <button class="rt-btn rt-btn--secondary" type="button" data-open-sheet="filters"><i class="ico ico-sliders"></i>Filters <span class="count-badge">5</span></button>
+        <span class="muted small" style="flex:1;">Tap Filters to reopen the sheet.</span>
+      </div>
+
+      <div class="card card--roomy">
+        <h2>What clients can filter by</h2>
+        <p class="small muted">Each filter maps to a model field they filled in during sign-up. Order is the order shown in the panel.</p>
+        <div class="inv-list">
+          <div class="inv-item"><b>City and dates</b><span>In the page header (B01), not the panel. City search suggests cities only. Dates use the range calendar (B04).</span></div>
+          <div class="inv-item"><b>Modelling categories</b><span>Multi-select chips, match any. <code>modelling_categories</code></span></div>
+          <div class="inv-item"><b>Day rate</b><span>Min and max fields in pounds, replacing the template's slider (small handles are hard to hit on a phone). <code>price</code></span></div>
+          <div class="inv-item"><b>Gender</b><span>Single-select chips. Tap the selected chip again to clear it. <code>gender</code></span></div>
+          <div class="inv-item"><b>Experience level</b><span>Single-select chips. <code>experience_level</code></span></div>
+          <div class="inv-item"><b>Height</b><span>Min and max in cm, 100 to 250. <code>height_cm</code></span></div>
+          <div class="inv-item"><b>Hair colour, Eye colour</b><span>Single-select chips, text only. <code>hair_colour</code>, <code>eye_colour</code></span></div>
+          <div class="inv-item"><b>How far they'll travel</b><span>Tick boxes, match any, so a client can include every range they would accept. Needs the Console filter changed from single-select to multi-select. <code>availability_radius</code></span></div>
+          <div class="inv-item"><b>Ethnicity</b><span>Tick boxes, match any, last in the list. See open question 6. <code>ethnicity</code></span></div>
+          <div class="inv-item"><b>Not filters</b><span>Bust or chest, waist, hips, shoe size, website and Instagram are shown on the profile (B03) only.</span></div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<div class="notes-dock">
+  <details class="design-notes">
+    <summary>Design notes</summary>
+    <ul>
+      <li><strong>One panel, two presentations.</strong> The same markup is the 272px sidebar from 900px and a full-height sheet below it. In the sheet the header carries "Clear all" and a 44px close button; the footer carries the single cobalt action, "Show N models". In the sidebar, results update as filters change and there is no footer button.</li>
+      <li><strong>Groups collapse.</strong> On B01 the first three groups (categories, day rate, gender) start open and the rest are collapsed, each with a count badge when something is selected. Here every group is open so the full set can be reviewed.</li>
+      <li><strong>Chips, not long lists.</strong> Categories, gender, experience, hair and eye colour are chips (rt-chip, selected = ink-900, not cobalt) at 44px tall on phones. Ethnicity and travel range are tick boxes with 44px rows because the lists are longer or the labels wrap.</li>
+      <li><strong>Footer count.</strong> The button label follows the live result count. At zero it reads "No models match" as a disabled secondary button, with "Clear all" remaining in the header, so the client is never invited to apply a filter set that returns nothing.</li>
+      <li><strong>No colour swatches</strong> for hair and eye colour: text labels are clearer and avoid inventing a colour palette outside the tokens.</li>
+      <li><strong>Travel range changes meaning.</strong> The template filter is "equals one value", which would hide a National model from a client who ticks "Regional". The design assumes a multi-select, match-any filter (a Console setting, no code). Listed as a dependency.</li>
+      <li><strong>Leaving the sheet.</strong> Esc and the close button dismiss the sheet without changing the results; "Show N models" is the only way to commit.</li>
+    </ul>
+  </details>
+</div>
+<div class="container--editorial"><div class="mock-pager"><a href="B01-search-results.html">← B01 Search results</a><a href="B03-model-profile.html">Next: Model profile →</a></div></div>
+
+<script src="booking.js"></script>
+</body>
+</html>

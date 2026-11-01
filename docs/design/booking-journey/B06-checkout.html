@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>B06 · Checkout / booking request - Rogue Talent booking mockups</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Hanken+Grotesk:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="journey.css">
+</head>
+<body>
+
+<div class="mock-toolbar">
+  <span class="tag">Mock</span>
+  <a href="index.html">Journey map</a>
+  <span class="divider">·</span>
+  <span class="title">Client · B06 · Checkout / booking request</span>
+  <span class="mock-flag">Example data</span>
+  <span class="spacer"></span>
+  <a href="B05-price-breakdown.html">← Prev</a>
+  <a href="B07-request-sent.html">Next: Request sent →</a>
+</div>
+
+<header class="app-nav">
+  <a class="rt-nav__brand" href="index.html">Rogue<span>.</span></a>
+  <div class="app-nav__actions">
+    <a class="back-link" href="B03-model-profile.html"><i class="ico ico-arrow-left"></i>Back to profile</a>
+  </div>
+</header>
+
+<main class="page">
+
+  <div class="checkout-head">
+    <h1 class="page-title">Request to book <span class="accent">Ava.</span></h1>
+    <p class="small muted">Ava has 48 hours to accept. Your card is only charged if Ava accepts.</p>
+  </div>
+
+  <!-- Phone: collapsed summary at the top (replaces the old separate breakdown screen) -->
+  <details class="mobile-summary">
+    <summary>
+      <span class="thumb"><span class="photo-stripe"></span></span>
+      <span class="sum-main"><b>Ava C.</b><span>Wed 25 Nov to Thu 26 Nov</span></span>
+      <span class="sum-total">£1,035</span>
+      <i class="ico ico-chev-down chev"></i>
+    </summary>
+    <div class="mobile-summary__body">
+      <dl class="breakdown">
+        <div class="breakdown__row"><dt>£450 x 2 days</dt><dd>£900</dd></div>
+        <div class="breakdown__row"><dt>Booking fee (15%)</dt><dd>£135</dd></div>
+        <div class="breakdown__row breakdown__row--total"><dt>Total</dt><dd>£1,035</dd></div>
+      </dl>
+      <p class="breakdown__note">The booking fee is how Rogue Talent is paid. Ava keeps 100% of the day rate (£900). Travel is included in the rate.</p>
+      <ol class="next-list">
+        <li><span><strong>Ava has 48 hours</strong> to accept or decline.</span></li>
+        <li><span><strong>If Ava accepts,</strong> your card is charged and those dates are blocked on their calendar.</span></li>
+        <li><span><strong>Cancelling:</strong> free until 48 hours before the shoot. After that the booking is non-refundable.</span></li>
+      </ol>
+    </div>
+  </details>
+
+  <div class="checkout-grid">
+
+    <form class="checkout-main" onsubmit="return false;" novalidate>
+
+      <!-- 1. Shoot details first -->
+      <section class="co-section" aria-labelledby="co1">
+        <div class="co-head"><span class="co-num">1</span><h2 class="co-title" id="co1">Shoot details</h2></div>
+        <p class="co-lede">Ava reads this before deciding, so be specific.</p>
+
+        <div class="fixed-row">
+          <div class="fixed-row__main"><b>Wed 25 Nov to Thu 26 Nov</b><span>2 full days</span></div>
+          <a class="rt-btn rt-btn--ghost rt-btn--sm" href="B03-model-profile.html" style="min-height:44px;">Change</a>
+        </div>
+
+        <div class="rt-field">
+          <label class="rt-field__label" for="shoot_type">Shoot type <span class="rt-req">*</span></label>
+          <select class="rt-select" id="shoot_type">
+            <option value="">Choose a shoot type</option>
+            <option>Fashion</option><option>Commercial</option><option>Editorial</option><option>E-commerce</option>
+            <option>Lookbook</option><option>Fitness</option><option>Beauty</option><option>Lingerie</option>
+            <option>Swimwear</option><option>Events/Promo</option><option>Social content</option><option>TFP</option>
+          </select>
+        </div>
+
+        <div class="rt-field">
+          <label class="rt-field__label" for="shoot_description">What are you shooting? <span class="rt-req">*</span></label>
+          <textarea class="rt-textarea" id="shoot_description" placeholder="e.g. Autumn lookbook, six looks, studio set, hair and make-up provided"></textarea>
+          <span class="rt-field__hint">Say what you're shooting and what the model will be doing.</span>
+        </div>
+
+        <fieldset class="rt-field" style="border:0;padding:0;margin:0;min-width:0;">
+          <legend class="rt-field__label" style="padding:0;margin-bottom:8px;">Where will the shoot take place? <span class="rt-req">*</span></legend>
+          <div class="radio-list" role="radiogroup">
+            <label class="radio-card rt-check rt-check--radio"><input type="radio" name="location_type" value="professional-studio"><span class="rt-check__box"></span><span>Professional studio</span></label>
+            <label class="radio-card rt-check rt-check--radio"><input type="radio" name="location_type" value="brand-office-showroom"><span class="rt-check__box"></span><span>Brand office or showroom</span></label>
+            <label class="radio-card rt-check rt-check--radio"><input type="radio" name="location_type" value="outdoor-public"><span class="rt-check__box"></span><span>Outdoor or public</span></label>
+            <label class="radio-card rt-check rt-check--radio"><input type="radio" name="location_type" value="private-residence"><span class="rt-check__box"></span><span>Private residence</span></label>
+            <label class="radio-card rt-check rt-check--radio"><input type="radio" name="location_type" value="other"><span class="rt-check__box"></span><span>Other</span></label>
+          </div>
+        </fieldset>
+
+        <div class="notice" data-reveal-when="private-residence" hidden>
+          <i class="ico ico-info"></i>
+          <div>
+            <p><strong>Private residence shoots.</strong> Ava will see a short safety note next to your request, and can say no to any request for any reason.</p>
+            <p>Give the exact address below. An accurate location is part of how models decide.</p>
+          </div>
+        </div>
+
+        <div class="rt-field">
+          <label class="rt-field__label" for="shoot_address">Shoot address <span class="rt-req">*</span></label>
+          <input class="rt-input" id="shoot_address" type="text" autocomplete="street-address" placeholder="Street, town and postcode">
+          <span class="rt-field__hint">Shared with Ava, not shown publicly.</span>
+        </div>
+
+        <div class="rt-field">
+          <label class="rt-field__label" for="note">Anything Ava should know? <span class="rt-opt">(optional)</span></label>
+          <textarea class="rt-textarea" id="note" style="min-height:84px;" placeholder="e.g. call time, parking, who else will be on set"></textarea>
+        </div>
+      </section>
+
+      <!-- 2. Content licence -->
+      <section class="co-section" aria-labelledby="co2">
+        <div class="co-head"><span class="co-num">2</span><h2 class="co-title" id="co2">Content licence</h2></div>
+        <p class="co-lede">Every booking uses the same standard Content Licence &amp; Model Release. Ava agrees to it when accepting your request.</p>
+
+        <div class="licence-box">
+          <span class="mock-flag" style="align-self:flex-start;">Mock note: draft wording, pending legal review</span>
+          <ul>
+            <li><i class="ico ico-check"></i><span><strong>Use it freely.</strong> You can use the photos and video from this shoot for any lawful commercial purpose, in any media, worldwide, with no time limit.</span></li>
+            <li><i class="ico ico-check"></i><span><strong>One price.</strong> The total you pay for the booking covers the content too. There are no usage fees later.</span></li>
+            <li><i class="ico ico-check"></i><span><strong>For you only.</strong> You can't sell the content on or pass it to another company for their own use.</span></li>
+            <li><i class="ico ico-check"></i><span><strong>No AI.</strong> You can't use it to train AI or to create synthetic versions of the model without their separate consent.</span></li>
+            <li><i class="ico ico-check"></i><span><strong>Limits protect the model.</strong> If these limits are broken, the model can withdraw the licence for that use.</span></li>
+          </ul>
+          <a class="licence-link" href="#" target="_blank" rel="noopener">Read the full licence</a>
+        </div>
+
+        <label class="rt-check rt-check--top rt-check--tap"><input type="checkbox" id="licence"><span class="rt-check__box"><i class="ico ico-check"></i></span><span>I agree to the standard Rogue Talent Content Licence &amp; Model Release for this booking.</span></label>
+      </section>
+
+      <!-- 3. Payment last -->
+      <section class="co-section" aria-labelledby="co3">
+        <div class="co-head"><span class="co-num">3</span><h2 class="co-title" id="co3">Payment</h2></div>
+
+        <div class="notice">
+          <i class="ico ico-lock"></i>
+          <p><strong>You are only charged if Ava accepts.</strong> If Ava declines, or doesn't reply within 48 hours, you aren't charged. Your bank may show a temporary hold until then.</p>
+        </div>
+
+        <div class="rt-field">
+          <label class="rt-field__label" for="card">Card details <span class="rt-req">*</span></label>
+          <div class="rt-input card-el" id="card" role="group" aria-label="Card details (Stripe secure field)">
+            <span>Card number</span><span>MM / YY</span><span>CVC</span>
+          </div>
+        </div>
+
+        <div class="rt-field">
+          <label class="rt-field__label" for="cardname">Name on card <span class="rt-req">*</span></label>
+          <input class="rt-input" id="cardname" type="text" autocomplete="cc-name" value="Ben Carter">
+        </div>
+
+        <div class="field-row field-row--stack">
+          <div class="rt-field">
+            <label class="rt-field__label" for="postcode">Billing postcode <span class="rt-req">*</span></label>
+            <input class="rt-input" id="postcode" type="text" autocomplete="postal-code" placeholder="e.g. M1 1AE">
+          </div>
+          <div class="rt-field">
+            <label class="rt-field__label" for="country">Country <span class="rt-req">*</span></label>
+            <select class="rt-select" id="country" autocomplete="country"><option>United Kingdom</option><option>Ireland</option><option>Other country</option></select>
+          </div>
+        </div>
+
+        <label class="rt-check rt-check--tap"><input type="checkbox"><span class="rt-check__box"><i class="ico ico-check"></i></span><span>Save this card for future bookings</span></label>
+
+        <div class="submit-block">
+          <div class="submit-block__total"><span class="small muted">Total, charged only if Ava accepts</span><b>£1,035</b></div>
+          <button class="rt-btn rt-btn--primary rt-btn--lg rt-btn--block" type="submit">Send booking request</button>
+          <p class="panel__fine">By sending, you ask Ava to accept this booking. You can follow it in Your bookings.</p>
+        </div>
+      </section>
+
+    </form>
+
+    <aside class="checkout-aside" aria-label="Booking summary">
+      <div class="summary-card">
+        <div class="summary-card__who">
+          <span class="thumb"><span class="photo-stripe"></span></span>
+          <div><b>Ava C.</b><span>Manchester</span></div>
+        </div>
+        <dl class="kv-rows">
+          <div class="kv-row"><dt>Dates</dt><dd>Wed 25 Nov to Thu 26 Nov<small>2 full days</small></dd></div>
+        </dl>
+        <dl class="breakdown">
+          <div class="breakdown__row"><dt>£450 x 2 days</dt><dd>£900</dd></div>
+          <div class="breakdown__row"><dt>Booking fee (15%)</dt><dd>£135</dd></div>
+          <div class="breakdown__row breakdown__row--total"><dt>Total</dt><dd>£1,035</dd></div>
+        </dl>
+        <p class="breakdown__note">The booking fee is how Rogue Talent is paid. Ava keeps 100% of the day rate (£900). Travel is included in the rate.</p>
+        <hr>
+        <h2 class="panel__title" style="font-size:var(--text-lg);">What happens next</h2>
+        <ol class="next-list">
+          <li><span><strong>Ava has 48 hours</strong> to accept or decline.</span></li>
+          <li><span><strong>If Ava accepts,</strong> your card is charged and those dates are blocked on their calendar.</span></li>
+          <li><span><strong>Cancelling:</strong> free until 48 hours before the shoot. After that the booking is non-refundable.</span></li>
+        </ol>
+      </div>
+    </aside>
+
+  </div>
+
+  <!-- ============ States ============ -->
+  <div class="state-label">State · private residence chosen (tap "Private residence" above to see it live)</div>
+  <div class="stack" style="max-width:640px;">
+    <div class="notice">
+      <i class="ico ico-info"></i>
+      <div>
+        <p><strong>Private residence shoots.</strong> Ava will see a short safety note next to your request, and can say no to any request for any reason.</p>
+        <p>Give the exact address below. An accurate location is part of how models decide.</p>
+      </div>
+    </div>
+    <p class="xs muted">The note never says that some models turn residence shoots down, and the client is never told why a request cannot go ahead (see the generic message below).</p>
+  </div>
+
+  <div class="state-label">State · private residence not available to this client yet (needs the sole-trader rule built)</div>
+  <div class="stack" style="max-width:640px;">
+    <div class="radio-list">
+      <label class="radio-card rt-check rt-check--radio is-disabled"><input type="radio" name="loc2" disabled><span class="rt-check__box"></span><span>Private residence<small>Not available on your account yet. It opens up once you've completed bookings with positive reviews.</small></span></label>
+    </div>
+    <p class="xs muted">Safety framework v1: sole traders and self-employed photographers cannot book private-residence shoots until they have completed bookings with positive reviews. I found no enforcement of this rule in the code, so this state is a design for the Developer to wire up; until then the option is simply enabled.</p>
+  </div>
+
+  <div class="state-label">State · field errors</div>
+  <div class="stack" style="max-width:640px;">
+    <div class="rt-field">
+      <label class="rt-field__label" for="e1">What are you shooting? <span class="rt-req">*</span></label>
+      <textarea class="rt-textarea rt-textarea--error" id="e1"></textarea>
+      <span class="rt-field__error"><i class="ico ico-alert ico--sm"></i>Tell Ava what you're shooting.</span>
+    </div>
+    <div class="rt-field">
+      <label class="rt-check rt-check--top rt-check--tap"><input type="checkbox"><span class="rt-check__box" style="border-color:var(--status-error);"><i class="ico ico-check"></i></span><span>I agree to the standard Rogue Talent Content Licence &amp; Model Release for this booking.</span></label>
+      <span class="rt-field__error"><i class="ico ico-alert ico--sm"></i>Please agree to the content licence to continue.</span>
+    </div>
+    <p class="xs muted">Errors appear on send. The page scrolls to the first one. Red is used only because these are errors.</p>
+  </div>
+
+  <div class="state-label">State · errors when sending</div>
+  <div class="stack" style="max-width:640px;">
+    <div class="stack stack--sm"><span class="rt-eyebrow">Not available (any cause)</span>
+      <div class="notice notice--error"><i class="ico ico-alert"></i><p>This booking isn't available. Please try different dates, a different location, or another model.</p></div>
+      <p class="xs muted">One message for every cause: the dates were just taken, or the booking cannot go ahead for a reason we do not share. Existing string, kept on purpose so a model's boundaries are never revealed.</p></div>
+    <div class="stack stack--sm"><span class="rt-eyebrow">Card declined</span>
+      <div class="notice notice--error"><i class="ico ico-alert"></i><p>The card was declined. Try another card, or contact your bank. You haven't been charged.</p></div></div>
+    <div class="stack stack--sm"><span class="rt-eyebrow">Took too long</span>
+      <div class="notice notice--error"><i class="ico ico-alert"></i><p>This request timed out after 15 minutes. <a href="B03-model-profile.html">Go back to Ava's profile</a> and try again. You haven't been charged.</p></div></div>
+    <div class="stack stack--sm"><span class="rt-eyebrow">Account not ready (shown on the profile panel first, B03; this is the backstop)</span>
+      <div class="notice"><i class="ico ico-lock"></i><p>Your account needs to be approved and your identity verified before you can send a booking request. <a href="#">Check your account status</a> to see where you are.</p></div></div>
+  </div>
+
+  <div class="state-label">Copy changes (en.json) - template leftovers removed</div>
+  <div class="card" style="padding:0;overflow:hidden;">
+    <table class="copy-table">
+      <thead><tr><th>Key or field</th><th>Now</th><th>Proposed</th></tr></thead>
+      <tbody>
+        <tr><td>Billing address block (<code>StripePaymentAddress</code>)</td><td>Address line 1, "Apt #", city "Helsinki", postal code "00100", "State", country</td><td>Removed. Replaced by Billing postcode and Country (default United Kingdom). See open question 4.</td></tr>
+        <tr><td><code>StripePaymentForm.locationDetailsTitle</code></td><td>"Location of the listing"</td><td>Removed. The model's location is on their profile; the shoot address is asked in Shoot details.</td></tr>
+        <tr><td><code>StripePaymentForm.messageHeading</code></td><td>"Additional information"</td><td>Removed. These fields sit under "Shoot details".</td></tr>
+        <tr><td><code>StripePaymentForm.messageLabel</code></td><td>"Is there something the listing owner should know? (optional)"</td><td>"Anything {name} should know? (optional)"</td></tr>
+        <tr><td><code>StripePaymentForm.messagePlaceholder</code></td><td>"Hello {name}! You should know that..."</td><td>"e.g. call time, parking, who else will be on set"</td></tr>
+        <tr><td>Shoot fields placeholders</td><td>"Write description..." and similar template defaults</td><td>Specific examples as in the mock (shoot description, shoot address).</td></tr>
+        <tr><td><code>StripePaymentForm.billingDetails</code> / <code>billingDetailsNameLabel</code></td><td>"Billing details", "Card holder's name", placeholder "Enter your name..."</td><td>Heading removed (one Payment section). "Name on card", pre-filled from the account, no placeholder.</td></tr>
+        <tr><td><code>StripePaymentForm.submitPaymentInfo</code></td><td>"Confirm booking request"</td><td>"Send booking request"</td></tr>
+        <tr><td><code>CheckoutPage.default-booking.title</code></td><td>"Complete booking request"</td><td>"Request to book {name}" (name in cobalt)</td></tr>
+        <tr><td><code>StripePaymentForm.licenceDraftNotice</code></td><td>"DRAFT (em dash) pending legal review. Final wording will be supplied by our legal team."</td><td>Remove before launch. Contains an em dash today. The licence must be solicitor-final first.</td></tr>
+        <tr><td><code>CheckoutPage.destinationAccountNotCompleteStripeError</code>, <code>providerStripeAccountMissingError</code>, <code>chargeDisabledMessage</code></td><td>Mention "the listing author", "provider's payout information", "this listing"</td><td>"This model can't take bookings right now. You haven't been charged. Please contact support." One calm message for all three.</td></tr>
+        <tr><td><code>CheckoutPage.listingNotFoundError</code></td><td>"Unfortunately, this listing is no longer available."</td><td>"This profile is no longer available."</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+</main>
+
+<div class="notes-dock">
+  <details class="design-notes">
+    <summary>Design notes</summary>
+    <ul>
+      <li><strong>Reordered for M6.</strong> The shoot comes first (what, when, where, location type), then the content licence, then payment last with the one cobalt action. The model has to be able to say yes to the shoot before money is a topic, and the client has already thought about the shoot when they arrive. On a phone the old flow ran to about 4.5 screens; this one is one scroll with a collapsed summary at the top (tap to expand the breakdown), numbered sections, and no repeat of the model's photo.</li>
+      <li><strong>Dates are not asked again.</strong> They show as a read-only row with a "Change" link back to the profile, so the dates the client saw priced are the dates they are requesting.</li>
+      <li><strong>Private residence.</strong> The location type is a radio list (not a dropdown) so "Private residence" is a visible, deliberate choice. Picking it shows a calm note to the client and the model is shown the existing safety note on their side (B08). The client is not told that some models decline residence shoots; if the model has switched that off, the request fails with the generic "not available" message at send time and the boundary is never revealed (SAF-13/14). The sole-trader restriction (SAF-06) is designed as a disabled option with a reason; it is not in the code today.</li>
+      <li><strong>Licence.</strong> The five bullets are the plain-English box from the draft licence, shortened; the binding text is one tap away ("Read the full licence" opens it in a new tab). The checkbox label is the existing string. Final wording depends on the solicitor review, so the mock flags it as draft.</li>
+      <li><strong>Payment, minimal and UK-sensible.</strong> Card details (Stripe's secure field), name on card (pre-filled), billing postcode and country (defaults to United Kingdom). The US/Finnish fields are gone: street address, "Apt #", city, "State" and the "Helsinki" and "00100" placeholders. We already hold the client's business address from onboarding. This changes what billing data is collected, so it is open question 4 rather than an assumption.</li>
+      <li><strong>It is clear the card is not charged yet:</strong> in the subtitle, in a notice at the top of Payment, next to the total, and in the button's fine print area. The "temporary hold" sentence is standard card-authorisation behaviour; the Developer should confirm the wording against how the Stripe payment is set up.</li>
+      <li><strong>"What happens next"</strong> sits beside the form on desktop and inside the collapsed summary on phones. The third line (free to cancel until 48 hours before the shoot) is the two-tier cancellation policy; it must match the published Terms before launch (open question 8).</li>
+      <li><strong>Mobile.</strong> Inputs are 48px, radio rows 52px, tick rows 44px, Change link 44px. The card field is one line that scales; at 375px "Card number / MM / YY / CVC" fit without wrapping. Nothing scrolls sideways.</li>
+      <li>Single cobalt action: "Send booking request". The numbered circles are ink, the Change link is ghost, and the licence link is an underlined link.</li>
+    </ul>
+  </details>
+</div>
+<div class="container--editorial"><div class="mock-pager"><a href="B05-price-breakdown.html">← B05 Price breakdown</a><a href="B07-request-sent.html">Next: Request sent →</a></div></div>
+
+<script src="booking.js"></script>
+</body>
+</html>

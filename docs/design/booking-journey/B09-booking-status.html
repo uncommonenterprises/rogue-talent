@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>B09 · Booking status (both sides) - Rogue Talent booking mockups</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Hanken+Grotesk:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="journey.css">
+</head>
+<body>
+
+<div class="mock-toolbar">
+  <span class="tag">Mock</span>
+  <a href="index.html">Journey map</a>
+  <span class="divider">·</span>
+  <span class="title">Client + model · B09 · Booking status</span>
+  <span class="mock-flag">Example data</span>
+  <span class="spacer"></span>
+  <a href="B08-model-request.html">← Prev</a>
+  <a href="index.html">End of journey</a>
+</div>
+
+<header class="app-nav">
+  <a class="rt-nav__brand" href="index.html">Rogue<span>.</span></a>
+  <nav class="app-nav__links" aria-label="Main">
+    <a href="B01-search-results.html">Browse models</a>
+    <a class="is-active" href="B09-booking-status.html">Your bookings</a>
+  </nav>
+  <div class="app-nav__actions">
+    <span class="rt-status rt-status--verified app-nav__status"><span class="rt-status__dot"></span>Verified</span>
+    <a class="icon-btn" href="#" aria-label="Account menu"><span class="rt-avatar rt-avatar--sm">B</span></a>
+  </div>
+</header>
+
+<main class="page">
+
+  <section class="search-head">
+    <h1 class="page-title">One status, <span class="accent">same words.</span></h1>
+    <p class="small muted" style="max-width:66ch;">The client and the model see the same status name for the same booking, so a phone call or an email never has two vocabularies. Only the sentence and the next action differ. The chip is the existing <code>rt-status</code> shape from the account status badge, with booking colours.</p>
+  </section>
+
+  <!-- 1. The chips -->
+  <h2 class="panel__title" style="margin-bottom:var(--space-3);">The statuses</h2>
+  <div class="card" style="margin-bottom:var(--space-6);">
+    <div class="stack stack--sm">
+      <div style="display:flex;align-items:center;gap:var(--space-3);flex-wrap:wrap;"><span class="rt-status rt-status--lg rt-status--requested"><span class="rt-status__dot"></span>Requested</span><span class="small muted">Sent, waiting for the model. 48-hour window.</span></div>
+      <div style="display:flex;align-items:center;gap:var(--space-3);flex-wrap:wrap;"><span class="rt-status rt-status--lg rt-status--accepted"><span class="rt-status__dot"></span>Accepted</span><span class="small muted">Confirmed. Dates are blocked. Money has been taken.</span></div>
+      <div style="display:flex;align-items:center;gap:var(--space-3);flex-wrap:wrap;"><span class="rt-status rt-status--lg rt-status--completed"><span class="rt-status__dot"></span>Completed</span><span class="small muted">The shoot date has passed.</span></div>
+      <div style="display:flex;align-items:center;gap:var(--space-3);flex-wrap:wrap;"><span class="rt-status rt-status--lg rt-status--declined"><span class="rt-status__dot"></span>Declined</span><span class="small muted">The model said no. Nothing charged.</span></div>
+      <div style="display:flex;align-items:center;gap:var(--space-3);flex-wrap:wrap;"><span class="rt-status rt-status--lg rt-status--expired"><span class="rt-status__dot"></span>Expired</span><span class="small muted">Not answered within the window. Nothing charged.</span></div>
+      <div style="display:flex;align-items:center;gap:var(--space-3);flex-wrap:wrap;"><span class="rt-status rt-status--lg rt-status--cancelled"><span class="rt-status__dot"></span>Cancelled</span><span class="small muted">Ended after it was accepted. Money outcome stated alongside.</span></div>
+    </div>
+    <p class="xs muted">Red is not used: a model declining, or a request expiring, is a normal outcome, not an error. Amber is "waiting on someone", green is "confirmed", cobalt tint is "done", grey is "ended, nothing happening". The hollow dot on Expired is the only non-colour cue between the two grey chips, so the word always carries the meaning.</p>
+  </div>
+
+  <!-- 2. Lists -->
+  <h2 class="panel__title" style="margin-bottom:var(--space-3);">In the lists</h2>
+  <div class="state-grid" style="margin-bottom:var(--space-6);">
+
+    <div class="booking-list" aria-label="Client list">
+      <div class="booking-list__head"><h2>Your bookings</h2><span class="rt-eyebrow">Client view</span></div>
+      <a class="booking-row" href="B07-request-sent.html">
+        <span class="thumb"><span class="photo-stripe"></span></span>
+        <span class="booking-row__body">
+          <span class="booking-row__top"><span class="booking-row__name">Ava C.</span><span class="rt-status rt-status--requested"><span class="rt-status__dot"></span>Requested</span></span>
+          <span class="booking-row__meta">Wed 25 Nov to Thu 26 Nov · £1,035</span>
+          <span class="booking-row__note"><b>Ava replies by Tue 3 Nov, 16:20</b>. Not charged yet.</span>
+        </span>
+      </a>
+      <a class="booking-row" href="#">
+        <span class="thumb"><span class="photo-stripe"></span></span>
+        <span class="booking-row__body">
+          <span class="booking-row__top"><span class="booking-row__name">Mia R.</span><span class="rt-status rt-status--accepted"><span class="rt-status__dot"></span>Accepted</span></span>
+          <span class="booking-row__meta">Fri 13 Nov · £437</span>
+          <span class="booking-row__note">Charged on acceptance. Free to cancel until 48 hours before.</span>
+        </span>
+      </a>
+      <a class="booking-row" href="#">
+        <span class="thumb"><span class="photo-stripe"></span></span>
+        <span class="booking-row__body">
+          <span class="booking-row__top"><span class="booking-row__name">Zara K.</span><span class="rt-status rt-status--completed"><span class="rt-status__dot"></span>Completed</span></span>
+          <span class="booking-row__meta">Mon 19 Oct · £368</span>
+          <span class="booking-row__note"><b>Review due</b></span>
+        </span>
+      </a>
+      <a class="booking-row" href="#">
+        <span class="thumb"><span class="photo-stripe"></span></span>
+        <span class="booking-row__body">
+          <span class="booking-row__top"><span class="booking-row__name">Esme T.</span><span class="rt-status rt-status--declined"><span class="rt-status__dot"></span>Declined</span></span>
+          <span class="booking-row__meta">Tue 8 Dec · £575</span>
+          <span class="booking-row__note">Not charged.</span>
+        </span>
+      </a>
+      <a class="booking-row" href="#">
+        <span class="thumb"><span class="photo-stripe"></span></span>
+        <span class="booking-row__body">
+          <span class="booking-row__top"><span class="booking-row__name">Rosa D.</span><span class="rt-status rt-status--expired"><span class="rt-status__dot"></span>Expired</span></span>
+          <span class="booking-row__meta">Thu 3 Dec · £345</span>
+          <span class="booking-row__note">Not answered in 48 hours. Not charged.</span>
+        </span>
+      </a>
+    </div>
+
+    <div class="booking-list" aria-label="Model list">
+      <div class="booking-list__head"><h2>Booking requests</h2><span class="rt-eyebrow">Model view</span></div>
+      <a class="booking-row" href="B08-model-request.html">
+        <span class="rt-avatar">B</span>
+        <span class="booking-row__body">
+          <span class="booking-row__top"><span class="booking-row__name">Ben C., Northside Test Studio</span><span class="rt-status rt-status--requested"><span class="rt-status__dot"></span>Requested</span></span>
+          <span class="booking-row__meta">Wed 25 Nov to Thu 26 Nov · You'll earn £900</span>
+          <span class="booking-row__note"><b>Reply by Tue 3 Nov, 16:20</b>. 47 hours left.</span>
+        </span>
+      </a>
+      <a class="booking-row" href="#">
+        <span class="rt-avatar">H</span>
+        <span class="booking-row__body">
+          <span class="booking-row__top"><span class="booking-row__name">Harlow &amp; Finch</span><span class="rt-status rt-status--accepted"><span class="rt-status__dot"></span>Accepted</span></span>
+          <span class="booking-row__meta">Fri 13 Nov · You'll earn £380</span>
+          <span class="booking-row__note">Blocked on your calendar.</span>
+        </span>
+      </a>
+      <a class="booking-row" href="#">
+        <span class="rt-avatar">N</span>
+        <span class="booking-row__body">
+          <span class="booking-row__top"><span class="booking-row__name">North Quarter Studio</span><span class="rt-status rt-status--completed"><span class="rt-status__dot"></span>Completed</span></span>
+          <span class="booking-row__meta">Mon 19 Oct · You earned £320</span>
+          <span class="booking-row__note"><b>Review due</b>. Paid usually the next working day, always within five.</span>
+        </span>
+      </a>
+      <a class="booking-row" href="#">
+        <span class="rt-avatar">K</span>
+        <span class="booking-row__body">
+          <span class="booking-row__top"><span class="booking-row__name">Kiln Creative</span><span class="rt-status rt-status--declined"><span class="rt-status__dot"></span>Declined</span></span>
+          <span class="booking-row__meta">Tue 8 Dec · £500</span>
+          <span class="booking-row__note">You declined this request.</span>
+        </span>
+      </a>
+      <a class="booking-row" href="#">
+        <span class="rt-avatar">S</span>
+        <span class="booking-row__body">
+          <span class="booking-row__top"><span class="booking-row__name">Saltmarsh Studio</span><span class="rt-status rt-status--expired"><span class="rt-status__dot"></span>Expired</span></span>
+          <span class="booking-row__meta">Thu 3 Dec · £300</span>
+          <span class="booking-row__note">Not answered in time. The client wasn't charged.</span>
+        </span>
+      </a>
+    </div>
+
+  </div>
+
+  <!-- 3. Matrix -->
+  <h2 class="panel__title" style="margin-bottom:var(--space-3);">On the booking page: what each side reads</h2>
+  <div class="status-matrix" style="margin-bottom:var(--space-6);">
+    <div class="status-matrix__row status-matrix__row--head"><span>Status</span><span>Client sees</span><span>Model sees</span></div>
+
+    <div class="status-matrix__row">
+      <div><span class="rt-status rt-status--lg rt-status--requested"><span class="rt-status__dot"></span>Requested</span></div>
+      <div class="status-matrix__col"><h3>Client sees</h3><span><strong>Request sent to Ava.</strong> Ava has until Tue 3 Nov, 16:20 to reply. You aren't charged unless Ava accepts.</span><span class="status-matrix__act">Next: message Ava (B07)</span></div>
+      <div class="status-matrix__col"><h3>Model sees</h3><span><strong>Reply by Tue 3 Nov, 16:20.</strong> 47 hours left. If you don't reply, the request expires and the client isn't charged.</span><span class="status-matrix__act">Next: Accept request or Decline request (B08)</span></div>
+    </div>
+
+    <div class="status-matrix__row">
+      <div><span class="rt-status rt-status--lg rt-status--accepted"><span class="rt-status__dot"></span>Accepted</span></div>
+      <div class="status-matrix__col"><h3>Client sees</h3><span><strong>Ava accepted. You're booked for Wed 25 Nov to Thu 26 Nov.</strong> Your card has been charged £1,035. You can cancel for a full refund until 48 hours before the shoot.</span><span class="status-matrix__act">Next: view shoot details; Cancel booking (secondary)</span></div>
+      <div class="status-matrix__col"><h3>Model sees</h3><span><strong>You're booked: Wed 25 Nov to Thu 26 Nov.</strong> The dates are blocked on your calendar. You'll earn £900.</span><span class="status-matrix__act">Next: Share these shoot details (SAF-17)</span></div>
+    </div>
+
+    <div class="status-matrix__row">
+      <div><span class="rt-status rt-status--lg rt-status--declined"><span class="rt-status__dot"></span>Declined</span></div>
+      <div class="status-matrix__col"><h3>Client sees</h3><span><strong>Ava declined this request.</strong> You haven't been charged. Models can say no to any request, for any reason.</span><span class="status-matrix__act">Next: Find another model (the one cobalt action)</span></div>
+      <div class="status-matrix__col"><h3>Model sees</h3><span><strong>You declined this request.</strong> The client wasn't charged.</span><span class="status-matrix__act">Next: none</span></div>
+    </div>
+
+    <div class="status-matrix__row">
+      <div><span class="rt-status rt-status--lg rt-status--expired"><span class="rt-status__dot"></span>Expired</span></div>
+      <div class="status-matrix__col"><h3>Client sees</h3><span><strong>This request expired.</strong> Ava didn't reply within 48 hours, so you haven't been charged.</span><span class="status-matrix__act">Next: Request the same dates again or Find another model</span></div>
+      <div class="status-matrix__col"><h3>Model sees</h3><span><strong>This request expired.</strong> It wasn't answered in time, so the client wasn't charged.</span><span class="status-matrix__act">Next: none</span></div>
+    </div>
+
+    <div class="status-matrix__row">
+      <div><span class="rt-status rt-status--lg rt-status--completed"><span class="rt-status__dot"></span>Completed</span></div>
+      <div class="status-matrix__col"><h3>Client sees</h3><span><strong>Your shoot is complete.</strong> If something went wrong on the day, tell us as soon as you can.</span><span class="status-matrix__act">Next: Leave a review (cobalt); Report a problem (link)</span></div>
+      <div class="status-matrix__col"><h3>Model sees</h3><span><strong>Your shoot is complete.</strong> You'll be paid usually the next working day, always within five working days.</span><span class="status-matrix__act">Next: Leave a review (cobalt)</span></div>
+    </div>
+  </div>
+
+  <!-- 4. Mapping -->
+  <h2 class="panel__title" style="margin-bottom:var(--space-3);">How the process states map to these labels</h2>
+  <div class="card" style="margin-bottom:var(--space-7);">
+    <div class="inv-list">
+      <div class="inv-item"><b>Requested</b><span><code>preauthorized</code></span></div>
+      <div class="inv-item"><b>Accepted</b><span><code>accepted</code>, <code>accepted-late</code>. Late (inside 48 hours of the shoot) adds the line "Cancelling now is non-refundable."</span></div>
+      <div class="inv-item"><b>Completed</b><span><code>completed</code>, <code>delivered</code>, <code>reviewed-by-customer</code>, <code>reviewed-by-provider</code>, <code>reviewed</code>. The sub-line says "Review due" until reviewed. Replaces "Waiting for review" and "Waiting for listing owner review".</span></div>
+      <div class="inv-item"><b>Declined</b><span><code>declined</code></span></div>
+      <div class="inv-item"><b>Expired</b><span><code>expired</code></span></div>
+      <div class="inv-item"><b>Cancelled</b><span><code>cancelled</code>, <code>cancelled-charged</code>, <code>cancelled-charged-paid</code>. Client sub-line: "Refunded in full" or "Not refunded: cancelled within 48 hours". Model sub-line: "You'll still be paid" where that applies.</span></div>
+      <div class="inv-item"><b>Under review</b> <span class="rt-status rt-status--review" style="margin-left:6px;"><span class="rt-status__dot"></span>Under review</span><span><code>disputed-hold</code>. Amber: waiting on the Rogue team.</span></div>
+      <div class="inv-item"><b>Refunded</b><span><code>refunded-dispute</code>. Grey chip, same as Cancelled.</span></div>
+      <div class="inv-item"><b>Finish your request</b><span><code>pending-payment</code> (client only, up to 15 minutes), then <b>Payment expired</b> (<code>payment-expired</code>), grey. The model never sees these.</span></div>
+    </div>
+  </div>
+
+</main>
+
+<div class="notes-dock">
+  <details class="design-notes">
+    <summary>Design notes</summary>
+    <ul>
+      <li><strong>One pattern for all statuses.</strong> A chip (the existing <code>rt-status</code> shape), a one-line title, a plain sentence, one next action. The same trio on the list row and on the page banner. The five asked-for statuses are Requested, Accepted, Declined, Expired and Completed; Cancelled is added because the process has it and a booking that was accepted can end that way.</li>
+      <li><strong>Same names both sides.</strong> The old labels disagree: the list says "Requested" but the page says "Your booking request was successful!"; reviews say "Waiting for listing owner review". This replaces the owner/listing words with the model's name, drops the exclamation marks and removes "Inbox: As a customer / As a provider" in favour of "Your bookings" (client) and "Booking requests" (model).</li>
+      <li><strong>Money is stated on every state that touches it.</strong> Requested: not charged. Accepted: charged. Declined and Expired: not charged. Cancelled: refunded or not. Completed (model): paid usually the next working day, always within five working days. No state leaves the client or model guessing.</li>
+      <li><strong>Deadline in the list.</strong> A requested row shows the exact reply-by time (amber, bold). That is the one piece of urgency the model needs; no countdown animations, no "usually replies in" claims.</li>
+      <li><strong>Colour.</strong> Amber = waiting, green = confirmed, cobalt tint = done, grey = ended. No red. Chips are read by label first and colour second; the hollow dot on Expired separates it from Declined for people who cannot rely on shade.</li>
+      <li><strong>Tap targets and mobile.</strong> Each list row is at least 72px tall and fully tappable. Below 900px the matrix collapses to stacked rows with "Client sees" and "Model sees" labels. Nothing scrolls sideways.</li>
+      <li><strong>Not designed here:</strong> filtering or sorting the lists (Upcoming and Past tabs would be the natural next step), and the cancel dialog (already exists, with refund shown before confirming).</li>
+    </ul>
+  </details>
+</div>
+<div class="container--editorial"><div class="mock-pager"><a href="B08-model-request.html">← B08 Model request</a><a href="index.html">Journey map →</a></div></div>
+
+<script src="booking.js"></script>
+</body>
+</html>

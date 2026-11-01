@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Discovery &amp; booking journey - Rogue Talent design mockups</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Hanken+Grotesk:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="journey.css">
+</head>
+<body>
+
+<div class="mock-toolbar">
+  <span class="tag">Mock</span>
+  <span>Rogue Talent - discovery &amp; booking journey</span>
+  <span class="spacer"></span>
+  <span class="title">9 screens · click any card to open</span>
+</div>
+
+<header class="map-hero">
+  <div class="container--editorial">
+    <span class="rt-eyebrow rt-eyebrow--inverse">Design review · ux-designer → PM → Neil</span>
+    <h1>From first search to a <span>confirmed booking,</span> on desktop and phone.</h1>
+    <p>Every screen a client sees from "find a model" to "request sent", and the model's side of the same request: accept or decline, and the status both of them read afterwards. Built on the same tokens and <code>rt-*</code> components as the approved sign-up set. Nothing here is live; it is for review before any of it goes to the Developer. All names, numbers and photos are example data.</p>
+  </div>
+</header>
+
+<div class="container--editorial">
+
+  <section class="map-group">
+    <h2>Find a model</h2>
+    <p class="group-sub">Search with filters, then a model's page. The fix for one-model-per-screen on phones is here.</p>
+    <div class="map-list">
+      <a class="map-card" href="B01-search-results.html"><span class="num">B01</span><h3>Search results</h3><p>Desktop sidebar and 3-up grid. On phones a 2-up grid with a compact card, so two rows fit on one screen. City and dates always visible; filters in a sheet.</p></a>
+      <a class="map-card" href="B02-filters.html"><span class="num">B02</span><h3>Filters</h3><p>The mobile full-height filter sheet and the desktop sidebar, every group open, with the list of what clients can filter by.</p></a>
+      <a class="map-card" href="B03-model-profile.html"><span class="num">B03</span><h3>Model profile</h3><p>Gallery first, stats, rates, travel and notice, city-level location, reviews and "checked before going live". Sticky booking panel on desktop; bottom bar and sheet on phones. Panel states included.</p></a>
+    </div>
+  </section>
+
+  <section class="map-group">
+    <h2>Choose dates and see the price</h2>
+    <p class="group-sub">Two components, shown on their own so the Developer can build them once and reuse them.</p>
+    <div class="map-list">
+      <a class="map-card" href="B04-date-selection.html"><span class="num">B04</span><h3>Date selection</h3><p>On-brand range calendar: ink and a faint tint, no solid cobalt block. End date counts as a full day. Desktop popover and phone sheet. Live, so you can try it.</p></a>
+      <a class="map-card" href="B05-price-breakdown.html"><span class="num">B05</span><h3>Price breakdown</h3><p>Day rate x days, plus the 15% fee, plus the total, and the "model keeps 100%" note. Client and model versions, travel variant, copy changes.</p></a>
+    </div>
+  </section>
+
+  <section class="map-group">
+    <h2>Send the request</h2>
+    <p class="group-sub">Checkout restructured: shoot, then licence, then payment last.</p>
+    <div class="map-list">
+      <a class="map-card" href="B06-checkout.html"><span class="num">B06</span><h3>Checkout / booking request</h3><p>Shoot details first, the content licence second, a minimal UK billing section last. Template leftovers removed. Private-residence and error states.</p></a>
+      <a class="map-card" href="B07-request-sent.html"><span class="num">B07</span><h3>Request sent</h3><p>What happens next, the real 48-hour deadline, where to track it, and the money stated honestly.</p></a>
+    </div>
+  </section>
+
+  <section class="map-group" style="border-bottom:0;">
+    <h2>The model's side, and tracking</h2>
+    <p class="group-sub">The request the model answers, and the status pattern both sides share.</p>
+    <div class="map-list">
+      <a class="map-card" href="B08-model-request.html"><span class="num">B08</span><h3>Incoming request (model)</h3><p>Deadline first, earnings as 100% of their rate, the shoot, who is booking, what they agree to, Accept or Decline. Private-residence and after-accept states.</p></a>
+      <a class="map-card" href="B09-booking-status.html"><span class="num">B09</span><h3>Booking status (both sides)</h3><p>Requested, Accepted, Declined, Expired, Completed and Cancelled: one chip and one sentence each, with what each side reads and how process states map.</p></a>
+    </div>
+  </section>
+
+</div>
+
+<div class="container--editorial" style="padding: var(--space-7) 0; border-top: var(--border-hair) solid var(--border-hairline);">
+  <h2 style="font-family:var(--font-display); font-weight:800; font-size:var(--text-2xl); margin-bottom: var(--space-4);">Why nine screens, and what moved</h2>
+  <ul class="plain-list">
+    <li><strong>Filters (B02) is its own file</strong> because on a phone it is a different surface (a full-height sheet) with its own states, and on desktop the same panel is the sidebar. B01 contains the live panel too.</li>
+    <li><strong>Date selection (B04) and Price breakdown (B05) are components shown standalone</strong> rather than only inside the profile and checkout. Each is used in four places, so a single reference stops them drifting apart. They are also embedded and live in B03 and B06.</li>
+    <li><strong>The booking panel and its states are inside B03,</strong> not a separate screen, because on desktop it is part of the page and on phones it is the bar and sheet.</li>
+    <li><strong>Request sent (B07) is the "just sent" top card of the booking page;</strong> B09 shows what that same page says in every other state.</li>
+    <li>City and dates moved out of the filter panel into the search header on all sizes, so the two most important criteria are always visible.</li>
+  </ul>
+</div>
+
+<div class="container--editorial" style="padding: 0 0 var(--space-7);">
+  <h2 style="font-family:var(--font-display); font-weight:800; font-size:var(--text-2xl); margin-bottom: var(--space-4);">Run-through findings addressed</h2>
+  <div class="stack">
+    <div class="card"><strong>10, model page.</strong> Blank map removed (city line only). "About the listing author" replaced by "Checked before going live". <span class="muted">B03</span></div>
+    <div class="card"><strong>11, calendar and checkout.</strong> Calendar is ink plus a faint tint, not a solid cobalt block. Checkout has none of the template leftovers ("Helsinki", "00100", "Apt #", "State", "Location of the listing", "listing owner"), and the fee note has no em dash. <span class="muted">B04, B05, B06</span></div>
+    <div class="card"><strong>M5, one card per phone screen.</strong> 2-up grid with a compact card below 900px. <span class="muted">B01</span></div>
+    <div class="card"><strong>M6, checkout 4.5 screens, payment first.</strong> Reordered to shoot, licence, payment; billing cut to name, postcode and country; summary collapsed at the top. <span class="muted">B06</span></div>
+    <div class="card"><strong>M12, model page.</strong> The name appears once in the panel area; "Book now" is replaced by "Select dates" then "Request to book". The 8 hydration errors are a Developer check. <span class="muted">B03</span></div>
+    <div class="card"><strong>Listed in the brief but not about these screens:</strong> finding 16 (account status page loads blank), finding 17 (test photos of real people) and M11 (two cobalt buttons on the homepage). B03's panel states link to the account status page but do not fix its load time; every image here is a labelled placeholder, never a real person; and every screen here keeps to one cobalt action.</div>
+  </div>
+</div>
+
+<div class="container--editorial" style="padding: 0 0 var(--space-7);">
+  <h2 style="font-family:var(--font-display); font-weight:800; font-size:var(--text-2xl); margin-bottom: var(--space-4);">Design principles applied</h2>
+  <div class="principle-grid">
+    <div><h3>One cobalt action per view</h3><p>Select dates or Request to book; Send booking request; Accept request; Go to your bookings. Chips, selected days and numbered steps are ink, never cobalt. (The panel-states strip on B03 shows several panels side by side for reference; each is its own view in product.)</p></div>
+    <div><h3>Say what happens to the money</h3><p>Every price screen states whether the card is charged. Requested, Declined and Expired say "not charged". The model sees 100% of their rate.</p></div>
+    <div><h3>Safety without theatre</h3><p>Private residence is a visible choice with a calm note, the model's boundary is never revealed, and the shareable summary says plainly that Rogue Talent does not monitor shoots.</p></div>
+    <div><h3>Only real, enforced facts</h3><p>The 48-hour deadline, the 48-hour cancellation cutoff and the payout promise are all enforced by the process. Minimum notice is not, so it is shown as a guide. No response-time or rating claims.</p></div>
+    <div><h3>Phone first</h3><p>Sheets instead of pop-overs, 44px tap targets, one column, and a summary that collapses. Designed at 375px; desktop adds columns.</p></div>
+    <div><h3>No stock photography, no gendered pronouns</h3><p>Every picture is the labelled stripe. Copy uses the model's name or "the day rate", never he or she inferred from a field.</p></div>
+  </div>
+</div>
+
+<div class="container--editorial" style="padding: 0 0 var(--space-7);">
+  <h2 style="font-family:var(--font-display); font-weight:800; font-size:var(--text-2xl); margin-bottom: var(--space-5);">Open questions for Neil</h2>
+  <div class="oq-list">
+
+    <div class="oq-item">
+      <h3>1. Is it right to keep the per-card "Verified" badge retired and state the standard once instead?</h3>
+      <p>The lifecycle spec retired the badge because every visible model is Verified, so it signals nothing. B01 states the standard in one line under the heading ("Every model here is reviewed by our team and ID and bank verified"). B03 repeats it as a section, "Checked before going live", at the moment of booking. Both are public safety and verification claims. They are true today, in wording already used on the approved client "ready to book" screen.</p>
+      <p class="oq-rec"><strong>Recommendation:</strong> approve as designed. It tells new clients the standard without implying some models are unverified. Please confirm the exact wording since it is a public claim.</p>
+    </div>
+
+    <div class="oq-item">
+      <h3>2. Half-day and hourly rates are collected and shown, but only whole days can be booked. What should the profile do?</h3>
+      <p>B03 shows all three rates and labels half-day and hourly "for reference", with a sentence saying bookings are charged per full day. Showing prices a client cannot select invites "can you do half a day for £260?" and an off-platform deal, which is also a fee leak.</p>
+      <p class="oq-rec"><strong>Recommendation:</strong> for v1 show them as designed, with the honest note. If clients keep asking, make half-day a bookable option next (a process and price change, not a design one). Hiding them is the other option if you would rather not invite the question.</p>
+    </div>
+
+    <div class="oq-item">
+      <h3>3. Minimum notice: should the system enforce it?</h3>
+      <p>Today it is a stated preference only (the model can decline any request). B03 and B04 show it as a guide and, if a client picks a start date inside it, a calm non-blocking line. Enforcing it would be a product rule change and would hide dates models may well accept.</p>
+      <p class="oq-rec"><strong>Recommendation:</strong> keep it a guide for v1, as designed. Revisit if models report requests arriving too late.</p>
+    </div>
+
+    <div class="oq-item">
+      <h3>4. Billing details: collect only name, postcode and country?</h3>
+      <p>B06 drops the street address, "Apt #", city and "State" that the template asks for, keeping name on card, billing postcode and country (default United Kingdom). We already hold a client's business address from onboarding. This changes what is sent to Stripe as billing details.</p>
+      <p class="oq-rec"><strong>Recommendation:</strong> yes. It is how UK card checkouts work and it removes most of the fields behind M6. The Developer should confirm Stripe's postcode checks still behave as you want.</p>
+    </div>
+
+    <div class="oq-item">
+      <h3>5. When a model charges travel separately, how is it paid?</h3>
+      <p>The profile and the price breakdown say plainly that travel is not in the total and can be agreed in the booking conversation. Nothing collects it through Rogue Talent, so it would be paid outside the platform, and the 15% fee does not apply to it.</p>
+      <p class="oq-rec"><strong>Recommendation:</strong> accept this for v1 and keep the honest wording. Decide before launch whether to add an optional "travel" line the client pays through the platform; it is the cleaner answer but is new scope.</p>
+    </div>
+
+    <div class="oq-item">
+      <h3>6. Keep ethnicity as a search filter?</h3>
+      <p>It was a deliberate earlier choice, and <code>docs/discovery-model-fields.md</code> flags it as legally and ethically sensitive. B01 and B02 keep it, but last in the list and collapsed on B01.</p>
+      <p class="oq-rec"><strong>Recommendation:</strong> keep it as decided, last and collapsed, and ask the solicitor to look at it in the same review as the content licence. Removing it is a one-line Console change if they advise it.</p>
+    </div>
+
+    <div class="oq-item">
+      <h3>7. Remove the "Contact" button before a request is sent?</h3>
+      <p>The template's author card has a Contact button. B03 removes it with the rest of "About the listing author". Clients can still put questions in the request note, and message the model once a request exists (B07). That keeps unsolicited messages to models, and conversation outside a booking, to a minimum.</p>
+      <p class="oq-rec"><strong>Recommendation:</strong> remove it for launch. It supports the safety posture and keeps conversation tied to a booking. Add it back if clients cannot get answers to simple questions.</p>
+    </div>
+
+    <div class="oq-item">
+      <h3>8. Show the cancellation policy at checkout?</h3>
+      <p>B06 and B09 say a client can cancel free until 48 hours before the shoot and not after. That matches the two-tier process in <code>docs/booking-process-design.md</code>, but <code>docs/cancellation-process-spec.md</code> records that the published FAQ and Terms still describe three tiers. This is a legal and consumer-rights surface.</p>
+      <p class="oq-rec"><strong>Recommendation:</strong> show it, but only once the Terms are rewritten to the two-tier policy and the process version is live. Until then, remove the line rather than publish a promise the Terms contradict.</p>
+    </div>
+
+    <div class="oq-item">
+      <h3>9. Should a client be able to withdraw a request before the model replies?</h3>
+      <p>The process has no cancel from "Requested". A client who sends a request by mistake, or finds another model, must wait up to 48 hours. B07 offers no withdraw link for that reason.</p>
+      <p class="oq-rec"><strong>Recommendation:</strong> add a small "withdraw request" transition (full release of the card hold) before launch. It is fair to clients and frees the model's inbox. It is a process change, so it needs your approval.</p>
+    </div>
+
+    <div class="oq-item">
+      <h3>10. Is accepting a booking a sufficient way for the model to agree the content licence?</h3>
+      <p>The draft licence says the model accepts by accepting the booking. B08 puts the sentence "By accepting, you agree to the Content Licence &amp; Model Release for this booking" above the Accept button, with a plain-English summary and the full text on the page. It is a perpetual, all-media, single-fee licence, so this is a legal surface and the wording is still draft.</p>
+      <p class="oq-rec"><strong>Recommendation:</strong> keep the design, and send B08 to the solicitor along with the licence itself. Do not launch with the "DRAFT" wording visible or with this sentence unreviewed.</p>
+    </div>
+
+    <div class="oq-item">
+      <h3>11. Is it right to show the shoot address to the model before they accept?</h3>
+      <p>B08 shows the full address, and the location type, so the model can decide, especially for a private residence. The address is visible only to the model and the client.</p>
+      <p class="oq-rec"><strong>Recommendation:</strong> yes. A model cannot make a safe decision without it. The shareable summary already works this way after acceptance.</p>
+    </div>
+
+  </div>
+</div>
+
+<div class="container--editorial" style="padding: 0 0 var(--space-7);">
+  <h2 style="font-family:var(--font-display); font-weight:800; font-size:var(--text-2xl); margin-bottom: var(--space-4);">Product and engineering dependencies</h2>
+  <ul class="plain-list">
+    <li><strong>Search:</strong> compact 2-up card below 900px and full card from 900px (ListingCard and results grid CSS); date and city controls moved to the search header; price filter changed from slider to min and max fields; mobile filter sheet restyle; "How far they'll travel" filter changed to multi-select, match any (Console); drop the "Oldest" sort option (config).</li>
+    <li><strong>Model page:</strong> remove the map (<code>SectionMapMaybe</code>); replace <code>UserCard</code>, "Hello, I'm {name}" and Contact with the "Checked before going live" section; show half-day and hourly rates (already stored); show the minimum notice and travel fields; rename "Book now" to "Select dates" then "Request to book". The 8 hydration errors need a Developer look.</li>
+    <li><strong>Calendar:</strong> restyle the template's date picker to the ink and tint treatment; surface the model's <code>min_booking_notice</code> and the current time for the informational line.</li>
+    <li><strong>Checkout:</strong> reorder <code>StripePaymentForm</code> (shoot fields, licence, payment); remove <code>ShippingDetails</code> and <code>StripePaymentAddress</code> in favour of name, postcode and country mapped into Stripe billing details; collapse <code>MobileOrderBreakdown</code> into the summary; replace the listed template strings (B06 copy table).</li>
+    <li><strong>Sole-trader private-residence rule (SAF-06):</strong> in the v1 safety scope, but I found no enforcement of it in <code>src</code>. B06 shows a disabled-option state ready for it.</li>
+    <li><strong>Deadline and statuses:</strong> expose "reply by" (the earlier of 48 hours after authorisation and the shoot start) on the booking page and in both lists, and add the status chips and the label changes in B09 to the lists and the booking page.</li>
+    <li><strong>Edge case to specify:</strong> what happens to a pending request if its dates are taken by another accepted booking before the model replies (auto-decline, or Accept fails with a clear message)?</li>
+    <li><strong>Model acceptance:</strong> add the licence sentence above Accept (B08) and confirm the acceptance is recorded with the agreement version, as the checkout already does for the client.</li>
+    <li><strong>Withdraw request</strong> (question 9) and the <strong>cancellation line</strong> (question 8) depend on the process and the Terms, not on design.</li>
+    <li><strong>Copy and dashes:</strong> 32 lines in <code>en.json</code> contain an em or en dash. On these booking surfaces they include the fee note (<code>OrderBreakdown.commissionFeeNote</code>), the licence draft notice and terms body, the private-residence safety intro, four shareable-summary strings, three provider cancelled and completed strings, and the "in review" profile banner. Replacements for the fee note, the safety intro and the summary intro are in B05, B06 and B08; the rest need the same treatment before launch.</li>
+  </ul>
+</div>
+
+<div class="container--editorial" style="padding: 0 0 var(--space-7);">
+  <h2 style="font-family:var(--font-display); font-weight:800; font-size:var(--text-2xl); margin-bottom: var(--space-4);">Escalations (not mine to decide)</h2>
+  <ul class="plain-list">
+    <li><strong>Public claims:</strong> the trust line and the "Checked before going live" section (question 1); "free to cancel until 48 hours before" (question 8).</li>
+    <li><strong>Legal surfaces:</strong> the licence summary shown to the client (B06), the sentence above Accept (B08, question 10), and the draft wording flag.</li>
+    <li><strong>Safety surfaces:</strong> the private-residence note to the client (B06), the disabled sole-trader state, the model's safety note and shareable summary (B08).</li>
+    <li><strong>Product rules:</strong> questions 2, 3, 4, 5, 7 and 9 each touch a rule, so none is assumed in the design beyond what is stated.</li>
+  </ul>
+</div>
+
+<footer class="map-foot">
+  <div class="container--editorial">Rogue Talent - design mockups for review only. Not built. ux-designer, 01/11/2026. Test-environment context only: no live data, no live payment screens. Mobile was designed at 375px and every screen was checked by the PM at 375 x 667 (iPhone SE) on 01/11/2026: nothing scrolls sideways, and the search screen header was tightened so models show on the first screen. Em dashes and en dashes: none in these files (checked by search).</div>
+</footer>
+
+</body>
+</html>

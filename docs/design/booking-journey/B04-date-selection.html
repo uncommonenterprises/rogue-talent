@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>B04 · Date selection - Rogue Talent booking mockups</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Hanken+Grotesk:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="journey.css">
+</head>
+<body data-rate="450" data-notice-hours="48" data-start="2026-11-25" data-end="2026-11-26" data-cta-href="B06-checkout.html">
+
+<div class="mock-toolbar">
+  <span class="tag">Mock</span>
+  <a href="index.html">Journey map</a>
+  <span class="divider">·</span>
+  <span class="title">Client · B04 · Date selection</span>
+  <span class="mock-flag">Example data</span>
+  <span class="spacer"></span>
+  <a href="B03-model-profile.html">← Prev</a>
+  <a href="B05-price-breakdown.html">Next: Price breakdown →</a>
+</div>
+
+<header class="app-nav">
+  <a class="rt-nav__brand" href="index.html">Rogue<span>.</span></a>
+  <nav class="app-nav__links" aria-label="Main">
+    <a class="is-active" href="B01-search-results.html">Browse models</a>
+    <a href="B09-booking-status.html">Your bookings</a>
+  </nav>
+  <div class="app-nav__actions">
+    <span class="rt-status rt-status--verified app-nav__status"><span class="rt-status__dot"></span>Verified</span>
+    <a class="icon-btn" href="#" aria-label="Account menu"><span class="rt-avatar rt-avatar--sm">B</span></a>
+  </div>
+</header>
+
+<main class="page">
+
+  <section class="search-head">
+    <h1 class="page-title">Choosing <span class="accent">dates.</span></h1>
+    <p class="small muted" style="max-width:62ch;">The calendar is the same component everywhere: in the search header (B01), in the booking panel (B03) and in the phone sheet. It is live, so try it. Good ranges to test: Wed 25 to Thu 26 Nov (clean), Mon 9 to Fri 13 Nov (crosses days Ava is not available), and Tue 3 Nov (inside the 48-hour notice).</p>
+  </section>
+
+  <!-- Desktop: the popover inside the booking panel, next to the phone sheet -->
+  <div class="frames only-desktop">
+    <div class="stack">
+      <span class="rt-eyebrow">Desktop · popover from the booking panel</span>
+      <div class="panel" style="max-width:380px;">
+        <div class="panel__price">£450 <small>/ day</small></div>
+        <div class="date-field">
+          <button type="button" tabindex="-1"><span class="lbl">Start</span><span class="val is-empty" data-bind="startval">Add date</span></button>
+          <button type="button" tabindex="-1"><span class="lbl">End</span><span class="val is-empty" data-bind="endval">Add date</span></button>
+        </div>
+        <div class="cal--framed stack">
+          <div data-cal data-layout="single"></div>
+          <div class="cal__legend"><span><i class="sel"></i>Selected</span><span><i class="rng"></i>In your range</span><span><i class="una"></i>Not available</span></div>
+          <div class="notice notice--error" data-show-when="conflict" hidden><i class="ico ico-alert"></i><p>Ava isn't available on <strong data-bind="conflictDate"></strong>, so that range can't be booked. Pick dates that don't include it.</p></div>
+          <div class="cal-summary"><span class="cal-summary__main" data-bind="summaryMain"></span><span class="cal-summary__sub" data-bind="summarySub"></span></div>
+          <div style="display:flex;justify-content:space-between;gap:8px;">
+            <button class="rt-btn rt-btn--ghost" type="button" data-clear-dates style="min-height:44px;">Clear dates</button>
+            <button class="rt-btn rt-btn--secondary" type="button" style="min-height:44px;">Done</button>
+          </div>
+        </div>
+        <div class="notice" data-show-when="notice" hidden><i class="ico ico-info"></i><p>Ava asks for at least 48 hours' notice. You can still send this request and Ava can decline it.</p></div>
+        <a class="rt-btn rt-btn--primary rt-btn--lg rt-btn--block" href="B06-checkout.html" data-cta><span data-bind="ctaLabel">Request to book</span></a>
+      </div>
+      <p class="small muted" style="max-width:48ch;">On desktop the calendar opens as a popover when either date field is clicked, shows one month with arrows (it cannot page before this month), and closes with Done, Esc or a click outside.</p>
+    </div>
+
+    <div class="stack">
+      <span class="rt-eyebrow">Phone · full-height sheet</span>
+      <div class="device-frame">
+        <div class="device-frame__bar">375px wide · two of the four months shown</div>
+        <div class="sheet" style="position:static;height:auto;max-height:none;box-shadow:none;border-radius:0;">
+          <div class="sheet__head"><h2 class="sheet__title">Choose your dates</h2><span class="icon-btn"><i class="ico ico-close"></i></span></div>
+          <div class="sheet__body">
+            <div data-cal data-layout="stack" data-months="2"></div>
+            <div class="cal__legend"><span><i class="sel"></i>Selected</span><span><i class="rng"></i>In your range</span><span><i class="una"></i>Not available</span></div>
+            <div class="cal-summary"><span class="cal-summary__main" data-bind="summaryMain"></span><span class="cal-summary__sub" data-bind="summarySub"></span></div>
+          </div>
+          <div class="sheet__foot">
+            <a class="rt-btn rt-btn--secondary rt-btn--lg rt-btn--block" href="B05-price-breakdown.html">Apply dates</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phone: the real sheet, open on load -->
+  <div class="only-mobile stack" style="padding-bottom:var(--space-5);">
+    <button class="rt-btn rt-btn--secondary rt-btn--block" type="button" data-open-sheet="sheet-dates" style="min-height:48px;"><i class="ico ico-calendar"></i>Open the dates sheet</button>
+    <p class="small muted">The sheet is open on load. Close it with the cross to see the rest of this page.</p>
+  </div>
+
+  <div class="state-label">Messages the calendar can show</div>
+  <div class="stack" style="max-width:640px;">
+    <div class="stack stack--sm"><span class="rt-eyebrow">Range includes a day Ava is not available</span><div class="notice notice--error"><i class="ico ico-alert"></i><p>Ava isn't available on <strong>Tue 17 Nov</strong>, so that range can't be booked. Pick dates that don't include it.</p></div><p class="xs muted">The calendar restarts the range from the day just tapped. It never says why a day is unavailable (blocked by the model, or already booked): that is the model's business.</p></div>
+    <div class="stack stack--sm"><span class="rt-eyebrow">Start date inside the model's notice</span><div class="notice"><i class="ico ico-info"></i><p>Ava asks for at least 48 hours' notice. You can still send this request and Ava can decline it.</p></div><p class="xs muted">Information only. Does not block the request (open question 3).</p></div>
+    <div class="stack stack--sm"><span class="rt-eyebrow">Availability could not load (existing template error, reworded)</span><div class="notice notice--error"><i class="ico ico-alert"></i><p>We couldn't load Ava's available dates. Please refresh the page and try again.</p></div><p class="xs muted">The date fields and "Select dates" stay disabled until it loads.</p></div>
+    <div class="stack stack--sm"><span class="rt-eyebrow">Summary line, any range</span><div class="cal-summary"><span class="cal-summary__main">Wed 25 Nov to Fri 27 Nov</span><span class="cal-summary__sub">3 full days. Your end date counts as a full day.</span></div><p class="xs muted">A shorter form of the existing string "Your end date is included, so you're booking N full days at the day rate". A single day reads "1 full day."</p></div>
+  </div>
+
+</main>
+
+<!-- Real phone sheet -->
+<div class="sheet-root sheet-root--mobile is-open" id="sheet-dates" role="dialog" aria-modal="true" aria-labelledby="sd-title">
+  <div class="sheet-backdrop"></div>
+  <div class="sheet">
+    <div class="sheet__head"><h2 class="sheet__title" id="sd-title">Choose your dates</h2><button class="icon-btn" type="button" data-close-sheet aria-label="Close"><i class="ico ico-close"></i></button></div>
+    <div class="sheet__body">
+      <div data-cal data-layout="stack" data-months="4"></div>
+      <div class="cal__legend"><span><i class="sel"></i>Selected</span><span><i class="rng"></i>In your range</span><span><i class="una"></i>Not available</span></div>
+      <div class="notice notice--error" data-show-when="conflict" hidden><i class="ico ico-alert"></i><p>Ava isn't available on <strong data-bind="conflictDate"></strong>, so that range can't be booked. Pick dates that don't include it.</p></div>
+      <div class="cal-summary"><span class="cal-summary__main" data-bind="summaryMain"></span><span class="cal-summary__sub" data-bind="summarySub"></span></div>
+      <div class="notice" data-show-when="notice" hidden><i class="ico ico-info"></i><p>Ava asks for at least 48 hours' notice. You can still send this request and Ava can decline it.</p></div>
+    </div>
+    <div class="sheet__foot">
+      <a class="rt-btn rt-btn--primary rt-btn--lg rt-btn--block" href="B05-price-breakdown.html" data-close-sheet>Apply dates</a>
+      <button class="rt-btn rt-btn--ghost rt-btn--block" type="button" data-clear-dates style="min-height:44px;">Clear dates</button>
+    </div>
+  </div>
+</div>
+
+<div class="notes-dock">
+  <details class="design-notes">
+    <summary>Design notes</summary>
+    <ul>
+      <li><strong>Fixes finding 11 (the big solid-blue calendar).</strong> No solid cobalt block anywhere in the calendar. The first and last day are ink-900 with white text (the same treatment as a selected rt-chip), the days between are a faint accent-50 band, today is a small dot under the number, and the only cobalt on screen is the one primary button. Hover is ink-100. Focus is a 2px cobalt inset ring.</li>
+      <li><strong>Unavailable days</strong> are ink-300 with a hairline strikethrough, so they read as "not available" without relying on colour alone and without using red (red is danger only). Blocked-by-the-model and already-booked look identical on purpose. Days before today are ink-300 with no strike.</li>
+      <li><strong>The end date counts as a full day.</strong> The summary box says so on every range ("2 full days. Your end date counts as a full day."), and the price breakdown uses the same day count (B05). Tapping one day twice gives a single full day.</li>
+      <li><strong>Phone: a scrolling stack of four months,</strong> not a paged single month. Seven columns across 343px gives 49px day cells, so every date is a comfortable tap target, and scrolling is easier than hunting for a tiny next-month arrow. The sheet footer holds the single cobalt "Apply dates". Desktop: one month with 44px arrows inside a popover.</li>
+      <li><strong>Week starts on Monday,</strong> as in the UK and as in the model's own calendar spec. Dates are written "Wed 25 Nov" everywhere.</li>
+      <li><strong>Engineering:</strong> this replaces the template's react-dates styling (BookingDatesForm); the behaviour (a range, unavailable days from the model's calendar and bookings) is unchanged. The notice line needs the model's <code>min_booking_notice</code> and the current time; it is informational only.</li>
+    </ul>
+  </details>
+</div>
+<div class="container--editorial"><div class="mock-pager"><a href="B03-model-profile.html">← B03 Model profile</a><a href="B05-price-breakdown.html">Next: Price breakdown →</a></div></div>
+
+<script src="booking.js"></script>
+</body>
+</html>

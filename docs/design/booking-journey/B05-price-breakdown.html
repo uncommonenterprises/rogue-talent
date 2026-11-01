@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>B05 · Price breakdown - Rogue Talent booking mockups</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Hanken+Grotesk:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="journey.css">
+</head>
+<body>
+
+<div class="mock-toolbar">
+  <span class="tag">Mock</span>
+  <a href="index.html">Journey map</a>
+  <span class="divider">·</span>
+  <span class="title">Client + model · B05 · Price breakdown</span>
+  <span class="mock-flag">Example data</span>
+  <span class="spacer"></span>
+  <a href="B04-date-selection.html">← Prev</a>
+  <a href="B06-checkout.html">Next: Checkout →</a>
+</div>
+
+<header class="app-nav">
+  <a class="rt-nav__brand" href="index.html">Rogue<span>.</span></a>
+  <nav class="app-nav__links" aria-label="Main">
+    <a class="is-active" href="B01-search-results.html">Browse models</a>
+    <a href="B09-booking-status.html">Your bookings</a>
+  </nav>
+  <div class="app-nav__actions">
+    <span class="rt-status rt-status--verified app-nav__status"><span class="rt-status__dot"></span>Verified</span>
+    <a class="icon-btn" href="#" aria-label="Account menu"><span class="rt-avatar rt-avatar--sm">B</span></a>
+  </div>
+</header>
+
+<main class="page">
+
+  <section class="search-head">
+    <h1 class="page-title">One price, <span class="accent">no surprises.</span></h1>
+    <p class="small muted" style="max-width:64ch;">The breakdown is one component used in four places: the booking panel (B03), the phone sheet (B03 and B04), the checkout summary (B06) and the booking page afterwards (B07, B08). Pick a number of days to see it change. Day rate here is £450.</p>
+  </section>
+
+  <div class="chip-row" role="group" aria-label="Number of days" id="day-chips" style="padding-bottom:var(--space-5);">
+    <button type="button" class="rt-chip" data-d="1" style="min-height:44px;">1 day</button>
+    <button type="button" class="rt-chip rt-chip--selected" data-d="2" style="min-height:44px;">2 days</button>
+    <button type="button" class="rt-chip" data-d="3" style="min-height:44px;">3 days</button>
+    <button type="button" class="rt-chip" data-d="5" style="min-height:44px;">5 days</button>
+  </div>
+
+  <div class="state-grid">
+
+    <div class="stack stack--sm">
+      <span class="rt-eyebrow">Client · panel, sheet and checkout</span>
+      <div class="card">
+        <dl class="breakdown">
+          <div class="breakdown__row"><dt id="c-rate">£450 x 2 days</dt><dd id="c-sub">£900</dd></div>
+          <div class="breakdown__row"><dt>Booking fee (15%)</dt><dd id="c-fee">£135</dd></div>
+          <div class="breakdown__row breakdown__row--total"><dt>Total</dt><dd id="c-total">£1,035</dd></div>
+        </dl>
+        <p class="breakdown__note">The booking fee is how Rogue Talent is paid. Ava keeps 100% of the day rate (<span id="c-keeps">£900</span>). Travel is included in the rate.</p>
+      </div>
+      <p class="xs muted">The total is the biggest number, in Bricolage. Everything else is quiet Hanken. Amounts show pence only when there are some.</p>
+    </div>
+
+    <div class="stack stack--sm">
+      <span class="rt-eyebrow">Client · model charges travel separately</span>
+      <div class="card">
+        <dl class="breakdown">
+          <div class="breakdown__row"><dt id="t-rate">£450 x 2 days</dt><dd id="t-sub">£900</dd></div>
+          <div class="breakdown__row"><dt>Booking fee (15%)</dt><dd id="t-fee">£135</dd></div>
+          <div class="breakdown__row breakdown__row--total"><dt>Total</dt><dd id="t-total">£1,035</dd></div>
+        </dl>
+        <div class="notice"><i class="ico ico-info"></i><p><strong>Travel is not included.</strong> Ava charges travel separately, so it isn't in this total. You can agree it in the booking conversation once you've sent your request.</p></div>
+        <p class="breakdown__note">The booking fee is how Rogue Talent is paid. Ava keeps 100% of the day rate (<span id="t-keeps">£900</span>).</p>
+      </div>
+      <p class="xs muted">Shown when the model's travel costs setting is "Charged separately". See open question 5.</p>
+    </div>
+
+    <div class="stack stack--sm">
+      <span class="rt-eyebrow">Model · incoming request (B08)</span>
+      <div class="card">
+        <dl class="breakdown">
+          <div class="breakdown__row"><dt id="m-rate">£450 x 2 days</dt><dd id="m-sub">£900</dd></div>
+          <div class="breakdown__row"><dt>Fee taken from you</dt><dd>£0</dd></div>
+          <div class="breakdown__row breakdown__row--total"><dt>You'll earn</dt><dd id="m-total">£900</dd></div>
+        </dl>
+        <p class="breakdown__note">That is 100% of your rate. The client pays the 15% booking fee on top of it. You are paid usually the next working day after the shoot, always within five working days.</p>
+      </div>
+      <p class="xs muted">The model never sees the client's total or the fee as a deduction. The payout wording is the approved promise from the booking process design.</p>
+    </div>
+
+    <div class="stack stack--sm">
+      <span class="rt-eyebrow">Client · a fee with pence (day rate £225, 3 days)</span>
+      <div class="card">
+        <dl class="breakdown">
+          <div class="breakdown__row"><dt>£225 x 3 days</dt><dd>£675</dd></div>
+          <div class="breakdown__row"><dt>Booking fee (15%)</dt><dd>£101.25</dd></div>
+          <div class="breakdown__row breakdown__row--total"><dt>Total</dt><dd>£776.25</dd></div>
+        </dl>
+      </div>
+      <p class="xs muted">Pence appear only when needed, never "£101.3". A single day reads "£450 x 1 day".</p>
+    </div>
+
+  </div>
+
+  <div class="state-label">Copy changes (en.json keys)</div>
+  <div class="card" style="padding:0;overflow:hidden;">
+    <table class="copy-table">
+      <thead><tr><th>Key</th><th>Now</th><th>Proposed</th></tr></thead>
+      <tbody>
+        <tr><td><code>OrderBreakdown.commission</code></td><td>"Rogue Talent fee *" (customer and provider)</td><td>Customer: "Booking fee (15%)". Not shown to the model; replaced by the "Fee taken from you: £0" row.</td></tr>
+        <tr><td><code>OrderBreakdown.commissionFeeNote</code></td><td>"* This 15% booking fee is what funds Rogue Talent (em dash here) the model keeps 100% of their rate, with no cut taken from their side."</td><td>"The booking fee is how Rogue Talent is paid. {name} keeps 100% of the day rate ({amount})." No asterisk, no dash. Shown under the breakdown, not as a footnote.</td></tr>
+        <tr><td><code>OrderBreakdown.total</code></td><td>"Total price"</td><td>"Total"</td></tr>
+        <tr><td><code>OrderBreakdown.baseUnitDay</code></td><td>"{unitPrice} x {quantity} days"</td><td>Unchanged.</td></tr>
+        <tr><td><code>OrderBreakdown.providerTotalDefault</code></td><td>"You'll earn"</td><td>Unchanged, plus the line "That is 100% of your rate." under it.</td></tr>
+        <tr><td>new</td><td>none</td><td>"Travel is not included. {name} charges travel separately, so it isn't in this total."</td></tr>
+        <tr><td><code>BookingDatesForm.inclusiveDateInfo</code></td><td>"Your end date is included, so you're booking N full days at the day rate."</td><td>Unchanged; shown in the calendar summary (B04) as well as here.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+</main>
+
+<div class="notes-dock">
+  <details class="design-notes">
+    <summary>Design notes</summary>
+    <ul>
+      <li><strong>Arithmetic is on the surface.</strong> Day rate x days, then the 15% fee, then the total. Same rows in the panel, the phone sheet, checkout and the booking page, so a client never sees two different-looking prices for the same booking. The run-through example (2 days x £300 + 15% = £690) is what this shows for any rate.</li>
+      <li><strong>"The model keeps 100%" is a plain sentence, not a footnote.</strong> The old copy used an asterisk and an em dash. The new line has neither and names the amount the model receives, which makes the wedge concrete without saying "no agency".</li>
+      <li><strong>Honest about travel.</strong> If the model's travel costs setting is "Charged separately", the total is explicitly not the whole cost. The profile (B03) already says this; repeating it at the moment of payment avoids a surprise. If travel is included, the single line "Travel is included in the rate" sits in the note instead.</li>
+      <li><strong>Model side.</strong> The model sees what they earn, not what the client pays, and that the fee is not taken from them. The payout timing line is the already-approved promise ("usually the next working day, always within five working days") and appears on the incoming request (B08) and after the shoot.</li>
+      <li><strong>No taxes shown.</strong> The mock shows no VAT line because the product does not compute one. Whether prices need to show VAT is a compliance question already tracked in <code>docs/compliance-open-items.md</code>; this component can take an extra row if that changes.</li>
+      <li><strong>Wording avoids gendered pronouns.</strong> Models have a gender field, but the system should not infer "she" or "he" from it. Copy uses the model's name, "the day rate" or "their".</li>
+    </ul>
+  </details>
+</div>
+<div class="container--editorial"><div class="mock-pager"><a href="B04-date-selection.html">← B04 Date selection</a><a href="B06-checkout.html">Next: Checkout →</a></div></div>
+
+<script>
+(function () {
+  var RATE = 450;
+  function money(n) {
+    var v = Math.round(n * 100) / 100;
+    var p = v.toFixed(2).split('.');
+    return '£' + p[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',') + (p[1] === '00' ? '' : '.' + p[1]);
+  }
+  function set(id, t) { var e = document.getElementById(id); if (e) { e.textContent = t; } }
+  function render(d) {
+    var sub = RATE * d;
+    var fee = Math.round(sub * 0.15 * 100) / 100;
+    var label = money(RATE) + ' x ' + d + (d === 1 ? ' day' : ' days');
+    ['c', 't', 'm'].forEach(function (k) { set(k + '-rate', label); set(k + '-sub', money(sub)); });
+    set('c-fee', money(fee)); set('t-fee', money(fee));
+    set('c-total', money(sub + fee)); set('t-total', money(sub + fee)); set('m-total', money(sub));
+    set('c-keeps', money(sub)); set('t-keeps', money(sub));
+  }
+  var chips = document.querySelectorAll('#day-chips .rt-chip');
+  for (var i = 0; i < chips.length; i++) {
+    chips[i].addEventListener('click', function () {
+      for (var j = 0; j < chips.length; j++) { chips[j].classList.remove('rt-chip--selected'); }
+      this.classList.add('rt-chip--selected');
+      render(parseInt(this.getAttribute('data-d'), 10));
+    });
+  }
+})();
+</script>
+</body>
+</html>
