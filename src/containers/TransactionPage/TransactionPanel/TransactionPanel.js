@@ -6,6 +6,7 @@ import { propTypes } from '../../../util/types';
 import { userDisplayNameAsString } from '../../../util/data';
 import { createSlug } from '../../../util/urlHelpers';
 import { displayPrice } from '../../../util/configHelpers';
+import { getShootDetail } from '../../../util/bookingSummary';
 
 import { AvatarLarge, NamedLink, UserDisplayName } from '../../../components';
 
@@ -180,7 +181,7 @@ export class TransactionPanelComponent extends Component {
     // client's public company/agency field (VAT is private and not exposed).
     const clientName = otherUserDisplayNameString;
     const clientCompany = customer?.attributes?.profile?.publicData?.company_name;
-    const shootAddress = protectedData?.shoot_address;
+    const shootAddress = getShootDetail(protectedData, 'shoot_address');
 
     const deletedListingTitle = intl.formatMessage({
       id: 'TransactionPanel.deletedListingTitle',

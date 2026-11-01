@@ -29,6 +29,7 @@ import {
   getDailyRange,
   getReplyByDeadline,
   getRequestSentAt,
+  getShootDetail,
 } from '../../util/bookingSummary';
 import {
   SAFETY_RESPECT_RATING_BY_CUSTOMER,
@@ -916,7 +917,7 @@ export const TransactionPageComponent = props => {
 
   // SAF-11 / SAF-17: model-side safety UI, driven by the SAF-10 shoot details on
   // the order protectedData and the booking process state.
-  const locationType = transaction?.attributes?.protectedData?.location_type;
+  const locationType = getShootDetail(transaction?.attributes?.protectedData, 'location_type');
   const isResidenceShoot = locationType === 'private-residence';
   // SAF-11: advisory shows to the model from the request through the confirmed booking.
   const showResidenceAdvisory =
@@ -931,7 +932,7 @@ export const TransactionPageComponent = props => {
   // SAF-17: shareable shoot summary shows to the model on a confirmed, pre-shoot booking.
   const showShootSummary = isProviderRole && !!isCancellableBookingState;
   // Human-readable shoot-type label for the summary (protectedData stores the value).
-  const shootTypeValue = transaction?.attributes?.protectedData?.shoot_type;
+  const shootTypeValue = getShootDetail(transaction?.attributes?.protectedData, 'shoot_type');
   const shootTypeField = foundListingTypeConfig?.transactionFields?.find(
     f => f.key === 'shoot_type'
   );
@@ -965,7 +966,7 @@ export const TransactionPageComponent = props => {
     lineItemUnitType === 'line-item/day'
       ? getDailyRange(booking?.attributes?.start, booking?.attributes?.end)
       : null;
-  const locationTypeValue = transaction?.attributes?.protectedData?.location_type;
+  const locationTypeValue = locationType;
   const locationTypeMessageId = `BookingCheckout.locationType.${locationTypeValue}`;
   const locationTypeLabel = locationTypeValue
     ? Object.prototype.hasOwnProperty.call(intl.messages || {}, locationTypeMessageId)
@@ -1044,7 +1045,7 @@ export const TransactionPageComponent = props => {
       }
       shootTypeLabel={shootTypeLabel}
       locationTypeLabel={locationTypeLabel}
-      shootAddress={transaction?.attributes?.protectedData?.shoot_address}
+      shootAddress={getShootDetail(transaction?.attributes?.protectedData, 'shoot_address')}
       licenceAgreedLabel={licenceAgreedLabel}
       transactionId={transaction?.id?.uuid}
     />
@@ -1169,8 +1170,8 @@ export const TransactionPageComponent = props => {
       dayCountLabel={dayCountLabel}
       shootTypeLabel={shootTypeLabel}
       locationTypeLabel={locationTypeLabel}
-      shootAddress={transaction?.attributes?.protectedData?.shoot_address}
-      description={transaction?.attributes?.protectedData?.shoot_description}
+      shootAddress={getShootDetail(transaction?.attributes?.protectedData, 'shoot_address')}
+      description={getShootDetail(transaction?.attributes?.protectedData, 'shoot_description')}
       clientNote={clientNote}
       clientName={clientName}
       clientCompany={clientCompany}

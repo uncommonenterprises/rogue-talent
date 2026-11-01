@@ -1693,6 +1693,19 @@ describe('B08 model request: the reply', () => {
     expect(screen.getAllByText('Call time is 9am.').length).toBeGreaterThan(0);
   });
 
+  it('SAF-11: the residence note shows from the address type checkout saved', async () => {
+    requestTx.attributes.protectedData = {
+      customer_location_type: 'private-residence',
+      customer_shoot_address: '12 Alder Close, Altrincham WA14 2PQ',
+    };
+    await act(async () => {
+      renderRequest(jest.fn());
+    });
+    expect(screen.getByText('TransactionPanel.residenceAdvisoryHeading')).toBeInTheDocument();
+    expect(screen.getByText('12 Alder Close, Altrincham WA14 2PQ')).toBeInTheDocument();
+    requestTx.attributes.protectedData = {};
+  });
+
   it('accept fires straight away; decline asks first, then fires', async () => {
     const onTransition = jest.fn(() => Promise.resolve({ meta: { requestStatus: 'fulfilled' } }));
     await act(async () => {
