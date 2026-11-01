@@ -34,10 +34,32 @@ Neil walked a model on his phone; the PM walked a model and a client on desktop 
 | 11 | Booking calendar / checkout (not yet redesigned) | Big solid-blue calendar; checkout has template leftovers: "Helsinki" / "00100" placeholders, "Apt #", "State", "Location of the listing", "listing owner", "Write description..." placeholders, "Hello Marcus B! You should know that...", em dash in the fee note. Needs the booking/checkout redesign stage. | Should fix (next design stage) |
 | 12 | Client pending screen | "takes a couple of minutes" (unbacked timing). | Nice to have |
 | 13 | Check your inbox | Long email address breaks awkwardly across lines. | Nice to have |
-| 14 | Your profile | Only shoe size shows number spin arrows. | Nice to have |
+| 14 | Your profile | Number spin arrows on focus: a desktop-browser artefact only, not shown on iPhones. | Ignore |
 | 15 | Footer | "Create your profile" shown to clients; social icons still Sharetribe's (already on runbook). | Nice to have |
 | 16 | Account status page | Blank / "Loading your account status" for several seconds on each visit. | Nice to have |
 | 17 | Test data | "Anais P." live with no photo (predates the 3-photo rule); "Jane F." uses what looks like a real celebrity photo. Clean test data before any demo; never seed real people's images. | Housekeeping |
+
+## iPhone SE (375 x 667) walk - 01/11/2026
+Fresh model "Mia C." (verified email FIRST, then built the profile) + client "Ben C." logged in on the same screen size.
+Worked well: slim auth header + form first, role cards, check inbox, verified banner, "Step X of 4" bar, single-column
+profile form, ethnicity dropdown + pills (good tap targets), rates, 2-column portfolio grid, review screen, Pending
+tracker, logged-in homepage nav, sticky "price / Book now" bar, full-screen booking panel, calendar, price breakdown.
+Verify-first route lands correctly on About you (finding 1 only happens when a draft already exists).
+
+| # | Where (SE) | Finding | Severity |
+|---|---|---|---|
+| M1 | About you, city field | Suggestions open below the bottom of the screen (keyboard would hide them entirely on a real phone). Scroll the field up on focus. | Should fix |
+| M2 | App top bar (logged in) | Logo oversized vs the marketing header; status badge jammed against the right edge, no margin. | Should fix |
+| M3 | Mobile menu (old template) | "Your listings" wording; big "Create your profile" button for a model who already has one; no link to account status. | Should fix |
+| M4 | Logged-in homepage (mobile) | No account menu: can't reach status, settings or log out from the homepage. | Should fix |
+| M5 | Search results | One model card per screen (photo fills the viewport); slow to browse/compare. Consider 2-up grid or shorter cards on phones. | Should fix (search design) |
+| M6 | Checkout | ~4.5 screens; payment + billing (US/Finnish template fields) before the shoot details; needs reordering + trimming in the checkout redesign. | Should fix (next design stage) |
+| M7 | All tick boxes (sign-up, review) | Box sits above its label text: shared component alignment bug (same as #3). | Should fix |
+| M8 | Portfolio upload copy | "Drag photos here, or click to upload" on a phone; should be "Tap to add photos" on touch screens. | Nice to have |
+| M9 | Verify-email link | Old template interstitial ("We will need to send you email notifications...") flashes before redirect. | Nice to have |
+| M10 | Log in (mobile) | "Don't have an account? Sign up" and "New here? Create an account" duplicate each other. | Nice to have |
+| M11 | Homepage (logged out) | Two cobalt buttons visible at once (header "Join" + hero "Create your account"). | Nice to have |
+| M12 | Model page | 8 "recoverable" hydration errors in the console (server vs browser render mismatch); "Book now" grey until loaded; name shown twice in the booking panel. | Nice to have (dev check) |
 
 ## Not covered by the PM (needs Neil)
 - Stripe Connect onboarding for a model (bank/ID test details) -> model goes Verified + appears in search.
