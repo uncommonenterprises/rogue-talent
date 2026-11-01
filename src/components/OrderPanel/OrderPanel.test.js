@@ -9,11 +9,15 @@ import {
   createUser,
   fakeIntl,
 } from '../../util/testData';
+import { renderToString } from 'react-dom/server';
+import { hydrateRoot } from 'react-dom/client';
+import { act } from 'react';
 import {
   renderWithProviders as render,
   testingLibrary,
   getRouteConfiguration,
   getHostedConfiguration,
+  TestProvider,
 } from '../../util/testHelpers';
 import { TIME_SLOT_TIME } from '../../util/types';
 
@@ -330,6 +334,42 @@ describe('OrderPanel', () => {
       expect(queryAllByText('OrderPanel.logInToBook')).toHaveLength(0);
     });
     window.matchMedia = originalMatchMedia;
+  });
+
+  it('Booking: no hydration mismatch when the user loads only in the browser', async () => {
+    // The server renders a logged-in page before the current user is loaded; the browser
+    // hydrates with the user already loaded. The panel must match the server HTML first.
+    const listing = createListing('listing-day-hydrate', {
+      title: 'the listing',
+      price: new Money(1000, 'USD'),
+      availabilityPlan: { type: 'availability-plan/day', timezone: 'Etc/UTC', entries: [] },
+      publicData: {
+        listingType: 'rent-bicycles-daily',
+        transactionProcessAlias: 'default-booking/release-1',
+        unitType: 'day',
+      },
+    });
+    const model = createCurrentUser('model', {
+      profile: { displayName: 'Mia C', abbreviatedName: 'MC', publicData: { userType: 'model' } },
+    });
+    const base = { ...commonProps, listing, isOwnListing: false, validListingTypes };
+    const tree = currentUser => (
+      <TestProvider config={config} routeConfiguration={routeConfiguration}>
+        <OrderPanel {...base} isAuthenticated currentUser={currentUser} />
+      </TestProvider>
+    );
+
+    const container = document.createElement('div');
+    container.innerHTML = renderToString(tree(null));
+    document.body.appendChild(container);
+    const recoverable = [];
+    await act(async () => {
+      hydrateRoot(container, tree(model), { onRecoverableError: e => recoverable.push(e) });
+    });
+    expect(recoverable).toHaveLength(0);
+    // After mounting, the real state shows: models can't book
+    expect(container.textContent).toContain('OrderPanel.modelAccountLede');
+    document.body.removeChild(container);
   });
 
   it('Booking: nightly', async () => {

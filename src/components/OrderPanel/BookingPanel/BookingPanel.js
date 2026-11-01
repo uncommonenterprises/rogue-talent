@@ -12,6 +12,7 @@ import {
   PANEL_CHECK_STATUS,
   PANEL_CLOSED,
   PANEL_LOGGED_OUT,
+  PANEL_MODEL_ACCOUNT,
   PANEL_OWN_PROFILE,
   PANEL_PENDING,
   PANEL_VERIFY_IDENTITY,
@@ -182,6 +183,10 @@ const BookingPanel = props => {
       <p className={css.lede}>
         <FormattedMessage id="OrderPanel.closedListingButtonText" />
       </p>
+    ) : panelState === PANEL_MODEL_ACCOUNT ? (
+      <p className={css.lede}>
+        <FormattedMessage id="OrderPanel.modelAccountLede" />
+      </p>
     ) : null;
 
   const barCta = isBookState ? (
@@ -199,6 +204,10 @@ const BookingPanel = props => {
         <FormattedMessage id="BookingDatesForm.selectDates" />
       </button>
     )
+  ) : panelState === PANEL_MODEL_ACCOUNT ? (
+    <span className={css.barNote}>
+      <FormattedMessage id="OrderPanel.modelAccountLede" />
+    </span>
   ) : panelState === PANEL_CLOSED ? null : (
     <StateLink
       panelState={panelState}

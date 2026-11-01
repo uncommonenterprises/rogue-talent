@@ -11,6 +11,7 @@ import {
   ACCOUNT_STATUS_VERIFIED,
   getAccountStatus,
   isAccountStatusFlowEnabled,
+  isModelUser,
 } from '../../util/accountStatus';
 import { clientNeedsIdentityVerification, isClientUser } from '../../util/userHelpers';
 
@@ -21,6 +22,7 @@ export const PANEL_VERIFY_IDENTITY = 'verifyIdentity';
 export const PANEL_CHECK_STATUS = 'checkStatus';
 export const PANEL_OWN_PROFILE = 'ownProfile';
 export const PANEL_CLOSED = 'closed';
+export const PANEL_MODEL_ACCOUNT = 'modelAccount';
 
 /**
  * @param {Object} params
@@ -47,6 +49,10 @@ export const getBookingPanelState = ({
   // A loaded current user also counts as logged in (pages that don't pass isAuthenticated).
   if (!isAuthenticated && !currentUser?.id) {
     return PANEL_LOGGED_OUT;
+  }
+  // A model looking at another model's profile: models can't book (they have no client role).
+  if (isModelUser(currentUser)) {
+    return PANEL_MODEL_ACCOUNT;
   }
   // currentUser is still loading: show the normal booking panel; the server gate decides.
   if (!currentUser?.id || !isClientUser(currentUser)) {

@@ -138,6 +138,8 @@ export class TransactionPanelComponent extends Component {
       timeZone,
       lineItemUnitType,
       shootTypeLabel,
+      requestSentCard,
+      bookingSummaryRows,
     } = this.props;
 
     const hasTransitions = transitions.length > 0;
@@ -223,28 +225,32 @@ export class TransactionPanelComponent extends Component {
               </div>
             ) : null}
 
-            <PanelHeading
-              processName={stateData.processName}
-              processState={stateData.processState}
-              showExtraInfo={allowShowingExtraInfo(stateData.showExtraInfo, transactionPartyInfo)}
-              showPriceOnMobile={showPrice}
-              price={listing?.attributes?.price}
-              intl={intl}
-              deliveryMethod={deliveryMethod}
-              isPendingPayment={!!stateData.isPendingPayment}
-              transactionRole={transactionRole}
-              providerName={authorDisplayName}
-              customerName={customerDisplayName}
-              listingId={listing?.id?.uuid}
-              listingTitle={listingTitle}
-              listingDeleted={listingDeleted}
-            />
+            {/* B07: while a client's request is waiting, the "request sent" card replaces the
+                generic heading, and the agreed details move into the booking summary. */}
+            {requestSentCard || (
+              <PanelHeading
+                processName={stateData.processName}
+                processState={stateData.processState}
+                showExtraInfo={allowShowingExtraInfo(stateData.showExtraInfo, transactionPartyInfo)}
+                showPriceOnMobile={showPrice}
+                price={listing?.attributes?.price}
+                intl={intl}
+                deliveryMethod={deliveryMethod}
+                isPendingPayment={!!stateData.isPendingPayment}
+                transactionRole={transactionRole}
+                providerName={authorDisplayName}
+                customerName={customerDisplayName}
+                listingId={listing?.id?.uuid}
+                listingTitle={listingTitle}
+                listingDeleted={listingDeleted}
+              />
+            )}
 
             {requestQuote}
             {offer}
-            {transactionFieldsComponent}
+            {requestSentCard ? null : transactionFieldsComponent}
             {/* Contracts v1 — image usage licence block (both parties). */}
-            {usageLicence}
+            {requestSentCard ? null : usageLicence}
 
             {/* SAF-11: private-residence safety advisory for the model (advisory,
                 non-blocking, not shown to the client). */}
@@ -253,6 +259,7 @@ export class TransactionPanelComponent extends Component {
             {!isInquiryProcess ? (
               <div className={css.orderDetails}>
                 <div className={css.orderDetailsMobileSection}>
+                  {bookingSummaryRows}
                   {showBreakDown ? (
                     <BreakdownMaybe
                       orderBreakdown={orderBreakdown}
@@ -377,6 +384,7 @@ export class TransactionPanelComponent extends Component {
                   intl={intl}
                 />
                 {showOrderPanel ? orderPanel : null}
+                {bookingSummaryRows}
                 {showBreakDown ? (
                   <BreakdownMaybe
                     className={css.breakdownContainer}

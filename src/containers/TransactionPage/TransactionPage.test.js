@@ -664,6 +664,15 @@ describe('TransactionPage', () => {
         render(<TransactionPageComponent {...props} />);
       });
 
+      // B07: while a booking is Requested, the client sees the "request sent" card (with the
+      // reply-by deadline and the B05 price breakdown) instead of the generic heading.
+      if (tr === 'transition/confirm-payment' && processName === 'default-booking') {
+        expect(screen.getByText('RequestSent.title')).toBeInTheDocument();
+        expect(screen.getByText('RequestSent.lede')).toBeInTheDocument();
+        expect(screen.queryAllByText('PriceBreakdown.total').length).toBeGreaterThan(0);
+        return;
+      }
+
       const state = stateData.processState;
       const txTitle = `TransactionPage.${processName}.${transactionRole}.${state}.title`;
       expect(screen.getByText(txTitle)).toBeInTheDocument();
@@ -998,6 +1007,15 @@ describe('TransactionPage', () => {
       await act(async () => {
         render(<TransactionPageComponent {...props} />);
       });
+
+      // B07: while a booking is Requested, the client sees the "request sent" card (with the
+      // reply-by deadline and the B05 price breakdown) instead of the generic heading.
+      if (tr === 'transition/confirm-payment' && processName === 'default-booking') {
+        expect(screen.getByText('RequestSent.title')).toBeInTheDocument();
+        expect(screen.getByText('RequestSent.lede')).toBeInTheDocument();
+        expect(screen.queryAllByText('PriceBreakdown.total').length).toBeGreaterThan(0);
+        return;
+      }
 
       const state = stateData.processState;
       const txTitle = `TransactionPage.${processName}.${transactionRole}.${state}.title`;

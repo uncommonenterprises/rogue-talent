@@ -74,10 +74,9 @@ export const getErrorMessages = (
   } else if (isAmountTooLowError) {
     initiateOrderErrorMessage = <FormattedMessage id="CheckoutPage.initiateOrderAmountTooLow" />;
   } else if (isTransactionInitiateBookingTimeNotAvailableError(initiateOrderError)) {
-    // If bookings are used, there could be error related to those
-    initiateOrderErrorMessage = (
-      <FormattedMessage id="CheckoutPage.bookingTimeNotAvailableMessage" />
-    );
+    // B06: one message for every "not available" cause (dates just taken included), so a
+    // model's boundaries are never revealed.
+    initiateOrderErrorMessage = <FormattedMessage id="CheckoutPage.bookingUnavailableMessage" />;
   } else if (isTransitionQuantityInfoMissingError(initiateOrderError)) {
     initiateOrderErrorMessage = (
       <FormattedMessage id="CheckoutPage.correctQuantityInformationMissing" />
@@ -128,7 +127,7 @@ export const getErrorMessages = (
     // SAF-14: generic, reason-free "not available" message. Never reveals the boundary.
     speculateErrorMessage = <FormattedMessage id="CheckoutPage.bookingUnavailableMessage" />;
   } else if (isTransactionInitiateBookingTimeNotAvailableError(speculateTransactionError)) {
-    speculateErrorMessage = <FormattedMessage id="CheckoutPage.bookingTimeNotAvailableMessage" />;
+    speculateErrorMessage = <FormattedMessage id="CheckoutPage.bookingUnavailableMessage" />;
   } else if (isTransactionInitiateListingInsufficientStockError(speculateTransactionError)) {
     speculateErrorMessage = <FormattedMessage id="CheckoutPage.notEnoughStockMessage" />;
   } else if (isTransactionZeroPaymentError(speculateTransactionError)) {

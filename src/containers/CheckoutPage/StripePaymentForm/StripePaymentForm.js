@@ -4,7 +4,7 @@
  * It's also handled separately in handleSubmit function.
  */
 import React, { Component } from 'react';
-import { Form as FinalForm } from 'react-final-form';
+import { Field, Form as FinalForm } from 'react-final-form';
 import arrayMutators from 'final-form-arrays';
 import classNames from 'classnames';
 
@@ -18,18 +18,24 @@ import * as validators from '../../../util/validators';
 import {
   Heading,
   Form,
+  Notice,
   PrimaryButton,
   FieldCheckbox,
+  FieldSelect,
   FieldTextInput,
   IconSpinner,
   SavedCardDetails,
   StripePaymentAddress,
   CustomExtendedDataField,
+  ValidationError,
 } from '../../../components';
 
 import ShippingDetails from '../ShippingDetails/ShippingDetails';
+import getCountryCodes from '../../../translations/countryCodes';
+import { SectionHead, ShootDetailsSection } from './BookingCheckoutFields';
 
 import css from './StripePaymentForm.module.css';
+import bookingCss from './BookingCheckout.module.css';
 
 /**
  * Translate a Stripe API error object.
@@ -73,6 +79,9 @@ const stripeElementsOptions = {
     {
       cssSrc: 'https://fonts.googleapis.com/css?family=Inter',
     },
+    {
+      cssSrc: 'https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500',
+    },
   ],
 };
 
@@ -80,6 +89,21 @@ const stripeElementsOptions = {
 // However, its internal width-calculation seems to break if font-size is too big
 // compared to component's own width.
 const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+// Booking checkout (B06): Hanken + design-system ink (--ink-900 / --ink-400). The card field
+// is one line: number, expiry and CVC; the billing postcode is its own field below.
+const bookingCardStyles = {
+  base: {
+    fontFamily: '"Hanken Grotesk", "Helvetica Neue", Arial, sans-serif',
+    fontSize: '16px',
+    fontSmoothing: 'antialiased',
+    lineHeight: '24px',
+    color: '#131417',
+    '::placeholder': {
+      color: '#9A9DA5',
+    },
+  },
+};
+
 const cardStyles = {
   base: {
     fontFamily: '-apple-system, BlinkMacSystemFont, "Inter", Helvetica, Arial, sans-serif',
@@ -104,13 +128,19 @@ const OneTimePaymentWithCardElement = props => {
     label,
     intl,
     marketplaceName,
+    bookingLayout = false,
   } = props;
   const labelText =
     label || intl.formatMessage({ id: 'StripePaymentForm.saveAfterOnetimePayment' });
   return (
     <React.Fragment>
-      <label className={css.paymentLabel} htmlFor={`${formId}-card`}>
-        <FormattedMessage id="StripePaymentForm.paymentCardDetails" />
+      <label
+        className={bookingLayout ? bookingCss.label : css.paymentLabel}
+        htmlFor={`${formId}-card`}
+      >
+        <FormattedMessage
+          id={bookingLayout ? 'BookingCheckout.cardLabel' : 'StripePaymentForm.paymentCardDetails'}
+        />
       </label>
       <div className={cardClasses} id={`${formId}-card`} ref={handleStripeElementRef} />
       {hasCardError ? <span className={css.error}>{error}</span> : null}
@@ -362,12 +392,16 @@ class StripePaymentForm extends Component {
     const elements = this.stripe.elements(stripeElementsOptions);
 
     if (!this.card) {
-      this.card = elements.create('card', { style: cardStyles });
+      const { bookingLayout } = this.props;
+      this.card = elements.create(
+        'card',
+        bookingLayout ? { style: bookingCardStyles, hidePostalCode: true } : { style: cardStyles }
+      );
       this.card.mount(element || this.cardContainer);
       this.card.addEventListener('change', this.handleCardValueChange);
       // EventListener is the only way to simulate breakpoints with Stripe.
       window.addEventListener('resize', () => {
-        if (this.card) {
+        if (this.card && !this.props.bookingLayout) {
           if (window.innerWidth < 768) {
             this.card.update({ style: { base: { fontSize: '14px', lineHeight: '24px' } } });
           } else {
@@ -415,12 +449,39 @@ class StripePaymentForm extends Component {
     }
   }
 
+  scrollToElement(el) {
+    if (el && typeof el.scrollIntoView === 'function') {
+      el.scrollIntoView({ block: 'center' });
+    }
+  }
+
+  // B06: errors appear on send and the page scrolls to the first one.
+  scrollToFirstError(formApi) {
+    if (typeof document === 'undefined' || !formApi) {
+      return;
+    }
+    const { errors = {} } = formApi.getState();
+    const firstName = formApi.getRegisteredFields().find(name => !!errors[name]);
+    if (firstName) {
+      const form = document.getElementById(this.props.formId);
+      const el = form?.querySelector(`[name="${firstName}"]`);
+      this.scrollToElement(el);
+      if (el && typeof el.focus === 'function') {
+        el.focus({ preventScroll: true });
+      }
+    }
+  }
+
   handleCardValueChange(event) {
     const { intl } = this.props;
     const { error, complete } = event;
+    if (complete && this.state.cardMissing) {
+      this.setState({ cardMissing: false });
+    }
 
+    // The booking checkout hides the card's own postcode and asks for it separately.
     const postalCode = event.value.postalCode;
-    if (this.finalFormAPI) {
+    if (this.finalFormAPI && !this.props.bookingLayout) {
       this.finalFormAPI.change('postal', postalCode);
     }
 
@@ -452,6 +513,10 @@ class StripePaymentForm extends Component {
 
     if (inProgress || onetimePaymentNeedsAttention) {
       // Already submitting or card value incomplete/invalid
+      if (onetimePaymentNeedsAttention && !inProgress && this.props.bookingLayout) {
+        this.setState({ cardMissing: true });
+        this.scrollToElement(document.getElementById(`${formId}-card`));
+      }
       return;
     }
 
@@ -499,6 +564,10 @@ class StripePaymentForm extends Component {
       transactionFieldConfigs = [],
       showTransactionFields,
       values,
+      bookingLayout,
+      bookingDatesLabel,
+      bookingDayCountLabel,
+      listingLinkParams,
     } = formRenderProps;
 
     this.finalFormAPI = formApi;
@@ -591,6 +660,239 @@ class StripePaymentForm extends Component {
 
     const showAdditionalInfoHeading =
       showInitialMessageInput || (hasTransactionFieldConfigs && showTransactionFields);
+
+    // Rogue Talent booking checkout (B06): shoot details, then the content licence, then payment
+    // last with the single cobalt action.
+    if (bookingLayout && hasStripeKey) {
+      const countryCodes = getCountryCodes(locale);
+      const cardErrorCode = confirmCardPaymentError?.code;
+      const declineCode = confirmCardPaymentError?.decline_code;
+      const bookingPaymentErrorMessage =
+        cardErrorCode === 'incorrect_zip' || declineCode === 'incorrect_zip'
+          ? intl.formatMessage({ id: 'BookingCheckout.postcodeMismatch' })
+          : cardErrorCode === 'card_declined'
+          ? intl.formatMessage({ id: 'BookingCheckout.cardDeclined' })
+          : paymentErrorMessage;
+      const cardMissing = this.state.cardMissing && onetimePaymentNeedsAttention;
+
+      const onBookingSubmit = e => {
+        const result = handleSubmit(e);
+        const { hasValidationErrors } = formApi.getState();
+        if (hasValidationErrors) {
+          if (billingDetailsNeeded && onetimePaymentNeedsAttention && showOnetimePaymentFields) {
+            this.setState({ cardMissing: true });
+          }
+          this.scrollToFirstError(formApi);
+        }
+        return result;
+      };
+
+      return (
+        <Form
+          id={formId}
+          className={classNames(classes, bookingCss.form)}
+          onSubmit={onBookingSubmit}
+          enforcePagePreloadFor="OrderDetailsPage"
+          noValidate
+        >
+          <ShootDetailsSection
+            formId={formId}
+            modelName={providerDisplayName}
+            datesLabel={bookingDatesLabel}
+            dayCountLabel={bookingDayCountLabel}
+            listingLinkParams={listingLinkParams}
+            transactionFieldsProps={transactionFieldsProps}
+            showTransactionFields={hasTransactionFieldConfigs && showTransactionFields}
+            showInitialMessageInput={showInitialMessageInput}
+            values={values}
+          />
+
+          <section className={bookingCss.section} aria-labelledby={`${formId}-licence`}>
+            <SectionHead
+              number={2}
+              titleId="BookingCheckout.licenceTitle"
+              id={`${formId}-licence`}
+            />
+            {/* Existing licence strings and draft notice: the wording is pending solicitor review. */}
+            <div className={bookingCss.licenceBox}>
+              <p className={bookingCss.draftNotice}>
+                <FormattedMessage id="StripePaymentForm.licenceDraftNotice" />
+              </p>
+              <details className={bookingCss.licenceDetails}>
+                <summary className={bookingCss.licenceSummary}>
+                  <FormattedMessage id="StripePaymentForm.licencePreviewToggle" />
+                </summary>
+                <p className={bookingCss.licenceBody}>
+                  <FormattedMessage id="StripePaymentForm.licenceTermsBody" />
+                </p>
+              </details>
+            </div>
+            <FieldCheckbox
+              className={bookingCss.check}
+              id={`${formId}-licenceAgreement`}
+              name="licenceAgreement"
+              label={intl.formatMessage({ id: 'StripePaymentForm.licenceCheckboxLabel' })}
+              value="agreed"
+              validate={validators.requiredFieldArrayCheckbox(
+                intl.formatMessage({ id: 'StripePaymentForm.licenceRequired' })
+              )}
+            />
+            {/* Tick boxes don't show their own errors: show "Please agree..." on send (B06). */}
+            <Field name="licenceAgreement" subscription={{ touched: true, error: true }}>
+              {({ meta }) => <ValidationError fieldMeta={meta} />}
+            </Field>
+          </section>
+
+          <section className={bookingCss.section} aria-labelledby={`${formId}-payment`}>
+            <SectionHead
+              number={3}
+              titleId="BookingCheckout.paymentTitle"
+              id={`${formId}-payment`}
+            />
+            <Notice icon="lock">
+              <p>
+                <FormattedMessage
+                  id="BookingCheckout.onlyChargedIfAccepts"
+                  values={{ name: providerDisplayName, strong: text => <strong>{text}</strong> }}
+                />
+              </p>
+            </Notice>
+
+            {billingDetailsNeeded && !loadingData ? (
+              <>
+                {hasDefaultPaymentMethod ? (
+                  <PaymentMethodSelector
+                    cardClasses={classNames(cardClasses, bookingCss.cardElement)}
+                    formId={formId}
+                    defaultPaymentMethod={ensuredDefaultPaymentMethod}
+                    changePaymentMethod={this.changePaymentMethod}
+                    handleStripeElementRef={this.handleStripeElementRef}
+                    hasCardError={hasCardError}
+                    error={this.state.error}
+                    paymentMethod={selectedPaymentMethod}
+                    intl={intl}
+                    marketplaceName={marketplaceName}
+                  />
+                ) : (
+                  <OneTimePaymentWithCardElement
+                    cardClasses={classNames(cardClasses, bookingCss.cardElement, {
+                      [bookingCss.cardElementError]: cardMissing,
+                    })}
+                    formId={formId}
+                    handleStripeElementRef={this.handleStripeElementRef}
+                    hasCardError={hasCardError || cardMissing}
+                    error={
+                      cardMissing && !this.state.error
+                        ? intl.formatMessage({ id: 'BookingCheckout.cardRequired' })
+                        : this.state.error
+                    }
+                    label={intl.formatMessage({ id: 'StripePaymentForm.saveAfterOnetimePayment' })}
+                    intl={intl}
+                    marketplaceName={marketplaceName}
+                    bookingLayout
+                  />
+                )}
+
+                {showOnetimePaymentFields ? (
+                  <div className={bookingCss.billing}>
+                    <FieldTextInput
+                      rootClassName={bookingCss.fieldRoot}
+                      type="text"
+                      id={`${formId}.name`}
+                      name="name"
+                      autoComplete="cc-name"
+                      label={intl.formatMessage({ id: 'BookingCheckout.nameOnCard' })}
+                      validate={validators.required(
+                        intl.formatMessage({ id: 'BookingCheckout.nameRequired' })
+                      )}
+                    />
+                    <div className={bookingCss.fieldRow}>
+                      <FieldTextInput
+                        rootClassName={bookingCss.fieldRoot}
+                        type="text"
+                        id={`${formId}.postal`}
+                        name="postal"
+                        autoComplete="postal-code"
+                        label={intl.formatMessage({ id: 'BookingCheckout.postcodeLabel' })}
+                        placeholder={intl.formatMessage({
+                          id: 'BookingCheckout.postcodePlaceholder',
+                        })}
+                        validate={validators.required(
+                          intl.formatMessage({ id: 'BookingCheckout.postcodeRequired' })
+                        )}
+                      />
+                      <FieldSelect
+                        rootClassName={bookingCss.fieldRoot}
+                        id={`${formId}.country`}
+                        name="country"
+                        autoComplete="country"
+                        label={intl.formatMessage({ id: 'BookingCheckout.countryLabel' })}
+                        validate={validators.required(
+                          intl.formatMessage({ id: 'StripePaymentAddress.countryRequired' })
+                        )}
+                      >
+                        {countryCodes.map(c => (
+                          <option key={c.code} value={c.code}>
+                            {c.name}
+                          </option>
+                        ))}
+                      </FieldSelect>
+                    </div>
+                  </div>
+                ) : null}
+              </>
+            ) : loadingData ? (
+              <p className={css.spinner}>
+                <IconSpinner />
+              </p>
+            ) : null}
+
+            <div className={bookingCss.submitBlock}>
+              {hasPaymentErrors ? (
+                <Notice variant="error" role="alert">
+                  <p>{bookingPaymentErrorMessage}</p>
+                </Notice>
+              ) : null}
+              {totalPriceMaybe ? (
+                <div className={bookingCss.submitTotal}>
+                  <span>
+                    <FormattedMessage
+                      id="BookingCheckout.totalChargedIf"
+                      values={{ name: providerDisplayName }}
+                    />
+                  </span>
+                  <b>{totalPriceMaybe}</b>
+                </div>
+              ) : null}
+              <PrimaryButton
+                className={bookingCss.submitButton}
+                type="submit"
+                inProgress={submitInProgress}
+                disabled={submitInProgress}
+              >
+                {billingDetailsNeeded ? (
+                  <FormattedMessage
+                    id="StripePaymentForm.submitPaymentInfo"
+                    values={{ totalPrice: totalPriceMaybe, isBooking: isBookingYesNo }}
+                  />
+                ) : (
+                  <FormattedMessage
+                    id="StripePaymentForm.submitConfirmPaymentInfo"
+                    values={{ totalPrice: totalPriceMaybe, isBooking: isBookingYesNo }}
+                  />
+                )}
+              </PrimaryButton>
+              <p className={bookingCss.finePrint}>
+                <FormattedMessage
+                  id="BookingCheckout.submitFinePrint"
+                  values={{ name: providerDisplayName }}
+                />
+              </p>
+            </div>
+          </section>
+        </Form>
+      );
+    }
 
     return hasStripeKey ? (
       <Form className={classes} onSubmit={handleSubmit} enforcePagePreloadFor="OrderDetailsPage">
