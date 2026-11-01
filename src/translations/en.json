@@ -1306,6 +1306,7 @@
   "OrderPanel.createClientAccount": "Create a client account",
   "OrderPanel.editProfile": "Edit your profile",
   "OrderPanel.logInToBook": "Log in to book",
+  "OrderPanel.modelAccountLede": "Only client accounts can book models.",
   "OrderPanel.loggedOutLede": "Log in or create an account to send {name} a booking request. Clients are reviewed and ID verified before they can book.",
   "OrderPanel.ownProfileLede": "This is your profile, as clients see it. You can't book yourself.",
   "OrderPanel.pendingNotice": "Your account is waiting for approval. You can browse now, and you'll be able to book once we've approved it and you've verified your identity.",

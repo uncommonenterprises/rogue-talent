@@ -9,6 +9,7 @@ import {
   PANEL_CHECK_STATUS,
   PANEL_OWN_PROFILE,
   PANEL_CLOSED,
+  PANEL_MODEL_ACCOUNT,
 } from './bookingPanelState';
 
 const client = ({ metadata = {}, privateData = {} } = {}) =>
@@ -47,6 +48,19 @@ describe('getBookingPanelState (B03 panel states)', () => {
     expect(
       getBookingPanelState({ isAuthenticated: false, currentUser: client(), flagEnabled: false })
     ).toEqual(PANEL_BOOK);
+  });
+
+  it("a model viewing another model's profile cannot book", () => {
+    const model = createCurrentUser('model-1', {
+      profile: { displayName: 'Ava C', abbreviatedName: 'AC', publicData: { userType: 'model' } },
+    });
+    expect(getBookingPanelState({ isAuthenticated: true, currentUser: model })).toEqual(
+      PANEL_MODEL_ACCOUNT
+    );
+    // Their own profile still shows the own-profile panel
+    expect(
+      getBookingPanelState({ isAuthenticated: true, currentUser: model, isOwnListing: true })
+    ).toEqual(PANEL_OWN_PROFILE);
   });
 
   it('shows the booking panel while the user is still loading', () => {

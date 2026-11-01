@@ -436,12 +436,12 @@ const OrderPanel = props => {
   // Rogue Talent model profile (B03/B04): daily bookings use the booking panel (sticky panel on
   // desktop, bottom bar + dates sheet on phones) with its account-aware states.
   if (shouldHaveBookingDates && !showPriceMissing && !showInvalidCurrency) {
-    const panelState = getBookingPanelState({
-      isAuthenticated,
-      currentUser,
-      isOwnListing,
-      isClosed,
-    });
+    // The server renders before the current user is loaded (only the auth flag is known), and
+    // the browser hydrates with the user already loaded. Until mounted, use only what both sides
+    // know, so the first browser render matches the server HTML (no hydration mismatch).
+    const panelState = mounted
+      ? getBookingPanelState({ isAuthenticated, currentUser, isOwnListing, isClosed })
+      : getBookingPanelState({ isAuthenticated, currentUser: null, isClosed });
     const modelName = getModelFirstName(author, listing?.attributes?.title);
     const renderBookingForm = (layout, onDatesChange) =>
       showBookingDatesForm ? (
@@ -451,6 +451,7 @@ const OrderPanel = props => {
           layout={layout}
           modelName={modelName}
           minNoticeKey={publicData?.min_booking_notice}
+          travelFeePolicy={publicData?.travel_fee_policy}
           onDatesChange={onDatesChange}
           dayCountAvailableForBooking={dayCountAvailableForBooking}
           monthlyTimeSlots={monthlyTimeSlots}
