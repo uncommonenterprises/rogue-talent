@@ -337,8 +337,8 @@ describe('OrderPanel', () => {
   });
 
   it('Booking: no hydration mismatch when the user loads only in the browser', async () => {
-    // The server renders a logged-in page before the current user is loaded; the browser
-    // hydrates with the user already loaded. The panel must match the server HTML first.
+    // The server renders logged out (no auth info, no user in the server store); the browser
+    // hydrates with both loaded. The panel must match the server HTML first.
     const listing = createListing('listing-day-hydrate', {
       title: 'the listing',
       price: new Money(1000, 'USD'),
@@ -355,7 +355,7 @@ describe('OrderPanel', () => {
     const base = { ...commonProps, listing, isOwnListing: false, validListingTypes };
     const tree = currentUser => (
       <TestProvider config={config} routeConfiguration={routeConfiguration}>
-        <OrderPanel {...base} isAuthenticated currentUser={currentUser} />
+        <OrderPanel {...base} isAuthenticated={!!currentUser} currentUser={currentUser} />
       </TestProvider>
     );
 

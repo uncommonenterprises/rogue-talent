@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux';
 
 import { useConfiguration } from '../../context/configurationContext';
 import { useIntl } from '../../util/reactIntl';
+import { useMounted } from '../../util/useMounted';
 import { isScrollingDisabled } from '../../ducks/ui.duck';
 import { makeGetListingsByIdSelector } from '../../ducks/marketplaceData.duck';
 import { Page, LayoutSingleColumn, NamedLink, ListingCard } from '../../components';
@@ -21,9 +22,21 @@ const STATS = [
 ];
 
 const STEPS = [
-  { n: '01', title: 'Discover', text: 'Search verified talent by city, category and availability.' },
-  { n: '02', title: 'Book direct', text: 'Agree rates and dates with the model in-platform. No gatekeeper.' },
-  { n: '03', title: 'Shoot & pay', text: 'Secure payments, contracts and releases handled by Rogue.' },
+  {
+    n: '01',
+    title: 'Discover',
+    text: 'Search verified talent by city, category and availability.',
+  },
+  {
+    n: '02',
+    title: 'Book direct',
+    text: 'Agree rates and dates with the model in-platform. No gatekeeper.',
+  },
+  {
+    n: '03',
+    title: 'Shoot & pay',
+    text: 'Secure payments, contracts and releases handled by Rogue.',
+  },
 ];
 
 const TRUST = [
@@ -53,25 +66,28 @@ export const GeneralLandingPage = () => {
   const intl = useIntl();
   const scrollingDisabled = useSelector(isScrollingDisabled);
   // RT-FB-08: logged-in users don't get the "Create your account" calls to action.
-  const isAuthenticated = useSelector(state => !!state.auth?.isAuthenticated);
+  // Waits for hydration: the server renders logged out (see util/useMounted.js).
+  const mounted = useMounted();
+  const isAuthenticatedInStore = useSelector(state => !!state.auth?.isAuthenticated);
+  const isAuthenticated = mounted && isAuthenticatedInStore;
   const marketplaceName = config.marketplaceName;
 
   // Real, published model-profile listings for the "Featured talent" strip
   // (fetched in GeneralLandingPage.duck loadData).
   const getListingsById = useMemo(makeGetListingsByIdSelector, []);
-  const featuredTalentIds = useSelector(
-    state => state.GeneralLandingPage?.featuredTalentIds || []
-  );
+  const featuredTalentIds = useSelector(state => state.GeneralLandingPage?.featuredTalentIds || []);
   const featuredListings = useSelector(state => getListingsById(state, featuredTalentIds));
 
-  const title = intl.formatMessage(
-    { id: 'GeneralLandingPage.schemaTitle' },
-    { marketplaceName }
-  );
+  const title = intl.formatMessage({ id: 'GeneralLandingPage.schemaTitle' }, { marketplaceName });
   const description = intl.formatMessage({ id: 'GeneralLandingPage.schemaDescription' });
 
   return (
-    <Page title={title} description={description} scrollingDisabled={scrollingDisabled} contentType="website">
+    <Page
+      title={title}
+      description={description}
+      scrollingDisabled={scrollingDisabled}
+      contentType="website"
+    >
       <LayoutSingleColumn
         className={css.root}
         mainColumnClassName={css.main}
@@ -85,8 +101,8 @@ export const GeneralLandingPage = () => {
             <div className={css.eyebrowLight}>The model, disrupted</div>
             <h1 className={css.heroTitle}>Models and brands, connected direct.</h1>
             <p className={css.heroIngress}>
-              The marketplace where models and the businesses that book them work together
-              directly - no agents, no middlemen, no cut.
+              The marketplace where models and the businesses that book them work together directly
+              - no agents, no middlemen, no cut.
             </p>
             <div className={css.heroButtons}>
               {isAuthenticated ? null : (
