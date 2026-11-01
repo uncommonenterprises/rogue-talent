@@ -6,14 +6,14 @@ Rogue Talent (roguetalent.co) is a two-sided marketplace for professional models
 ## Architecture
 - **Frontend/server:** This repo — Sharetribe Web Template (React + Express SSR)
 - **Marketplace backend:** Sharetribe Extend — https://console.sharetribe.com/o/ndstealth1/m/ndstealth1-test/
-- **Live dev URL:** https://rogue-talent-production.up.railway.app (Railway, auto-deploys from main)
-  - **⚠️ NAMING TRAP:** the URL says "production" but it points at the **test** marketplace (`ndstealth1-test`, `REACT_APP_ENV=development`). It is NOT a live/production environment. There is currently **no live environment at all**.
+- **Test site URL:** https://test.roguetalent.co (Railway, auto-deploys from main; moved here 01/11/2026). It points at the **test** marketplace (`ndstealth1-test`, `REACT_APP_ENV=development`). There is currently **no live environment at all**; live will be roguetalent.co.
+  - The old Railway address `rogue-talent-production.up.railway.app` still reaches the same test site (fallback only; its "production" name was misleading). Use test.roguetalent.co everywhere.
 - **Payments:** Stripe Connect (GBP)
 - **Maps:** Google Maps (key in env as `REACT_APP_GOOGLE_MAPS_API_KEY`; restrict by HTTP referrer)
 
 ## Environments & agent boundaries — non-negotiable
 - **Write ONLY to the test marketplace `ndstealth1-test`.** Never write to a live/production marketplace (none exists yet — keep this rule so it's already in force the day one does).
-- The Railway URL above is the **test** env despite its name (see the naming trap). "Never touch live" is currently vacuous because there is no live env — that is not a reason to relax the rule.
+- test.roguetalent.co is the **test** env. "Never touch live" is currently vacuous because there is no live env; that is not a reason to relax the rule.
 - When a live environment is created: its credentials stay OUT of the dev environment, no browser automation is ever pointed at it, and any agent (incl. the future PM agent) tests the test env only.
 - This repo is **PUBLIC** — no secret values in any committed file (see Environment variables below).
 
@@ -146,7 +146,7 @@ Marketplace: **`ndstealth1-test`** (the test environment — see the test-only r
 - `src/routeConfiguration.js` — app routing
 
 ## Deployment
-Every push to `main` automatically deploys to Railway. Build takes ~5 minutes. Check https://rogue-talent-production.up.railway.app after pushing.
+Every push to `main` automatically deploys to Railway. Build takes ~5 minutes. Check https://test.roguetalent.co after pushing.
 
 ## GitHub
 Repo: https://github.com/uncommonenterprises/rogue-talent

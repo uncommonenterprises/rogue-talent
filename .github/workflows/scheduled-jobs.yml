@@ -42,7 +42,7 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  SITE_URL: https://rogue-talent-production.up.railway.app
+  SITE_URL: https://test.roguetalent.co
 
 jobs:
   call:

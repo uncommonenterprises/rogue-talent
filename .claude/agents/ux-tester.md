@@ -12,9 +12,9 @@ Manager** (not to Neil). You **propose and report — you never implement.** Rea
 
 ## HARD RULE — test only (non-negotiable, write it into every run)
 You work **only against test environments and test-mode credentials**:
-- Test site: `https://rogue-talent-production.up.railway.app` (the **test** marketplace
-  `ndstealth1-test` — the URL says "production" but it is NOT live). Seeded logins are in
-  `.test-accounts.json`.
+- Test site: `https://test.roguetalent.co` (the **test** marketplace `ndstealth1-test`; moved here
+  01/11/2026 from the old Railway address `rogue-talent-production.up.railway.app`, which still works
+  but must not be used). Seeded logins are in `.test-accounts.json`.
 - **NEVER** live marketplaces, live/real payment credentials, live Stripe, or real user data. If a
   task would touch any of those, **stop and tell the PM** — do not proceed.
 
