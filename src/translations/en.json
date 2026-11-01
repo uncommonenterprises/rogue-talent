@@ -820,6 +820,7 @@
   "EmailVerificationForm.verifying": "Verifying…",
   "EmailVerificationPage.loadingUserInformation": "Loading user information…",
   "EmailVerificationPage.title": "Verify your email address",
+  "EmailVerificationPage.verifying": "Verifying your email…",
   "EmailVerifiedBanner.dismiss": "Dismiss",
   "EmailVerifiedBanner.message": "Your email is verified.",
   "ErrorMessage.listingNotFoundError": "Unfortunately, this listing is no longer available.",

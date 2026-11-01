@@ -116,6 +116,24 @@ describe('EmailVerificationPage - where the user lands after verifying (screen 0
     expect(screen.getByTestId('location').textContent).toBe('/');
   });
 
+  it('shows only "Verifying your email" while the link is being checked (M9)', () => {
+    const unverified = userWithType('model', { emailVerified: false });
+    renderPage({ currentUser: unverified, isVerified: false, emailVerificationInProgress: true });
+    expect(screen.getByRole('status')).toHaveTextContent('EmailVerificationPage.verifying');
+    expect(screen.queryByText('EmailVerificationForm.verifyEmailAddress')).not.toBeInTheDocument();
+  });
+
+  it('falls back to the verify form when the link fails', () => {
+    const unverified = userWithType('model', { emailVerified: false });
+    renderPage({
+      currentUser: unverified,
+      isVerified: false,
+      verificationError: { type: 'error', name: 'Error', status: 409 },
+    });
+    expect(screen.queryByText('EmailVerificationPage.verifying')).not.toBeInTheDocument();
+    expect(screen.getByText('EmailVerificationForm.verifyEmailAddress')).toBeInTheDocument();
+  });
+
   it('redirects a verified client with business details submitted to the search page', () => {
     render(
       <>

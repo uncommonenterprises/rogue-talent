@@ -124,7 +124,12 @@ export const EmailVerificationPageComponent = props => {
     const destination = getVerifiedDestination({ user, profileListing, config });
     return <NamedRedirect name={destination.name} params={destination.params} />;
   }
-  const showLoading = !user.id || (isVerifiedNow && waitForProfileListing);
+  // Run-through M9: while the link's token is being checked (and until the redirect), show a
+  // minimal "Verifying your email…" line instead of the old template screen. The full form only
+  // appears when there's something to act on: no token, or the check failed.
+  const hasToken = !!initialValues.verificationToken;
+  const showVerifying =
+    (hasToken && !verificationError) || (isVerifiedNow && waitForProfileListing);
 
   return (
     <Page
@@ -136,7 +141,11 @@ export const EmailVerificationPageComponent = props => {
     >
       <AuthShell variant="verify">
         <div className={css.content}>
-          {!showLoading ? (
+          {showVerifying ? (
+            <p className={css.loading} role="status">
+              <FormattedMessage id="EmailVerificationPage.verifying" />
+            </p>
+          ) : user.id ? (
             <EmailVerificationForm
               initialValues={initialValues}
               onSubmit={submitVerification}
