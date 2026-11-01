@@ -23,7 +23,9 @@ import {
   FieldCheckbox,
   FieldSelect,
   FieldTextInput,
+  FullLicenceDisclosure,
   IconSpinner,
+  LicenceSummary,
   SavedCardDetails,
   StripePaymentAddress,
   CustomExtendedDataField,
@@ -713,20 +715,18 @@ class StripePaymentForm extends Component {
               titleId="BookingCheckout.licenceTitle"
               id={`${formId}-licence`}
             />
-            {/* Existing licence strings and draft notice: the wording is pending solicitor review. */}
-            <div className={bookingCss.licenceBox}>
-              <p className={bookingCss.draftNotice}>
-                <FormattedMessage id="StripePaymentForm.licenceDraftNotice" />
-              </p>
-              <details className={bookingCss.licenceDetails}>
-                <summary className={bookingCss.licenceSummary}>
-                  <FormattedMessage id="StripePaymentForm.licencePreviewToggle" />
-                </summary>
-                <p className={bookingCss.licenceBody}>
-                  <FormattedMessage id="StripePaymentForm.licenceTermsBody" />
-                </p>
-              </details>
-            </div>
+            <p className={bookingCss.licenceLede}>
+              <FormattedMessage
+                id="BookingCheckout.licenceLede"
+                values={{ name: providerDisplayName }}
+              />
+            </p>
+            {/* LEGAL: plain-English summary, DRAFT pending legal review (kept marked as draft). */}
+            <LicenceSummary
+              audience="client"
+              draftNotice={<FormattedMessage id="StripePaymentForm.licenceDraftNotice" />}
+              fullLicence={<FullLicenceDisclosure />}
+            />
             <FieldCheckbox
               className={bookingCss.check}
               id={`${formId}-licenceAgreement`}
