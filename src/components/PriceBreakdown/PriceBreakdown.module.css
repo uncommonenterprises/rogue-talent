@@ -1,0 +1,60 @@
+/* B05 price breakdown: quiet Hanken rows, the total is the biggest number, in Bricolage. */
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.rows {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+}
+
+.row,
+.rowTotal {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-4);
+  color: var(--text-secondary);
+
+  & dt {
+    min-width: 0;
+  }
+
+  & dd {
+    margin: 0;
+    color: var(--text-primary);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+}
+
+.rowTotal {
+  align-items: baseline;
+  margin-top: var(--space-1);
+  padding-top: var(--space-3);
+  border-top: var(--border-hair) solid var(--border-hairline);
+  font-weight: var(--weight-bold);
+  font-size: var(--text-base);
+  color: var(--text-primary);
+
+  & dd {
+    font-family: var(--font-display);
+    font-weight: var(--weight-extrabold);
+    font-size: var(--text-xl);
+    letter-spacing: var(--tracking-tight);
+  }
+}
+
+.note {
+  margin: 0;
+  padding: var(--space-1) 0 0 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  line-height: 1.5;
+  color: var(--text-muted);
+}

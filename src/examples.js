@@ -69,6 +69,7 @@ import * as Modal from './components/Modal/Modal.example';
 import * as ModalInMobile from './components/ModalInMobile/ModalInMobile.example';
 import * as NamedLink from './components/NamedLink/NamedLink.example';
 import * as OrderBreakdown from './components/OrderBreakdown/OrderBreakdown.example';
+import * as PriceBreakdown from './components/PriceBreakdown/PriceBreakdown.example';
 import * as BookingDatesForm from './components/OrderPanel/BookingDatesForm/BookingDatesForm.example';
 import * as BookingTimeForm from './components/OrderPanel/BookingTimeForm/BookingTimeForm.example';
 import * as BookingFixedDurationForm from './components/OrderPanel/BookingFixedDurationForm/BookingFixedDurationForm.example';
@@ -223,6 +224,7 @@ export {
   ModalInMobile,
   NamedLink,
   OrderBreakdown,
+  PriceBreakdown,
   OrderPanel,
   OutsideClickHandler,
   PageBuilder,

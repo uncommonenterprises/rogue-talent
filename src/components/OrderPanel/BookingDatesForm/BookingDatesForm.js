@@ -19,11 +19,8 @@ import {
 import { LINE_ITEM_DAY, propTypes } from '../../../util/types';
 import { timeSlotsPerDate } from '../../../util/generators';
 import { isInsideMinimumNotice } from '../../../util/modelProfile';
-import { BOOKING_PROCESS_NAME } from '../../../transactions/transaction';
 
-import { Form, PrimaryButton, Notice } from '../../../components';
-
-import EstimatedCustomerBreakdownMaybe from '../EstimatedCustomerBreakdownMaybe';
+import { Form, PrimaryButton, Notice, PriceBreakdown } from '../../../components';
 
 import FetchLineItemsError from '../FetchLineItemsError/FetchLineItemsError.js';
 import FieldBookingDates from './FieldBookingDates';
@@ -464,6 +461,7 @@ export const BookingDatesForm = props => {
     layout = 'popover',
     modelName = '',
     minNoticeKey,
+    travelFeePolicy,
     onDatesChange,
     ...rest
   } = props;
@@ -653,17 +651,14 @@ export const BookingDatesForm = props => {
           </Notice>
         ) : null;
 
+        // B05: the shared price breakdown, estimated from the server's line items.
         const breakdown = showEstimatedBreakdown ? (
-          <div className={css.priceBreakdownContainer}>
-            <EstimatedCustomerBreakdownMaybe
-              breakdownData={breakdownData}
-              lineItems={lineItems}
-              timeZone={timeZone}
-              currency={unitPrice.currency}
-              marketplaceName={marketplaceName}
-              processName={BOOKING_PROCESS_NAME}
-            />
-          </div>
+          <PriceBreakdown
+            className={css.priceBreakdownContainer}
+            lineItems={lineItems}
+            modelName={modelName}
+            travelFeePolicy={travelFeePolicy}
+          />
         ) : null;
 
         const loadError = availabilityLoadError ? (

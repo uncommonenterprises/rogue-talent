@@ -136,6 +136,7 @@ export { default as CustomExtendedDataField } from './CustomExtendedDataField/Cu
 export const CustomExtendedDataSection = loadable(() => import(/* webpackChunkName: "CustomExtendedDataSection" */ './CustomExtendedDataSection/CustomExtendedDataSection'));
 export { default as FileUpload } from './FileUpload/FileUpload'
 export { default as OrderBreakdown } from './OrderBreakdown/OrderBreakdown';
+export { default as PriceBreakdown } from './PriceBreakdown/PriceBreakdown';
 export { default as OrderPanel } from './OrderPanel/OrderPanel';
 export { default as ListingCard } from './ListingCard/ListingCard';
 export { default as Map } from './Map/Map';
