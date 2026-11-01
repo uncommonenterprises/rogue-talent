@@ -17,6 +17,8 @@ only, never chat.
 > business details + account-owner verification all ticked). Stage A resumes at: Synthetic Identity
 > Protection -> TEST-mode secret key + restricted key + Identity webhook -> Railway vars -> PM verifies.
 >
+> **UPDATE 01/11/2026: Stage B PROVISIONED on test.** Connect `account.updated` webhook (Connected accounts, snapshot) + `STRIPE_CONNECT_WEBHOOK_SECRET` (PM-verified: rejects unsigned, 400). `CRON_SECRET` on Railway + GitHub Actions secret. Access control checked: user approval OFF, posting rights unrestricted, listing approval ON (already), **transaction rights restriction kept ON as a second safety net until the human review** (approving a client = set reviewDecision AND grant transaction rights). All 10 existing test users set `reviewDecision: approved`. `REACT_APP_ACCOUNT_STATUS_FLOW_ENABLED=true`. Scheduled jobs run from GitHub Actions (`.github/workflows/scheduled-jobs.yml`: decision emails every 10 min, verify nudge 09:00 UTC); both dry runs OK (`configured: true`; 10 approved emails owed; 3 approved-unverified clients to nudge), schedules enabled. Still open in Stage B: the model 18+ data check + merge of 74e480c9a (held), and the end-to-end walk (Neil's run-through).
+>
 > **UPDATE 30/09:** sign-up redesign stages 1-3 + the Gate A review-decision build are merged (dormant until the flag). support@roguetalent.co now exists (alias of hi@, set up by Neil 30/09). **Stage B deferred by Neil to a later session** - resume at Stage B below.
 >
 > **UPDATE 29/09 later:** Stage A PROVISIONED on test. Synthetic Identity Protection already on; branding
