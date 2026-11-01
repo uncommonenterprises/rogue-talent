@@ -59,11 +59,11 @@
 }
 
 /* Top of the booking panel lines up with the location eyebrow (the head's top padding), not
-   the gallery edge (Neil's B03 change, 01/11/2026). */
+   the gallery edge (Neil's B03 change, 01/11/2026). It sticks just below the sticky topbar. */
 .aside {
   @media (--viewportBooking) {
     position: sticky;
-    top: var(--space-5);
+    top: calc(var(--topbarHeightDesktop) + var(--space-5));
     margin-top: var(--space-5);
   }
 }
