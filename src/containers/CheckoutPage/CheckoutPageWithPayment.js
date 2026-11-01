@@ -21,8 +21,23 @@ import {
   PURCHASE_PROCESS_NAME,
 } from '../../transactions/transaction';
 
+import { formatMoneyCompact } from '../../util/currency';
+import { getModelCity, getModelFirstName } from '../../util/modelProfile';
+import { formatDay, getDailyRange } from '../../util/bookingSummary';
+
 // Import shared components
-import { H3, H4, NamedLink, OrderBreakdown, Page, TopbarSimplified } from '../../components';
+import {
+  H3,
+  H4,
+  NamedLink,
+  Notice,
+  OrderBreakdown,
+  Page,
+  PriceBreakdown,
+  ResponsiveImage,
+  RtIcon,
+  TopbarSimplified,
+} from '../../components';
 
 import {
   bookingDatesMaybe,
@@ -39,11 +54,13 @@ import {
 import { getErrorMessages } from './ErrorMessages';
 
 import StripePaymentForm from './StripePaymentForm/StripePaymentForm';
+import { WhatHappensNext } from './StripePaymentForm/BookingCheckoutFields';
 import DetailsSideCard from './DetailsSideCard';
 import MobileListingImage from './MobileListingImage';
 import MobileOrderBreakdown from './MobileOrderBreakdown';
 
 import css from './CheckoutPage.module.css';
+import bookingCss from './BookingCheckoutPage.module.css';
 
 // Stripe PaymentIntent statuses, where user actions are already completed
 // https://stripe.com/docs/payments/payment-intents/status
@@ -590,6 +607,208 @@ export const CheckoutPageWithPayment = props => {
               <FormattedMessage id="CheckoutPage.incompatibleCurrency" />
             </H4>
           </section>
+        </div>
+      </Page>
+    );
+  }
+
+  // Rogue Talent booking checkout (B06): shoot first, then the licence, then payment.
+  if (isBooking) {
+    const modelName = getModelFirstName(listing?.author, listingTitle);
+    const city = getModelCity(listing?.attributes?.publicData);
+    const travelFeePolicy = listing?.attributes?.publicData?.travel_fee_policy;
+    const listingLinkParams = { id: listing?.id?.uuid, slug: createSlug(listingTitle || '') };
+    const bookingDates = orderData?.bookingDates || {};
+    const range = getDailyRange(
+      tx?.booking?.attributes?.start || bookingDates.bookingStart,
+      tx?.booking?.attributes?.end || bookingDates.bookingEnd
+    );
+    const datesLabel = range
+      ? range.dayCount === 1
+        ? formatDay(intl, range.start, timeZone)
+        : intl.formatMessage(
+            { id: 'BookingDatesForm.summaryRange' },
+            {
+              start: formatDay(intl, range.start, timeZone),
+              end: formatDay(intl, range.lastDay, timeZone),
+            }
+          )
+      : null;
+    const dayCountLabel = range
+      ? intl.formatMessage({ id: 'BookingCheckout.dayCount' }, { dayCount: range.dayCount })
+      : null;
+    const payinTotal = tx?.attributes?.payinTotal;
+    const totalCompact =
+      tx?.attributes?.lineItems?.length > 0 && payinTotal
+        ? formatMoneyCompact(intl, payinTotal)
+        : null;
+    const priceBreakdown =
+      tx.id && tx.attributes.lineItems?.length > 0 ? (
+        <PriceBreakdown
+          lineItems={tx.attributes.lineItems}
+          modelName={modelName}
+          travelFeePolicy={travelFeePolicy}
+        />
+      ) : null;
+    const thumbVariants = firstImage
+      ? Object.keys(firstImage?.attributes?.variants || {}).filter(k =>
+          k.startsWith(config.layout?.listingImage?.variantPrefix || 'listing-card')
+        )
+      : [];
+    const thumb = firstImage ? (
+      <span className={bookingCss.thumb}>
+        <ResponsiveImage
+          rootClassName={bookingCss.thumbImage}
+          alt={listingTitle}
+          image={firstImage}
+          variants={thumbVariants}
+          sizes="56px"
+        />
+      </span>
+    ) : null;
+    const pageErrors = [
+      errorMessages.initiateOrderErrorMessage,
+      errorMessages.listingNotFoundErrorMessage,
+      errorMessages.speculateErrorMessage,
+      errorMessages.retrievePaymentIntentErrorMessage,
+      errorMessages.paymentExpiredMessage,
+    ].filter(Boolean);
+
+    return (
+      <Page title={title} scrollingDisabled={scrollingDisabled} className={bookingCss.pageRoot}>
+        <TopbarSimplified />
+        <div className={bookingCss.page}>
+          <div className={bookingCss.head}>
+            <NamedLink
+              name="ListingPage"
+              params={listingLinkParams}
+              className={bookingCss.backLink}
+            >
+              <RtIcon name="arrowLeft" />
+              <FormattedMessage id="BookingCheckout.backToProfile" />
+            </NamedLink>
+            <h1 className={bookingCss.title}>
+              <FormattedMessage
+                id="BookingCheckout.heading"
+                values={{
+                  name: modelName,
+                  accent: text => <span className={bookingCss.accent}>{text}</span>,
+                }}
+              />
+            </h1>
+            <p className={bookingCss.sub}>
+              <FormattedMessage id="BookingCheckout.sub" values={{ name: modelName }} />
+            </p>
+          </div>
+
+          {/* Phone: a collapsed summary at the top, tap to see the breakdown */}
+          <details className={bookingCss.mobileSummary}>
+            <summary className={bookingCss.mobileSummaryHead}>
+              {thumb}
+              <span className={bookingCss.mobileSummaryMain}>
+                <b>{listingTitle}</b>
+                {datesLabel ? <span>{datesLabel}</span> : null}
+              </span>
+              {totalCompact ? (
+                <span className={bookingCss.mobileSummaryTotal}>{totalCompact}</span>
+              ) : null}
+              <RtIcon name="chevronDown" className={bookingCss.chevron} />
+            </summary>
+            <div className={bookingCss.mobileSummaryBody}>
+              {errorMessages.speculateTransactionErrorMessage}
+              {priceBreakdown}
+              <WhatHappensNext modelName={modelName} />
+            </div>
+          </details>
+
+          <div className={bookingCss.grid}>
+            <main className={bookingCss.main}>
+              {pageErrors.length > 0 ? (
+                <Notice variant="error" role="alert" className={bookingCss.pageError}>
+                  {pageErrors}
+                </Notice>
+              ) : null}
+              {showPaymentForm ? (
+                <StripePaymentForm
+                  className={css.paymentForm}
+                  onSubmit={values =>
+                    handleSubmit(values, process, props, stripe, submitting, setSubmitting)
+                  }
+                  inProgress={submitting}
+                  formId="CheckoutPagePaymentForm"
+                  providerDisplayName={modelName}
+                  showInitialMessageInput={showInitialMessageInput}
+                  initialValues={{ ...initialValuesForStripePayment, country: 'GB' }}
+                  initiateOrderError={initiateOrderError}
+                  confirmCardPaymentError={confirmCardPaymentError}
+                  confirmPaymentError={confirmPaymentError}
+                  hasHandledCardPayment={hasPaymentIntentUserActionsDone}
+                  loadingData={!stripeCustomerFetched}
+                  defaultPaymentMethod={
+                    hasDefaultPaymentMethod(stripeCustomerFetched, currentUser)
+                      ? currentUser.stripeCustomer.defaultPaymentMethod
+                      : null
+                  }
+                  paymentIntent={paymentIntent}
+                  onStripeInitialized={stripe => {
+                    setStripe(stripe);
+                    return onStripeInitialized(stripe, process, props);
+                  }}
+                  askShippingDetails={false}
+                  showPickUpLocation={false}
+                  showLocation={false}
+                  listingLocation={listingLocation}
+                  totalPrice={totalCompact}
+                  locale={config.localization.locale}
+                  stripePublishableKey={config.stripe.publishableKey}
+                  marketplaceName={config.marketplaceName}
+                  isBooking
+                  isFuzzyLocation={config.maps.fuzzy.enabled}
+                  transactionFieldConfigs={transactionFieldConfigs}
+                  showTransactionFields={showTransactionFields}
+                  bookingLayout
+                  bookingDatesLabel={datesLabel}
+                  bookingDayCountLabel={dayCountLabel}
+                  listingLinkParams={listingLinkParams}
+                />
+              ) : null}
+            </main>
+
+            <aside
+              className={bookingCss.aside}
+              aria-label={intl.formatMessage({ id: 'BookingCheckout.summaryLabel' })}
+            >
+              <div className={bookingCss.summaryCard}>
+                <div className={bookingCss.who}>
+                  {thumb}
+                  <div>
+                    <b>{listingTitle}</b>
+                    {city ? <span>{city}</span> : null}
+                  </div>
+                </div>
+                {datesLabel ? (
+                  <dl className={bookingCss.kvRows}>
+                    <div className={bookingCss.kvRow}>
+                      <dt>
+                        <FormattedMessage id="BookingCheckout.datesLabel" />
+                      </dt>
+                      <dd>
+                        {datesLabel}
+                        {dayCountLabel ? <small>{dayCountLabel}</small> : null}
+                      </dd>
+                    </div>
+                  </dl>
+                ) : null}
+                {errorMessages.speculateTransactionErrorMessage}
+                {priceBreakdown}
+                <hr className={bookingCss.hr} />
+                <h2 className={bookingCss.panelTitle}>
+                  <FormattedMessage id="BookingCheckout.nextTitle" />
+                </h2>
+                <WhatHappensNext modelName={modelName} />
+              </div>
+            </aside>
+          </div>
         </div>
       </Page>
     );

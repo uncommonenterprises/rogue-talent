@@ -22,7 +22,9 @@ describe('CheckoutPage error messages: booking gates', () => {
     );
     render(<div>{initiateOrderErrorMessage}</div>, { messages: enMessages });
     expect(
-      screen.getByText(/Your account needs to be approved before you can send a booking request/)
+      screen.getByText(
+        /Your account needs to be approved and your identity verified before you can send a booking request/
+      )
     ).toBeInTheDocument();
     expect(screen.getByText('Check your account status').closest('a')).toHaveAttribute(
       'href',

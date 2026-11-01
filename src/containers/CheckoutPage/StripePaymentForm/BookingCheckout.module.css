@@ -1,0 +1,408 @@
+@import '../../../styles/customMediaQueries.css';
+
+/* ===============================================================
+   BOOKING CHECKOUT (B06) form sections and page. Tokens only.
+   =============================================================== */
+
+.form {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---- Sections ---- */
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-6) 0;
+  border-top: var(--border-hair) solid var(--border-hairline);
+
+  &:first-child {
+    border-top: 0;
+    padding-top: var(--space-3);
+  }
+}
+
+.sectionHead {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.sectionNumber {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--ink-900);
+  color: var(--white);
+  font-family: var(--font-sans);
+  font-weight: var(--weight-bold);
+  font-size: 13px;
+}
+
+.sectionTitle {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-display);
+  font-weight: var(--weight-extrabold);
+  font-size: var(--text-xl);
+  letter-spacing: var(--tracking-tight);
+  line-height: 1.2;
+  color: var(--text-primary);
+}
+
+.lede {
+  margin: calc(var(--space-2) * -1) 0 0 0;
+  padding: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+/* Read-only dates with "Change" */
+.fixedRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--surface-subtle);
+  border-radius: var(--radius-lg);
+}
+
+.fixedRowMain {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.4;
+  font-family: var(--font-sans);
+
+  & b {
+    font-size: var(--text-sm);
+    color: var(--text-primary);
+  }
+
+  & span {
+    font-size: var(--text-xs);
+    color: var(--text-secondary);
+  }
+}
+
+.ghostLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  min-height: 44px;
+  padding: 8px 14px;
+  font-family: var(--font-sans);
+  font-weight: var(--weight-bold);
+  font-size: var(--text-xs);
+  color: var(--accent-600);
+  border-radius: var(--radius-md);
+  text-decoration: none;
+
+  &:hover {
+    background: var(--accent-50);
+    text-decoration: none;
+  }
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--shadow-focus);
+  }
+}
+
+/* ---- Fields ---- */
+.field {
+  margin: 0;
+}
+
+/* Text fields on this page keep their error message in the flow (below the input, above any
+   hint), instead of the app's default absolutely-positioned error. */
+.fieldRoot {
+  margin: 0;
+}
+
+.label {
+  display: block;
+  margin: 0 0 var(--space-2) 0;
+  padding: 0;
+  font-family: var(--font-sans);
+  font-weight: var(--weight-semibold);
+  font-size: var(--text-sm);
+  color: var(--text-primary);
+}
+
+.req {
+  color: var(--accent-500);
+}
+
+.opt {
+  font-weight: var(--weight-regular);
+  color: var(--text-muted);
+}
+
+.hint {
+  margin: var(--space-2) 0 0 0;
+  padding: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+/* Location type: radio rows (52px) */
+.radioList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.radioCard {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 52px;
+  padding: 12px 14px;
+  font-family: var(--font-sans);
+  font-weight: var(--weight-semibold);
+  font-size: var(--text-sm);
+  color: var(--text-primary);
+  border: var(--border-hair) solid var(--ink-200);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: border-color var(--dur-fast) var(--ease-standard);
+
+  &:hover {
+    border-color: var(--ink-400);
+  }
+}
+
+.radioCardChecked {
+  border-color: var(--ink-900);
+  box-shadow: inset 0 0 0 1px var(--ink-900);
+}
+
+.radioInput {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* rt-check--radio */
+.radioCircle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 20px;
+  height: 20px;
+  border: var(--border-key) solid var(--ink-300);
+  border-radius: var(--radius-pill);
+  background: var(--white);
+  transition: background var(--dur-fast), border-color var(--dur-fast);
+
+  &::after {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--white);
+    opacity: 0;
+  }
+}
+
+.radioInput:checked + .radioCircle {
+  background: var(--accent-500);
+  border-color: var(--accent-500);
+
+  &::after {
+    opacity: 1;
+  }
+}
+
+.radioInput:focus-visible + .radioCircle {
+  box-shadow: 0 0 0 3px var(--accent-100);
+}
+
+/* ---- Licence ---- */
+.licenceBox {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border: var(--border-hair) solid var(--border-hairline);
+  border-radius: var(--radius-lg);
+}
+
+.draftNotice {
+  align-self: flex-start;
+  margin: 0;
+  padding: 4px 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  line-height: 1.5;
+  color: var(--ink-600);
+  background: var(--ink-100);
+  border: var(--border-hair) solid var(--ink-200);
+  border-radius: var(--radius-sm);
+}
+
+.licenceDetails {
+  font-family: var(--font-sans);
+}
+
+.licenceSummary {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  font-weight: var(--weight-bold);
+  font-size: var(--text-sm);
+  color: var(--accent-600);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+
+.licenceBody {
+  margin: var(--space-2) 0 0 0;
+  padding: 0;
+  font-size: var(--text-sm);
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+
+.check {
+  min-height: 44px;
+}
+
+/* ---- Payment ---- */
+.cardElement {
+  min-height: 48px;
+  padding: 12px 14px;
+  background: var(--white);
+  border: var(--border-hair) solid var(--ink-200);
+  border-radius: var(--radius-lg);
+}
+
+.cardElementError {
+  border-color: var(--status-error);
+}
+
+.billing {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.fieldRow {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-3);
+
+  @media (min-width: 481px) {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.submitBlock {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding-top: var(--space-5);
+  border-top: var(--border-hair) solid var(--border-hairline);
+}
+
+.submitTotal {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--space-3);
+  font-family: var(--font-sans);
+
+  & span {
+    font-size: var(--text-sm);
+    color: var(--text-muted);
+  }
+
+  & b {
+    font-family: var(--font-display);
+    font-weight: var(--weight-extrabold);
+    font-size: var(--text-2xl);
+    letter-spacing: var(--tracking-tight);
+    white-space: nowrap;
+    color: var(--text-primary);
+  }
+}
+
+.submitButton {
+  min-height: 52px;
+  font-size: var(--text-base);
+}
+
+.finePrint {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  line-height: 1.5;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+/* "What happens next" */
+.nextList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: nx;
+
+  & li {
+    display: flex;
+    gap: var(--space-3);
+    font-family: var(--font-sans);
+    font-size: var(--text-sm);
+    line-height: 1.5;
+    color: var(--text-secondary);
+    counter-increment: nx;
+
+    &::before {
+      content: counter(nx);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex: none;
+      width: 22px;
+      height: 22px;
+      margin-top: 1px;
+      border: var(--border-key) solid var(--ink-300);
+      border-radius: 50%;
+      font-weight: var(--weight-bold);
+      font-size: 11px;
+      color: var(--ink-600);
+    }
+  }
+
+  & strong {
+    font-weight: var(--weight-semibold);
+    color: var(--text-primary);
+  }
+}

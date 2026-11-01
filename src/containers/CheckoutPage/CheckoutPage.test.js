@@ -202,30 +202,35 @@ describe('CheckoutPage', () => {
     };
     render(<CheckoutPageWithPayment {...props} />);
 
-    const bookingTitle = 'CheckoutPage.default-booking.title';
-    expect(screen.getByRole('heading', { name: bookingTitle })).toBeInTheDocument();
-    const orderBreakdownTitle = 'CheckoutPage.default-booking.orderBreakdown';
-    expect(screen.getByRole('heading', { name: orderBreakdownTitle })).toBeInTheDocument();
-
-    // These are rendered twice (mobile & desktop)
-    expect(screen.getAllByText('OrderBreakdown.baseUnitQuantity')).toHaveLength(2);
-    expect(screen.queryAllByText('OrderBreakdown.shippingFee')).toHaveLength(0);
-    expect(screen.getAllByText('OrderBreakdown.total')).toHaveLength(2);
+    // B06: "Request to book {name}." with shoot details, licence and payment sections, in that order
+    expect(screen.getByRole('heading', { name: 'BookingCheckout.heading' })).toBeInTheDocument();
+    const sectionTitles = screen
+      .getAllByRole('heading', { level: 2 })
+      .map(h => h.textContent)
+      .filter(t => t.startsWith('BookingCheckout.'));
+    expect(sectionTitles).toEqual([
+      'BookingCheckout.shootTitle',
+      'BookingCheckout.licenceTitle',
+      'BookingCheckout.paymentTitle',
+      'BookingCheckout.nextTitle',
+    ]);
 
     const getTextbox = name => screen.getByRole('textbox', { name });
-
-    const paymentHeading = 'StripePaymentForm.paymentHeading';
-    expect(screen.getByRole('heading', { name: paymentHeading })).toBeInTheDocument();
-
-    const billingDetails = 'StripePaymentForm.billingDetails';
-    expect(screen.getByRole('heading', { name: billingDetails })).toBeInTheDocument();
-    expect(getTextbox('StripePaymentForm.billingDetailsNameLabel')).toBeInTheDocument();
-    expect(getTextbox('StripePaymentAddress.addressLine1Label')).toBeInTheDocument();
-    expect(getTextbox('StripePaymentAddress.addressLine2Label')).toBeInTheDocument();
-    expect(getTextbox('StripePaymentAddress.postalCodeLabel')).toBeInTheDocument();
-    expect(getTextbox('StripePaymentAddress.cityLabel')).toBeInTheDocument();
-    expect(getTextbox('StripePaymentAddress.stateLabel')).toBeInTheDocument();
-    expect(getTextbox('StripePaymentForm.messageLabel')).toBeInTheDocument();
+    // Minimal UK billing (open question 4): name on card, billing postcode, country
+    expect(getTextbox('BookingCheckout.nameOnCard')).toBeInTheDocument();
+    expect(getTextbox('BookingCheckout.postcodeLabel')).toBeInTheDocument();
+    expect(screen.getByRole('combobox', { name: 'BookingCheckout.countryLabel' })).toHaveValue(
+      'GB'
+    );
+    // Template leftovers are gone
+    expect(screen.queryByText('StripePaymentAddress.addressLine1Label')).not.toBeInTheDocument();
+    expect(screen.queryByText('StripePaymentAddress.addressLine2Label')).not.toBeInTheDocument();
+    expect(screen.queryByText('StripePaymentAddress.cityLabel')).not.toBeInTheDocument();
+    expect(screen.queryByText('StripePaymentAddress.stateLabel')).not.toBeInTheDocument();
+    expect(screen.queryByText('StripePaymentForm.locationDetailsTitle')).not.toBeInTheDocument();
+    expect(screen.queryByText('StripePaymentForm.messageHeading')).not.toBeInTheDocument();
+    // The card is only charged if the model accepts
+    expect(screen.getByText('BookingCheckout.onlyChargedIfAccepts')).toBeInTheDocument();
 
     expect(
       screen.getByRole('button', { name: 'StripePaymentForm.submitPaymentInfo' })

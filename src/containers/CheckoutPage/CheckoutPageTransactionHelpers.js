@@ -39,6 +39,7 @@ export const bookingDatesMaybe = bookingDates => {
  * Construct billing details (JSON-like object) for the Stripe API
  *
  * @param {Object} formValues object containing name, addressLine1, addressLine2, postal, city, state, country
+ *   (the booking checkout sends only name, postal and country)
  * @param {Object} currentUser
  * @returns Object that contains name, email and potentially address data for the Stripe API
  */
@@ -49,6 +50,9 @@ export const getBillingDetails = (formValues, currentUser) => {
   // However, let's not assume that <StripePaymentAddress> data is among formValues.
   // Read more about this from Stripe's docs
   // https://stripe.com/docs/stripe-js/reference#stripe-handle-card-payment-no-element
+  // Rogue Talent booking checkout (B06, open question 4) asks only for the billing postcode and
+  // country. Stripe accepts a partial address: the postcode is what the card issuer checks (AVS).
+  const postalOnly = (postal || '').trim();
   const addressMaybe =
     addressLine1 && postal
       ? {
@@ -59,6 +63,13 @@ export const getBillingDetails = (formValues, currentUser) => {
             line2: addressLine2,
             postal_code: postal,
             state: state,
+          },
+        }
+      : postalOnly || country
+      ? {
+          address: {
+            ...(postalOnly ? { postal_code: postalOnly.toUpperCase() } : {}),
+            ...(country ? { country } : {}),
           },
         }
       : {};
