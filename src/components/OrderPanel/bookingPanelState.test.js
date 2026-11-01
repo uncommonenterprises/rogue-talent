@@ -43,6 +43,12 @@ describe('getBookingPanelState (B03 panel states)', () => {
     expect(getBookingPanelState({ isAuthenticated: false })).toEqual(PANEL_LOGGED_OUT);
   });
 
+  it('a loaded user counts as logged in even without isAuthenticated', () => {
+    expect(
+      getBookingPanelState({ isAuthenticated: false, currentUser: client(), flagEnabled: false })
+    ).toEqual(PANEL_BOOK);
+  });
+
   it('shows the booking panel while the user is still loading', () => {
     expect(getBookingPanelState({ isAuthenticated: true, currentUser: null })).toEqual(PANEL_BOOK);
   });

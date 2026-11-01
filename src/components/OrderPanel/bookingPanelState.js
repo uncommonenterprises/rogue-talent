@@ -44,7 +44,8 @@ export const getBookingPanelState = ({
   if (isClosed) {
     return PANEL_CLOSED;
   }
-  if (!isAuthenticated) {
+  // A loaded current user also counts as logged in (pages that don't pass isAuthenticated).
+  if (!isAuthenticated && !currentUser?.id) {
     return PANEL_LOGGED_OUT;
   }
   // currentUser is still loading: show the normal booking panel; the server gate decides.
