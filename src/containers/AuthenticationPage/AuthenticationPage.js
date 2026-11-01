@@ -76,6 +76,23 @@ const getShellVariant = ({ showEmailVerification, isLogin, userType }) => {
   return ['model', 'client'].includes(userType) ? userType : 'join';
 };
 
+// "Check your inbox" (run-through 01/11/2026, finding 13): the address sits on its own line, as
+// two units (the part before the @, then "@domain") that each wrap whole, so a long address never
+// breaks at a hyphen in the middle of its first part. A part only breaks inside itself if it is
+// wider than the screen.
+const EmailAddress = ({ email }) => {
+  const address = email || '';
+  const at = address.lastIndexOf('@');
+  const localPart = at > 0 ? address.slice(0, at) : address;
+  const domainPart = at > 0 ? address.slice(at) : '';
+  return (
+    <span className={css.email}>
+      <span className={css.emailPart}>{localPart}</span>
+      {domainPart ? <span className={css.emailPart}>{domainPart}</span> : null}
+    </span>
+  );
+};
+
 // The "Already have an account? Log in" / "Don't have an account? Sign up" line under a form.
 const FormFootPrompt = props => {
   const { messageId, linkMessageId, linkName, linkParams, linkTo } = props;
@@ -541,7 +558,7 @@ export const AuthenticationPageComponent = props => {
         {showEmailVerification ? (
           <EmailVerificationInfo
             name={user.attributes.profile.firstName}
-            email={<span className={css.email}>{user.attributes.email}</span>}
+            email={<EmailAddress email={user.attributes.email} />}
             isModel={isModel}
             closeLinkName={isModel ? 'NewListingPage' : 'SearchPage'}
             onResendVerificationEmail={onResendVerificationEmail}

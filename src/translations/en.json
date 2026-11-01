@@ -123,7 +123,7 @@
   "AuthenticationPage.termsAndConditionsPrivacyLinkText": "Privacy Policy",
   "AuthenticationPage.termsAndConditionsTermsLinkText": "Terms of Service",
   "AuthenticationPage.verifyEmailClose": "LATER",
-  "AuthenticationPage.verifyEmailText": "We've sent a verification link to {email}. Click it to confirm your email.",
+  "AuthenticationPage.verifyEmailText": "We've sent a verification link to {email} Click it to confirm your email.",
   "AuthenticationPage.verifyEmailClientCta": "Browse models",
   "AuthenticationPage.verifyEmailClientNote": "You'll need to verify your email before you can send a booking request.",
   "AuthenticationPage.verifyEmailTitle": "Check your inbox, {name}",
