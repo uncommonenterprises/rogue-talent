@@ -1,0 +1,608 @@
+@import '../../../styles/customMediaQueries.css';
+
+/* ===============================================================
+   MODEL PROFILE (B03). Tokens only; rt-* components rebuilt here.
+   =============================================================== */
+
+/* ---- Page layout ---- */
+.pageRoot {
+  background-color: var(--surface-page);
+}
+
+.page {
+  width: 100%;
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: 0 var(--space-4);
+
+  /* Room for the fixed phone booking bar */
+  @media (--viewportBelowBooking) {
+    padding-bottom: 96px;
+  }
+
+  @media (--viewportBooking) {
+    padding: 0 var(--space-5);
+  }
+}
+
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 44px;
+  font-family: var(--font-sans);
+  font-weight: var(--weight-semibold);
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  text-decoration: none;
+
+  &:hover {
+    color: var(--text-primary);
+    text-decoration: none;
+  }
+}
+
+.grid {
+  display: block;
+  padding-bottom: var(--space-8);
+
+  @media (--viewportBooking) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 380px;
+    gap: var(--space-8);
+    align-items: start;
+  }
+}
+
+.main {
+  min-width: 0;
+}
+
+/* Top of the booking panel lines up with the location eyebrow (the head's top padding), not
+   the gallery edge (Neil's B03 change, 01/11/2026). */
+.aside {
+  @media (--viewportBooking) {
+    position: sticky;
+    top: var(--space-5);
+    margin-top: var(--space-5);
+  }
+}
+
+/* ---- Gallery ---- */
+.gallery {
+  position: relative;
+  margin: 0 calc(var(--space-4) * -1);
+
+  @media (--viewportBooking) {
+    margin: 0;
+  }
+}
+
+.galleryTrack {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  @media (--viewportBooking) {
+    display: none;
+  }
+}
+
+.galleryItem {
+  flex: 0 0 100%;
+  scroll-snap-align: start;
+  aspect-ratio: 4 / 5;
+  background: var(--ink-100);
+}
+
+.galleryImage {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.galleryCount {
+  position: absolute;
+  right: var(--space-3);
+  bottom: var(--space-3);
+  padding: 4px 10px;
+  font-family: var(--font-sans);
+  font-weight: var(--weight-bold);
+  font-size: var(--text-xs);
+  color: var(--white);
+  background: rgba(10, 10, 11, 0.7);
+  border-radius: var(--radius-pill);
+
+  @media (--viewportBooking) {
+    display: none;
+  }
+}
+
+.galleryMosaic {
+  display: none;
+
+  @media (--viewportBooking) {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+    gap: var(--space-2);
+    height: 520px;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    cursor: pointer;
+  }
+}
+
+.mosaicBig,
+.mosaicCell {
+  min-height: 0;
+  background: var(--ink-100);
+  overflow: hidden;
+}
+
+.mosaicBig {
+  grid-column: 1 / span 2;
+  grid-row: 1 / span 2;
+}
+
+/* Fewer than five photos: let the photos fill the mosaic instead of leaving gaps */
+.galleryMosaic[data-count='1'] .mosaicBig {
+  grid-column: 1 / span 4;
+}
+.galleryMosaic[data-count='2'] .mosaicCell {
+  grid-column: 3 / span 2;
+  grid-row: 1 / span 2;
+}
+.galleryMosaic[data-count='3'] .mosaicCell {
+  grid-column: span 2;
+}
+.galleryMosaic[data-count='4'] .mosaicCell:nth-child(2) {
+  grid-column: span 2;
+}
+
+.galleryAll {
+  display: none;
+
+  @media (--viewportBooking) {
+    position: absolute;
+    right: var(--space-4);
+    bottom: var(--space-4);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: 8px 14px;
+    margin: 0;
+    min-height: 36px;
+    font-family: var(--font-sans);
+    font-weight: var(--weight-bold);
+    font-size: var(--text-xs);
+    line-height: 1;
+    color: var(--ink-900);
+    background: var(--white);
+    border: var(--border-key) solid var(--ink-900);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+
+    &:hover {
+      background: var(--ink-50);
+    }
+    &:focus {
+      outline: none;
+    }
+    &:focus-visible {
+      box-shadow: var(--shadow-focus);
+    }
+  }
+}
+
+.carouselModalScrollLayer {
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(10, 10, 11, 0.92);
+}
+
+.carouselModalContainer {
+  width: 100%;
+  height: 100%;
+}
+
+/* ---- Head ---- */
+.head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-5) 0;
+  border-bottom: var(--border-hair) solid var(--border-hairline);
+}
+
+.eyebrow {
+  font-family: var(--font-sans);
+  font-weight: var(--weight-bold);
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.name {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-display);
+  font-weight: var(--weight-extrabold);
+  font-size: var(--text-3xl);
+  letter-spacing: var(--tracking-tighter);
+  line-height: var(--leading-tight);
+  color: var(--text-primary);
+  overflow-wrap: anywhere;
+
+  @media (--viewportBooking) {
+    font-size: var(--text-4xl);
+  }
+}
+
+.ratingLine {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+
+  & strong {
+    color: var(--text-primary);
+  }
+}
+
+.ratingStar {
+  width: 16px;
+  height: 16px;
+  color: var(--ink-900);
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  font-family: var(--font-sans);
+  font-weight: var(--weight-semibold);
+  font-size: var(--text-xs);
+  letter-spacing: 0.01em;
+  color: var(--ink-700);
+  background: var(--ink-100);
+  border-radius: var(--radius-pill);
+}
+
+/* ---- Sections ---- */
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-6) 0;
+  border-bottom: var(--border-hair) solid var(--border-hairline);
+
+  &:last-child {
+    border-bottom: 0;
+  }
+}
+
+.sectionTitle {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-display);
+  font-weight: var(--weight-extrabold);
+  font-size: var(--text-xl);
+  letter-spacing: var(--tracking-tight);
+  line-height: 1.2;
+  color: var(--text-primary);
+}
+
+.subTitle {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-sans);
+  font-weight: var(--weight-bold);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  line-height: 1.4;
+  color: var(--text-muted);
+}
+
+.facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4) var(--space-5);
+  margin: 0;
+
+  @media (--viewportCompactGrid) {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.fact {
+  min-width: 0;
+
+  & dt {
+    font-family: var(--font-sans);
+    font-weight: var(--weight-bold);
+    font-size: var(--text-2xs);
+    letter-spacing: var(--tracking-wider);
+    text-transform: uppercase;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+
+  & dd {
+    margin: 0;
+    font-family: var(--font-sans);
+    font-weight: var(--weight-semibold);
+    font-size: var(--text-base);
+    color: var(--text-primary);
+    overflow-wrap: anywhere;
+  }
+}
+
+.links {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+
+  & a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    color: var(--accent-600);
+  }
+}
+
+.smallMuted {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.errorText {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  color: var(--status-error);
+}
+
+/* Rates */
+.rateGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-3);
+
+  @media (min-width: 481px) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.rateCell,
+.rateCellMain {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--space-4);
+  border: var(--border-hair) solid var(--border-hairline);
+  border-radius: var(--radius-lg);
+}
+
+/* The day rate is the one bookings use: outlined in ink */
+.rateCellMain {
+  border: var(--border-key) solid var(--ink-900);
+}
+
+.rateLabel {
+  font-family: var(--font-sans);
+  font-weight: var(--weight-bold);
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.rateAmount {
+  font-family: var(--font-display);
+  font-weight: var(--weight-extrabold);
+  font-size: var(--text-2xl);
+  letter-spacing: var(--tracking-tight);
+  line-height: 1.1;
+  color: var(--text-primary);
+}
+
+.rateSub {
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+}
+
+/* Travel and notice */
+.kvRows {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+}
+
+.kvRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--space-4);
+  padding: var(--space-3) 0;
+  border-top: var(--border-hair) solid var(--border-subtle);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+
+  &:first-child {
+    border-top: 0;
+  }
+
+  & dt {
+    flex: none;
+    max-width: 50%;
+    color: var(--text-secondary);
+  }
+
+  & dd {
+    min-width: 0;
+    margin: 0;
+    font-weight: var(--weight-semibold);
+    text-align: right;
+    color: var(--text-primary);
+  }
+
+  & dd small {
+    display: block;
+    font-weight: var(--weight-regular);
+    font-size: var(--text-xs);
+    line-height: 1.5;
+    color: var(--text-muted);
+  }
+}
+
+/* Location */
+.trustLine {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  line-height: 1.5;
+  color: var(--text-secondary);
+
+  & strong {
+    color: var(--text-primary);
+  }
+}
+
+.trustIcon {
+  margin-top: 2px;
+  color: var(--ink-900);
+}
+
+/* Reviews */
+.reviewSummary {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-5);
+}
+
+.reviewScore {
+  font-family: var(--font-display);
+  font-weight: var(--weight-extrabold);
+  font-size: var(--text-3xl);
+  letter-spacing: var(--tracking-tighter);
+  line-height: 1;
+  color: var(--text-primary);
+}
+
+.reviewSummaryText {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.stars {
+  display: inline-flex;
+  gap: 2px;
+}
+
+.starOn,
+.starOff {
+  width: 16px;
+  height: 16px;
+}
+.starOn {
+  color: var(--ink-900);
+}
+.starOff {
+  color: var(--ink-300);
+}
+
+.review {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-4) 0;
+  border-top: var(--border-hair) solid var(--border-subtle);
+}
+
+.reviewMeta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+}
+
+.reviewAvatar {
+  width: 32px;
+  height: 32px;
+  flex: none;
+}
+
+.reviewDate {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+
+.reviewText {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+
+/* Checked before going live */
+.checkedList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  & li {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-3);
+    font-family: var(--font-sans);
+    font-size: var(--text-sm);
+    line-height: 1.5;
+    color: var(--text-secondary);
+  }
+
+  & strong {
+    font-weight: var(--weight-semibold);
+    color: var(--text-primary);
+  }
+}
+
+.checkedIcon {
+  margin-top: 2px;
+  color: var(--ink-900);
+}
