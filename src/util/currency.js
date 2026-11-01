@@ -256,6 +256,32 @@ export const formatMoney = (intl, value) => {
 };
 
 /**
+ * Format money, showing pence only when they are needed: £450.00 -> "£450", £450.50 -> "£450.50".
+ * Used on the booking journey (search cards, model profile, booking panel and price breakdown),
+ * where whole-pound amounts read more cleanly without ".00".
+ *
+ * @param {Object} intl
+ * @param {Money} value
+ * @return {String} formatted money value
+ */
+export const formatMoneyCompact = (intl, value) => {
+  if (!(value instanceof Money)) {
+    throw new Error('Value must be a Money type');
+  }
+  const divisor = unitDivisor(value.currency);
+  const hasPence = new Decimal(value.amount).mod(divisor).toNumber() !== 0;
+  if (hasPence) {
+    return formatMoney(intl, value);
+  }
+  const numberFormatOptions = {
+    ...getCurrencyFormatting(value.currency, {}),
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  };
+  return intl.formatNumber(convertMoneyToNumber(value), numberFormatOptions);
+};
+
+/**
  * Format the given major-unit string value as currency. E.g. "10" -> "$10".
  *
  * NOTE: This function should not be used with listing prices or other Money type.

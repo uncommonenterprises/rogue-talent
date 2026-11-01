@@ -11,6 +11,7 @@ import {
   ensureSeparator,
   truncateToSubUnitPrecision,
   formatMoney,
+  formatMoneyCompact,
 } from './currency';
 
 const { Money } = sdkTypes;
@@ -246,5 +247,24 @@ describe('currency utils', () => {
     // No test for that actual formatting for now. It depends on the
     // locale, and it doesn't really make sense to test the fake intl
     // implementation in the tests.
+  });
+
+  describe('formatMoneyCompact', () => {
+    // A minimal intl stand-in backed by the platform's real Intl, so the output is checked.
+    const intl = { formatNumber: (v, o) => new Intl.NumberFormat('en-GB', o).format(v) };
+
+    it('complains about incorrect value type', () => {
+      expect(() => formatMoneyCompact(intl, 450)).toThrow('Value must be a Money type');
+    });
+    it('drops ".00" on whole pounds', () => {
+      expect(formatMoneyCompact(intl, new Money(45000, 'GBP'))).toEqual('£450');
+      expect(formatMoneyCompact(intl, new Money(103500, 'GBP'))).toEqual('£1,035');
+      expect(formatMoneyCompact(intl, new Money(0, 'GBP'))).toEqual('£0');
+    });
+    it('keeps pence when they are needed', () => {
+      expect(formatMoneyCompact(intl, new Money(45050, 'GBP'))).toEqual('£450.50');
+      expect(formatMoneyCompact(intl, new Money(7550, 'GBP'))).toEqual('£75.50');
+      expect(formatMoneyCompact(intl, new Money(13501, 'GBP'))).toEqual('£135.01');
+    });
   });
 });
