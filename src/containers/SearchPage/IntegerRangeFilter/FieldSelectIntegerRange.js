@@ -76,6 +76,8 @@ const RangeInput = props => {
     initialValues,
     intl,
     getLabelForRangeInput,
+    rangeLabels,
+    rangePrefix,
   } = props;
   const { value: values = {}, onChange, name } = input;
 
@@ -194,6 +196,57 @@ const RangeInput = props => {
   const classes = isInSideBar ? css.formWrapper : null;
 
   const validHandles = getValidHandles(values, fieldValues, defaultMinValue, defaultMaxValue);
+
+  // Sidebar / phone sheet (B02): two labelled Min and Max fields, no slider (its small handles
+  // are hard to hit on a phone). The popup layout keeps the template's inputs + slider.
+  if (isInSideBar) {
+    const fieldId = `${name}-range`;
+    const inputWithPrefix = (side, inputProps) => (
+      <div className={css.rangeField}>
+        <label className={css.rangeLabel} htmlFor={`${fieldId}-${side}`}>
+          {rangeLabels?.[side] || side}
+        </label>
+        <div className={rangePrefix ? css.inputPrefix : null}>
+          {rangePrefix ? (
+            <span className={css.prefix} aria-hidden="true">
+              {rangePrefix}
+            </span>
+          ) : null}
+          <input id={`${fieldId}-${side}`} {...inputProps} />
+        </div>
+      </div>
+    );
+    return (
+      <div className={css.rangeRow}>
+        {inputWithPrefix('min', {
+          className: classNames(css.rangeInput, { [css.invalidInput]: isMinInvalid }),
+          inputMode: 'numeric',
+          pattern: '\\d*',
+          name: `${name}_min`,
+          min: defaultMinValue,
+          max: defaultMaxValue,
+          placeholder: defaultMinValue,
+          value: fieldValues.minValue,
+          onChange: handleMinValueChange,
+          onBlur: handleMinValueBlur,
+          'aria-invalid': isMinInvalid,
+        })}
+        {inputWithPrefix('max', {
+          className: classNames(css.rangeInput, { [css.invalidInput]: isMaxInvalid }),
+          inputMode: 'numeric',
+          pattern: '\\d*',
+          name: `${name}_max`,
+          min: defaultMinValue,
+          max: defaultMaxValue,
+          placeholder: defaultMaxValue,
+          value: fieldValues.maxValue,
+          onChange: handleMaxValueChange,
+          onBlur: handleMaxValueBlur,
+          'aria-invalid': isMaxInvalid,
+        })}
+      </div>
+    );
+  }
 
   return (
     <div className={classes}>

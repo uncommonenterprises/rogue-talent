@@ -293,6 +293,8 @@ export const listingFields = [
       showFilter: true,
       group: 'primary',
       label: 'Ethnicity',
+      // Match any of the chosen values (B02: "Shows models who do any of the categories you pick").
+      searchMode: 'has_any',
     },
     showConfig: {
       label: 'Ethnicity',
@@ -367,6 +369,8 @@ export const listingFields = [
       showFilter: true,
       group: 'primary',
       label: 'Modelling categories',
+      // Match any of the chosen values (B02: "Shows models who do any of the categories you pick").
+      searchMode: 'has_any',
     },
     showConfig: {
       label: 'Modelling categories',

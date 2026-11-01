@@ -1,133 +1,82 @@
 @import '../../../styles/customMediaQueries.css';
 
+/* B01/B02 filter group: hairline above, a 52px header row (label, count badge, chevron),
+   the options below. Same markup in the phone sheet and the desktop sidebar. */
 .root {
   position: relative;
-  padding-top: var(--space-5);
-  padding-bottom: var(--space-4);
-  /* Design-system hairline divider between filter groups */
-  border-bottom: var(--border-hair) solid var(--border-subtle);
-
-  @media (--viewportMedium) {
-    padding-top: var(--space-4);
-    padding-bottom: var(--space-3);
-    border-bottom: var(--border-hair) solid var(--border-subtle);
-  }
+  border-top: var(--border-hair) solid var(--border-hairline);
 }
 
 .filterHeader {
-  line-height: 24px;
+  display: block;
 }
 
 .labelButton {
-  /* Override button styles */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
   width: 100%;
-  outline: none;
-  line-height: 24px;
-  text-align: left;
-  border: none;
+  min-height: 52px;
   padding: 0;
+  margin: 0;
+  border: 0;
+  background: transparent;
+  text-align: left;
   cursor: pointer;
-
-  &:focus,
-  &:hover {
-    color: var(--text-primary);
-  }
 
   &:focus {
-    & .label,
-    & .label * {
-      color: var(--text-primary);
-    }
+    outline: none;
+  }
+
+  &:focus-visible {
+    box-shadow: var(--shadow-focus);
+    border-radius: var(--radius-md);
   }
 }
 
-.labelButtonContent {
-  display: inline-block;
-  width: 100%;
-
-  &:hover {
-    color: var(--text-primary);
-
-    & * {
-      color: var(--text-primary);
-      stroke: var(--text-primary);
-    }
-  }
-}
-
-.labelWrapper {
-  display: inline-block;
-  max-width: calc(100% - 16px);
-}
-
-.label,
-.labelSelected {
-  composes: marketplaceSmallFontStyles from global;
-  font-weight: var(--fontWeightBold);
-
-  /* Baseline adjustment for label text */
-  margin-top: 0;
-  margin-bottom: var(--space-3);
-
-  @media (--viewportMedium) {
-    margin-bottom: var(--space-2);
-  }
-}
-
-/* Group label / eyebrow on design-system type tokens */
 .label {
-  color: var(--text-secondary);
-  letter-spacing: var(--tracking-wide);
-}
-
-.labelSelected {
-  color: var(--text-primary);
-  margin-left: 5px;
-
-  &:hover {
-    color: var(--text-primary);
-  }
-}
-
-.openSign {
-  float: right;
-}
-
-.clearButton {
-  margin: 0;
-  display: block;
   font-family: var(--font-sans);
+  font-weight: var(--weight-bold);
   font-size: var(--text-sm);
-  line-height: 18px;
-  font-weight: var(--weight-medium);
-  color: var(--text-muted);
-  padding: 2px 0 4px 12px;
+  line-height: 1.4;
+  color: var(--text-primary);
+}
 
-  /* Override button styles */
-  outline: none;
-  text-align: left;
-  border: none;
-  background: none;
-  cursor: pointer;
+.meta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
 
-  &:focus,
-  &:hover {
-    color: var(--text-primary);
-  }
+.countBadge {
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: var(--radius-pill);
+  background: var(--ink-900);
+  color: var(--white);
+  font-family: var(--font-sans);
+  font-weight: var(--weight-bold);
+  font-size: 11px;
+  line-height: 20px;
+  text-align: center;
+}
 
-  @media (--viewportMedium) {
-    padding: 4px 0 4px 12px;
-    margin-top: 8px;
-  }
+.chevron {
+  color: var(--ink-500);
+  transition: transform var(--dur-fast) var(--ease-standard);
+}
+
+.chevronOpen {
+  transform: rotate(180deg);
 }
 
 .plain {
   width: 100%;
   display: none;
-
-  @media (--viewportMedium) {
-    padding-bottom: 16px;
-  }
+  padding: 0 0 var(--space-4) 0;
 }
 
 .isOpen {
