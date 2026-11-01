@@ -62,24 +62,32 @@
 
 .label {
   display: flex;
-  align-items: center;
+  /* Run-through 01/11/2026, finding 3 / M7: the box lines up with the FIRST line of the label
+     text (longer labels wrap beside it), whatever padding or line height the caller's text class
+     sets. Baseline alignment includes that padding, so no per-caller offsets are needed. */
+  align-items: baseline;
   padding: 0;
   margin-bottom: 0;
 }
 
 .checkboxWrapper {
-  height: 32px;
-  margin-top: -2px;
-  margin-right: 8px;
-  align-self: baseline;
-
+  flex: none;
   display: inline-flex;
-  align-items: center;
+  align-items: baseline;
+  margin-right: 8px;
   cursor: pointer;
 
-  @media (--viewportMedium) {
-    height: 24px;
-    margin-top: -1px;
+  /* A zero-width text character gives the wrapper a real text baseline to align with the
+     label's first line. */
+  &::before {
+    content: '\200b';
+  }
+
+  /* The box's bottom edge sits on the baseline; nudge it down so it centres on capital letters
+     at the label sizes used (14 to 16px). */
+  & svg {
+    position: relative;
+    top: 0.15em;
   }
 }
 
