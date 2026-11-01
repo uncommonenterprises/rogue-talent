@@ -1,0 +1,222 @@
+@import '../../../styles/customMediaQueries.css';
+
+/* B04 booking calendar: Start / End fields, the desktop popover and the phone stack. */
+.root {
+  width: 100%;
+}
+
+.picker {
+  position: relative;
+}
+
+/* Two-part date field (B03 panel): Start | End */
+.dateField {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border: var(--border-hair) solid var(--ink-200);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--white);
+}
+
+.dateFieldButton {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  min-height: 56px;
+  width: 100%;
+  padding: 10px 14px;
+  margin: 0;
+  text-align: left;
+  background: var(--white);
+  border: 0;
+  border-radius: 0;
+  cursor: pointer;
+
+  & + & {
+    border-left: var(--border-hair) solid var(--ink-200);
+  }
+
+  &:hover {
+    background: var(--ink-50);
+  }
+
+  &:focus {
+    outline: none;
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--accent-500);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    background: var(--ink-50);
+  }
+}
+
+.dateFieldLabel {
+  font-family: var(--font-sans);
+  font-weight: var(--weight-bold);
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.dateFieldValue,
+.dateFieldEmpty {
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  line-height: 1.4;
+}
+.dateFieldValue {
+  font-weight: var(--weight-semibold);
+  color: var(--text-primary);
+}
+.dateFieldEmpty {
+  font-weight: var(--weight-regular);
+  color: var(--ink-400);
+}
+
+/* Desktop popover: one month with 44px arrows; closes with Done, Esc or a click outside */
+.popover {
+  position: absolute;
+  z-index: var(--zIndexPopup);
+  top: 100%;
+  right: 0;
+  margin-top: var(--space-2);
+  width: 372px;
+  max-width: calc(100vw - 32px);
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  background: var(--white);
+  border: var(--border-hair) solid var(--border-hairline);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+}
+
+.popoverActions {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.ghostButton,
+.doneButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 12px 20px;
+  margin: 0;
+  font-family: var(--font-sans);
+  font-weight: var(--weight-bold);
+  font-size: var(--text-sm);
+  line-height: 1;
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease-standard);
+
+  &:focus {
+    outline: none;
+  }
+  &:focus-visible {
+    box-shadow: var(--shadow-focus);
+  }
+}
+.ghostButton {
+  color: var(--accent-600);
+  background: transparent;
+  border: var(--border-key) solid transparent;
+
+  &:hover {
+    background: var(--accent-50);
+  }
+}
+.doneButton {
+  color: var(--ink-900);
+  background: var(--white);
+  border: var(--border-key) solid var(--ink-900);
+
+  &:hover {
+    background: var(--ink-50);
+  }
+}
+
+/* Phone sheet: the calendar sits inline as a stack of months */
+.stackRoot {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* Legend */
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-4);
+  padding-top: var(--space-1);
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+}
+.legendItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.legendSelected,
+.legendRange,
+.legendUnavailable {
+  position: relative;
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: var(--radius-sm);
+  border: var(--border-hair) solid var(--ink-200);
+  background: var(--white);
+}
+.legendSelected {
+  background: var(--ink-900);
+  border-color: var(--ink-900);
+}
+.legendRange {
+  background: var(--accent-50);
+  border-color: var(--accent-100);
+}
+.legendUnavailable::after {
+  content: '';
+  position: absolute;
+  left: 1px;
+  right: 1px;
+  top: 50%;
+  height: 1px;
+  background: var(--ink-400);
+}
+
+/* Summary box */
+.summary {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--space-3) var(--space-4);
+  background: var(--surface-subtle);
+  border-radius: var(--radius-lg);
+}
+.summaryMain {
+  font-family: var(--font-sans);
+  font-weight: var(--weight-bold);
+  font-size: var(--text-sm);
+  color: var(--text-primary);
+}
+.summarySub {
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  line-height: 1.5;
+  color: var(--text-secondary);
+}

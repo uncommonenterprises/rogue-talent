@@ -1,0 +1,33 @@
+.root {
+  display: inline-block;
+  flex: none;
+}
+
+/* Line icons: never filled, whatever a parent's svg rules say */
+.root.stroke,
+.root.stroke * {
+  fill: none;
+  stroke: currentColor;
+}
+
+/* Filled icons (star) */
+.root.filled,
+.root.filled * {
+  fill: currentColor;
+  stroke: none;
+}
+
+.sm {
+  width: 14px;
+  height: 14px;
+}
+
+.md {
+  width: 18px;
+  height: 18px;
+}
+
+.lg {
+  width: 24px;
+  height: 24px;
+}

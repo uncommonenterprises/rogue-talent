@@ -7,7 +7,7 @@ import FilterPlain from '../FilterPlain/FilterPlain';
 import FilterPopup from '../FilterPopup/FilterPopup';
 import FieldSelectIntegerRange from './FieldSelectIntegerRange';
 
-import { FormattedMessage, useIntl } from '../../../util/reactIntl';
+import { useIntl } from '../../../util/reactIntl';
 import css from './IntegerRangeFilter.module.css';
 
 const RADIX = 10;
@@ -106,6 +106,9 @@ const IntegerRangeFilter = props => {
     showAsPopup = true,
     formatValidRangeValues,
     getLabelForRangeInput,
+    rangeLabels,
+    rangePrefix,
+    note,
     ...rest
   } = props;
 
@@ -151,10 +154,6 @@ const IntegerRangeFilter = props => {
   const formattedRange = hasInitialValues
     ? `${formattedRangeValues.minValue} - ${formattedRangeValues.maxValue}`
     : '';
-  const labelSelectionForPlain = hasInitialValues ? (
-    <FormattedMessage id="IntegerRangeFilter.labelSelectedPlain" values={formattedRangeValues} />
-  ) : null;
-
   return showAsPopup ? (
     <FilterPopup
       className={classes}
@@ -183,8 +182,7 @@ const IntegerRangeFilter = props => {
       rootClassName={rootClassName}
       label={label}
       ariaLabel={getAriaLabel(label, formattedRange)}
-      labelSelection={labelSelectionForPlain}
-      labelSelectionSeparator=":"
+      selectedCount={hasInitialValues ? 1 : 0}
       isSelected={hasInitialValues}
       id={`${id}.plain`}
       liveEdit
@@ -202,7 +200,10 @@ const IntegerRangeFilter = props => {
         initialValues={resolvedInitialValues}
         intl={intl}
         getLabelForRangeInput={getLabelForRangeInput}
+        rangeLabels={rangeLabels}
+        rangePrefix={rangePrefix}
       />
+      {note ? <p className={css.note}>{note}</p> : null}
     </FilterPlain>
   );
 };

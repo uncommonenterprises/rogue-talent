@@ -1314,6 +1314,15 @@ describe('TransactionPage', () => {
         },
       };
 
+      // Desktop layout for the booking panel (B03)
+      const originalMatchMedia = window.matchMedia;
+      window.matchMedia = query => ({
+        matches: false,
+        media: query,
+        addEventListener: () => {},
+        removeEventListener: () => {},
+      });
+
       const { getByText, getAllByText } = render(<TransactionPageComponent {...props} />, {
         config,
         routeConfiguration,
@@ -1329,18 +1338,18 @@ describe('TransactionPage', () => {
         // Activity feed (here we just check the heading)
         expect(screen.getByText('TransactionPanel.activityHeading')).toBeInTheDocument();
 
-        // Listing's title (side card)
-        expect(getAllByText('listing-item title')).toHaveLength(2);
-        // Default unit price is $55
-        expect(getAllByText('OrderPanel.price')).toHaveLength(1);
-        expect(getAllByText('OrderPanel.priceInMobileCTA')).toHaveLength(1);
-        expect(getAllByText('OrderPanel.perUnit')).toHaveLength(1);
+        // The booking panel no longer repeats the model's name (B03, run-through M12)
+        expect(screen.queryAllByText('listing-item title')).toHaveLength(0);
+        // Day rate in the panel and in the phone bar
+        expect(getAllByText('OrderPanel.perDayShort')).toHaveLength(1);
+        expect(getAllByText('OrderPanel.perDayLong')).toHaveLength(1);
 
-        // BookingTimeForm inputs
-        expect(getByText('BookingDatesForm.bookingStartTitle')).toBeInTheDocument();
-        expect(getByText('BookingDatesForm.bookingEndTitle')).toBeInTheDocument();
-        expect(getByText('BookingDatesForm.requestToBook')).toBeInTheDocument();
+        // Booking dates (B04) and "Select dates" until a range exists (panel + phone bar)
+        expect(getByText('BookingDatesForm.startLabel')).toBeInTheDocument();
+        expect(getByText('BookingDatesForm.endLabel')).toBeInTheDocument();
+        expect(getAllByText('BookingDatesForm.selectDates')).toHaveLength(2);
       });
+      window.matchMedia = originalMatchMedia;
     });
 
     it('Inquiry with restricted view rights should not show OrderPanel - day unit', async () => {

@@ -3,6 +3,78 @@
 .root {
 }
 
+/* B02: Min and Max fields side by side (rt-field + rt-input), with an optional "£" prefix */
+.rangeRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+}
+
+.rangeField {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.rangeLabel {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-sans);
+  font-weight: var(--weight-semibold);
+  font-size: var(--text-sm);
+  line-height: 1.4;
+  color: var(--text-primary);
+}
+
+.inputPrefix {
+  position: relative;
+
+  & .rangeInput {
+    padding-left: 28px;
+  }
+}
+
+.prefix {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.rangeInput {
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 14px;
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  color: var(--text-primary);
+  background: var(--white);
+  border: var(--border-hair) solid var(--ink-200);
+  border-radius: var(--radius-lg);
+
+  &::placeholder {
+    color: var(--ink-400);
+  }
+
+  &:focus {
+    outline: none;
+    border-color: var(--accent-500);
+    box-shadow: 0 0 0 3px var(--accent-100);
+  }
+}
+
+.note {
+  margin: var(--space-3) 0 0 0;
+  padding: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
 .contentWrapper {
   display: flex;
   flex-wrap: wrap;

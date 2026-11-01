@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
 import classNames from 'classnames';
 
-import { FormattedMessage, injectIntl, intlShape } from '../../../util/reactIntl';
+import { injectIntl } from '../../../util/reactIntl';
 
-import { KeyboardListener } from '../../../components';
+import { KeyboardListener, RtIcon } from '../../../components';
 
-import IconPlus from '../IconPlus/IconPlus';
 import FilterForm from '../FilterForm/FilterForm';
 
 import css from './FilterPlain.module.css';
@@ -64,8 +63,8 @@ const moveFocusToNextFocusableElement = (formId, direction = 'next') => {
  * @param {string} props.id - The ID
  * @param {Function} props.onSubmit - The function to submit
  * @param {React.Node} props.label - The label
- * @param {React.Node} [props.labelSelection] - The label with active selection
- * @param {React.Node} [props.labelSelectionSeparator] - The label selection separator
+ * @param {number} [props.selectedCount] - Number of selected values, shown as a count badge
+ * @param {boolean} [props.initiallyOpen] - Whether the group starts open (default true)
  * @param {boolean} props.isSelected - Whether the filter is selected
  * @param {React.Node} props.children - The children
  * @param {Object} [props.initialValues] - The initial values
@@ -76,7 +75,8 @@ const moveFocusToNextFocusableElement = (formId, direction = 'next') => {
 class FilterPlainComponent extends Component {
   constructor(props) {
     super(props);
-    this.state = { isOpen: true };
+    // B01: only the first few groups start open; the rest are collapsed.
+    this.state = { isOpen: props.initiallyOpen !== false };
 
     this.handleChange = this.handleChange.bind(this);
     this.handleClear = this.handleClear.bind(this);
@@ -121,9 +121,8 @@ class FilterPlainComponent extends Component {
       plainClassName,
       id,
       label,
-      labelSelection,
-      labelSelectionSeparator,
       isSelected,
+      selectedCount = 0,
       children,
       initialValues,
       keepDirtyOnReinitialize = false,
@@ -243,25 +242,22 @@ class FilterPlainComponent extends Component {
         <div className={css.filterHeader}>
           <button
             id={`${id}.toggle`}
+            type="button"
             className={css.labelButton}
             onClick={() => this.toggleIsOpen()}
             aria-label={ariaLabel}
             aria-expanded={this.state.isOpen}
             aria-controls={this.state.isOpen ? formId : ''}
           >
-            <span className={css.labelButtonContent}>
-              <span className={css.labelWrapper}>
-                <span className={css.label}>
-                  {label}
-                  {labelSelection && labelSelectionSeparator ? labelSelectionSeparator : null}
-                  {labelSelection ? (
-                    <span className={css.labelSelected}>{labelSelection}</span>
-                  ) : null}
-                </span>
-              </span>
-              <span className={css.openSign}>
-                <IconPlus isOpen={this.state.isOpen} isSelected={isSelected} />
-              </span>
+            <span className={css.label}>{label}</span>
+            <span className={css.meta}>
+              {isSelected && selectedCount > 0 ? (
+                <span className={css.countBadge}>{selectedCount}</span>
+              ) : null}
+              <RtIcon
+                name="chevronDown"
+                className={classNames(css.chevron, { [css.chevronOpen]: this.state.isOpen })}
+              />
             </span>
           </button>
         </div>
@@ -279,16 +275,6 @@ class FilterPlainComponent extends Component {
             onChange={this.handleChange}
             initialValues={initialValues}
             keepDirtyOnReinitialize={keepDirtyOnReinitialize}
-            clearButton={
-              <button
-                id={`${formId}.clear`}
-                type="button"
-                className={css.clearButton}
-                onClick={this.handleClear}
-              >
-                <FormattedMessage id={'FilterPlain.clear'} />
-              </button>
-            }
           >
             {children}
           </FilterForm>

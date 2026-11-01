@@ -369,3 +369,225 @@
   -webkit-clip-path: inset(50%);
   clip-path: inset(50%);
 }
+
+/* ---------------------------------------------------------------
+   BOOKING THEME (B04, run-through finding 11). Hairlines and ink, never a solid cobalt block:
+   start/end days are ink-900 with white text (like a selected rt-chip), the days between are
+   a faint accent-50 band, today is a small dot, unavailable days are ink-300 with a hairline
+   strike (blocked and booked look identical on purpose), past days are ink-300 with no strike.
+   Hover is ink-100; focus is a 2px cobalt inset ring. 44px cells.
+   --------------------------------------------------------------- */
+.booking {
+  border: 0;
+  border-radius: 0;
+  min-width: 0;
+  color: var(--text-primary);
+  background-color: transparent;
+
+  & .datepicker {
+    min-width: 0;
+  }
+
+  & .header {
+    padding: 0 0 var(--space-2) 0;
+    min-height: 44px;
+  }
+
+  & .monthName {
+    font-family: var(--font-display);
+    font-weight: var(--weight-extrabold);
+    font-size: var(--text-lg);
+    letter-spacing: var(--tracking-tight);
+    line-height: 1.2;
+  }
+
+  & .previousMonthButton,
+  & .nextMonthButton,
+  & .previousMonthSpacer,
+  & .nextMonthSpacer {
+    width: 44px;
+    height: 44px;
+  }
+
+  & .previousMonthButton,
+  & .nextMonthButton {
+    padding: 0;
+    border-radius: var(--radius-lg);
+
+    &:hover {
+      background-color: var(--ink-50);
+    }
+    &:focus {
+      outline: none;
+    }
+    &:focus-visible {
+      box-shadow: var(--shadow-focus);
+    }
+  }
+
+  & .arrowIcon {
+    stroke: var(--ink-900);
+    fill: var(--ink-900);
+  }
+
+  & .body {
+    padding: 0 0 var(--space-1) 0;
+  }
+
+  & .calendarViewport {
+    width: 312px;
+  }
+  & .calendars {
+    width: calc(3 * 308px);
+  }
+  & .calendarTable {
+    width: 308px;
+  }
+
+  & .weekday > span {
+    aspect-ratio: auto;
+    padding: 4px 0;
+    font-family: var(--font-sans);
+    font-weight: var(--weight-bold);
+    font-size: var(--text-2xs);
+    letter-spacing: var(--tracking-wider);
+    text-transform: uppercase;
+    line-height: 16px;
+    color: var(--text-muted);
+  }
+
+  & .date {
+    width: 44px;
+    height: 44px;
+    font-family: var(--font-sans);
+    font-weight: var(--weight-semibold);
+    font-size: var(--text-sm);
+    font-variant-numeric: tabular-nums;
+    color: var(--text-primary);
+
+    & > * {
+      aspect-ratio: auto;
+    }
+
+    &:hover > * {
+      background-color: var(--ink-100);
+      color: var(--text-primary);
+      border-radius: var(--radius-md);
+    }
+  }
+
+  & .renderedDay {
+    position: relative;
+    height: 44px;
+    border-radius: 0;
+  }
+
+  & .keyboardUsed .date:focus {
+    outline: none;
+  }
+  & .keyboardUsed .date:focus > * {
+    box-shadow: inset 0 0 0 2px var(--accent-500);
+    border-radius: var(--radius-md);
+  }
+
+  /* Today: a small dot under the number */
+  & .dateToday .renderedDay:after {
+    width: 4px;
+    height: 4px;
+    left: 50%;
+    margin-left: -2px;
+    bottom: 6px;
+    border-radius: 50%;
+    background-color: var(--ink-500);
+  }
+
+  /* The band between the first and last day */
+  & .dateInRange .renderedDay,
+  & .dateInRange:hover .renderedDay {
+    background-color: var(--accent-50);
+    color: var(--text-primary);
+    border-radius: 0;
+  }
+
+  /* First and last day (and a lone selected day): ink with white text */
+  & .dateSelected .renderedDay,
+  & .dateSelected:hover .renderedDay,
+  & .dateStart .renderedDay,
+  & .dateStart:hover .renderedDay,
+  & .dateEnd .renderedDay,
+  & .dateEnd:hover .renderedDay {
+    background-color: var(--ink-900);
+    color: var(--white);
+    border-radius: var(--radius-md);
+  }
+  & .dateStart .renderedDay,
+  & .dateStart:hover .renderedDay {
+    border-radius: var(--radius-md) 0 0 var(--radius-md);
+  }
+  & .dateEnd .renderedDay,
+  & .dateEnd:hover .renderedDay {
+    border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  }
+  & .dateStart.dateEnd .renderedDay,
+  & .dateStart.dateEnd:hover .renderedDay {
+    border-radius: var(--radius-md);
+  }
+  & .dateSelected.dateToday .renderedDay:after,
+  & .dateStart.dateToday .renderedDay:after,
+  & .dateEnd.dateToday .renderedDay:after {
+    background-color: var(--white);
+  }
+
+  /* Not available: ink-300 with a hairline strike; past days: ink-300, no strike */
+  & .dateDisabled,
+  & .dateDisabled:hover {
+    cursor: not-allowed;
+
+    & .renderedDay {
+      background-color: transparent;
+      color: var(--ink-300);
+      text-decoration: line-through;
+      text-decoration-thickness: 1px;
+    }
+  }
+  & .dateDisabled.datePast .renderedDay {
+    text-decoration: none;
+  }
+}
+
+/* ---------------------------------------------------------------
+   STACK LAYOUT (B04 phone sheet): a scrolling stack of months, fluid width. Seven columns across
+   a 343px sheet gives 49px day cells.
+   --------------------------------------------------------------- */
+.stack {
+  min-width: 0;
+
+  & .datepicker {
+    width: 100%;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+  }
+
+  & .calendarTable {
+    width: 100%;
+  }
+
+  & .date {
+    width: auto;
+  }
+}
+
+.stackTitle {
+  margin: 0 0 var(--space-2) 0;
+  padding: 0;
+  font-family: var(--font-display);
+  font-weight: var(--weight-extrabold);
+  font-size: var(--text-lg);
+  letter-spacing: var(--tracking-tight);
+  line-height: 1.2;
+}
+
+.datePast {
+}

@@ -3,3 +3,11 @@
 @custom-media --viewportLarge (min-width: 1024px);
 @custom-media --viewportLargeWithPaddings (min-width: 1128px);
 @custom-media --viewportXLarge (min-width: 1921px);
+
+/* Discovery and booking journey (docs/design/booking-journey, 01/11/2026). The approved
+   designs switch from the phone layout (filter sheet, compact cards, booking bottom bar)
+   to the desktop layout (sidebar, full cards, sticky booking panel) at 900px. */
+@custom-media --viewportCompactGrid (min-width: 600px);
+@custom-media --viewportBooking (min-width: 900px);
+@custom-media --viewportBelowBooking (max-width: 899px);
+@custom-media --viewportWideGrid (min-width: 1180px);

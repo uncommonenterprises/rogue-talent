@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useCallback } from 'react';
 import { useDispatch, useSelector, useStore } from 'react-redux';
-import classNames from 'classnames';
 
 // Utils
 import { FormattedMessage } from '../../util/reactIntl';
 import { LISTING_STATE_CLOSED, propTypes } from '../../util/types';
+import { getModelFirstName } from '../../util/modelProfile';
 import { OFFER, REQUEST } from '../../transactions/transaction';
 
 // Global ducks (for Redux actions and thunks)
@@ -14,34 +14,18 @@ import { manageDisableScrolling, isScrollingDisabled } from '../../ducks/ui.duck
 import { initializeCardPaymentData } from '../../ducks/stripe.duck.js';
 
 // Shared components
-import {
-  H2,
-  H3,
-  H4,
-  Page,
-  NamedLink,
-  OrderPanel,
-  LayoutSingleColumn,
-  SectionText,
-} from '../../components';
+import { Page, NamedLink, OrderPanel, LayoutSingleColumn, RtIcon } from '../../components';
 
 // Related components and modules
 import TopbarContainer from '../TopbarContainer/TopbarContainer';
 import FooterContainer from '../FooterContainer/FooterContainer';
 import NotFoundPage from '../NotFoundPage/NotFoundPage';
 
-import {
-  sendInquiry,
-  setInitialValues,
-  fetchTimeSlots,
-  fetchTransactionLineItems,
-} from './ListingPage.duck';
+import { sendInquiry, fetchTimeSlots, fetchTransactionLineItems } from './ListingPage.duck';
 
 import {
   LoadingPage,
   ErrorPage,
-  handleContactUser,
-  handleSubmitInquiry,
   handleNavigateToMakeOfferPage,
   handleNavigateToRequestQuotePage,
   handleSubmit,
@@ -49,21 +33,16 @@ import {
   getDerivedRenderData,
 } from './ListingPage.shared';
 import Notifications from './Notifications/Notifications';
-import SectionReviews from './SectionReviews';
-import SectionAuthorMaybe from './SectionAuthorMaybe';
-import SectionMapMaybe from './SectionMapMaybe';
-import SectionGallery from './SectionGallery';
-import CustomListingFields from './CustomListingFields';
 import ListingPageAccessWrapper from './ListingPageAccessWrapper';
+import ProfileGallery from './ModelProfile/ProfileGallery';
+import ProfileDetails, { ProfileHead } from './ModelProfile/ProfileDetails';
 
 import css from './ListingPage.module.css';
+import profileCss from './ModelProfile/ModelProfile.module.css';
 
 const MIN_LENGTH_FOR_LONG_WORDS_IN_TITLE = 16;
 
 export const ListingPageComponent = props => {
-  const [inquiryModalOpen, setInquiryModalOpen] = useState(
-    props.inquiryModalOpenForListingId === props.params.id
-  );
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -109,24 +88,19 @@ export const ListingPageComponent = props => {
     payoutDetailsWarningClassName: css.payoutDetailsWarning,
   });
   const {
-    listingConfig,
     listingId,
-    isVariant,
     currentListing,
     listingSlug,
     params,
     listingPathParamType,
     listingTab,
     description,
-    geolocation,
     price,
     title,
     publicData,
-    metadata,
     richTitle,
     isOwnListing,
     showListingImage,
-    showDescription,
     processType,
     ensuredAuthor,
     noPayoutDetailsSetWithOwnListing,
@@ -162,26 +136,18 @@ export const ListingPageComponent = props => {
     );
   }
   const unitType = publicData.unitType;
+  const modelName = getModelFirstName(ensuredAuthor, title);
+  const editParams = {
+    id: listingId.uuid,
+    slug: listingSlug,
+    type: listingPathParamType,
+    tab: listingTab,
+  };
   const isNegotiation = processType === 'negotiation';
 
   const commonParams = { params, history, routes: routeConfiguration };
-  const onContactUser = handleContactUser({
-    ...commonParams,
-    currentUser,
-    callSetInitialValues,
-    setInitialValues, // from ListingPage.duck.js (set initial values for the listing page)
-    location,
-    setInquiryModalOpen,
-  });
-  // Note: this is for inquire transition to inquiry state in booking, purchase and negotiation processes.
-  // Inquiry process is handled through handleSubmit.
-  const onSubmitInquiry = handleSubmitInquiry({
-    ...commonParams,
-    getListing,
-    onSendInquiry,
-    setInquiryModalOpen,
-  });
-
+  // The Contact button and "About the listing author" are gone (B03, open question 7): before a
+  // request exists there is no messaging; the conversation lives on the booking (B07).
   const handleOrderSubmit = values => {
     const isCurrentlyClosed = currentListing.attributes.state === LISTING_STATE_CLOSED;
     if (isOwnListing || isCurrentlyClosed) {
@@ -235,109 +201,76 @@ export const ListingPageComponent = props => {
         },
       }}
     >
-      <LayoutSingleColumn className={css.pageRoot} topbar={topbar} footer={<FooterContainer />}>
-        <div className={css.contentWrapperForProductLayout}>
-          <div className={css.mainColumnForProductLayout}>
-            <Notifications
-              mounted={mounted}
-              listing={currentListing}
-              isOwnListing={isOwnListing}
-              noPayoutDetailsSetWithOwnListing={noPayoutDetailsSetWithOwnListing}
-              currentUser={currentUser}
-              className={css.actionBarForProductLayout}
-              editParams={{
-                id: listingId.uuid,
-                slug: listingSlug,
-                type: listingPathParamType,
-                tab: listingTab,
-              }}
-            />
-            {showListingImage && (
-              <SectionGallery
-                listing={currentListing}
-                variantPrefix={config.layout.listingImage.variantPrefix}
-              />
-            )}
-            <div
-              className={showListingImage ? css.mobileHeading : css.noListingImageHeadingProduct}
-            >
-              {showListingImage ? (
-                <H2 as="h1" className={css.orderPanelTitle}>
-                  <FormattedMessage id="ListingPage.orderTitle" values={{ title: richTitle }} />
-                </H2>
-              ) : (
-                <H3 as="h1" className={css.orderPanelTitle}>
-                  <FormattedMessage id="ListingPage.orderTitle" values={{ title: richTitle }} />
-                </H3>
-              )}
-            </div>
-            {showDescription && <SectionText text={description} showAsIngress />}
+      <LayoutSingleColumn
+        className={profileCss.pageRoot}
+        topbar={topbar}
+        footer={<FooterContainer />}
+      >
+        <div className={profileCss.page}>
+          <Notifications
+            mounted={mounted}
+            listing={currentListing}
+            isOwnListing={isOwnListing}
+            noPayoutDetailsSetWithOwnListing={noPayoutDetailsSetWithOwnListing}
+            currentUser={currentUser}
+            className={css.actionBarForProductLayout}
+            editParams={editParams}
+          />
+          <NamedLink name="SearchPage" className={profileCss.backLink}>
+            <RtIcon name="arrowLeft" />
+            <FormattedMessage id="ListingPage.backToResults" />
+          </NamedLink>
 
-            <CustomListingFields
-              publicData={publicData}
-              metadata={metadata}
-              listingFieldConfigs={listingConfig.listingFields}
-              categoryConfiguration={config.categoryConfiguration}
-              marketplaceCurrency={config.currency}
-              intl={intl}
-            />
-
-            <SectionMapMaybe
-              geolocation={geolocation}
-              publicData={publicData}
-              listingId={currentListing.id}
-              mapsConfig={config.maps}
-            />
-            <SectionReviews reviews={reviews} fetchReviewsError={fetchReviewsError} />
-            <SectionAuthorMaybe
+          {showListingImage ? (
+            <ProfileGallery
+              images={currentListing.images}
               title={title}
-              listing={currentListing}
-              authorDisplayName={authorDisplayName}
-              onContactUser={onContactUser}
-              isInquiryModalOpen={isAuthenticated && inquiryModalOpen}
-              onCloseInquiryModal={() => setInquiryModalOpen(false)}
-              sendInquiryError={sendInquiryError}
-              sendInquiryInProgress={sendInquiryInProgress}
-              onSubmitInquiry={onSubmitInquiry}
-              currentUser={currentUser}
               onManageDisableScrolling={onManageDisableScrolling}
             />
-          </div>
-          <div className={css.orderColumnForProductLayout}>
-            <OrderPanel
-              className={classNames(css.productOrderPanel, {
-                [css.imagesEnabled]: showListingImage,
-              })}
-              listing={currentListing}
-              isOwnListing={isOwnListing}
-              onSubmit={handleOrderSubmit}
-              authorLink={
-                <NamedLink
-                  className={css.authorNameLink}
-                  name={isVariant ? 'ListingPageVariant' : 'ListingPage'}
-                  params={params}
-                  to={{ hash: '#author' }}
-                >
-                  {authorDisplayName}
-                </NamedLink>
-              }
-              title={<FormattedMessage id="ListingPage.orderTitle" values={{ title: richTitle }} />}
-              titleDesktop={
-                <H4 as="h1" className={css.orderPanelTitle}>
+          ) : null}
+
+          <div className={profileCss.grid}>
+            <article className={profileCss.main}>
+              <ProfileHead
+                title={title}
+                publicData={publicData}
+                config={config}
+                reviews={reviews}
+              />
+              <ProfileDetails
+                publicData={publicData}
+                price={price}
+                config={config}
+                modelName={modelName}
+                reviews={reviews}
+                fetchReviewsError={fetchReviewsError}
+              />
+            </article>
+            <aside
+              className={profileCss.aside}
+              aria-label={intl.formatMessage({ id: 'ListingPage.bookLabel' }, { name: modelName })}
+            >
+              <OrderPanel
+                listing={currentListing}
+                isOwnListing={isOwnListing}
+                onSubmit={handleOrderSubmit}
+                title={
                   <FormattedMessage id="ListingPage.orderTitle" values={{ title: richTitle }} />
-                </H4>
-              }
-              payoutDetailsWarning={payoutDetailsWarning}
-              author={ensuredAuthor}
-              onManageDisableScrolling={onManageDisableScrolling}
-              onContactUser={onContactUser}
-              {...restOfProps}
-              validListingTypes={config.listing.listingTypes}
-              marketplaceCurrency={config.currency}
-              dayCountAvailableForBooking={config.stripe.dayCountAvailableForBooking}
-              marketplaceName={config.marketplaceName}
-              showListingImage={showListingImage}
-            />
+                }
+                payoutDetailsWarning={payoutDetailsWarning}
+                author={ensuredAuthor}
+                onManageDisableScrolling={onManageDisableScrolling}
+                {...restOfProps}
+                currentUser={currentUser}
+                isAuthenticated={isAuthenticated}
+                editParams={editParams}
+                validListingTypes={config.listing.listingTypes}
+                marketplaceCurrency={config.currency}
+                dayCountAvailableForBooking={config.stripe.dayCountAvailableForBooking}
+                marketplaceName={config.marketplaceName}
+                showListingImage={showListingImage}
+              />
+            </aside>
           </div>
         </div>
       </LayoutSingleColumn>

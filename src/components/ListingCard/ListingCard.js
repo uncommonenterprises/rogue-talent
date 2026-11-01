@@ -9,15 +9,12 @@ import { useIntl } from '../../util/reactIntl';
 import { requireListingImage } from '../../util/configHelpers';
 import { lazyLoadWithDimensions } from '../../util/uiHelpers';
 import { createSlug } from '../../util/urlHelpers';
-import { isAccountStatusFlowEnabled } from '../../util/accountStatus';
 
 import {
   AspectRatioWrapper,
   NamedLink,
   ResponsiveImage,
   ListingCardThumbnail,
-  VerifiedBadge,
-  isUserVerified,
 } from '../../components';
 
 import { getListingCardTranslations, getTalentCardData } from './ListingCard.helpers';
@@ -96,6 +93,10 @@ const ListingCardImage = props => {
  * @param {string?} props.renderSizes for img/srcset
  * @param {Function?} props.setActiveListing
  * @param {boolean?} props.showAuthorInfo
+ * @param {'search'?} props.variant 'search' = compact card below 900px (B01: two rows of models
+ *   on a phone screen); the full rt-talent card from 900px
+ * @param {boolean?} props.showAvailability show the green "Free on your dates" line (only when
+ *   the search has a date range, so every result is available on those dates)
  * @returns {JSX.Element} listing card to be used in search result panel etc.
  */
 export const ListingCard = props => {
@@ -111,12 +112,16 @@ export const ListingCard = props => {
     renderSizes,
     setActiveListing,
     lazyLoadImage = true,
+    variant,
+    showAvailability = false,
   } = props;
 
   const translations = getListingCardTranslations(listing, config, intl);
   const { titlePlain, cardAriaLabel, showPrice, priceTooltip } = translations;
 
-  const classes = classNames(rootClassName || css.root, className);
+  const classes = classNames(rootClassName || css.root, className, {
+    [css.searchVariant]: variant === 'search',
+  });
 
   const id = listing?.id?.uuid;
   const { title = '', publicData } = listing?.attributes || {};
@@ -139,15 +144,18 @@ export const ListingCard = props => {
     : null;
 
   // Talent-card (rt-talent) data — model attributes now live on the listing.
-  const { author, location, metaParts, categories, formattedPrice } = getTalentCardData(
+  const { location, metaParts, categories, formattedPrice } = getTalentCardData(
     listing,
     config,
     intl
   );
-  // Account-status lifecycle §9: once the Verified-only visibility guarantee is live
-  // (step-2 flag ON), every visible model is Verified, so the per-card badge is redundant
-  // noise — stop rendering it. Flag OFF (today) keeps the badge exactly as before.
-  const verified = !isAccountStatusFlowEnabled() && isUserVerified(author);
+  // The per-card Verified badge is retired (B01, Neil 01/11/2026 open question 1): every visible
+  // model is reviewed and ID verified, so the standard is stated once in the search header.
+  // Gender and height always; experience only on the full card (hidden in CSS below 900px).
+  const mainMeta = metaParts.slice(0, 2);
+  const extraMeta = metaParts.slice(2);
+  const visibleCategories = categories.slice(0, 2);
+  const hiddenCategoryCount = categories.length - visibleCategories.length;
   // Portrait 4:5 photo — the editorial fashion shape (design system §9).
   const photoAspectWidth = 4;
   const photoAspectHeight = 5;
@@ -182,13 +190,23 @@ export const ListingCard = props => {
             setActivePropsMaybe={setActivePropsMaybe}
           />
         )}
-        {verified ? <VerifiedBadge className={css.photoBadge} user={author} /> : null}
       </div>
 
       <div className={css.body}>
-        {location ? (
+        {location || showAvailability ? (
           <div className={css.loc}>
             <span className={css.eyebrow}>{location}</span>
+            {showAvailability ? (
+              <span className={css.avail}>
+                <span className={css.availDot} aria-hidden="true" />
+                <span className={css.availFull}>
+                  {intl.formatMessage({ id: 'ListingCard.freeOnYourDates' })}
+                </span>
+                <span className={css.availShort}>
+                  {intl.formatMessage({ id: 'ListingCard.free' })}
+                </span>
+              </span>
+            ) : null}
           </div>
         ) : null}
 
@@ -196,17 +214,28 @@ export const ListingCard = props => {
 
         {metaParts.length > 0 ? (
           <div className={classNames(css.meta, { [css.lightText]: darkMode })}>
-            {metaParts.join(' · ')}
+            {mainMeta.join(' · ')}
+            {extraMeta.length > 0 ? (
+              <span className={css.metaMore}>{` · ${extraMeta.join(' · ')}`}</span>
+            ) : null}
           </div>
         ) : null}
 
         {categories.length > 0 ? (
           <div className={css.tags}>
-            {categories.slice(0, 3).map(cat => (
+            {visibleCategories.map(cat => (
               <span key={cat} className={css.tag}>
                 {cat}
               </span>
             ))}
+            {hiddenCategoryCount > 0 ? (
+              <span className={css.tagOutline}>
+                {intl.formatMessage(
+                  { id: 'ListingCard.moreCategories' },
+                  { count: hiddenCategoryCount }
+                )}
+              </span>
+            ) : null}
           </div>
         ) : null}
 

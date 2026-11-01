@@ -22,15 +22,9 @@
   }
 }
 
-/* Photo — portrait 4:5; holds the verified-badge overlay top-left. */
+/* Photo — portrait 4:5. (The per-card Verified badge is retired, B01.) */
 .photo {
   position: relative;
-}
-.photoBadge {
-  position: absolute;
-  top: var(--space-3);
-  left: var(--space-3);
-  z-index: 1;
 }
 
 /* Image sub-elements (used by ListingCardImage) */
@@ -54,8 +48,14 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: var(--space-2);
+  min-height: 16px;
 }
 .eyebrow {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   font-family: var(--font-sans);
   font-weight: var(--weight-bold);
   font-size: var(--text-2xs);
@@ -93,6 +93,37 @@
   padding: 6px 12px;
   border-radius: var(--radius-pill);
 }
+/* "+2" when a model has more categories than fit */
+.tagOutline {
+  composes: tag;
+  background: transparent;
+  border: var(--border-hair) solid var(--ink-200);
+}
+
+/* Green "Free on your dates" line: only when the search has a date range (green = availability) */
+.avail {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  font-family: var(--font-sans);
+  font-weight: var(--weight-bold);
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--status-success);
+  white-space: nowrap;
+}
+.availDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--status-success);
+}
+.availShort {
+  display: none;
+}
+
 .rule {
   height: 1px;
   background: var(--border-subtle);
@@ -135,6 +166,48 @@
 }
 .root:hover .viewBtn {
   background: var(--ink-50);
+}
+
+/* ---------------------------------------------------------------
+   SEARCH VARIANT (B01, run-through M5): below 900px a compact card so two rows of models fit
+   on a phone screen. Photo, city, name, day rate and one meta line; tags, the rule and the
+   "View" button are hidden and the whole card is the tap target.
+   --------------------------------------------------------------- */
+@media (--viewportBelowBooking) {
+  .searchVariant:hover {
+    transform: none;
+    box-shadow: none;
+  }
+  .searchVariant .body {
+    padding: var(--space-3);
+    gap: var(--space-1);
+  }
+  .searchVariant .name {
+    font-size: var(--text-lg);
+    line-height: 1.1;
+  }
+  .searchVariant .tags,
+  .searchVariant .rule,
+  .searchVariant .viewBtn,
+  .searchVariant .metaMore,
+  .searchVariant .availFull {
+    display: none;
+  }
+  .searchVariant .availShort {
+    display: inline;
+  }
+  .searchVariant .meta {
+    font-size: var(--text-xs);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .searchVariant .rate {
+    font-size: var(--text-base);
+  }
+  .searchVariant .foot {
+    padding-top: 2px;
+  }
 }
 
 /* Dark surfaces (map popups) */

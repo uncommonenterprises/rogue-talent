@@ -16,18 +16,19 @@ import css from './SelectMultipleFilter.module.css';
 // TODO: Live edit didn't work with FieldCheckboxGroup
 //       There's a mutation problem: formstate.dirty is not reliable with it.
 const GroupOfFieldCheckboxes = props => {
-  const { id, className, name, options, legend } = props;
+  const { id, className, name, options, legend, presentation = 'chips' } = props;
+  const isList = presentation === 'list';
   return (
     <fieldset className={className}>
       {legend ? <legend className={css.accessibilityLegend}>{legend}</legend> : null}
-      <ul className={css.list}>
+      <ul className={isList ? css.checkList : css.list}>
         {options.map(optionConfig => {
           const { option, label } = optionConfig;
           const fieldId = `${id}.${option}`;
           return (
-            <li key={fieldId} className={css.item}>
+            <li key={fieldId} className={isList ? css.checkItem : css.item}>
               <FieldCheckbox
-                className={css.chip}
+                className={isList ? css.check : css.chip}
                 id={fieldId}
                 name={name}
                 label={label}
@@ -72,6 +73,9 @@ const format = (selectedOptions, queryParamName, schemaType, searchMode) => {
  * @param {'has_all' | 'has_any'} props.searchMode - The search mode
  * @param {boolean} [props.showAsPopup] - Whether to show as popup
  * @param {number} [props.contentPlacementOffset] - The content placement offset
+ * @param {'chips'|'list'} [props.presentation] - Pills (default) or a tick-box list (B02)
+ * @param {boolean} [props.singleSelect] - Keep only the option just tapped (B02 single-select chips)
+ * @param {React.ReactNode} [props.note] - Small note under the options
  * @returns {JSX.Element}
  */
 const SelectMultipleFilter = props => {
@@ -91,6 +95,9 @@ const SelectMultipleFilter = props => {
     schemaType,
     searchMode,
     showAsPopup,
+    presentation,
+    singleSelect = false,
+    note,
     ...rest
   } = props;
 
@@ -110,19 +117,18 @@ const SelectMultipleFilter = props => {
       )
     : label;
 
-  const labelSelectionForPlain = hasInitialValues
-    ? intl.formatMessage(
-        { id: 'SelectMultipleFilterPlainForm.labelSelected' },
-        { count: selectedOptions.length }
-      )
-    : '';
-
   // pass the initial values with the name key so that
   // they can be passed to the correct field
   const namedInitialValues = { [name]: selectedOptions };
 
   const handleSubmit = values => {
-    const usedValue = values ? values[name] : values;
+    const raw = values ? values[name] : values;
+    // Single-select chips (B02: gender, experience, hair, eye colour): keep only the option just
+    // tapped. Tapping the selected chip again clears it.
+    const usedValue =
+      singleSelect && Array.isArray(raw) && raw.length > 1
+        ? [raw.filter(o => !selectedOptions.includes(o)).pop() || raw[raw.length - 1]]
+        : raw;
     onSubmit(format(usedValue, queryParamName, schemaType, searchMode));
   };
 
@@ -154,7 +160,7 @@ const SelectMultipleFilter = props => {
       className={className}
       rootClassName={rootClassName}
       label={label}
-      labelSelection={labelSelectionForPlain}
+      selectedCount={selectedOptions.length}
       ariaLabel={getAriaLabel(label, selectedOptions.join(', '))}
       isSelected={hasInitialValues}
       id={`${id}.plain`}
@@ -169,7 +175,9 @@ const SelectMultipleFilter = props => {
         id={`${id}-checkbox-group`}
         options={options}
         legend={label}
+        presentation={presentation}
       />
+      {note ? <p className={css.note}>{note}</p> : null}
     </FilterPlain>
   );
 };

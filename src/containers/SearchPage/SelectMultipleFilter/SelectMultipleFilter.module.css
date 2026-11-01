@@ -13,14 +13,8 @@
 
 .fieldGroupPlain {
   margin: 0;
-  padding-left: 12px;
-  padding-bottom: 6px;
+  padding: 0;
   border: none;
-
-  @media (--viewportMedium) {
-    padding: 3px 0 29px 12px;
-    padding: 4px 0 4px 12px;
-  }
 }
 
 .accessibilityLegend {
@@ -56,7 +50,9 @@
 .chip label {
   display: inline-flex;
   align-items: center;
-  padding: 7px 14px;
+  /* 44px tap targets on phones (B02); 36px in the desktop sidebar */
+  min-height: 44px;
+  padding: 8px 14px;
 
   border: var(--border-hair) solid var(--ink-200);
   border-radius: var(--radius-pill);
@@ -109,4 +105,45 @@
   outline: none;
   border-color: var(--accent-500);
   box-shadow: 0 0 0 3px var(--accent-100);
+}
+
+@media (--viewportBooking) {
+  .chip label {
+    min-height: 36px;
+    padding: 6px 12px;
+  }
+}
+
+/* Tick-box list (travel range, ethnicity): 44px rows on phones, 36px in the sidebar */
+.checkList {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.checkItem {
+  padding: 0;
+}
+
+.check label {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0;
+  cursor: pointer;
+
+  @media (--viewportBooking) {
+    min-height: 36px;
+  }
+}
+
+.note {
+  margin: var(--space-3) 0 0 0;
+  padding: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  line-height: 1.5;
+  color: var(--text-muted);
 }
