@@ -1,0 +1,53 @@
+.root {
+  display: flex;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border: var(--border-hair) solid var(--border-hairline);
+  border-radius: var(--radius-lg);
+  background: var(--surface-subtle);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  line-height: 1.5;
+  color: var(--text-secondary);
+
+  & strong {
+    color: var(--text-primary);
+  }
+
+  & p {
+    margin: 0;
+    padding: 0;
+  }
+}
+
+.icon {
+  margin-top: 2px;
+  color: var(--ink-700);
+}
+
+.body {
+  min-width: 0;
+}
+
+.info {
+}
+
+.warn {
+  background: var(--amber-50);
+  border-color: var(--amber-100);
+
+  & .icon {
+    color: var(--amber-700);
+  }
+}
+
+/* Errors only: a faint red tint (status-error at 6% / 30%) */
+.error {
+  background: rgba(210, 43, 43, 0.06);
+  border-color: rgba(210, 43, 43, 0.3);
+  color: var(--text-primary);
+
+  & .icon {
+    color: var(--status-error);
+  }
+}

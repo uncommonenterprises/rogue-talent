@@ -45,6 +45,7 @@ import {
   getPreviousDay,
   getPreviousMonth,
   getStartOfDay,
+  getMonths,
   isDateInRange,
   isSameDay,
   subDays,
@@ -55,8 +56,11 @@ import css from './DatePicker.module.css';
 import DatePickerHeader from './DatePickerHeader.js';
 
 const CELL_WIDTH = 38;
-const SLIDE_WIDTH = CELL_WIDTH * 7;
+// The booking theme (B04) uses 44px day cells so every date is a comfortable tap target.
+const CELL_WIDTH_BOOKING = 44;
 const OUTLINE_WIDTH = 2;
+const THEME_BOOKING = 'booking';
+const LAYOUT_STACK = 'stack';
 
 const CalendarMonth = props => {
   const {
@@ -76,6 +80,7 @@ const CalendarMonth = props => {
     startDateOffset,
     endDateOffset,
     intl,
+    title,
   } = props;
   const [hoveredDate, setHoveredDate] = useState(null);
   const [keyboardUsed, setKeyboardUsed] = useState(false);
@@ -124,6 +129,7 @@ const CalendarMonth = props => {
         [css.keyboardUsed]: keyboardUsed,
       })}
     >
+      {title ? <h3 className={css.stackTitle}>{title}</h3> : null}
       <table className={css.calendarTable} onKeyDown={handleKeyDown} role="presentation">
         <thead className={css.calendarHeader}>
           <tr className={css.weekdayRow} aria-hidden="true">
@@ -181,6 +187,7 @@ const CalendarMonth = props => {
                   const isStart = range && startExist && isSameDay(orderedValues[0], day);
                   const isEnd = range && (isSameDay(orderedValues[1], day) || boundaryPointsToEnd);
                   const isToday = isSameDay(day, new Date());
+                  const isPast = day < getStartOfDay(new Date());
                   const isDisabled = isDayBlocked(day);
 
                   const hasOneDateSelected =
@@ -203,6 +210,7 @@ const CalendarMonth = props => {
                     [css.date]: true,
                     [css.dateCurrent]: isCurrent,
                     [css.dateDisabled]: isDisabled || isDisabledMinimumNights,
+                    [css.datePast]: isPast,
                     [css.dateMinimumNights]: isDisabledMinimumNights,
                     [css.dateOverflowing]: isOverflowing,
                     [css.dateToday]: isToday,
@@ -296,7 +304,14 @@ const DatePicker = props => {
     isDayBlocked = () => false,
     isBlockedBetween = () => false,
     hasFocusOnMount = true,
+    layout,
+    numberOfMonths = 4,
+    onRangeConflict,
   } = props;
+  const isBookingTheme = theme === THEME_BOOKING;
+  const isStackLayout = layout === LAYOUT_STACK;
+  const cellWidth = isBookingTheme ? CELL_WIDTH_BOOKING : CELL_WIDTH;
+  const slideWidth = cellWidth * 7;
 
   const pickerRef = useRef(null);
 
@@ -413,9 +428,16 @@ const DatePicker = props => {
       // and select the new date for starting point for the new range
       if (newValue[0] && newValue[1] && isBlockedBetween(newValue)) {
         onCurrentValueChange([date]);
+        // Let the parent explain why the range restarted (B04 conflict message).
+        if (onRangeConflict) {
+          onRangeConflict(newValue);
+        }
         return;
       }
 
+      if (onRangeConflict) {
+        onRangeConflict(null);
+      }
       onCurrentValueChange(newValue);
     } else {
       // Don't allow selecting the same day.
@@ -549,8 +571,11 @@ const DatePicker = props => {
   // Note 1: we assume that cells are square
   // Note 2: Stylesheet needs to be changed too if cells are resized
   const rows = getCalendarRows(currentDate, firstDayOfWeek);
-  const extraHeight = 52; // weekday row + some extra
-  const height = rows ? `${rows.length * CELL_WIDTH + extraHeight}px` : '242px';
+  const extraHeight = isBookingTheme ? 36 : 52; // weekday row + some extra
+  const height = rows ? `${rows.length * cellWidth + extraHeight}px` : '242px';
+
+  // The stack starts at the month of the initial start date (or today) and does not move.
+  const [stackStartMonth] = useState(getInitialStartDate(startDate));
 
   const commonMonthProps = {
     currentDate,
@@ -568,11 +593,11 @@ const DatePicker = props => {
   };
 
   const translateX = index => {
-    const initialPosition = -1 * (1 * SLIDE_WIDTH - OUTLINE_WIDTH);
+    const initialPosition = -1 * (1 * slideWidth - OUTLINE_WIDTH);
     return index === -1
-      ? initialPosition + SLIDE_WIDTH
+      ? initialPosition + slideWidth
       : index === 1
-      ? initialPosition - SLIDE_WIDTH
+      ? initialPosition - slideWidth
       : initialPosition;
   };
   const style = {
@@ -586,61 +611,87 @@ const DatePicker = props => {
       aria-roledescription="datepicker"
       className={classNames(css.root, {
         [css.light]: theme === 'light',
+        [css.booking]: isBookingTheme,
+        [css.stack]: isStackLayout,
         [css.disabled]: disabled,
       })}
       role="application"
     >
-      <div className={css.datepicker} ref={pickerRef}>
-        <DatePickerHeader
-          monthClassName={allowSlide ? null : css.monthSlideEffect}
-          currentDate={currentDate}
-          showMonthStepper={showMonthStepper}
-          showPreviousMonthStepper={showPreviousMonthStepper}
-          showNextMonthStepper={showNextMonthStepper}
-          nextMonth={nextMonth}
-          previousMonth={previousMonth}
-          disabled={disabled}
-          intl={intl}
-        />
-
-        <div className={css.body} style={{ height }}>
-          <div className={css.calendarViewport}>
-            <div
-              id="calendars"
-              className={css.calendars}
-              onTransitionEnd={handleTransitionEnd}
-              style={style}
-            >
+      {isStackLayout ? (
+        // Phone sheet (B04): a scrolling stack of months instead of a paged single month, so no
+        // small next-month arrow is needed. The month shown first is the start date's month.
+        <div className={css.datepicker} ref={pickerRef}>
+          {Array.from({ length: numberOfMonths }, (_, i) => {
+            const month = new Date(
+              stackStartMonth.getFullYear(),
+              stackStartMonth.getMonth() + i,
+              1
+            );
+            const monthTitle = `${getMonths(intl)[month.getMonth()]} ${month.getFullYear()}`;
+            return (
               <CalendarMonth
-                currentMonth={getPreviousMonth(currentDate)}
-                visible={!allowSlide}
-                {...commonMonthProps}
-              />
-              <CalendarMonth
-                currentMonth={currentDate}
+                key={getISODateString(month)}
+                currentMonth={month}
                 visible={true}
-                startDateOffset={startDateOffset}
-                endDateOffset={endDateOffset}
+                title={monthTitle}
                 {...commonMonthProps}
               />
-              <CalendarMonth
-                currentMonth={getNextMonth(currentDate)}
-                visible={!allowSlide}
-                {...commonMonthProps}
-              />
+            );
+          })}
+        </div>
+      ) : (
+        <div className={css.datepicker} ref={pickerRef}>
+          <DatePickerHeader
+            monthClassName={allowSlide ? null : css.monthSlideEffect}
+            currentDate={currentDate}
+            showMonthStepper={showMonthStepper}
+            showPreviousMonthStepper={showPreviousMonthStepper}
+            showNextMonthStepper={showNextMonthStepper}
+            nextMonth={nextMonth}
+            previousMonth={previousMonth}
+            disabled={disabled}
+            intl={intl}
+          />
+
+          <div className={css.body} style={{ height }}>
+            <div className={css.calendarViewport}>
+              <div
+                id="calendars"
+                className={css.calendars}
+                onTransitionEnd={handleTransitionEnd}
+                style={style}
+              >
+                <CalendarMonth
+                  currentMonth={getPreviousMonth(currentDate)}
+                  visible={!allowSlide}
+                  {...commonMonthProps}
+                />
+                <CalendarMonth
+                  currentMonth={currentDate}
+                  visible={true}
+                  startDateOffset={startDateOffset}
+                  endDateOffset={endDateOffset}
+                  {...commonMonthProps}
+                />
+                <CalendarMonth
+                  currentMonth={getNextMonth(currentDate)}
+                  visible={!allowSlide}
+                  {...commonMonthProps}
+                />
+              </div>
             </div>
           </div>
-        </div>
 
-        <DatePickerFooter
-          showFooter={showTodayButton || showClearButton}
-          showTodayButton={showTodayButton}
-          showClearButton={showClearButton}
-          disabled={disabled}
-          onShowToday={onShowToday}
-          onClear={onClear}
-        />
-      </div>
+          <DatePickerFooter
+            showFooter={showTodayButton || showClearButton}
+            showTodayButton={showTodayButton}
+            showClearButton={showClearButton}
+            disabled={disabled}
+            onShowToday={onShowToday}
+            onClear={onClear}
+          />
+        </div>
+      )}
     </div>
   );
 };
