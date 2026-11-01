@@ -15,6 +15,12 @@ the operator/payout window; the operator then resolves via the existing `operato
 transitions. This is a **new transition — the EDN must be re-validated and pushed** (needs
 Neil's go). The revised count is 35 transitions / 18 states.
 
+**Update (01/11/2026, Q9):** added `transition/customer-withdraw` (client withdraws a
+request before the model replies: `preauthorized` to new end state `withdrawn`, card hold
+released in full, dates released) and the `booking-withdrawn-request` email to the model.
+Validated locally (36 transitions, 19 states). **Not pushed.** Neil runs the push:
+`docs/booking-v2-withdraw-push-runbook.md`.
+
 **Still needed before it's the real process:**
 - Email templates: the `templates/` dir + new dispute/cancel templates (the notifications
   here reference stock templates repointed to `auto-payout`, plus new ones to author).

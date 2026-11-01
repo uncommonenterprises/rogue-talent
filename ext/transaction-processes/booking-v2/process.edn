@@ -69,6 +69,17 @@
     {:name :action/decline-booking}],
    :from :state/preauthorized,
    :to :state/declined}
+  ;; Q9 (Neil, 01/11/2026): the client can withdraw a request before the model replies.
+  ;; Same money outcome as a decline or an expiry: the card hold is released in full and
+  ;; nothing is charged. decline-booking releases the pending booking, so the dates stay open.
+  {:name :transition/customer-withdraw,
+   :actor :actor.role/customer,
+   :actions
+   [{:name :action/calculate-full-refund}
+    {:name :action/stripe-refund-payment}
+    {:name :action/decline-booking}],
+   :from :state/preauthorized,
+   :to :state/withdrawn}
   {:name :transition/expire,
    :at
    {:fn/min
@@ -290,6 +301,11 @@
    :on :transition/operator-decline,
    :to :actor.role/provider,
    :template :booking-operator-declined-request}
+  ;; Q9: the model is told the request ended and the client wasn't charged.
+  {:name :notification/booking-withdrawn-request-to-provider,
+   :on :transition/customer-withdraw,
+   :to :actor.role/provider,
+   :template :booking-withdrawn-request}
   {:name :notification/booking-expired-request,
    :on :transition/expire,
    :to :actor.role/customer,

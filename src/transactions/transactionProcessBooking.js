@@ -33,6 +33,11 @@ export const transitions = {
   OPERATOR_ACCEPT: 'transition/operator-accept',
   OPERATOR_DECLINE: 'transition/operator-decline',
 
+  // Q9: the client withdraws the request before the model replies. Full release of the card
+  // hold, nothing charged. Only on process versions that include it (prepared in
+  // ext/transaction-processes/booking-v2, pushed by Neil), so the UI checks nextTransitions.
+  CUSTOMER_WITHDRAW: 'transition/customer-withdraw',
+
   // Auto-decline + full refund if the provider doesn't respond within the 48h accept window.
   EXPIRE: 'transition/expire',
 
@@ -95,6 +100,7 @@ export const states = {
   PAYMENT_EXPIRED: 'payment-expired',
   PREAUTHORIZED: 'preauthorized',
   DECLINED: 'declined',
+  WITHDRAWN: 'withdrawn', // Q9: the client withdrew the request before the model replied
   EXPIRED: 'expired',
   ACCEPTED: 'accepted',
   ACCEPTED_LATE: 'accepted-late',
@@ -142,12 +148,14 @@ export const graph = {
       on: {
         [transitions.DECLINE]: states.DECLINED,
         [transitions.OPERATOR_DECLINE]: states.DECLINED,
+        [transitions.CUSTOMER_WITHDRAW]: states.WITHDRAWN,
         [transitions.EXPIRE]: states.EXPIRED,
         [transitions.ACCEPT]: states.ACCEPTED,
         [transitions.OPERATOR_ACCEPT]: states.ACCEPTED,
       },
     },
     [states.DECLINED]: {},
+    [states.WITHDRAWN]: {},
     [states.EXPIRED]: {},
 
     [states.ACCEPTED]: {
@@ -226,6 +234,7 @@ export const isRelevantPastTransition = transition => {
     transitions.CONFIRM_PAYMENT,
     transitions.DECLINE,
     transitions.OPERATOR_DECLINE,
+    transitions.CUSTOMER_WITHDRAW,
     transitions.EXPIRE,
     transitions.CUSTOMER_CANCEL,
     transitions.CUSTOMER_CANCEL_LATE,
@@ -293,6 +302,7 @@ export const isRefunded = transition => {
     transitions.EXPIRE,
     transitions.DECLINE,
     transitions.OPERATOR_DECLINE,
+    transitions.CUSTOMER_WITHDRAW,
     transitions.CUSTOMER_CANCEL,
     transitions.PROVIDER_CANCEL,
     transitions.PROVIDER_CANCEL_LATE,
