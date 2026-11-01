@@ -1,0 +1,83 @@
+/* Booking status chip (rt-status, booking colours). Tokens only. */
+.root {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: 5px;
+  padding: 4px 9px;
+  font-family: var(--font-sans);
+  font-weight: var(--weight-bold);
+  font-size: var(--text-2xs);
+  line-height: 1.2;
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  white-space: nowrap;
+  border-radius: var(--radius-sm);
+}
+
+.large {
+  gap: 6px;
+  padding: 6px 12px;
+  font-size: var(--text-xs);
+
+  & .dot {
+    width: 8px;
+    height: 8px;
+  }
+}
+
+.dot {
+  display: inline-block;
+  flex-shrink: 0;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+/* Waiting on someone */
+.requested,
+.review {
+  background: var(--amber-100);
+  color: var(--amber-700);
+
+  & .dot {
+    background: var(--amber-700);
+  }
+}
+
+/* Confirmed */
+.accepted {
+  background: rgba(30, 127, 82, 0.12);
+  color: var(--status-success);
+
+  & .dot {
+    background: var(--status-success);
+  }
+}
+
+/* Done */
+.completed {
+  background: var(--accent-50);
+  color: var(--accent-700);
+
+  & .dot {
+    background: var(--accent-700);
+  }
+}
+
+/* Ended, nothing happening */
+.declined,
+.cancelled,
+.expired {
+  background: var(--ink-100);
+  color: var(--ink-700);
+
+  & .dot {
+    background: var(--ink-700);
+  }
+}
+
+.expired .dot {
+  background: transparent;
+  border: var(--border-key) solid var(--ink-600);
+}

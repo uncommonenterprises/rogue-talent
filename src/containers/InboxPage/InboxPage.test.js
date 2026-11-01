@@ -26,6 +26,8 @@ import {
   getProcess,
 } from '../../transactions/transaction';
 
+import { getBookingStatus } from '../../util/bookingStatus';
+
 import { getStateData } from './InboxPage.stateData';
 import InboxPage, { InboxItem } from './InboxPage';
 
@@ -457,7 +459,7 @@ describe('InboxPage', () => {
         transactionRole,
       });
 
-      const tree = render(
+      render(
         <InboxItem
           tx={tx}
           transactionRole={transactionRole}
@@ -467,11 +469,45 @@ describe('InboxPage', () => {
           isPurchase={false}
         />
       );
-      expect(tree.asFragment().firstChild).toMatchSnapshot();
 
-      const quantityFound = screen.queryAllByText('Jun 14, 2022');
-      const expected = tr !== 'transition/inquire' ? 1 : 0;
-      expect(quantityFound).toHaveLength(expected);
+      // Daily bookings use the B09 row: one status label for both sides, the dates and money.
+      const state = getProcess('default-booking').getState(tx);
+      const status = getBookingStatus({ state, role: transactionRole, lastTransition: tr });
+      if (tr === 'transition/inquire') {
+        expect(screen.queryByText('2022-06-14')).not.toBeInTheDocument();
+      } else if (status) {
+        expect(screen.getByText(status.labelId)).toBeInTheDocument();
+        expect(screen.getByText(/2022-06-14/)).toBeInTheDocument();
+      } else {
+        // The model never sees the client's unfinished payment.
+        expect([
+          'transition/request-payment',
+          'transition/request-payment-after-inquiry',
+          'transition/expire-payment',
+        ]).toContain(tr);
+        expect(screen.queryByText(/2022-06-14/)).not.toBeInTheDocument();
+      }
+    });
+
+    it('the model sees the client, the earnings and the reply-by time while Requested', () => {
+      const requested = bookings.find(b => b.tr === 'transition/confirm-payment').tx;
+      render(
+        <InboxItem
+          tx={requested}
+          transactionRole={TX_TRANSITION_ACTOR_PROVIDER}
+          intl={fakeIntl}
+          stateData={getStateData({
+            transaction: requested,
+            transactionRole: TX_TRANSITION_ACTOR_PROVIDER,
+          })}
+          isBooking={true}
+          isPurchase={false}
+        />
+      );
+      expect(screen.getByText('BookingStatus.requested')).toBeInTheDocument();
+      expect(screen.getByText(/BookingStatus.row.willEarn/)).toBeInTheDocument();
+      expect(screen.getByText('BookingStatus.note.provider.requested')).toBeInTheDocument();
+      expect(screen.getByRole('link')).toHaveAttribute('href', '/sale/id-booking-CONFIRM_PAYMENT-sale');
     });
   });
 

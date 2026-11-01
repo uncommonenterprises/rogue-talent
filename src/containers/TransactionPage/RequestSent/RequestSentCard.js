@@ -3,25 +3,9 @@ import classNames from 'classnames';
 
 import { FormattedMessage } from '../../../util/reactIntl';
 
-import { NamedLink, RtIcon } from '../../../components';
+import { BookingStatusChip, NamedLink, RtIcon } from '../../../components';
 
 import css from './RequestSent.module.css';
-
-/**
- * Booking status chip (rt-status shape). Stage 3 (B09) maps every process state to one of these.
- *
- * @component
- * @param {Object} props
- * @param {'requested'|'accepted'|'declined'|'expired'|'completed'|'cancelled'} props.status
- * @param {React.ReactNode} props.children label
- * @param {boolean} [props.large]
- */
-export const BookingStatusChip = ({ status, children, large = false, className }) => (
-  <span className={classNames(css.status, css[status], { [css.statusLarge]: large }, className)}>
-    <span className={css.statusDot} aria-hidden="true" />
-    {children}
-  </span>
-);
 
 /**
  * The client's "request sent" card (B07): did it go through, the real reply-by deadline, and
