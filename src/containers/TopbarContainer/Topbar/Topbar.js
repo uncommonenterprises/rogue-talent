@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import classNames from 'classnames';
 
 import appSettings from '../../../config/settings';
@@ -166,6 +166,15 @@ const TopbarComponent = props => {
     hideSearchForm = false,
   } = props;
 
+  // The server renders the topbar before the current user is loaded (logged-out view); the
+  // browser loads the user before hydrating. Until the first client render has hydrated, the
+  // user-dependent links below use the logged-out values, so both renders match. The real
+  // links appear straight after mount.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const handleSubmit = values => {
     const { currentSearchParams, history, location, config, routeConfiguration } = props;
 
@@ -216,13 +225,13 @@ const TopbarComponent = props => {
     });
   };
 
-  const showCreateListingsLink = showCreateListingLinkForUser(config, currentUser);
+  const showCreateListingsLink = showCreateListingLinkForUser(config, mounted ? currentUser : null);
   // "Create your profile" or, once the model has one, "Your profile" (run-through finding 2).
-  const primaryLink = primaryActionLink({
-    currentUserHasListings,
-    profileListing: currentUserProfileListing,
-    config,
-  });
+  const primaryLink = primaryActionLink(
+    mounted
+      ? { currentUserHasListings, profileListing: currentUserProfileListing, config }
+      : { config }
+  );
   // The account-status page exists for models and clients while the lifecycle flow is on.
   const showAccountStatusLink =
     isAuthenticated &&
@@ -257,7 +266,8 @@ const TopbarComponent = props => {
   const customLinks = getResolvedCustomLinks(sortedCustomLinks, routeConfiguration);
   const resolvedCurrentPage = currentPage || getResolvedCurrentPage(location, routeConfiguration);
 
-  const notificationDot = notificationCount > 0 ? <div className={css.notificationDot} /> : null;
+  const notificationDot =
+    mounted && notificationCount > 0 ? <div className={css.notificationDot} /> : null;
 
   const hasMatchMedia = typeof window !== 'undefined' && window?.matchMedia;
   const isMobileLayout = hasMatchMedia
@@ -391,7 +401,7 @@ const TopbarComponent = props => {
           alt={intl.formatMessage({ id: 'Topbar.logoIcon' })}
           linkToExternalSite={config?.topbar?.logoLink}
         />
-        {accountStatus && isAuthenticated ? (
+        {mounted && accountStatus && isAuthenticated ? (
           // Sign-up stage 3 (screens 14 to 21): on the account-status page the compact status
           // chip takes the search button's place, linking to the page (as on desktop).
           <NamedLink name="AccountStatusPage" className={css.accountStatusMobile}>

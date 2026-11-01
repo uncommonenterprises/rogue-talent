@@ -3,30 +3,14 @@ import classNames from 'classnames';
 
 import { FormattedMessage } from '../../../util/reactIntl';
 
-import { NamedLink, RtIcon } from '../../../components';
+import { BookingStatusChip, NamedLink, RtIcon } from '../../../components';
 
 import css from './RequestSent.module.css';
 
 /**
- * Booking status chip (rt-status shape). Stage 3 (B09) maps every process state to one of these.
- *
- * @component
- * @param {Object} props
- * @param {'requested'|'accepted'|'declined'|'expired'|'completed'|'cancelled'} props.status
- * @param {React.ReactNode} props.children label
- * @param {boolean} [props.large]
- */
-export const BookingStatusChip = ({ status, children, large = false, className }) => (
-  <span className={classNames(css.status, css[status], { [css.statusLarge]: large }, className)}>
-    <span className={css.statusDot} aria-hidden="true" />
-    {children}
-  </span>
-);
-
-/**
  * The client's "request sent" card (B07): did it go through, the real reply-by deadline, and
- * what happens next. Shown while the booking is Requested (state/preauthorized). No withdraw
- * link in stage 2 (open question 9 is stage 3).
+ * what happens next. Shown while the booking is Requested (state/preauthorized). Q9: the client
+ * can withdraw the request (with a confirmation), once the process version allows it.
  *
  * @component
  * @param {Object} props
@@ -34,10 +18,12 @@ export const BookingStatusChip = ({ status, children, large = false, className }
  * @param {string} [props.deadlineLabel] "Tue 3 Nov, 16:20"
  * @param {'window'|'shootStart'} [props.deadlineKind]
  * @param {string} [props.sentAtLabel] "Sun 1 Nov, 16:20"
+ * @param {Function} [props.onWithdraw] opens the withdraw confirmation; omitted = no link (the
+ *   booking's process version has no withdraw transition)
  * @returns {JSX.Element}
  */
 const RequestSentCard = props => {
-  const { modelName, deadlineLabel, deadlineKind = 'window', sentAtLabel } = props;
+  const { modelName, deadlineLabel, deadlineKind = 'window', sentAtLabel, onWithdraw } = props;
   const strong = text => <strong>{text}</strong>;
 
   return (
@@ -123,6 +109,11 @@ const RequestSentCard = props => {
         <NamedLink name="SearchPage" className={css.secondaryLink}>
           <FormattedMessage id="RequestSent.browseMore" />
         </NamedLink>
+        {onWithdraw ? (
+          <button type="button" className={css.withdrawButton} onClick={onWithdraw}>
+            <FormattedMessage id="RequestSent.withdraw" />
+          </button>
+        ) : null}
       </div>
     </section>
   );

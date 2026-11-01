@@ -99,3 +99,18 @@ export const getReplyByDeadline = transaction => {
   }
   return { deadline: windowEnd, kind: 'window' };
 };
+
+/**
+ * A shoot detail the client gave at checkout (B06): shoot_type, shoot_description, location_type,
+ * shoot_address. Checkout saves transaction fields under the role prefix
+ * (`customer_shoot_address`, see pickTransactionFieldsData in util/fieldHelpers.js); the plain key
+ * is read as a fallback for older test data.
+ *
+ * @param {Object} protectedData transaction protectedData
+ * @param {string} key e.g. 'location_type'
+ * @returns {*} the value, or undefined
+ */
+export const getShootDetail = (protectedData, key) => {
+  const prefixed = protectedData?.[`customer_${key}`];
+  return prefixed != null && prefixed !== '' ? prefixed : protectedData?.[key];
+};

@@ -1,6 +1,6 @@
 @import '../../../styles/customMediaQueries.css';
 
-/* B07 "request sent" card, the booking status chip, and the summary rows. Tokens only. */
+/* B07 "request sent" card and the summary rows. Tokens only. */
 .card {
   display: flex;
   flex-direction: column;
@@ -33,83 +33,6 @@
   border-radius: 50%;
   background: var(--amber-100);
   color: var(--amber-700);
-}
-
-/* ---- Booking status chip (rt-status) ---- */
-.status {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 4px 9px;
-  font-family: var(--font-sans);
-  font-weight: var(--weight-bold);
-  font-size: var(--text-2xs);
-  letter-spacing: var(--tracking-wide);
-  text-transform: uppercase;
-  white-space: nowrap;
-  border-radius: var(--radius-sm);
-}
-
-.statusLarge {
-  gap: 6px;
-  padding: 6px 12px;
-  font-size: var(--text-xs);
-
-  & .statusDot {
-    width: 8px;
-    height: 8px;
-  }
-}
-
-.statusDot {
-  display: inline-block;
-  flex-shrink: 0;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-}
-
-.requested {
-  background: var(--amber-100);
-  color: var(--amber-700);
-
-  & .statusDot {
-    background: var(--amber-700);
-  }
-}
-
-.accepted {
-  background: rgba(30, 127, 82, 0.12);
-  color: var(--status-success);
-
-  & .statusDot {
-    background: var(--status-success);
-  }
-}
-
-.completed {
-  background: var(--accent-50);
-  color: var(--accent-700);
-
-  & .statusDot {
-    background: var(--accent-700);
-  }
-}
-
-.declined,
-.cancelled,
-.expired {
-  background: var(--ink-100);
-  color: var(--ink-700);
-
-  & .statusDot {
-    background: var(--ink-700);
-  }
-}
-
-.expired .statusDot {
-  background: transparent;
-  border: var(--border-key) solid var(--ink-600);
 }
 
 /* ---- Title and lede ---- */
@@ -319,6 +242,35 @@
 
   &:hover {
     background: var(--ink-50);
+  }
+}
+
+/* Q9: withdraw is a quiet choice, not a second primary action. */
+.withdrawButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 44px;
+  padding: 0 var(--space-4);
+  font-family: var(--font-sans);
+  font-weight: var(--weight-semibold);
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+
+  &:hover {
+    color: var(--text-primary);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--shadow-focus);
   }
 }
 

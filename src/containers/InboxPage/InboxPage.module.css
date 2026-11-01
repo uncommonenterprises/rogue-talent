@@ -374,6 +374,92 @@
   color: var(--colorGrey300);
 }
 
+/* B09 booking row: who, the status chip, dates and money, one sentence. */
+.bookingRow {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  width: 100%;
+  min-height: 72px;
+  padding: var(--space-3) var(--space-2);
+  border-radius: var(--radius-md);
+  font-family: var(--font-sans);
+  color: var(--text-primary);
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: none;
+    background: var(--ink-50);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: inset 0 0 0 2px var(--accent-500);
+  }
+}
+
+.bookingRowAvatar {
+  position: relative;
+  flex: none;
+}
+
+.bookingRowDot {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 10px;
+  height: 10px;
+  border: var(--border-key) solid var(--white);
+  border-radius: 50%;
+  background: var(--accent-500);
+}
+
+.bookingRowBody {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.bookingRowTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.bookingRowName {
+  min-width: 0;
+  font-weight: var(--weight-bold);
+  font-size: var(--text-sm);
+  line-height: 1.4;
+  color: var(--text-primary);
+  overflow-wrap: anywhere;
+}
+
+.bookingRowMeta {
+  font-size: var(--text-sm);
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.bookingRowNote {
+  font-size: var(--text-xs);
+  line-height: 1.5;
+  color: var(--text-muted);
+
+  & strong {
+    font-weight: var(--weight-bold);
+    color: var(--text-primary);
+  }
+}
+
+.bookingRowNoteUrgent strong {
+  color: var(--amber-700);
+}
+
 .bannedUserLink {
   & .itemUsername,
   &:hover .itemUsername,

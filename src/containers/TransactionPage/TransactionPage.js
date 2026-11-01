@@ -21,12 +21,15 @@ import { getCurrentUserTypeRoles, hasPermissionToViewData } from '../../util/use
 import { userDisplayNameAsString } from '../../util/data';
 import { isMobileSafari } from '../../util/userAgent';
 import { getModelFirstName } from '../../util/modelProfile';
+import { formatMoneyCompact } from '../../util/currency';
+import { getBannerMessageIds, getBookingStatus, getNextSteps } from '../../util/bookingStatus';
 import {
   formatDay,
   formatDayTime,
   getDailyRange,
   getReplyByDeadline,
   getRequestSentAt,
+  getShootDetail,
 } from '../../util/bookingSummary';
 import {
   SAFETY_RESPECT_RATING_BY_CUSTOMER,
@@ -88,6 +91,14 @@ import SendMessageForm from './SendMessageForm/SendMessageForm';
 import TransactionPanel from './TransactionPanel/TransactionPanel';
 import RequestSentCard from './RequestSent/RequestSentCard';
 import BookingSummaryRows from './RequestSent/BookingSummaryRows';
+import BookingStatusBanner from './BookingStatus/BookingStatusBanner';
+import ConfirmActionModal from './ConfirmActionModal/ConfirmActionModal';
+import {
+  EarnCard,
+  ModelReplyCard,
+  ModelRequestDetails,
+  ModelRequestHeader,
+} from './ModelRequest/ModelRequest';
 
 import {
   makeTransition,
@@ -326,6 +337,8 @@ export const TransactionPageComponent = props => {
   const [changeRequestSubmitted, setChangeRequestSubmitted] = useState(false);
   const [isMakeCounterOfferModalOpen, setMakeCounterOfferModalOpen] = useState(false);
   const [counterOfferSubmitted, setCounterOfferSubmitted] = useState(false);
+  const [isDeclineModalOpen, setDeclineModalOpen] = useState(false);
+  const [isWithdrawModalOpen, setWithdrawModalOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -833,21 +846,41 @@ export const TransactionPageComponent = props => {
     isBookingTx &&
     !!process &&
     bookingProcessState === process.states?.PREAUTHORIZED;
+  // B09: daily bookings (Rogue Talent's model bookings) get one status label for both sides.
+  const isDailyBookingTx = isBookingTx && lineItemUnitType === 'line-item/day';
+  const bookingStatus = isDailyBookingTx
+    ? getBookingStatus({
+        state: bookingProcessState,
+        role: transactionRole,
+        lastTransition: transaction?.attributes?.lastTransition,
+      })
+    : null;
+  const isEndedBooking = [
+    'declined',
+    'expired',
+    'cancelled',
+    'refunded',
+    'paymentExpired',
+  ].includes(bookingStatus?.status);
   const breakdownNumbers = hasLineItems
     ? getBreakdownData(transaction.attributes.lineItems, transactionRole)
     : null;
-  // Stage 2 uses it on the client's Requested page (B07), where the dates sit in the summary
-  // rows; the other states keep the receipt with dates until the status pages (B08/B09).
+  // The B05 breakdown on the client's Requested page (B07) and on every daily booking page, where
+  // the dates sit in the summary rows. Bookings with refunds keep the detailed receipt.
   const usePriceBreakdown =
-    isRequestedForCustomer && !!breakdownNumbers && !breakdownNumbers.hasRefunds;
+    (isRequestedForCustomer || isDailyBookingTx) &&
+    !!breakdownNumbers &&
+    !breakdownNumbers.hasRefunds;
 
   const orderBreakdownMaybe = usePriceBreakdown
     ? {
         orderBreakdown: (
           <PriceBreakdown
+            className={css.priceBreakdown}
             lineItems={transaction.attributes.lineItems}
             role={transactionRole}
             modelName={modelFirstName}
+            showNote={!isEndedBooking}
             travelFeePolicy={listing?.attributes?.publicData?.travel_fee_policy}
             notePrefix={
               isRequestedForCustomer ? (
@@ -884,7 +917,7 @@ export const TransactionPageComponent = props => {
 
   // SAF-11 / SAF-17: model-side safety UI, driven by the SAF-10 shoot details on
   // the order protectedData and the booking process state.
-  const locationType = transaction?.attributes?.protectedData?.location_type;
+  const locationType = getShootDetail(transaction?.attributes?.protectedData, 'location_type');
   const isResidenceShoot = locationType === 'private-residence';
   // SAF-11: advisory shows to the model from the request through the confirmed booking.
   const showResidenceAdvisory =
@@ -899,7 +932,7 @@ export const TransactionPageComponent = props => {
   // SAF-17: shareable shoot summary shows to the model on a confirmed, pre-shoot booking.
   const showShootSummary = isProviderRole && !!isCancellableBookingState;
   // Human-readable shoot-type label for the summary (protectedData stores the value).
-  const shootTypeValue = transaction?.attributes?.protectedData?.shoot_type;
+  const shootTypeValue = getShootDetail(transaction?.attributes?.protectedData, 'shoot_type');
   const shootTypeField = foundListingTypeConfig?.transactionFields?.find(
     f => f.key === 'shoot_type'
   );
@@ -909,8 +942,20 @@ export const TransactionPageComponent = props => {
   // B07: the client's "request sent" card with the real reply-by deadline, and what was agreed.
   const replyBy = isRequestedForCustomer ? getReplyByDeadline(transaction) : null;
   const sentAt = isRequestedForCustomer ? getRequestSentAt(transaction) : null;
+  // Q9: the client can withdraw while Requested, but only on a process version that has the
+  // transition (the API lists it as a next step). Older bookings, and every booking until the
+  // new process version is live, simply don't show the link.
+  const withdrawTransition = process?.transitions?.CUSTOMER_WITHDRAW;
+  const canWithdraw =
+    isRequestedForCustomer &&
+    !!withdrawTransition &&
+    (nextTransitions || []).some(t => t?.attributes?.name === withdrawTransition);
+  const withdrawInProgress = !!withdrawTransition && transitionInProgress === withdrawTransition;
+  const onWithdrawRequest = () => onTransition(transaction?.id, withdrawTransition, {});
+
   const requestSentCard = isRequestedForCustomer ? (
     <RequestSentCard
+      onWithdraw={canWithdraw ? () => setWithdrawModalOpen(true) : null}
       modelName={modelFirstName}
       deadlineLabel={replyBy ? formatDayTime(intl, replyBy.deadline, timeZone) : null}
       deadlineKind={replyBy?.kind}
@@ -921,7 +966,7 @@ export const TransactionPageComponent = props => {
     lineItemUnitType === 'line-item/day'
       ? getDailyRange(booking?.attributes?.start, booking?.attributes?.end)
       : null;
-  const locationTypeValue = transaction?.attributes?.protectedData?.location_type;
+  const locationTypeValue = locationType;
   const locationTypeMessageId = `BookingCheckout.locationType.${locationTypeValue}`;
   const locationTypeLabel = locationTypeValue
     ? Object.prototype.hasOwnProperty.call(intl.messages || {}, locationTypeMessageId)
@@ -930,21 +975,66 @@ export const TransactionPageComponent = props => {
           ?.find(f => f.key === 'location_type')
           ?.enumOptions?.find(o => o.option === locationTypeValue)?.label || locationTypeValue
     : null;
-  const bookingSummaryRows = isRequestedForCustomer ? (
-    <BookingSummaryRows
-      datesLabel={
-        dailyRange
-          ? dailyRange.dayCount === 1
-            ? formatDay(intl, dailyRange.start, timeZone)
-            : intl.formatMessage(
-                { id: 'BookingDatesForm.summaryRange' },
-                {
-                  start: formatDay(intl, dailyRange.start, timeZone),
-                  end: formatDay(intl, dailyRange.lastDay, timeZone),
-                }
-              )
+  const datesLabel = dailyRange
+    ? dailyRange.dayCount === 1
+      ? formatDay(intl, dailyRange.start, timeZone)
+      : intl.formatMessage(
+          { id: 'BookingDatesForm.summaryRange' },
+          {
+            start: formatDay(intl, dailyRange.start, timeZone),
+            end: formatDay(intl, dailyRange.lastDay, timeZone),
+          }
+        )
+    : null;
+
+  // The licence: the client agreed at checkout (B06), the model by accepting (B08).
+  const acceptedAt = txTransitions.find(t =>
+    [process?.transitions?.ACCEPT, process?.transitions?.OPERATOR_ACCEPT].includes(t.transition)
+  )?.createdAt;
+  const licenceAgreedAt = isCustomerRole ? getRequestSentAt(transaction) : acceptedAt;
+  const hasAgreedLicence = isCustomerRole
+    ? !!transaction?.attributes?.protectedData?.licenceAgreedByCustomer
+    : !!acceptedAt;
+  const licenceAgreedLabel = hasAgreedLicence
+    ? licenceAgreedAt
+      ? intl.formatMessage(
+          { id: 'RequestSent.licenceAgreedOn' },
+          { date: formatDay(intl, licenceAgreedAt, timeZone) }
+        )
+      : intl.formatMessage({ id: 'RequestSent.licenceAgreed' })
+    : null;
+
+  // B09: the status banner for every daily booking state except Requested (B07 client, B08 model).
+  const bannerMessageIds =
+    isDailyBookingTx && !isRequestedForCustomer
+      ? getBannerMessageIds(bookingStatus, transactionRole)
+      : null;
+  const payinTotal = transaction?.attributes?.payinTotal;
+  const bookingStatusBanner = bannerMessageIds ? (
+    <BookingStatusBanner
+      bookingStatus={bookingStatus}
+      messageIds={bannerMessageIds}
+      values={{
+        name: modelFirstName,
+        client: userDisplayNameAsString(customer, ''),
+        dates: datesLabel || '',
+        total: payinTotal ? formatMoneyCompact(intl, payinTotal) : '',
+      }}
+      nextSteps={getNextSteps(bookingStatus, transactionRole)}
+      modelName={modelFirstName}
+      listingLinkParams={
+        listing?.id && !listingDeleted
+          ? { id: listing.id.uuid, slug: createSlug(listing.attributes?.title || '') }
           : null
       }
+    />
+  ) : null;
+
+  // B07 keeps its full summary (shoot, where, licence). Other daily booking pages show the dates
+  // and the licence; the shoot details are in the transaction fields beside them.
+  const bookingSummaryRows = isRequestedForCustomer ? (
+    <BookingSummaryRows
+      datesLabel={datesLabel}
       dayCountLabel={
         dailyRange
           ? intl.formatMessage(
@@ -955,17 +1045,22 @@ export const TransactionPageComponent = props => {
       }
       shootTypeLabel={shootTypeLabel}
       locationTypeLabel={locationTypeLabel}
-      shootAddress={transaction?.attributes?.protectedData?.shoot_address}
-      licenceAgreedLabel={
-        transaction?.attributes?.protectedData?.licenceAgreedByCustomer
-          ? sentAt
-            ? intl.formatMessage(
-                { id: 'RequestSent.licenceAgreedOn' },
-                { date: formatDay(intl, sentAt, timeZone) }
-              )
-            : intl.formatMessage({ id: 'RequestSent.licenceAgreed' })
+      shootAddress={getShootDetail(transaction?.attributes?.protectedData, 'shoot_address')}
+      licenceAgreedLabel={licenceAgreedLabel}
+      transactionId={transaction?.id?.uuid}
+    />
+  ) : isDailyBookingTx && bookingStatus ? (
+    <BookingSummaryRows
+      datesLabel={datesLabel}
+      dayCountLabel={
+        dailyRange
+          ? intl.formatMessage(
+              { id: 'BookingCheckout.dayCount' },
+              { dayCount: dailyRange.dayCount }
+            )
           : null
       }
+      licenceAgreedLabel={licenceAgreedLabel}
       transactionId={transaction?.id?.uuid}
     />
   ) : null;
@@ -1001,6 +1096,103 @@ export const TransactionPageComponent = props => {
     />
   );
 
+  // B08: the model's incoming request (daily booking, Requested, model's side). Needs the
+  // accept/decline actions; if they're unavailable (e.g. a banned client) the template page shows.
+  const acceptProps = stateData?.primaryButtonProps;
+  const declineProps = stateData?.secondaryButtonProps;
+  const isModelRequest =
+    isProviderRole &&
+    bookingStatus?.status === 'requested' &&
+    !!acceptProps?.onAction &&
+    !!declineProps?.onAction;
+  const clientName = userDisplayNameAsString(customer, '');
+  const clientCompany = customer?.attributes?.profile?.publicData?.company_name;
+  const allMessagesLoaded = !(totalMessagePages > oldestMessagePageFetched);
+  const firstMessage =
+    isModelRequest && allMessagesLoaded && messages?.length > 0
+      ? [...messages].sort(
+          (a, b) => (a.attributes?.createdAt || 0) - (b.attributes?.createdAt || 0)
+        )[0]
+      : null;
+  // The client's note is the message they sent with the request (the first message).
+  const clientNote =
+    firstMessage && firstMessage.sender?.id?.uuid === customer?.id?.uuid
+      ? firstMessage.attributes?.content
+      : null;
+  const modelReplyBy = isModelRequest ? getReplyByDeadline(transaction) : null;
+  const earnNumbers = isModelRequest ? breakdownNumbers : null;
+  const earnCardProps = earnNumbers
+    ? {
+        amount: formatMoneyCompact(intl, earnNumbers.total),
+        rateLabel: intl.formatMessage(
+          { id: 'OrderBreakdown.baseUnitDay' },
+          {
+            unitPrice: formatMoneyCompact(intl, earnNumbers.unitPrice),
+            quantity: earnNumbers.quantity,
+          }
+        ),
+        // The client's fee only appears on the client's line items; 15% is the configured fee.
+        feePercentage:
+          getBreakdownData(transaction?.attributes?.lineItems, 'customer')?.feePercentage ?? 15,
+      }
+    : null;
+  const dayCountLabel = dailyRange
+    ? intl.formatMessage({ id: 'BookingCheckout.dayCount' }, { dayCount: dailyRange.dayCount })
+    : null;
+  const modelSafetyReportSearch = `?${new URLSearchParams({
+    tx: transaction?.id?.uuid || '',
+    role: transactionRole || '',
+    party: clientName || '',
+  }).toString()}`;
+  const declineInProgress = !!declineProps?.inProgress;
+  const modelReplyCardProps = isModelRequest
+    ? {
+        acceptProps,
+        onDecline: () => setDeclineModalOpen(true),
+        declineInProgress,
+        datesLabel,
+        safetyReportSearch: modelSafetyReportSearch,
+      }
+    : null;
+  const modelRequestHeader = isModelRequest ? (
+    <ModelRequestHeader
+      clientName={clientName}
+      clientCompany={clientCompany}
+      deadline={modelReplyBy?.deadline}
+      deadlineLabel={modelReplyBy ? formatDayTime(intl, modelReplyBy.deadline, timeZone) : null}
+      earnCard={earnCardProps ? <EarnCard {...earnCardProps} placement="phone" /> : null}
+    />
+  ) : null;
+  const modelRequestDetails = isModelRequest ? (
+    <ModelRequestDetails
+      showResidenceAdvisory={showResidenceAdvisory}
+      datesLabel={datesLabel}
+      dayCountLabel={dayCountLabel}
+      shootTypeLabel={shootTypeLabel}
+      locationTypeLabel={locationTypeLabel}
+      shootAddress={getShootDetail(transaction?.attributes?.protectedData, 'shoot_address')}
+      description={getShootDetail(transaction?.attributes?.protectedData, 'shoot_description')}
+      clientNote={clientNote}
+      clientName={clientName}
+      clientCompany={clientCompany}
+      transactionId={transaction?.id?.uuid}
+    />
+  ) : null;
+  const replyCard = variant =>
+    isModelRequest ? (
+      <ModelReplyCard
+        {...modelReplyCardProps}
+        placement={variant}
+        earnCard={
+          variant === 'desktop' && earnCardProps ? (
+            <EarnCard {...earnCardProps} placement="desktop" />
+          ) : null
+        }
+      />
+    ) : null;
+  // B08 replaces the action buttons with its own reply card.
+  const panelStateData = isModelRequest ? { ...stateData, showActionButtons: false } : stateData;
+
   const customTransactionFieldProps = (role = 'customer', isOfferOrRequest = false) => ({
     protectedData: transaction?.attributes.protectedData,
     intl,
@@ -1034,20 +1226,25 @@ export const TransactionPageComponent = props => {
       savePaymentMethodFailed={savePaymentMethodFailed}
       fetchMessagesError={fetchMessagesError}
       onOpenDisputeModal={onOpenDisputeModal}
-      stateData={stateData}
+      stateData={panelStateData}
       transactionRole={transactionRole}
       showBookingLocation={showBookingLocation}
       hasViewingRights={hasViewingRights}
       showListingImage={showListingImage}
-      showResidenceAdvisory={showResidenceAdvisory}
+      showResidenceAdvisory={showResidenceAdvisory && !isModelRequest}
       showShootSummary={showShootSummary}
       booking={booking}
       timeZone={timeZone}
       lineItemUnitType={lineItemUnitType}
       shootTypeLabel={shootTypeLabel}
       usageLicence={usageLicence}
-      requestSentCard={requestSentCard}
-      bookingSummaryRows={bookingSummaryRows}
+      statusHeader={requestSentCard || modelRequestHeader || bookingStatusBanner}
+      hideTransactionFields={!!requestSentCard || isModelRequest}
+      hideUsageLicence={!!requestSentCard || isDailyBookingTx}
+      bookingSummaryRows={isModelRequest ? null : bookingSummaryRows}
+      bookingDetails={modelRequestDetails}
+      replyCardMobile={replyCard('mobile')}
+      replyCardDesktop={replyCard('desktop')}
       sendMessageForm={
         showSendMessageForm ? (
           <SendMessageForm
@@ -1135,7 +1332,7 @@ export const TransactionPageComponent = props => {
       }
       isInquiryProcess={processName === INQUIRY_PROCESS_NAME}
       config={config}
-      {...orderBreakdownMaybe}
+      {...(isModelRequest ? {} : orderBreakdownMaybe)}
       orderPanel={
         <OrderPanel
           className={classNames(css.orderPanel, {
@@ -1288,6 +1485,47 @@ export const TransactionPageComponent = props => {
             changeRequestSubmitted={changeRequestSubmitted}
             changeRequestInProgress={transitionInProgress === process.transitions.REQUEST_CHANGES}
             changeRequestError={transitionError}
+          />
+        ) : null}
+        {isModelRequest || isDeclineModalOpen ? (
+          <ConfirmActionModal
+            id="DeclineRequestModal"
+            isOpen={isDeclineModalOpen}
+            onClose={() => setDeclineModalOpen(false)}
+            onManageDisableScrolling={onManageDisableScrolling}
+            onConfirm={() => declineProps?.onAction?.()}
+            inProgress={declineInProgress}
+            hasError={!!declineProps?.error}
+            title={<FormattedMessage id="ModelRequest.declineTitle" />}
+            body={
+              <FormattedMessage
+                id="ModelRequest.declineBody"
+                values={{ name: clientName, dates: datesLabel || '' }}
+              />
+            }
+            confirmLabel={<FormattedMessage id="ModelRequest.decline" />}
+            cancelLabel={<FormattedMessage id="ModelRequest.keepRequest" />}
+            errorMessage={declineProps?.errorText}
+          />
+        ) : null}
+        {canWithdraw || isWithdrawModalOpen ? (
+          <ConfirmActionModal
+            id="WithdrawRequestModal"
+            isOpen={isWithdrawModalOpen}
+            onClose={() => setWithdrawModalOpen(false)}
+            onManageDisableScrolling={onManageDisableScrolling}
+            onConfirm={onWithdrawRequest}
+            inProgress={withdrawInProgress}
+            hasError={!!transitionError && isWithdrawModalOpen && !withdrawInProgress}
+            title={<FormattedMessage id="RequestSent.withdrawTitle" />}
+            body={
+              <FormattedMessage id="RequestSent.withdrawBody" values={{ name: modelFirstName }} />
+            }
+            confirmLabel={<FormattedMessage id="RequestSent.withdraw" />}
+            cancelLabel={<FormattedMessage id="RequestSent.keepRequest" />}
+            errorMessage={
+              <FormattedMessage id="RequestSent.withdrawFailed" values={{ name: modelFirstName }} />
+            }
           />
         ) : null}
         {showMakeCounterOfferModal ? (

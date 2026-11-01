@@ -31,6 +31,8 @@ import {
   getProcess,
 } from '../../transactions/transaction';
 
+import { getBannerMessageIds, getBookingStatus, getNextSteps } from '../../util/bookingStatus';
+
 import { getStateData } from './TransactionPage.stateData';
 import { TransactionPageComponent } from './TransactionPage';
 
@@ -494,57 +496,64 @@ describe('TransactionPage', () => {
         render(<TransactionPageComponent {...props} />);
       });
 
+      // B08: while Requested, the model sees the request page: deadline, earnings (phone and
+      // desktop cards), the shoot, who is booking, the draft licence summary, and one reply card
+      // per layout with Accept and Decline (no template action buttons, no template heading).
+      if (tr === 'transition/confirm-payment') {
+        expect(screen.getByText('ModelRequest.title')).toBeInTheDocument();
+        expect(screen.getByText('BookingStatus.requested')).toBeInTheDocument();
+        expect(screen.getByText('ModelRequest.replyBy')).toBeInTheDocument();
+        expect(screen.getAllByText('ModelRequest.earnEyebrow')).toHaveLength(2);
+        expect(screen.getByText('ModelRequest.shootTitle')).toBeInTheDocument();
+        expect(screen.getByText('ModelRequest.whoTitle')).toBeInTheDocument();
+        expect(screen.getByText('ModelRequest.trustLine')).toBeInTheDocument();
+        expect(screen.getByText('ModelRequest.licenceTitle')).toBeInTheDocument();
+        expect(screen.getAllByText(/LicenceSummary\.model\.point/)).toHaveLength(4);
+        expect(screen.getByText('StripePaymentForm.licenceDraftNotice')).toBeInTheDocument();
+        expect(screen.getAllByText('ModelRequest.acceptAgreesLicence')).toHaveLength(2);
+        expect(screen.getAllByRole('button', { name: 'ModelRequest.accept' })).toHaveLength(2);
+        expect(screen.getAllByRole('button', { name: 'ModelRequest.decline' })).toHaveLength(2);
+        expect(screen.getAllByText('TransactionPanel.reportSafetyConcern')).toHaveLength(2);
+        expect(
+          screen.queryByText(
+            'TransactionPage.default-booking.provider.transition-accept.actionButton'
+          )
+        ).not.toBeInTheDocument();
+        expect(screen.getByText('TransactionPanel.activityHeading')).toBeInTheDocument();
+        return;
+      }
+
+      // B09: daily bookings show the status banner (one label for both sides), the dates in the
+      // booking summary and the B05 breakdown. Refunds keep the detailed receipt.
       const state = stateData.processState;
-      const txTitle = `TransactionPage.${processName}.${transactionRole}.${state}.title`;
-      expect(screen.getByText(txTitle)).toBeInTheDocument();
+      const bookingStatus = getBookingStatus({ state, role: transactionRole, lastTransition: tr });
+      const banner = getBannerMessageIds(bookingStatus, transactionRole);
+      if (banner) {
+        expect(screen.getByText(banner.titleId)).toBeInTheDocument();
+        expect(screen.getByText(banner.bodyId)).toBeInTheDocument();
+        expect(screen.getByText(bookingStatus.labelId)).toBeInTheDocument();
+      } else {
+        const txTitle = `TransactionPage.${processName}.${transactionRole}.${state}.title`;
+        expect(screen.getByText(txTitle)).toBeInTheDocument();
+      }
 
-      expect(screen.getByText('TransactionPage.listingTitleMobile')).toBeInTheDocument();
-
-      // Order breakdown
       const expectedLength = isInquiry ? 0 : 2;
-      expect(
-        screen.queryAllByText(`TransactionPanel.${processName}.orderBreakdownTitle`)
-      ).toHaveLength(expectedLength);
-
-      expect(screen.queryAllByText('OrderBreakdown.bookingStart')).toHaveLength(expectedLength);
-      expect(screen.queryAllByText('Tuesday')).toHaveLength(expectedLength * 2);
-      expect(screen.queryAllByText('Jun 14')).toHaveLength(expectedLength * 2);
-      expect(screen.queryAllByText('OrderBreakdown.bookingEnd')).toHaveLength(expectedLength);
-      //expect(screen.queryAllByText('Tuesday')).toHaveLength(expectedLength);
-      //expect(screen.queryAllByText('Jun 14')).toHaveLength(expectedLength);
-
-      expect(screen.queryAllByText('OrderBreakdown.baseUnitDay')).toHaveLength(expectedLength);
-      expect(screen.queryAllByText('OrderBreakdown.subTotal')).toHaveLength(expectedLength);
-      expect(screen.queryAllByText('$10.00')).toHaveLength(expectedLength * 2);
-
-      // Order breakdown: refund?
-      const expectedLengthReversal = isReversal ? 2 : 0;
-      expect(screen.queryAllByText('OrderBreakdown.refund')).toHaveLength(expectedLengthReversal);
-      expect(screen.queryAllByText('-$10.00')).toHaveLength(expectedLengthReversal);
-
-      // Order breakdown: commission
-      expect(screen.queryAllByText('OrderBreakdown.commission')).toHaveLength(expectedLength);
-      expect(screen.queryAllByText('-$1.00')).toHaveLength(expectedLength);
-
-      // Order breakdown: commission refund?
-      expect(screen.queryAllByText('OrderBreakdown.refundProviderFee')).toHaveLength(
-        expectedLengthReversal
+      expect(screen.queryAllByText('BookingCheckout.datesLabel')).toHaveLength(
+        bookingStatus ? 2 : 0
       );
-
-      // Order breakdown: total (with multiple translation keys)
-      const total = isReversal
-        ? 'OrderBreakdown.providerTotalRefunded'
-        : isReceived
-        ? 'OrderBreakdown.providerTotalReceived'
-        : 'OrderBreakdown.providerTotalDefault';
-      const expectedTotal = isReversal ? expectedLengthReversal : expectedLength;
-      expect(screen.queryAllByText(total)).toHaveLength(expectedTotal);
-      expect(screen.queryAllByText('$9.00')).toHaveLength(expectedTotal);
-
-      // A note about commission (customer should no see this)
-      expect(screen.queryAllByText('OrderBreakdown.commissionFeeNote')).toHaveLength(
-        expectedLength
-      );
+      if (isReversal) {
+        expect(screen.queryAllByText('OrderBreakdown.refund')).toHaveLength(2);
+        expect(screen.queryAllByText('OrderBreakdown.providerTotalRefunded')).toHaveLength(2);
+      } else {
+        expect(screen.queryAllByText('OrderBreakdown.providerTotalDefault')).toHaveLength(
+          expectedLength
+        );
+        expect(screen.queryAllByText('PriceBreakdown.feeTakenFromYou')).toHaveLength(
+          expectedLength
+        );
+      }
+      // The old licence block gives way to the summary row on daily bookings.
+      expect(screen.queryByText('UsageLicenceSection.heading')).not.toBeInTheDocument();
 
       // Activity feed (here we just check the heading)
       expect(screen.getByText('TransactionPanel.activityHeading')).toBeInTheDocument();
@@ -673,52 +682,40 @@ describe('TransactionPage', () => {
         return;
       }
 
+      // B09: daily bookings show the status banner (one label for both sides), the dates in the
+      // booking summary and the B05 breakdown. Refunds keep the detailed receipt.
       const state = stateData.processState;
-      const txTitle = `TransactionPage.${processName}.${transactionRole}.${state}.title`;
-      expect(screen.getByText(txTitle)).toBeInTheDocument();
+      const bookingStatus = getBookingStatus({ state, role: transactionRole, lastTransition: tr });
+      const banner = getBannerMessageIds(bookingStatus, transactionRole);
+      if (banner) {
+        expect(screen.getByText(banner.titleId)).toBeInTheDocument();
+        expect(screen.getByText(banner.bodyId)).toBeInTheDocument();
+        expect(screen.getByText(bookingStatus.labelId)).toBeInTheDocument();
+      } else {
+        const txTitle = `TransactionPage.${processName}.${transactionRole}.${state}.title`;
+        expect(screen.getByText(txTitle)).toBeInTheDocument();
+      }
 
-      expect(screen.getByText('TransactionPage.listingTitleMobile')).toBeInTheDocument();
-
-      // Order breakdown
       const expectedLength = isInquiry ? 0 : 2;
-      expect(
-        screen.queryAllByText(`TransactionPanel.${processName}.orderBreakdownTitle`)
-      ).toHaveLength(expectedLength);
-
-      expect(screen.queryAllByText('OrderBreakdown.bookingStart')).toHaveLength(expectedLength);
-      expect(screen.queryAllByText('Tuesday')).toHaveLength(expectedLength * 2);
-      expect(screen.queryAllByText('Jun 14')).toHaveLength(expectedLength * 2);
-      expect(screen.queryAllByText('OrderBreakdown.bookingEnd')).toHaveLength(expectedLength);
-      //expect(screen.queryAllByText('Tuesday')).toHaveLength(expectedLength);
-      //expect(screen.queryAllByText('Jun 14')).toHaveLength(expectedLength);
-
-      expect(screen.queryAllByText('OrderBreakdown.baseUnitDay')).toHaveLength(expectedLength);
-      expect(screen.queryAllByText('OrderBreakdown.subTotal')).toHaveLength(
-        isReversal ? expectedLength : 0
+      expect(screen.queryAllByText('BookingCheckout.datesLabel')).toHaveLength(
+        bookingStatus ? 2 : 0
       );
-      expect(screen.queryAllByText('$10.00')).toHaveLength(
-        isReversal ? expectedLength * 3 : expectedLength * 2
-      ); // base, subtotal, total
-
-      // Order breakdown: refund?
-      const expectedLengthReversal = isReversal ? 2 : 0;
-      expect(screen.queryAllByText('OrderBreakdown.refund')).toHaveLength(expectedLengthReversal);
-      expect(screen.queryAllByText('-$10.00')).toHaveLength(expectedLengthReversal);
-
-      // Order breakdown: commission (customer should no see this)
+      if (isReversal) {
+        expect(screen.queryAllByText('OrderBreakdown.refund')).toHaveLength(2);
+        expect(screen.queryAllByText('OrderBreakdown.total')).toHaveLength(2);
+      } else {
+        expect(screen.queryAllByText('PriceBreakdown.total')).toHaveLength(expectedLength);
+      }
+      // The client never sees the model's fee lines.
       expect(screen.queryAllByText('OrderBreakdown.commission')).toHaveLength(0);
-      expect(screen.queryAllByText('-$1.00')).toHaveLength(0);
+      expect(screen.queryAllByText('PriceBreakdown.feeTakenFromYou')).toHaveLength(0);
+      expect(screen.queryByText('UsageLicenceSection.heading')).not.toBeInTheDocument();
 
-      // Order breakdown: commission refund? (customer should no see this)
-      expect(screen.queryAllByText('OrderBreakdown.refundProviderFee')).toHaveLength(0);
-
-      // Order breakdown: total (with multiple translation keys)
-      const total = 'OrderBreakdown.total';
-      const expectedTotal = isReversal ? expectedLengthReversal : expectedLength;
-      expect(screen.queryAllByText(total)).toHaveLength(expectedTotal);
-
-      // A note about commission (customer should no see this)
-      expect(screen.queryAllByText('OrderBreakdown.commissionFeeNote')).toHaveLength(0);
+      // Ended requests offer the next step: find another model.
+      const { findAnother } = getNextSteps(bookingStatus, transactionRole);
+      expect(screen.queryAllByText('BookingStatus.findAnotherModel')).toHaveLength(
+        banner && findAnother ? 1 : 0
+      );
 
       // Activity feed (here we just check the heading)
       expect(screen.getByText('TransactionPanel.activityHeading')).toBeInTheDocument();
@@ -1616,5 +1613,244 @@ describe('TransactionPage', () => {
         expect(screen.queryByText('OrderPanel.ctaButtonMessagePurchase')).toBeNull();
       });
     });
+  });
+});
+
+describe('B08 model request: the reply', () => {
+  const provider = createUser('provider');
+  const customer = createUser('customer', {
+    profile: { publicData: { company_name: 'Northside Test Studio' } },
+  });
+  const transitions = getProcess('default-booking').transitions;
+  const dayItem = {
+    code: LINE_ITEM_DAY,
+    includeFor: ['customer', 'provider'],
+    quantity: new Decimal(2),
+    unitPrice: new Money(45000, 'GBP'),
+    lineTotal: new Money(90000, 'GBP'),
+    reversal: false,
+  };
+  const requestTx = createTransaction({
+    id: 'tx-b08',
+    customer,
+    provider,
+    listing: createListing('listing-b08', {
+      publicData: {
+        listingType: 'rent-bikes',
+        transactionProcessAlias: 'default-booking/release-1',
+        unitType: 'day',
+      },
+    }),
+    booking: createBooking('booking-b08', {
+      start: new Date(Date.UTC(2026, 10, 25)),
+      end: new Date(Date.UTC(2026, 10, 27)),
+    }),
+    processName: 'default-booking',
+    lastTransition: transitions.CONFIRM_PAYMENT,
+    lineItems: [dayItem],
+  });
+
+  const renderRequest = onTransition =>
+    render(
+      <TransactionPageComponent
+        currentUser={createCurrentUser('provider')}
+        transactionRole={TX_TRANSITION_ACTOR_PROVIDER}
+        transaction={requestTx}
+        params={{ id: 'tx-b08' }}
+        totalMessagePages={1}
+        oldestMessagePageFetched={1}
+        messages={[
+          createMessage(
+            'note',
+            { content: 'Call time is 9am.', createdAt: new Date(Date.UTC(2026, 10, 1)) },
+            { sender: customer }
+          ),
+        ]}
+        history={{ push: noop, block: () => noop }}
+        location={{ search: '' }}
+        scrollingDisabled={false}
+        onManageDisableScrolling={noop}
+        onSendMessage={noop}
+        onSendReview={noop}
+        onShowMoreMessages={noop}
+        onTransition={onTransition}
+        onFetchTimeSlots={noop}
+        callSetInitialValues={noop}
+        onInitializeCardPaymentData={noop}
+        onFetchTransactionLineItems={noop}
+        monthlyTimeSlots={{}}
+        timeSlotsForDate={{}}
+      />,
+      { withPortals: true }
+    );
+
+  it('shows the client, their company and their note before the model decides', async () => {
+    await act(async () => {
+      renderRequest(jest.fn());
+    });
+    expect(screen.getAllByText('Northside Test Studio').length).toBeGreaterThan(0);
+    expect(screen.getByText('ModelRequest.clientNoteLabel')).toBeInTheDocument();
+    expect(screen.getAllByText('Call time is 9am.').length).toBeGreaterThan(0);
+  });
+
+  it('SAF-11: the residence note shows from the address type checkout saved', async () => {
+    requestTx.attributes.protectedData = {
+      customer_location_type: 'private-residence',
+      customer_shoot_address: '12 Alder Close, Altrincham WA14 2PQ',
+    };
+    await act(async () => {
+      renderRequest(jest.fn());
+    });
+    expect(screen.getByText('TransactionPanel.residenceAdvisoryHeading')).toBeInTheDocument();
+    expect(screen.getByText('12 Alder Close, Altrincham WA14 2PQ')).toBeInTheDocument();
+    requestTx.attributes.protectedData = {};
+  });
+
+  it('accept fires straight away; decline asks first, then fires', async () => {
+    const onTransition = jest.fn(() => Promise.resolve({ meta: { requestStatus: 'fulfilled' } }));
+    await act(async () => {
+      renderRequest(onTransition);
+    });
+    const { userEvent } = testingLibrary;
+
+    await userEvent.click(screen.getAllByRole('button', { name: 'ModelRequest.decline' })[0]);
+    // Nothing happens until the model confirms.
+    expect(onTransition).not.toHaveBeenCalled();
+    const title = await screen.findByText('ModelRequest.declineTitle');
+    expect(screen.getByText('ModelRequest.declineBody')).toBeInTheDocument();
+
+    const dialog = title.closest('h2').parentElement;
+    await userEvent.click(within(dialog).getByRole('button', { name: 'ModelRequest.decline' }));
+    expect(onTransition).toHaveBeenCalledWith(requestTx.id, transitions.DECLINE, {});
+
+    onTransition.mockClear();
+    await userEvent.click(screen.getAllByRole('button', { name: 'ModelRequest.accept' })[0]);
+    expect(onTransition).toHaveBeenCalledWith(requestTx.id, transitions.ACCEPT, {});
+  });
+});
+
+describe('Q9 withdraw request (client, while Requested)', () => {
+  const provider = createUser('provider');
+  const customer = createUser('customer');
+  const transitions = getProcess('default-booking').transitions;
+  const requestTx = createTransaction({
+    id: 'tx-q9',
+    customer,
+    provider,
+    listing: createListing('listing-q9', {
+      publicData: {
+        listingType: 'rent-bikes',
+        transactionProcessAlias: 'default-booking/release-1',
+        unitType: 'day',
+      },
+    }),
+    booking: createBooking('booking-q9', {
+      start: new Date(Date.UTC(2026, 10, 25)),
+      end: new Date(Date.UTC(2026, 10, 27)),
+    }),
+    processName: 'default-booking',
+    lastTransition: transitions.CONFIRM_PAYMENT,
+    lineItems: [
+      {
+        code: LINE_ITEM_DAY,
+        includeFor: ['customer', 'provider'],
+        quantity: new Decimal(2),
+        unitPrice: new Money(45000, 'GBP'),
+        lineTotal: new Money(90000, 'GBP'),
+        reversal: false,
+      },
+    ],
+  });
+  const next = names => names.map(name => ({ id: new UUID(name), attributes: { name } }));
+
+  const renderRequested = (onTransition, nextTransitions) =>
+    render(
+      <TransactionPageComponent
+        currentUser={createCurrentUser('customer')}
+        transactionRole={TX_TRANSITION_ACTOR_CUSTOMER}
+        transaction={requestTx}
+        params={{ id: 'tx-q9' }}
+        totalMessagePages={1}
+        oldestMessagePageFetched={1}
+        messages={[]}
+        nextTransitions={nextTransitions}
+        history={{ push: noop, block: () => noop }}
+        location={{ search: '' }}
+        scrollingDisabled={false}
+        onManageDisableScrolling={noop}
+        onSendMessage={noop}
+        onSendReview={noop}
+        onShowMoreMessages={noop}
+        onTransition={onTransition}
+        onFetchTimeSlots={noop}
+        callSetInitialValues={noop}
+        onInitializeCardPaymentData={noop}
+        onFetchTransactionLineItems={noop}
+        monthlyTimeSlots={{}}
+        timeSlotsForDate={{}}
+      />,
+      { withPortals: true }
+    );
+
+  it('is hidden until the booking’s process version has the withdraw transition', async () => {
+    await act(async () => {
+      renderRequested(jest.fn(), next([transitions.EXPIRE]));
+    });
+    expect(screen.getByText('RequestSent.title')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'RequestSent.withdraw' })).not.toBeInTheDocument();
+  });
+
+  it('asks first, then withdraws (full release of the card hold)', async () => {
+    const onTransition = jest.fn(() => Promise.resolve({ meta: { requestStatus: 'fulfilled' } }));
+    await act(async () => {
+      renderRequested(onTransition, next([transitions.CUSTOMER_WITHDRAW, transitions.EXPIRE]));
+    });
+    const { userEvent } = testingLibrary;
+
+    // The dialog is mounted (closed) from the start, so the card's button is the first one.
+    await userEvent.click(screen.getAllByRole('button', { name: 'RequestSent.withdraw' })[0]);
+    expect(onTransition).not.toHaveBeenCalled();
+    const title = await screen.findByText('RequestSent.withdrawTitle');
+    expect(screen.getByText('RequestSent.withdrawBody')).toBeInTheDocument();
+
+    const dialog = title.closest('h2').parentElement;
+    await userEvent.click(within(dialog).getByRole('button', { name: 'RequestSent.withdraw' }));
+    expect(onTransition).toHaveBeenCalledWith(requestTx.id, transitions.CUSTOMER_WITHDRAW, {});
+  });
+
+  it('a withdrawn request reads Cancelled on both sides, with who withdrew and no charge', async () => {
+    const withdrawnTx = { ...requestTx, attributes: { ...requestTx.attributes } };
+    withdrawnTx.attributes.lastTransition = transitions.CUSTOMER_WITHDRAW;
+    await act(async () => {
+      render(
+        <TransactionPageComponent
+          currentUser={createCurrentUser('provider')}
+          transactionRole={TX_TRANSITION_ACTOR_PROVIDER}
+          transaction={withdrawnTx}
+          params={{ id: 'tx-q9' }}
+          totalMessagePages={1}
+          oldestMessagePageFetched={1}
+          messages={[]}
+          history={{ push: noop, block: () => noop }}
+          location={{ search: '' }}
+          scrollingDisabled={false}
+          onManageDisableScrolling={noop}
+          onSendMessage={noop}
+          onSendReview={noop}
+          onShowMoreMessages={noop}
+          onTransition={noop}
+          onFetchTimeSlots={noop}
+          callSetInitialValues={noop}
+          onInitializeCardPaymentData={noop}
+          onFetchTransactionLineItems={noop}
+          monthlyTimeSlots={{}}
+          timeSlotsForDate={{}}
+        />
+      );
+    });
+    expect(screen.getByText('BookingStatus.cancelled')).toBeInTheDocument();
+    expect(screen.getByText('BookingStatus.banner.provider.withdrawn.title')).toBeInTheDocument();
+    expect(screen.getByText('BookingStatus.banner.provider.withdrawn.body')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'ModelRequest.accept' })).not.toBeInTheDocument();
   });
 });

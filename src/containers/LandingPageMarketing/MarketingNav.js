@@ -7,6 +7,7 @@ import { FormattedMessage, useIntl } from '../../util/reactIntl';
 import { pathByRouteName } from '../../util/routes';
 import { isAccountStatusFlowEnabled, isModelUser } from '../../util/accountStatus';
 import { isClientUser } from '../../util/userHelpers';
+import { useMounted } from '../../util/useMounted';
 import { logout } from '../../ducks/auth.duck';
 import {
   Avatar,
@@ -116,7 +117,11 @@ const LoggedInActions = ({ currentUser }) => {
  * @param {'general'|'models'|'business'} props.page which landing page this is
  */
 const MarketingNav = ({ page = 'general' }) => {
-  const isAuthenticated = useSelector(state => !!state.auth?.isAuthenticated);
+  // The server renders logged out; show the logged-in actions once the page has hydrated so the
+  // first browser render matches the server HTML (see util/useMounted.js).
+  const mounted = useMounted();
+  const isAuthenticatedInStore = useSelector(state => !!state.auth?.isAuthenticated);
+  const isAuthenticated = mounted && isAuthenticatedInStore;
   const currentUser = useSelector(state => state.user?.currentUser);
 
   const cta =

@@ -1,0 +1,90 @@
+/* B09 booking page banner. Tokens only. */
+.root {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-3);
+  font-family: var(--font-sans);
+}
+
+.title {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-display);
+  font-weight: var(--weight-extrabold);
+  font-size: var(--text-2xl);
+  letter-spacing: var(--tracking-tight);
+  line-height: 1.15;
+  color: var(--text-primary);
+
+  @media (min-width: 640px) {
+    font-size: var(--text-3xl);
+  }
+}
+
+.body {
+  margin: 0;
+  padding: 0;
+  max-width: 60ch;
+  font-size: var(--text-base);
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  width: 100%;
+  margin-top: var(--space-2);
+
+  @media (min-width: 640px) {
+    flex-direction: row;
+    width: auto;
+  }
+}
+
+.primaryLink,
+.secondaryLink {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 12px 20px;
+  font-family: var(--font-sans);
+  font-weight: var(--weight-bold);
+  font-size: var(--text-base);
+  line-height: 1;
+  border-radius: var(--radius-lg);
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: none;
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--shadow-focus);
+  }
+}
+
+.primaryLink {
+  color: var(--white);
+  background: var(--accent-500);
+  border: var(--border-key) solid transparent;
+
+  &:hover {
+    background: var(--accent-600);
+  }
+}
+
+.secondaryLink {
+  font-size: var(--text-sm);
+  color: var(--ink-900);
+  background: var(--white);
+  border: var(--border-key) solid var(--ink-900);
+
+  &:hover {
+    background: var(--ink-50);
+  }
+}

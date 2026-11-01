@@ -513,6 +513,36 @@
   }
 }
 
+/* Daily bookings: the status header (B07 card, B09 banner, B08 request header). */
+.statusHeader {
+  margin: 24px 24px 0 24px;
+
+  @media (--viewportLarge) {
+    margin: 48px 0 0 0;
+  }
+}
+
+/* B08: the model's reply column, sticky beside the request on desktop. */
+.replyAside {
+  display: none;
+
+  @media (--viewportLarge) {
+    display: block;
+    position: sticky;
+    top: 24px;
+    width: 409px;
+  }
+}
+
+/* Daily bookings: what was agreed (dates, shoot, licence). */
+.bookingSummary {
+  margin: 0 24px;
+
+  @media (--viewportLarge) {
+    margin: 0 48px;
+  }
+}
+
 /* SAF-29: discreet safety-concern entry point in the transaction feed column. */
 .safetyReportLink {
   margin: 24px 24px 0 24px;

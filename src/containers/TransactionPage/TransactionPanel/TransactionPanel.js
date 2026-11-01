@@ -6,6 +6,7 @@ import { propTypes } from '../../../util/types';
 import { userDisplayNameAsString } from '../../../util/data';
 import { createSlug } from '../../../util/urlHelpers';
 import { displayPrice } from '../../../util/configHelpers';
+import { getShootDetail } from '../../../util/bookingSummary';
 
 import { AvatarLarge, NamedLink, UserDisplayName } from '../../../components';
 
@@ -138,9 +139,16 @@ export class TransactionPanelComponent extends Component {
       timeZone,
       lineItemUnitType,
       shootTypeLabel,
-      requestSentCard,
+      statusHeader,
+      hideTransactionFields = false,
+      hideUsageLicence = false,
       bookingSummaryRows,
+      // B08: the model's request detail and reply column (mobile and desktop instances)
+      bookingDetails,
+      replyCardMobile,
+      replyCardDesktop,
     } = this.props;
+    const isModelRequest = !!replyCardDesktop;
 
     const hasTransitions = transitions.length > 0;
     const isCustomer = transactionRole === 'customer';
@@ -173,7 +181,7 @@ export class TransactionPanelComponent extends Component {
     // client's public company/agency field (VAT is private and not exposed).
     const clientName = otherUserDisplayNameString;
     const clientCompany = customer?.attributes?.profile?.publicData?.company_name;
-    const shootAddress = protectedData?.shoot_address;
+    const shootAddress = getShootDetail(protectedData, 'shoot_address');
 
     const deletedListingTitle = intl.formatMessage({
       id: 'TransactionPanel.deletedListingTitle',
@@ -209,25 +217,29 @@ export class TransactionPanelComponent extends Component {
       <div className={classes}>
         <div className={css.container}>
           <div className={css.txInfo}>
-            <DetailCardImage
-              rootClassName={css.imageWrapperMobile}
-              avatarWrapperClassName={css.avatarWrapperMobile}
-              listingTitle={listingTitle}
-              image={firstImage}
-              provider={provider}
-              isCustomer={isCustomer}
-              showListingImage={showListingImage}
-              listingImageConfig={config.layout.listingImage}
-            />
-            {isProvider ? (
+            {isModelRequest ? null : (
+              <DetailCardImage
+                rootClassName={css.imageWrapperMobile}
+                avatarWrapperClassName={css.avatarWrapperMobile}
+                listingTitle={listingTitle}
+                image={firstImage}
+                provider={provider}
+                isCustomer={isCustomer}
+                showListingImage={showListingImage}
+                listingImageConfig={config.layout.listingImage}
+              />
+            )}
+            {isProvider && !statusHeader ? (
               <div className={css.avatarWrapperProviderDesktop}>
                 <AvatarLarge user={customer} className={css.avatarDesktop} />
               </div>
             ) : null}
 
-            {/* B07: while a client's request is waiting, the "request sent" card replaces the
-                generic heading, and the agreed details move into the booking summary. */}
-            {requestSentCard || (
+            {/* Daily bookings: the status header replaces the generic heading. B07 "request
+                sent" for the client while Requested, the B09 status banner otherwise. */}
+            {statusHeader ? (
+              <div className={css.statusHeader}>{statusHeader}</div>
+            ) : (
               <PanelHeading
                 processName={stateData.processName}
                 processState={stateData.processState}
@@ -248,9 +260,12 @@ export class TransactionPanelComponent extends Component {
 
             {requestQuote}
             {offer}
-            {requestSentCard ? null : transactionFieldsComponent}
-            {/* Contracts v1 — image usage licence block (both parties). */}
-            {requestSentCard ? null : usageLicence}
+            {hideTransactionFields ? null : transactionFieldsComponent}
+            {/* Contracts v1: image usage licence block. Daily bookings show the licence in the
+                booking summary instead (agreed on, and a link to the full licence). */}
+            {hideUsageLicence ? null : usageLicence}
+            {bookingDetails}
+            {replyCardMobile}
 
             {/* SAF-11: private-residence safety advisory for the model (advisory,
                 non-blocking, not shown to the client). */}
@@ -259,7 +274,9 @@ export class TransactionPanelComponent extends Component {
             {!isInquiryProcess ? (
               <div className={css.orderDetails}>
                 <div className={css.orderDetailsMobileSection}>
-                  {bookingSummaryRows}
+                  {bookingSummaryRows ? (
+                    <div className={css.bookingSummary}>{bookingSummaryRows}</div>
+                  ) : null}
                   {showBreakDown ? (
                     <BreakdownMaybe
                       orderBreakdown={orderBreakdown}
@@ -331,15 +348,18 @@ export class TransactionPanelComponent extends Component {
             {/* SAF-29: discreet safety-concern entry point (separate from the
                 dispute flow). Available to both parties on any booking. Prefills
                 the related booking + counterparty for the report. */}
-            <div className={css.safetyReportLink}>
-              <NamedLink
-                className={css.safetyReportLinkText}
-                name="SafetyReportPage"
-                to={{ search: safetyReportSearch }}
-              >
-                <FormattedMessage id="TransactionPanel.reportSafetyConcern" />
-              </NamedLink>
-            </div>
+            {/* B08 carries this link in its reply card instead. */}
+            {isModelRequest ? null : (
+              <div className={css.safetyReportLink}>
+                <NamedLink
+                  className={css.safetyReportLinkText}
+                  name="SafetyReportPage"
+                  to={{ search: safetyReportSearch }}
+                >
+                  <FormattedMessage id="TransactionPanel.reportSafetyConcern" />
+                </NamedLink>
+              </div>
+            )}
 
             {stateData.showActionButtons ? (
               <>
@@ -350,60 +370,68 @@ export class TransactionPanelComponent extends Component {
           </div>
 
           <div className={css.asideDesktop}>
-            <div
-              className={classNames(css.stickySection, { [css.noListingImage]: !showListingImage })}
-            >
-              <div className={css.detailCard}>
-                <DetailCardImage
-                  avatarWrapperClassName={css.avatarWrapperDesktop}
-                  listingTitle={listingTitle}
-                  image={firstImage}
-                  provider={provider}
-                  isCustomer={isCustomer}
-                  showListingImage={showListingImage}
-                  listingImageConfig={config.layout.listingImage}
-                />
-
-                <DetailCardHeadingsMaybe
-                  showDetailCardHeadings={showDetailCardHeadings}
-                  showListingImage={showListingImage}
-                  listingTitle={
-                    listingDeleted ? (
-                      listingTitle
-                    ) : (
-                      <NamedLink
-                        name="ListingPage"
-                        params={{ id: listing.id?.uuid, slug: createSlug(listingTitle) }}
-                      >
-                        {listingTitle}
-                      </NamedLink>
-                    )
-                  }
-                  showPrice={showPrice}
-                  price={listing?.attributes?.price}
-                  intl={intl}
-                />
-                {showOrderPanel ? orderPanel : null}
-                {bookingSummaryRows}
-                {showBreakDown ? (
-                  <BreakdownMaybe
-                    className={css.breakdownContainer}
-                    orderBreakdown={orderBreakdown}
-                    processName={stateData.processName}
-                    priceVariantName={priceVariantName}
+            {isModelRequest ? (
+              <div className={css.replyAside}>{replyCardDesktop}</div>
+            ) : (
+              <div
+                className={classNames(css.stickySection, {
+                  [css.noListingImage]: !showListingImage,
+                })}
+              >
+                <div className={css.detailCard}>
+                  <DetailCardImage
+                    avatarWrapperClassName={css.avatarWrapperDesktop}
+                    listingTitle={listingTitle}
+                    image={firstImage}
+                    provider={provider}
+                    isCustomer={isCustomer}
+                    showListingImage={showListingImage}
+                    listingImageConfig={config.layout.listingImage}
                   />
-                ) : null}
 
-                {stateData.showActionButtons ? (
-                  <div className={css.desktopActionButtons}>{actionButtons('desktop')}</div>
-                ) : null}
+                  <DetailCardHeadingsMaybe
+                    showDetailCardHeadings={showDetailCardHeadings}
+                    showListingImage={showListingImage}
+                    listingTitle={
+                      listingDeleted ? (
+                        listingTitle
+                      ) : (
+                        <NamedLink
+                          name="ListingPage"
+                          params={{ id: listing.id?.uuid, slug: createSlug(listingTitle) }}
+                        >
+                          {listingTitle}
+                        </NamedLink>
+                      )
+                    }
+                    showPrice={showPrice}
+                    price={listing?.attributes?.price}
+                    intl={intl}
+                  />
+                  {showOrderPanel ? orderPanel : null}
+                  {bookingSummaryRows ? (
+                    <div className={css.bookingSummary}>{bookingSummaryRows}</div>
+                  ) : null}
+                  {showBreakDown ? (
+                    <BreakdownMaybe
+                      className={css.breakdownContainer}
+                      orderBreakdown={orderBreakdown}
+                      processName={stateData.processName}
+                      priceVariantName={priceVariantName}
+                    />
+                  ) : null}
+
+                  {stateData.showActionButtons ? (
+                    <div className={css.desktopActionButtons}>{actionButtons('desktop')}</div>
+                  ) : null}
+                </div>
+                <DiminishedActionButtonMaybe
+                  id="desktop_disputeOrderButton"
+                  showDispute={stateData.showDispute}
+                  onOpenDisputeModal={onOpenDisputeModal}
+                />
               </div>
-              <DiminishedActionButtonMaybe
-                id="desktop_disputeOrderButton"
-                showDispute={stateData.showDispute}
-                onOpenDisputeModal={onOpenDisputeModal}
-              />
-            </div>
+            )}
           </div>
         </div>
       </div>

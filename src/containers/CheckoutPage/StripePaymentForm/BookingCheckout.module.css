@@ -240,47 +240,8 @@
 }
 
 /* ---- Licence ---- */
-.licenceBox {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
-  padding: var(--space-4);
-  border: var(--border-hair) solid var(--border-hairline);
-  border-radius: var(--radius-lg);
-}
-
-.draftNotice {
-  align-self: flex-start;
+.licenceLede {
   margin: 0;
-  padding: 4px 8px;
-  font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0.02em;
-  line-height: 1.5;
-  color: var(--ink-600);
-  background: var(--ink-100);
-  border: var(--border-hair) solid var(--ink-200);
-  border-radius: var(--radius-sm);
-}
-
-.licenceDetails {
-  font-family: var(--font-sans);
-}
-
-.licenceSummary {
-  display: flex;
-  align-items: center;
-  min-height: 44px;
-  font-weight: var(--weight-bold);
-  font-size: var(--text-sm);
-  color: var(--accent-600);
-  text-decoration: underline;
-  text-underline-offset: 2px;
-  cursor: pointer;
-}
-
-.licenceBody {
-  margin: var(--space-2) 0 0 0;
   padding: 0;
   font-size: var(--text-sm);
   line-height: 1.6;

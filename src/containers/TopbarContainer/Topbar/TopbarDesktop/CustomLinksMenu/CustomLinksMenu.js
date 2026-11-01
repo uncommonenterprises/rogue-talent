@@ -150,6 +150,21 @@ const CustomLinksMenu = ({
     setMounted(true);
   }, []);
 
+  // The first render matches the server's logged-out topbar (see Topbar.js), so whether the
+  // "Create your profile" link belongs in the list can change once the user is known. When it
+  // does, start the measured list again, otherwise a client would keep the logged-out link.
+  const linkSetKey = showCreateListingsLink ? 'withPrimaryAction' : 'withoutPrimaryAction';
+  const linkSetKeyRef = useRef(linkSetKey);
+  useEffect(() => {
+    if (linkSetKeyRef.current !== linkSetKey) {
+      linkSetKeyRef.current = linkSetKey;
+      setLinks([
+        ...createListingLinkConfigMaybe(intl, showCreateListingsLink, primaryLink),
+        ...customLinks,
+      ]);
+    }
+  }, [linkSetKey]);
+
   useEffect(() => {
     let animationFrameId = null;
     const body = document.body;

@@ -22,6 +22,7 @@ import {
   LINE_ITEM_FIXED,
 } from '../../util/types';
 import { subtractTime } from '../../util/dates';
+import { getBookingStatus } from '../../util/bookingStatus';
 import { createResourceLocatorString } from '../../util/routes';
 import {
   TX_TRANSITION_ACTOR_CUSTOMER,
@@ -53,6 +54,7 @@ import TopbarContainer from '../../containers/TopbarContainer/TopbarContainer';
 import FooterContainer from '../../containers/FooterContainer/FooterContainer';
 import NotFoundPage from '../../containers/NotFoundPage/NotFoundPage';
 import InboxSearchForm from './InboxSearchForm/InboxSearchForm';
+import BookingInboxRow from './BookingInboxRow';
 
 import { stateDataShape, getStateData } from './InboxPage.stateData';
 import css from './InboxPage.module.css';
@@ -63,6 +65,22 @@ const getUnitLineItem = lineItems => {
     item => LISTING_UNIT_TYPES.includes(item.code) && !item.reversal
   );
   return unitLineItem;
+};
+
+// Rogue Talent's daily bookings use the B09 row (one status label for both sides). Other
+// booking units keep the template row.
+const isDailyBooking = (isBooking, lineItems) =>
+  !!isBooking && getUnitLineItem(lineItems)?.code === LINE_ITEM_DAY;
+
+// The model never sees the client's unfinished payments (B09), so those rows are left out.
+const isHiddenBookingRow = (tx, transactionRole) => {
+  try {
+    const process = getProcess(resolveLatestProcessName(tx?.attributes?.processName));
+    const state = process.getState(tx);
+    return !getBookingStatus({ state, role: transactionRole });
+  } catch (e) {
+    return false;
+  }
 };
 
 // Booking data (start & end) are bit different depending on display times and
@@ -181,6 +199,19 @@ export const InboxItem = props => {
   const otherUser = isCustomer ? provider : customer;
   const otherUserDisplayName = <UserDisplayName user={otherUser} intl={intl} />;
   const isOtherUserBanned = otherUser.attributes.banned;
+
+  if (isDailyBooking(isBooking, lineItems)) {
+    return (
+      <div className={css.item}>
+        <BookingInboxRow
+          tx={tx}
+          transactionRole={transactionRole}
+          intl={intl}
+          showNotificationDot={!!(isSaleNotification || isOrderNotification)}
+        />
+      </div>
+    );
+  }
 
   const rowNotificationDot =
     isSaleNotification || isOrderNotification ? <div className={css.notificationDot} /> : null;
@@ -310,8 +341,12 @@ export const InboxPageComponent = props => {
     const isPurchase = isPurchaseProcess(transactionProcess);
     const isNegotiation = isNegotiationProcess(transactionProcess);
 
+    const hidden =
+      isDailyBooking(isBooking, tx?.attributes?.lineItems) &&
+      isHiddenBookingRow(tx, transactionRole);
+
     // Render InboxItem only if the latest transition of the transaction is handled in the `txState` function.
-    return stateData ? (
+    return stateData && !hidden ? (
       <li key={tx.id.uuid} className={css.listItem}>
         <InboxItem
           transactionRole={transactionRole}

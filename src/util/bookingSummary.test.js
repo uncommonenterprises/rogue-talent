@@ -4,6 +4,7 @@ import {
   getDailyRange,
   getRequestSentAt,
   getReplyByDeadline,
+  getShootDetail,
 } from './bookingSummary';
 
 const intl = { formatDate: (d, o) => new Intl.DateTimeFormat('en-GB', o).format(d) };
@@ -67,5 +68,21 @@ describe('bookingSummary', () => {
       kind: 'shootStart',
     });
     expect(getReplyByDeadline(tx())).toBeNull();
+  });
+});
+
+describe('getShootDetail', () => {
+  it('reads the key checkout saves (role-prefixed transaction field)', () => {
+    const pd = {
+      customer_location_type: 'private-residence',
+      customer_shoot_address: '12 Alder Close',
+    };
+    expect(getShootDetail(pd, 'location_type')).toBe('private-residence');
+    expect(getShootDetail(pd, 'shoot_address')).toBe('12 Alder Close');
+  });
+  it('falls back to the plain key, and copes with nothing', () => {
+    expect(getShootDetail({ location_type: 'studio' }, 'location_type')).toBe('studio');
+    expect(getShootDetail({}, 'location_type')).toBeUndefined();
+    expect(getShootDetail(null, 'location_type')).toBeUndefined();
   });
 });

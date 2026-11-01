@@ -148,5 +148,7 @@ export const onRecoverableError = (e, componentStack) => {
   }
 
   // Replace with your error monitoring service.
-  error(error, 'recoverable-error', data);
+  // (Passes the React error itself; this used to pass the `error` function by mistake, so the
+  // console and any monitoring service never saw which hydration error it was.)
+  error(e, 'recoverable-error', data);
 };
