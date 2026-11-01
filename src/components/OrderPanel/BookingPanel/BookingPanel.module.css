@@ -208,7 +208,9 @@
   }
 }
 
-/* ---- Phone dates sheet ---- */
+/* ---- Phone dates sheet ----
+   A fixed-height column: header, the form (its body scrolls) and the footer action always on
+   screen. */
 .sheet {
   @media (--viewportBelowBooking) {
     position: relative;
@@ -216,13 +218,23 @@
     flex-direction: column;
     flex-grow: 1;
     width: 100%;
-    min-height: 100vh;
+    height: calc(var(--vh, 1vh) * 100);
+    min-height: 0;
     padding: 0;
+    overflow: hidden;
     background: var(--white);
 
     /* The template modal close button is replaced by the sheet header's close button */
     & > nav {
       display: none;
+    }
+
+    /* Modal's content wrapper */
+    & > div {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
     }
   }
 }
@@ -231,9 +243,7 @@
   display: none;
 
   @media (--viewportBelowBooking) {
-    position: sticky;
-    top: 0;
-    z-index: 1;
+    flex: none;
     display: flex;
     align-items: center;
     justify-content: space-between;

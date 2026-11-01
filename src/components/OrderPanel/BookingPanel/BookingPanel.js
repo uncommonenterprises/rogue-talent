@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import classNames from 'classnames';
 
 import { FormattedMessage, useIntl } from '../../../util/reactIntl';
 import { formatMoney, formatMoneyCompact } from '../../../util/currency';
+import { PHONE_LAYOUT_MAX_WIDTH, useIsPhoneLayout } from '../../../util/useIsPhoneLayout';
 
 import { ModalInMobile, NamedLink, Notice, RtIcon } from '../../../components';
 
@@ -19,30 +20,7 @@ import {
 import css from './BookingPanel.module.css';
 
 // Below this width the panel is a bottom bar plus a full-height sheet (B03).
-const PHONE_MAX_WIDTH = 899;
-const PHONE_QUERY = `(max-width: ${PHONE_MAX_WIDTH}px)`;
-
-/**
- * True on phone-sized screens, null until mounted (the server cannot know).
- */
-const useIsPhone = () => {
-  const [isPhone, setIsPhone] = useState(null);
-  useEffect(() => {
-    if (typeof window === 'undefined' || !window.matchMedia) {
-      return undefined;
-    }
-    const mql = window.matchMedia(PHONE_QUERY);
-    const update = () => setIsPhone(mql.matches);
-    update();
-    if (mql.addEventListener) {
-      mql.addEventListener('change', update);
-      return () => mql.removeEventListener('change', update);
-    }
-    mql.addListener(update);
-    return () => mql.removeListener(update);
-  }, []);
-  return isPhone;
-};
+const PHONE_MAX_WIDTH = PHONE_LAYOUT_MAX_WIDTH;
 
 const formatPrice = (intl, price, marketplaceCurrency) => {
   if (!price) {
@@ -128,7 +106,7 @@ const StateLink = props => {
  */
 const BookingPanel = props => {
   const intl = useIntl();
-  const isPhone = useIsPhone();
+  const isPhone = useIsPhoneLayout();
   const [hasDates, setHasDates] = useState(false);
   const {
     className,

@@ -1,6 +1,6 @@
 import { displayPrice, isPriceVariationsEnabled } from '../../util/configHelpers';
 import { formatMoney, formatMoneyCompact } from '../../util/currency';
-import { getModelCity } from '../../util/modelProfile';
+import { getModelCity, getOptionLabel } from '../../util/modelProfile';
 import { richText } from '../../util/richText';
 import { isBookingProcessAlias } from '../../transactions/transaction';
 
@@ -134,8 +134,9 @@ export const getTalentCardData = (listing, config, intl) => {
   // Card meta wants the short label. The experience_level enum labels carry a
   // "(longer description)" suffix that's fine on the listing detail page but too long
   // for a compact card line — strip it here (card-only).
+  // Short label from en.json ("New face"), else the field label without its "(...)" suffix.
   const experienceFull = publicData?.experience_level
-    ? enumLabel(findListingField(config, 'experience_level'), publicData.experience_level)
+    ? getOptionLabel(intl, config, 'experience_level', publicData.experience_level)
     : null;
   const experience = experienceFull ? experienceFull.replace(/\s*\(.*\)\s*$/, '') : null;
   const metaParts = [gender, height, experience].filter(Boolean);

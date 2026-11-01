@@ -1,4 +1,5 @@
-import { getOptionLabel, getWebsiteHref, getInstagramHref, getAverageRating } from './profileData';
+import { getOptionLabel } from '../../../util/modelProfile';
+import { getWebsiteHref, getInstagramHref, getAverageRating } from './profileData';
 
 describe('model profile data helpers', () => {
   const config = {

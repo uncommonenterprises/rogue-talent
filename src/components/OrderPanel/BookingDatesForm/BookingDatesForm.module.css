@@ -32,11 +32,15 @@
 /* ---- Phone sheet layout ---- */
 .stackLayout {
   gap: 0;
-  min-height: 100%;
+  flex: 1;
+  min-height: 0;
 }
 
 .sheetBody {
   flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   display: flex;
   flex-direction: column;
   gap: var(--space-5);
@@ -44,8 +48,7 @@
 }
 
 .sheetFooter {
-  position: sticky;
-  bottom: 0;
+  flex: none;
   display: flex;
   flex-direction: column;
   gap: var(--space-2);

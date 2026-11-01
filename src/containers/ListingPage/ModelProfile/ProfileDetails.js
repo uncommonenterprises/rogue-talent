@@ -3,11 +3,11 @@ import React from 'react';
 import { FormattedMessage, useIntl } from '../../../util/reactIntl';
 import { formatMoneyCompact } from '../../../util/currency';
 import { types as sdkTypes } from '../../../util/sdkLoader';
-import { getModelCity } from '../../../util/modelProfile';
+import { getModelCity, getOptionLabel } from '../../../util/modelProfile';
 
 import { Avatar, ExternalLink, RtIcon, UserDisplayName } from '../../../components';
 
-import { getOptionLabel, getWebsiteHref, getInstagramHref, getAverageRating } from './profileData';
+import { getWebsiteHref, getInstagramHref, getAverageRating } from './profileData';
 
 import css from './ModelProfile.module.css';
 

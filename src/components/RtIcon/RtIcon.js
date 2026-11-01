@@ -22,10 +22,7 @@ const STROKE_ICONS = {
   },
   sliders: {
     width: 1.6,
-    circles: [
-      [13, 8, 2.5],
-      [9, 16, 2.5],
-    ],
+    circles: [[13, 8, 2.5], [9, 16, 2.5]],
     paths: ['M4 8h6M16 8h4M4 16h2M12 16h8'],
   },
   info: { width: 1.6, circles: [[12, 12, 9]], paths: ['M12 11v5M12 8h.01'] },
@@ -55,10 +52,11 @@ const STAR_PATH = 'M12 3l2.8 5.9 6.2.9-4.5 4.4 1.1 6.3L12 17.5 6.4 20.5l1.1-6.3L
  */
 const RtIcon = props => {
   const { name, size = 'md', className, title } = props;
-  const classes = classNames(css.root, css[size], className);
+  const isFilled = name === 'star';
+  const classes = classNames(css.root, css[size], isFilled ? css.filled : css.stroke, className);
   const a11y = title ? { role: 'img', 'aria-label': title } : { 'aria-hidden': true };
 
-  if (name === 'star') {
+  if (isFilled) {
     return (
       <svg className={classes} viewBox="0 0 24 24" fill="currentColor" focusable="false" {...a11y}>
         <path d={STAR_PATH} />

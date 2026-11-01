@@ -73,3 +73,25 @@ export const isInsideMinimumNotice = ({ startDate, noticeKey, now = new Date() }
   }
   return startDate.getTime() - now.getTime() < hours * HOUR_MS;
 };
+
+const findField = (config, key) => (config?.listing?.listingFields || []).find(f => f.key === key);
+
+/**
+ * Client-facing label for a listing-field option. A short label in en.json
+ * ("ModelField.<key>.<option>", e.g. "New face", "Local only (25 miles)") wins; otherwise the
+ * label configured on the listing field; otherwise the raw option.
+ *
+ * @param {Object} intl react-intl (needs `messages` and `formatMessage`)
+ * @param {Object} config app configuration
+ * @param {string} key listing field key
+ * @param {string} option stored option value
+ * @returns {string}
+ */
+export const getOptionLabel = (intl, config, key, option) => {
+  const id = `ModelField.${key}.${option}`;
+  if (intl?.messages && Object.prototype.hasOwnProperty.call(intl.messages, id)) {
+    return intl.formatMessage({ id });
+  }
+  const found = findField(config, key)?.enumOptions?.find(o => `${o.option}` === `${option}`);
+  return found?.label || `${option}`;
+};

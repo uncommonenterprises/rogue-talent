@@ -3,6 +3,20 @@
   flex: none;
 }
 
+/* Line icons: never filled, whatever a parent's svg rules say */
+.root.stroke,
+.root.stroke * {
+  fill: none;
+  stroke: currentColor;
+}
+
+/* Filled icons (star) */
+.root.filled,
+.root.filled * {
+  fill: currentColor;
+  stroke: none;
+}
+
 .sm {
   width: 14px;
   height: 14px;
