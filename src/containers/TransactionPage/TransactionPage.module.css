@@ -51,6 +51,15 @@
   }
 }
 
+/* B05 price breakdown on the booking page */
+.priceBreakdown {
+  margin: 0 24px 24px 24px;
+
+  @media (--viewportLarge) {
+    margin: 0 48px 32px 48px;
+  }
+}
+
 /* OrderPanel subcomponent */
 .orderPanel {
   margin: 16px 48px 48px 48px;

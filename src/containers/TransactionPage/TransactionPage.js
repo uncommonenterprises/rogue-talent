@@ -21,6 +21,8 @@ import { getCurrentUserTypeRoles, hasPermissionToViewData } from '../../util/use
 import { userDisplayNameAsString } from '../../util/data';
 import { isMobileSafari } from '../../util/userAgent';
 import { getModelFirstName } from '../../util/modelProfile';
+import { formatMoneyCompact } from '../../util/currency';
+import { getBannerMessageIds, getBookingStatus, getNextSteps } from '../../util/bookingStatus';
 import {
   formatDay,
   formatDayTime,
@@ -88,6 +90,7 @@ import SendMessageForm from './SendMessageForm/SendMessageForm';
 import TransactionPanel from './TransactionPanel/TransactionPanel';
 import RequestSentCard from './RequestSent/RequestSentCard';
 import BookingSummaryRows from './RequestSent/BookingSummaryRows';
+import BookingStatusBanner from './BookingStatus/BookingStatusBanner';
 
 import {
   makeTransition,
@@ -833,21 +836,41 @@ export const TransactionPageComponent = props => {
     isBookingTx &&
     !!process &&
     bookingProcessState === process.states?.PREAUTHORIZED;
+  // B09: daily bookings (Rogue Talent's model bookings) get one status label for both sides.
+  const isDailyBookingTx = isBookingTx && lineItemUnitType === 'line-item/day';
+  const bookingStatus = isDailyBookingTx
+    ? getBookingStatus({
+        state: bookingProcessState,
+        role: transactionRole,
+        lastTransition: transaction?.attributes?.lastTransition,
+      })
+    : null;
+  const isEndedBooking = [
+    'declined',
+    'expired',
+    'cancelled',
+    'refunded',
+    'paymentExpired',
+  ].includes(bookingStatus?.status);
   const breakdownNumbers = hasLineItems
     ? getBreakdownData(transaction.attributes.lineItems, transactionRole)
     : null;
-  // Stage 2 uses it on the client's Requested page (B07), where the dates sit in the summary
-  // rows; the other states keep the receipt with dates until the status pages (B08/B09).
+  // The B05 breakdown on the client's Requested page (B07) and on every daily booking page, where
+  // the dates sit in the summary rows. Bookings with refunds keep the detailed receipt.
   const usePriceBreakdown =
-    isRequestedForCustomer && !!breakdownNumbers && !breakdownNumbers.hasRefunds;
+    (isRequestedForCustomer || isDailyBookingTx) &&
+    !!breakdownNumbers &&
+    !breakdownNumbers.hasRefunds;
 
   const orderBreakdownMaybe = usePriceBreakdown
     ? {
         orderBreakdown: (
           <PriceBreakdown
+            className={css.priceBreakdown}
             lineItems={transaction.attributes.lineItems}
             role={transactionRole}
             modelName={modelFirstName}
+            showNote={!isEndedBooking}
             travelFeePolicy={listing?.attributes?.publicData?.travel_fee_policy}
             notePrefix={
               isRequestedForCustomer ? (
@@ -930,21 +953,66 @@ export const TransactionPageComponent = props => {
           ?.find(f => f.key === 'location_type')
           ?.enumOptions?.find(o => o.option === locationTypeValue)?.label || locationTypeValue
     : null;
-  const bookingSummaryRows = isRequestedForCustomer ? (
-    <BookingSummaryRows
-      datesLabel={
-        dailyRange
-          ? dailyRange.dayCount === 1
-            ? formatDay(intl, dailyRange.start, timeZone)
-            : intl.formatMessage(
-                { id: 'BookingDatesForm.summaryRange' },
-                {
-                  start: formatDay(intl, dailyRange.start, timeZone),
-                  end: formatDay(intl, dailyRange.lastDay, timeZone),
-                }
-              )
+  const datesLabel = dailyRange
+    ? dailyRange.dayCount === 1
+      ? formatDay(intl, dailyRange.start, timeZone)
+      : intl.formatMessage(
+          { id: 'BookingDatesForm.summaryRange' },
+          {
+            start: formatDay(intl, dailyRange.start, timeZone),
+            end: formatDay(intl, dailyRange.lastDay, timeZone),
+          }
+        )
+    : null;
+
+  // The licence: the client agreed at checkout (B06), the model by accepting (B08).
+  const acceptedAt = txTransitions.find(t =>
+    [process?.transitions?.ACCEPT, process?.transitions?.OPERATOR_ACCEPT].includes(t.transition)
+  )?.createdAt;
+  const licenceAgreedAt = isCustomerRole ? getRequestSentAt(transaction) : acceptedAt;
+  const hasAgreedLicence = isCustomerRole
+    ? !!transaction?.attributes?.protectedData?.licenceAgreedByCustomer
+    : !!acceptedAt;
+  const licenceAgreedLabel = hasAgreedLicence
+    ? licenceAgreedAt
+      ? intl.formatMessage(
+          { id: 'RequestSent.licenceAgreedOn' },
+          { date: formatDay(intl, licenceAgreedAt, timeZone) }
+        )
+      : intl.formatMessage({ id: 'RequestSent.licenceAgreed' })
+    : null;
+
+  // B09: the status banner for every daily booking state except Requested (B07 client, B08 model).
+  const bannerMessageIds =
+    isDailyBookingTx && !isRequestedForCustomer
+      ? getBannerMessageIds(bookingStatus, transactionRole)
+      : null;
+  const payinTotal = transaction?.attributes?.payinTotal;
+  const bookingStatusBanner = bannerMessageIds ? (
+    <BookingStatusBanner
+      bookingStatus={bookingStatus}
+      messageIds={bannerMessageIds}
+      values={{
+        name: modelFirstName,
+        client: userDisplayNameAsString(customer, ''),
+        dates: datesLabel || '',
+        total: payinTotal ? formatMoneyCompact(intl, payinTotal) : '',
+      }}
+      nextSteps={getNextSteps(bookingStatus, transactionRole)}
+      modelName={modelFirstName}
+      listingLinkParams={
+        listing?.id && !listingDeleted
+          ? { id: listing.id.uuid, slug: createSlug(listing.attributes?.title || '') }
           : null
       }
+    />
+  ) : null;
+
+  // B07 keeps its full summary (shoot, where, licence). Other daily booking pages show the dates
+  // and the licence; the shoot details are in the transaction fields beside them.
+  const bookingSummaryRows = isRequestedForCustomer ? (
+    <BookingSummaryRows
+      datesLabel={datesLabel}
       dayCountLabel={
         dailyRange
           ? intl.formatMessage(
@@ -956,16 +1024,21 @@ export const TransactionPageComponent = props => {
       shootTypeLabel={shootTypeLabel}
       locationTypeLabel={locationTypeLabel}
       shootAddress={transaction?.attributes?.protectedData?.shoot_address}
-      licenceAgreedLabel={
-        transaction?.attributes?.protectedData?.licenceAgreedByCustomer
-          ? sentAt
-            ? intl.formatMessage(
-                { id: 'RequestSent.licenceAgreedOn' },
-                { date: formatDay(intl, sentAt, timeZone) }
-              )
-            : intl.formatMessage({ id: 'RequestSent.licenceAgreed' })
+      licenceAgreedLabel={licenceAgreedLabel}
+      transactionId={transaction?.id?.uuid}
+    />
+  ) : isDailyBookingTx && bookingStatus ? (
+    <BookingSummaryRows
+      datesLabel={datesLabel}
+      dayCountLabel={
+        dailyRange
+          ? intl.formatMessage(
+              { id: 'BookingCheckout.dayCount' },
+              { dayCount: dailyRange.dayCount }
+            )
           : null
       }
+      licenceAgreedLabel={licenceAgreedLabel}
       transactionId={transaction?.id?.uuid}
     />
   ) : null;
@@ -1046,7 +1119,9 @@ export const TransactionPageComponent = props => {
       lineItemUnitType={lineItemUnitType}
       shootTypeLabel={shootTypeLabel}
       usageLicence={usageLicence}
-      requestSentCard={requestSentCard}
+      statusHeader={requestSentCard || bookingStatusBanner}
+      hideTransactionFields={!!requestSentCard}
+      hideUsageLicence={!!requestSentCard || isDailyBookingTx}
       bookingSummaryRows={bookingSummaryRows}
       sendMessageForm={
         showSendMessageForm ? (

@@ -507,7 +507,10 @@ describe('InboxPage', () => {
       expect(screen.getByText('BookingStatus.requested')).toBeInTheDocument();
       expect(screen.getByText(/BookingStatus.row.willEarn/)).toBeInTheDocument();
       expect(screen.getByText('BookingStatus.note.provider.requested')).toBeInTheDocument();
-      expect(screen.getByRole('link')).toHaveAttribute('href', '/sale/id-booking-CONFIRM_PAYMENT-sale');
+      expect(screen.getByRole('link')).toHaveAttribute(
+        'href',
+        '/sale/id-booking-CONFIRM_PAYMENT-sale'
+      );
     });
   });
 

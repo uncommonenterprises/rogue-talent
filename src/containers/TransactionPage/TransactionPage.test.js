@@ -31,6 +31,8 @@ import {
   getProcess,
 } from '../../transactions/transaction';
 
+import { getBannerMessageIds, getBookingStatus, getNextSteps } from '../../util/bookingStatus';
+
 import { getStateData } from './TransactionPage.stateData';
 import { TransactionPageComponent } from './TransactionPage';
 
@@ -494,57 +496,37 @@ describe('TransactionPage', () => {
         render(<TransactionPageComponent {...props} />);
       });
 
+      // B09: daily bookings show the status banner (one label for both sides), the dates in the
+      // booking summary and the B05 breakdown. Refunds keep the detailed receipt.
       const state = stateData.processState;
-      const txTitle = `TransactionPage.${processName}.${transactionRole}.${state}.title`;
-      expect(screen.getByText(txTitle)).toBeInTheDocument();
+      const bookingStatus = getBookingStatus({ state, role: transactionRole, lastTransition: tr });
+      const banner = getBannerMessageIds(bookingStatus, transactionRole);
+      if (banner) {
+        expect(screen.getByText(banner.titleId)).toBeInTheDocument();
+        expect(screen.getByText(banner.bodyId)).toBeInTheDocument();
+        expect(screen.getByText(bookingStatus.labelId)).toBeInTheDocument();
+      } else {
+        const txTitle = `TransactionPage.${processName}.${transactionRole}.${state}.title`;
+        expect(screen.getByText(txTitle)).toBeInTheDocument();
+      }
 
-      expect(screen.getByText('TransactionPage.listingTitleMobile')).toBeInTheDocument();
-
-      // Order breakdown
       const expectedLength = isInquiry ? 0 : 2;
-      expect(
-        screen.queryAllByText(`TransactionPanel.${processName}.orderBreakdownTitle`)
-      ).toHaveLength(expectedLength);
-
-      expect(screen.queryAllByText('OrderBreakdown.bookingStart')).toHaveLength(expectedLength);
-      expect(screen.queryAllByText('Tuesday')).toHaveLength(expectedLength * 2);
-      expect(screen.queryAllByText('Jun 14')).toHaveLength(expectedLength * 2);
-      expect(screen.queryAllByText('OrderBreakdown.bookingEnd')).toHaveLength(expectedLength);
-      //expect(screen.queryAllByText('Tuesday')).toHaveLength(expectedLength);
-      //expect(screen.queryAllByText('Jun 14')).toHaveLength(expectedLength);
-
-      expect(screen.queryAllByText('OrderBreakdown.baseUnitDay')).toHaveLength(expectedLength);
-      expect(screen.queryAllByText('OrderBreakdown.subTotal')).toHaveLength(expectedLength);
-      expect(screen.queryAllByText('$10.00')).toHaveLength(expectedLength * 2);
-
-      // Order breakdown: refund?
-      const expectedLengthReversal = isReversal ? 2 : 0;
-      expect(screen.queryAllByText('OrderBreakdown.refund')).toHaveLength(expectedLengthReversal);
-      expect(screen.queryAllByText('-$10.00')).toHaveLength(expectedLengthReversal);
-
-      // Order breakdown: commission
-      expect(screen.queryAllByText('OrderBreakdown.commission')).toHaveLength(expectedLength);
-      expect(screen.queryAllByText('-$1.00')).toHaveLength(expectedLength);
-
-      // Order breakdown: commission refund?
-      expect(screen.queryAllByText('OrderBreakdown.refundProviderFee')).toHaveLength(
-        expectedLengthReversal
+      expect(screen.queryAllByText('BookingCheckout.datesLabel')).toHaveLength(
+        bookingStatus ? 2 : 0
       );
-
-      // Order breakdown: total (with multiple translation keys)
-      const total = isReversal
-        ? 'OrderBreakdown.providerTotalRefunded'
-        : isReceived
-        ? 'OrderBreakdown.providerTotalReceived'
-        : 'OrderBreakdown.providerTotalDefault';
-      const expectedTotal = isReversal ? expectedLengthReversal : expectedLength;
-      expect(screen.queryAllByText(total)).toHaveLength(expectedTotal);
-      expect(screen.queryAllByText('$9.00')).toHaveLength(expectedTotal);
-
-      // A note about commission (customer should no see this)
-      expect(screen.queryAllByText('OrderBreakdown.commissionFeeNote')).toHaveLength(
-        expectedLength
-      );
+      if (isReversal) {
+        expect(screen.queryAllByText('OrderBreakdown.refund')).toHaveLength(2);
+        expect(screen.queryAllByText('OrderBreakdown.providerTotalRefunded')).toHaveLength(2);
+      } else {
+        expect(screen.queryAllByText('OrderBreakdown.providerTotalDefault')).toHaveLength(
+          expectedLength
+        );
+        expect(screen.queryAllByText('PriceBreakdown.feeTakenFromYou')).toHaveLength(
+          expectedLength
+        );
+      }
+      // The old licence block gives way to the summary row on daily bookings.
+      expect(screen.queryByText('UsageLicenceSection.heading')).not.toBeInTheDocument();
 
       // Activity feed (here we just check the heading)
       expect(screen.getByText('TransactionPanel.activityHeading')).toBeInTheDocument();
@@ -673,52 +655,40 @@ describe('TransactionPage', () => {
         return;
       }
 
+      // B09: daily bookings show the status banner (one label for both sides), the dates in the
+      // booking summary and the B05 breakdown. Refunds keep the detailed receipt.
       const state = stateData.processState;
-      const txTitle = `TransactionPage.${processName}.${transactionRole}.${state}.title`;
-      expect(screen.getByText(txTitle)).toBeInTheDocument();
+      const bookingStatus = getBookingStatus({ state, role: transactionRole, lastTransition: tr });
+      const banner = getBannerMessageIds(bookingStatus, transactionRole);
+      if (banner) {
+        expect(screen.getByText(banner.titleId)).toBeInTheDocument();
+        expect(screen.getByText(banner.bodyId)).toBeInTheDocument();
+        expect(screen.getByText(bookingStatus.labelId)).toBeInTheDocument();
+      } else {
+        const txTitle = `TransactionPage.${processName}.${transactionRole}.${state}.title`;
+        expect(screen.getByText(txTitle)).toBeInTheDocument();
+      }
 
-      expect(screen.getByText('TransactionPage.listingTitleMobile')).toBeInTheDocument();
-
-      // Order breakdown
       const expectedLength = isInquiry ? 0 : 2;
-      expect(
-        screen.queryAllByText(`TransactionPanel.${processName}.orderBreakdownTitle`)
-      ).toHaveLength(expectedLength);
-
-      expect(screen.queryAllByText('OrderBreakdown.bookingStart')).toHaveLength(expectedLength);
-      expect(screen.queryAllByText('Tuesday')).toHaveLength(expectedLength * 2);
-      expect(screen.queryAllByText('Jun 14')).toHaveLength(expectedLength * 2);
-      expect(screen.queryAllByText('OrderBreakdown.bookingEnd')).toHaveLength(expectedLength);
-      //expect(screen.queryAllByText('Tuesday')).toHaveLength(expectedLength);
-      //expect(screen.queryAllByText('Jun 14')).toHaveLength(expectedLength);
-
-      expect(screen.queryAllByText('OrderBreakdown.baseUnitDay')).toHaveLength(expectedLength);
-      expect(screen.queryAllByText('OrderBreakdown.subTotal')).toHaveLength(
-        isReversal ? expectedLength : 0
+      expect(screen.queryAllByText('BookingCheckout.datesLabel')).toHaveLength(
+        bookingStatus ? 2 : 0
       );
-      expect(screen.queryAllByText('$10.00')).toHaveLength(
-        isReversal ? expectedLength * 3 : expectedLength * 2
-      ); // base, subtotal, total
-
-      // Order breakdown: refund?
-      const expectedLengthReversal = isReversal ? 2 : 0;
-      expect(screen.queryAllByText('OrderBreakdown.refund')).toHaveLength(expectedLengthReversal);
-      expect(screen.queryAllByText('-$10.00')).toHaveLength(expectedLengthReversal);
-
-      // Order breakdown: commission (customer should no see this)
+      if (isReversal) {
+        expect(screen.queryAllByText('OrderBreakdown.refund')).toHaveLength(2);
+        expect(screen.queryAllByText('OrderBreakdown.total')).toHaveLength(2);
+      } else {
+        expect(screen.queryAllByText('PriceBreakdown.total')).toHaveLength(expectedLength);
+      }
+      // The client never sees the model's fee lines.
       expect(screen.queryAllByText('OrderBreakdown.commission')).toHaveLength(0);
-      expect(screen.queryAllByText('-$1.00')).toHaveLength(0);
+      expect(screen.queryAllByText('PriceBreakdown.feeTakenFromYou')).toHaveLength(0);
+      expect(screen.queryByText('UsageLicenceSection.heading')).not.toBeInTheDocument();
 
-      // Order breakdown: commission refund? (customer should no see this)
-      expect(screen.queryAllByText('OrderBreakdown.refundProviderFee')).toHaveLength(0);
-
-      // Order breakdown: total (with multiple translation keys)
-      const total = 'OrderBreakdown.total';
-      const expectedTotal = isReversal ? expectedLengthReversal : expectedLength;
-      expect(screen.queryAllByText(total)).toHaveLength(expectedTotal);
-
-      // A note about commission (customer should no see this)
-      expect(screen.queryAllByText('OrderBreakdown.commissionFeeNote')).toHaveLength(0);
+      // Ended requests offer the next step: find another model.
+      const { findAnother } = getNextSteps(bookingStatus, transactionRole);
+      expect(screen.queryAllByText('BookingStatus.findAnotherModel')).toHaveLength(
+        banner && findAnother ? 1 : 0
+      );
 
       // Activity feed (here we just check the heading)
       expect(screen.getByText('TransactionPanel.activityHeading')).toBeInTheDocument();

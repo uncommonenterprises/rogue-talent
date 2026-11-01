@@ -138,7 +138,9 @@ export class TransactionPanelComponent extends Component {
       timeZone,
       lineItemUnitType,
       shootTypeLabel,
-      requestSentCard,
+      statusHeader,
+      hideTransactionFields = false,
+      hideUsageLicence = false,
       bookingSummaryRows,
     } = this.props;
 
@@ -225,9 +227,11 @@ export class TransactionPanelComponent extends Component {
               </div>
             ) : null}
 
-            {/* B07: while a client's request is waiting, the "request sent" card replaces the
-                generic heading, and the agreed details move into the booking summary. */}
-            {requestSentCard || (
+            {/* Daily bookings: the status header replaces the generic heading. B07 "request
+                sent" for the client while Requested, the B09 status banner otherwise. */}
+            {statusHeader ? (
+              <div className={css.statusHeader}>{statusHeader}</div>
+            ) : (
               <PanelHeading
                 processName={stateData.processName}
                 processState={stateData.processState}
@@ -248,9 +252,10 @@ export class TransactionPanelComponent extends Component {
 
             {requestQuote}
             {offer}
-            {requestSentCard ? null : transactionFieldsComponent}
-            {/* Contracts v1 — image usage licence block (both parties). */}
-            {requestSentCard ? null : usageLicence}
+            {hideTransactionFields ? null : transactionFieldsComponent}
+            {/* Contracts v1: image usage licence block. Daily bookings show the licence in the
+                booking summary instead (agreed on, and a link to the full licence). */}
+            {hideUsageLicence ? null : usageLicence}
 
             {/* SAF-11: private-residence safety advisory for the model (advisory,
                 non-blocking, not shown to the client). */}
@@ -259,7 +264,9 @@ export class TransactionPanelComponent extends Component {
             {!isInquiryProcess ? (
               <div className={css.orderDetails}>
                 <div className={css.orderDetailsMobileSection}>
-                  {bookingSummaryRows}
+                  {bookingSummaryRows ? (
+                    <div className={css.bookingSummary}>{bookingSummaryRows}</div>
+                  ) : null}
                   {showBreakDown ? (
                     <BreakdownMaybe
                       orderBreakdown={orderBreakdown}
@@ -384,7 +391,9 @@ export class TransactionPanelComponent extends Component {
                   intl={intl}
                 />
                 {showOrderPanel ? orderPanel : null}
-                {bookingSummaryRows}
+                {bookingSummaryRows ? (
+                  <div className={css.bookingSummary}>{bookingSummaryRows}</div>
+                ) : null}
                 {showBreakDown ? (
                   <BreakdownMaybe
                     className={css.breakdownContainer}
