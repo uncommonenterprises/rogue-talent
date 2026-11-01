@@ -1383,7 +1383,7 @@
   "ModelRequest.shootTitle": "The shoot",
   "ModelRequest.shootTypeLabel": "Shoot type",
   "ModelRequest.title": "Booking request from {name}",
-  "ModelRequest.trustLine": "Clients are reviewed by our team and ID verified before they can send a request. This name and company are the ones we verified.",
+  "ModelRequest.trustLine": "Clients are reviewed by our team and ID verified before they can send a request.",
   "ModelRequest.whoTitle": "Who is booking",
   "NegotiationForm.ctaButton": "Submit an offer",
   "NegotiationRequestQuoteForm.ctaButton": "Request a quote",
