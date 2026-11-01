@@ -20,6 +20,14 @@ import { requireListingImage } from '../../util/configHelpers';
 import { getCurrentUserTypeRoles, hasPermissionToViewData } from '../../util/userHelpers.js';
 import { userDisplayNameAsString } from '../../util/data';
 import { isMobileSafari } from '../../util/userAgent';
+import { getModelFirstName } from '../../util/modelProfile';
+import {
+  formatDay,
+  formatDayTime,
+  getDailyRange,
+  getReplyByDeadline,
+  getRequestSentAt,
+} from '../../util/bookingSummary';
 import {
   SAFETY_RESPECT_RATING_BY_CUSTOMER,
   SAFETY_RESPECT_RATING_BY_PROVIDER,
@@ -53,7 +61,9 @@ import {
   OrderBreakdown,
   OrderPanel,
   LayoutSingleColumn,
+  PriceBreakdown,
 } from '../../components';
+import { getBreakdownData } from '../../components/PriceBreakdown/breakdownData';
 
 import TopbarContainer from '../../containers/TopbarContainer/TopbarContainer';
 import FooterContainer from '../../containers/FooterContainer/FooterContainer';
@@ -76,6 +86,8 @@ import RequestChangesModal from './RequestChangesModal/RequestChangesModal';
 import MakeCounterOfferModal from './MakeCounterOfferModal/MakeCounterOfferModal';
 import SendMessageForm from './SendMessageForm/SendMessageForm';
 import TransactionPanel from './TransactionPanel/TransactionPanel';
+import RequestSentCard from './RequestSent/RequestSentCard';
+import BookingSummaryRows from './RequestSent/BookingSummaryRows';
 
 import {
   makeTransition,
@@ -811,7 +823,44 @@ export const TransactionPageComponent = props => {
   const hasViewingRights = currentUser && hasPermissionToViewData(currentUser);
 
   const txBookingMaybe = booking?.id ? { booking, timeZone } : {};
-  const orderBreakdownMaybe = hasLineItems
+
+  // B05/B07: the shared price breakdown (client and model views). Bookings with refunds keep the
+  // detailed receipt (OrderBreakdown).
+  const isBookingTx = isBookingProcess(processName);
+  const modelFirstName = getModelFirstName(provider, listing?.attributes?.title);
+  const isRequestedForCustomer =
+    isCustomerRole &&
+    isBookingTx &&
+    !!process &&
+    bookingProcessState === process.states?.PREAUTHORIZED;
+  const breakdownNumbers = hasLineItems
+    ? getBreakdownData(transaction.attributes.lineItems, transactionRole)
+    : null;
+  // Stage 2 uses it on the client's Requested page (B07), where the dates sit in the summary
+  // rows; the other states keep the receipt with dates until the status pages (B08/B09).
+  const usePriceBreakdown =
+    isRequestedForCustomer && !!breakdownNumbers && !breakdownNumbers.hasRefunds;
+
+  const orderBreakdownMaybe = usePriceBreakdown
+    ? {
+        orderBreakdown: (
+          <PriceBreakdown
+            lineItems={transaction.attributes.lineItems}
+            role={transactionRole}
+            modelName={modelFirstName}
+            travelFeePolicy={listing?.attributes?.publicData?.travel_fee_policy}
+            notePrefix={
+              isRequestedForCustomer ? (
+                <FormattedMessage
+                  id="RequestSent.notChargedUnless"
+                  values={{ name: modelFirstName }}
+                />
+              ) : null
+            }
+          />
+        ),
+      }
+    : hasLineItems
     ? {
         orderBreakdown: (
           <OrderBreakdown
@@ -856,6 +905,70 @@ export const TransactionPageComponent = props => {
   );
   const shootTypeLabel =
     shootTypeField?.enumOptions?.find(o => o.option === shootTypeValue)?.label || shootTypeValue;
+
+  // B07: the client's "request sent" card with the real reply-by deadline, and what was agreed.
+  const replyBy = isRequestedForCustomer ? getReplyByDeadline(transaction) : null;
+  const sentAt = isRequestedForCustomer ? getRequestSentAt(transaction) : null;
+  const requestSentCard = isRequestedForCustomer ? (
+    <RequestSentCard
+      modelName={modelFirstName}
+      deadlineLabel={replyBy ? formatDayTime(intl, replyBy.deadline, timeZone) : null}
+      deadlineKind={replyBy?.kind}
+      sentAtLabel={sentAt ? formatDayTime(intl, sentAt, timeZone) : null}
+    />
+  ) : null;
+  const dailyRange =
+    lineItemUnitType === 'line-item/day'
+      ? getDailyRange(booking?.attributes?.start, booking?.attributes?.end)
+      : null;
+  const locationTypeValue = transaction?.attributes?.protectedData?.location_type;
+  const locationTypeMessageId = `BookingCheckout.locationType.${locationTypeValue}`;
+  const locationTypeLabel = locationTypeValue
+    ? Object.prototype.hasOwnProperty.call(intl.messages || {}, locationTypeMessageId)
+      ? intl.formatMessage({ id: locationTypeMessageId })
+      : foundListingTypeConfig?.transactionFields
+          ?.find(f => f.key === 'location_type')
+          ?.enumOptions?.find(o => o.option === locationTypeValue)?.label || locationTypeValue
+    : null;
+  const bookingSummaryRows = isRequestedForCustomer ? (
+    <BookingSummaryRows
+      datesLabel={
+        dailyRange
+          ? dailyRange.dayCount === 1
+            ? formatDay(intl, dailyRange.start, timeZone)
+            : intl.formatMessage(
+                { id: 'BookingDatesForm.summaryRange' },
+                {
+                  start: formatDay(intl, dailyRange.start, timeZone),
+                  end: formatDay(intl, dailyRange.lastDay, timeZone),
+                }
+              )
+          : null
+      }
+      dayCountLabel={
+        dailyRange
+          ? intl.formatMessage(
+              { id: 'BookingCheckout.dayCount' },
+              { dayCount: dailyRange.dayCount }
+            )
+          : null
+      }
+      shootTypeLabel={shootTypeLabel}
+      locationTypeLabel={locationTypeLabel}
+      shootAddress={transaction?.attributes?.protectedData?.shoot_address}
+      licenceAgreedLabel={
+        transaction?.attributes?.protectedData?.licenceAgreedByCustomer
+          ? sentAt
+            ? intl.formatMessage(
+                { id: 'RequestSent.licenceAgreedOn' },
+                { date: formatDay(intl, sentAt, timeZone) }
+              )
+            : intl.formatMessage({ id: 'RequestSent.licenceAgreed' })
+          : null
+      }
+      transactionId={transaction?.id?.uuid}
+    />
+  ) : null;
 
   const isNegotiationProcess = processName === NEGOTIATION_PROCESS_NAME;
   const isRegularNegotiation =
@@ -933,6 +1046,8 @@ export const TransactionPageComponent = props => {
       lineItemUnitType={lineItemUnitType}
       shootTypeLabel={shootTypeLabel}
       usageLicence={usageLicence}
+      requestSentCard={requestSentCard}
+      bookingSummaryRows={bookingSummaryRows}
       sendMessageForm={
         showSendMessageForm ? (
           <SendMessageForm
