@@ -4,6 +4,11 @@ import classNames from 'classnames';
 
 import { FormattedMessage } from '../../util/reactIntl';
 import { parse } from '../../util/urlHelpers';
+import { createResourceLocatorString } from '../../util/routes';
+import { formatCurrencyMajorUnit } from '../../util/currency';
+import { isMainSearchTypeKeywords, isOriginInUse } from '../../util/search';
+import { useIsPhoneLayout } from '../../util/useIsPhoneLayout';
+import { getOptionLabel } from '../../util/modelProfile';
 import { makeGetListingsByIdSelector } from '../../ducks/marketplaceData.duck';
 import { manageDisableScrolling, isScrollingDisabled } from '../../ducks/ui.duck';
 
@@ -19,59 +24,141 @@ import {
   onResetAll,
   createFilterValueChangeHandler,
   onSortBy,
+  getSearchPageResourceLocatorStringParams,
 } from './SearchPage.shared';
+import {
+  CHIP_FILTERS,
+  FILTERS_OPEN_BY_DEFAULT,
+  getActiveFilterChips,
+  getClientSortOptions,
+  getPanelFilters,
+  getRangeLabelKind,
+} from './searchJourney';
 
 import FilterComponent from './FilterComponent';
-import MainPanelHeader from './MainPanelHeader/MainPanelHeader';
-import SearchFiltersMobile from './SearchFiltersMobile/SearchFiltersMobile';
-import SortBy from './SortBy/SortBy';
 import SearchResultsPanel from './SearchResultsPanel/SearchResultsPanel';
-import NoSearchResultsMaybe from './NoSearchResultsMaybe/NoSearchResultsMaybe';
 import SearchPageAccessWrapper from './SearchPageAccessWrapper';
 import SearchErrors from './SearchErrors';
+import SearchHeader from './SearchJourney/SearchHeader';
+import FilterPanel from './SearchJourney/FilterPanel';
+import {
+  ActiveFilterChips,
+  MobileFilterBar,
+  SearchEmptyState,
+  SortSelect,
+} from './SearchJourney/ResultsControls';
 
 import css from './SearchPage.module.css';
+import journeyCss from './SearchJourney/SearchJourney.module.css';
 
-const MODAL_BREAKPOINT = 768; // Search is in modal on mobile layout
+const hasMessage = (intl, id) =>
+  !!intl?.messages && Object.prototype.hasOwnProperty.call(intl.messages, id);
 
-// SortBy component has its content in dropdown-popup.
-// With this offset we move the dropdown a few pixels on desktop layout.
-const FILTER_DROPDOWN_OFFSET = -14;
+/**
+ * Filter configs as the panel shows them (B02): client-facing labels from en.json where set
+ * ("How far they'll travel", "Height"), short option labels ("New face"), and per-group options.
+ */
+const decorateFilter = (filterConfig, intl, config) => {
+  const { key, enumOptions, filterConfig: fc = {} } = filterConfig;
+  const labelId = `SearchPage.filterLabel.${key}`;
+  const label = hasMessage(intl, labelId) ? intl.formatMessage({ id: labelId }) : fc.label;
+  const options = Array.isArray(enumOptions)
+    ? enumOptions.map(o => ({ ...o, label: getOptionLabel(intl, config, key, o.option) }))
+    : enumOptions;
+  return {
+    ...filterConfig,
+    ...(options ? { enumOptions: options } : {}),
+    filterConfig: { ...fc, label },
+  };
+};
+
+const filterExtraProps = (filterConfig, intl, marketplaceCurrency) => {
+  const { key, schemaType } = filterConfig;
+  const noteId = `SearchPage.filterNote.${key}`;
+  const note = hasMessage(intl, noteId) ? intl.formatMessage({ id: noteId }) : null;
+  const chipMode = CHIP_FILTERS[key];
+  const isRange = schemaType === 'price' || schemaType === 'long';
+  const currencySymbol =
+    schemaType === 'price'
+      ? formatCurrencyMajorUnit(intl, marketplaceCurrency, 0).replace(/[\d\s.,]/g, '')
+      : null;
+  return {
+    initiallyOpen: FILTERS_OPEN_BY_DEFAULT.includes(key),
+    presentation: chipMode ? 'chips' : 'list',
+    singleSelect: chipMode === 'single',
+    note,
+    ...(isRange
+      ? {
+          rangeLabels: {
+            min: intl.formatMessage({
+              id: schemaType === 'price' ? 'SearchPage.rangeMin' : 'SearchPage.rangeMinCm',
+            }),
+            max: intl.formatMessage({
+              id: schemaType === 'price' ? 'SearchPage.rangeMax' : 'SearchPage.rangeMaxCm',
+            }),
+          },
+          rangePrefix: currencySymbol,
+        }
+      : {}),
+  };
+};
 
 export class SearchPageComponent extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      isMobileModalOpen: false,
+      isFilterSheetOpen: false,
+      sheetInitialQueryParams: null,
       currentQueryParams: validUrlQueryParamsFromProps(props),
     };
-
-    this.onOpenMobileModal = this.onOpenMobileModal.bind(this);
-    this.onCloseMobileModal = this.onCloseMobileModal.bind(this);
 
     // Filter functions
     this.resetAll = this.resetAll.bind(this);
     this.getHandleChangedValueFn = this.getHandleChangedValueFn.bind(this);
+    this.openFilterSheet = this.openFilterSheet.bind(this);
+    this.cancelFilterSheet = this.cancelFilterSheet.bind(this);
+    this.applyFilterSheet = this.applyFilterSheet.bind(this);
+    this.pushQueryParams = this.pushQueryParams.bind(this);
 
     // SortBy
     this.handleSortBy = this.handleSortBy.bind(this);
   }
 
-  // Invoked when a modal is opened from a child component,
-  // for example when a filter modal is opened in mobile view
-  onOpenMobileModal() {
-    this.setState({ isMobileModalOpen: true });
+  pushQueryParams(queryParams) {
+    const { history, routeConfiguration, location } = this.props;
+    const { routeName, pathParams } = getSearchPageResourceLocatorStringParams(
+      routeConfiguration,
+      location
+    );
+    history.push(
+      createResourceLocatorString(routeName, routeConfiguration, pathParams, queryParams)
+    );
   }
 
-  // Invoked when a modal is closed from a child component,
-  // for example when a filter modal is opened in mobile view
-  onCloseMobileModal() {
-    this.setState({ isMobileModalOpen: false });
+  // Phone filter sheet (B02): closing without "Show N models" restores the results as they were.
+  openFilterSheet() {
+    this.setState({
+      isFilterSheetOpen: true,
+      sheetInitialQueryParams: validUrlQueryParamsFromProps(this.props),
+    });
+  }
+
+  cancelFilterSheet() {
+    const initial = this.state.sheetInitialQueryParams;
+    this.setState({ isFilterSheetOpen: false, sheetInitialQueryParams: null });
+    if (initial) {
+      this.setState({ currentQueryParams: initial });
+      this.pushQueryParams(initial);
+    }
+  }
+
+  applyFilterSheet() {
+    this.setState({ isFilterSheetOpen: false, sheetInitialQueryParams: null });
   }
 
   // Reset all filter query parameters
-  resetAll(e) {
+  resetAll() {
     const { history, routeConfiguration, config, location } = this.props;
     onResetAll({
       history,
@@ -119,16 +206,6 @@ export class SearchPageComponent extends Component {
     });
   }
 
-  // Reset all filter query parameters
-  handleResetAll(e) {
-    this.resetAll(e);
-
-    // blur event target if event is passed
-    if (e && e.currentTarget) {
-      e.currentTarget.blur();
-    }
-  }
-
   render() {
     const {
       intl,
@@ -144,6 +221,7 @@ export class SearchPageComponent extends Component {
       config,
       params: currentPathParams = {},
       currentUser,
+      isPhone,
     } = this.props;
 
     const {
@@ -151,13 +229,9 @@ export class SearchPageComponent extends Component {
       sortConfig,
       validQueryParams,
       availableFilters,
-      selectedFilters,
       isValidDatesFilter,
-      selectedFiltersCountForMobile,
       totalItems,
       listingsAreLoaded,
-      conflictingFilterActive,
-      showCreateListingsLink,
       title,
       description,
       schema,
@@ -176,160 +250,193 @@ export class SearchPageComponent extends Component {
       currentUser,
     });
 
-    const sortBy = mode => {
-      return sortConfig.active ? (
-        <SortBy
-          sort={validQueryParams[sortConfig.queryParamName]}
-          isConflictingFilterActive={!!conflictingFilterActive}
-          hasConflictingFilters={!!(sortConfig.conflictingFilters?.length > 0)}
-          selectedFilters={selectedFilters}
-          onSelect={this.handleSortBy}
-          showAsPopup
-          mode={mode}
-          labelId={`${mode}-search-page-sort-by`}
-          contentPlacementOffset={FILTER_DROPDOWN_OFFSET}
-        />
-      ) : null;
+    // B02: the panel's groups, in the design's order, with client-facing labels.
+    const panelFilters = getPanelFilters(availableFilters).map(f =>
+      decorateFilter(f, intl, config)
+    );
+
+    const optionLabel = (key, option) => getOptionLabel(intl, config, key, option);
+    const rangeLabel = ({ filter, min, max, lower, upper }) => {
+      const isPrice = filter.schemaType === 'price';
+      const fmt = n =>
+        isPrice
+          ? formatCurrencyMajorUnit(intl, marketplaceCurrency, n)
+          : filter.key === 'height_cm'
+          ? intl.formatMessage({ id: 'ListingPage.valueCm' }, { value: n })
+          : `${n}`;
+      const kind = getRangeLabelKind({ min, max, lower, upper });
+      return kind === 'upTo'
+        ? intl.formatMessage({ id: 'SearchPage.chipUpTo' }, { value: fmt(max) })
+        : kind === 'from'
+        ? intl.formatMessage({ id: 'SearchPage.chipFrom' }, { value: fmt(min) })
+        : intl.formatMessage({ id: 'SearchPage.chipRange' }, { min: fmt(min), max: fmt(max) });
     };
-    const noResultsInfo = (
-      <NoSearchResultsMaybe
-        listingsAreLoaded={listingsAreLoaded}
-        totalItems={totalItems}
-        location={location}
-        resetAll={this.resetAll}
-        showCreateListingsLink={showCreateListingsLink}
+    const chips = getActiveFilterChips({
+      filters: panelFilters,
+      queryParams: validQueryParams,
+      optionLabel,
+      rangeLabel,
+    });
+
+    const handleFilterChange = this.getHandleChangedValueFn(true);
+    const hasDates = !!validQueryParams.dates;
+    const hasFilters = chips.length > 0 || hasDates;
+
+    // Sorting: Newest, Lowest price, Highest price ("Oldest" is not shown, B01).
+    const isKeywordSearchActive =
+      isMainSearchTypeKeywords(config) && !!validQueryParams[sortConfig.relevanceFilter];
+    const sortOptions = sortConfig.active
+      ? getClientSortOptions(sortConfig, isKeywordSearchActive)
+      : [];
+    const sortValue = validQueryParams[sortConfig.queryParamName];
+    const handleSort = value => this.handleSortBy(sortConfig.queryParamName, value);
+
+    // City in the search header: same URL params as the topbar location search used.
+    const { address, origin, bounds } = parse(location.search, {
+      latlng: ['origin'],
+      latlngBounds: ['bounds'],
+    });
+    const initialLocation =
+      address && bounds
+        ? { search: address, selectedPlace: { address, origin, bounds } }
+        : null;
+    const handleSelectPlace = locationValue => {
+      const { search, selectedPlace } = locationValue || {};
+      const { origin: placeOrigin, bounds: placeBounds } = selectedPlace || {};
+      const originMaybe = isOriginInUse(config) ? { origin: placeOrigin } : {};
+      const { page, ...rest } = validQueryParams;
+      this.pushQueryParams({ ...rest, ...originMaybe, address: search, bounds: placeBounds });
+    };
+
+    const resultsCountMessage = searchInProgress ? (
+      <FormattedMessage id="SearchPage.loadingResults" />
+    ) : (
+      <FormattedMessage
+        id={hasDates ? 'SearchPage.resultsCountDates' : 'SearchPage.resultsCount'}
+        values={{ count: totalItems }}
       />
     );
 
-    // Set topbar class based on if a modal is open in
-    // a child component
-    const topbarClasses = this.state.isMobileModalOpen
-      ? classNames(css.topbarBehindModal, css.topbar)
-      : css.topbar;
+    const filterGroups = panelFilters.map(filterConfig => {
+      const filterId = `SearchFilters.${filterConfig.key.toLowerCase()}`;
+      return (
+        <FilterComponent
+          key={`SearchFilters.${filterConfig.scope || 'built-in'}.${filterConfig.key}`}
+          id={filterId}
+          config={filterConfig}
+          containerId="SearchPage_Filters"
+          listingCategories={listingCategories}
+          marketplaceCurrency={marketplaceCurrency}
+          urlQueryParams={validQueryParams}
+          initialValues={initialValues(this.props, this.state.currentQueryParams)}
+          getHandleChangedValueFn={this.getHandleChangedValueFn}
+          intl={intl}
+          liveEdit
+          showAsPopup={false}
+          isDesktop
+          {...filterExtraProps(filterConfig, intl, marketplaceCurrency)}
+        />
+      );
+    });
 
-    // N.B. openMobileMap button is sticky.
-    // For some reason, stickyness doesn't work on Safari, if the element is <button>
+    const showEmptyState = listingsAreLoaded && totalItems === 0;
+
     return (
       <Page
+        className={journeyCss.pageRoot}
         scrollingDisabled={scrollingDisabled}
         description={description}
         title={title}
         schema={schema}
       >
         <TopbarContainer
-          rootClassName={topbarClasses}
+          rootClassName={classNames(css.topbar, {
+            [css.topbarBehindModal]: this.state.isFilterSheetOpen,
+          })}
           currentSearchParams={validQueryParams}
           hideEmailVerifiedNotice
+          hideSearchForm
         />
         {/* Screen 05 banner: under the (desktop-fixed) topbar rather than hidden behind it */}
         <EmailVerifiedNotice className={css.emailVerifiedNotice} />
-        <div className={css.layoutWrapperContainer}>
-          <aside className={css.layoutWrapperFilterColumn} data-testid="filterColumnAside">
-            <div className={css.filterColumnContent}>
-              {availableFilters.map(filterConfig => {
-                const key = `SearchFiltersDesktop.${filterConfig.scope || 'built-in'}.${
-                  filterConfig.key
-                }`;
-                const filterId = `SearchFiltersDesktop.${filterConfig.key.toLowerCase()}`;
-                return (
-                  <FilterComponent
-                    key={key}
-                    id={filterId}
-                    className={css.filter}
-                    config={filterConfig}
-                    containerId="SearchPageWithGrid_DesktopFilters"
-                    listingCategories={listingCategories}
-                    marketplaceCurrency={marketplaceCurrency}
-                    urlQueryParams={validQueryParams}
-                    initialValues={initialValues(this.props, this.state.currentQueryParams)}
-                    getHandleChangedValueFn={this.getHandleChangedValueFn}
-                    intl={intl}
-                    liveEdit
-                    showAsPopup={false}
-                    isDesktop
-                  />
-                );
-              })}
-              <button className={css.resetAllButton} onClick={e => this.handleResetAll(e)}>
-                <FormattedMessage id={'SearchFiltersMobile.resetAll'} />
-              </button>
-            </div>
-          </aside>
+        <div id="main-content" className={journeyCss.page} role="main">
+          <SearchHeader
+            initialLocation={initialLocation}
+            onSelectPlace={handleSelectPlace}
+            datesParam={validQueryParams.dates}
+            onDatesChange={dates => handleFilterChange({ dates })}
+            isPhone={!!isPhone}
+            onManageDisableScrolling={onManageDisableScrolling}
+          />
 
-          <div id="main-content" className={css.layoutWrapperMain} role="main">
-            <div className={css.searchResultContainer}>
-              <SearchFiltersMobile
-                className={css.searchFiltersMobileList}
-                urlQueryParams={validQueryParams}
-                sortByComponent={sortBy('mobile')}
-                listingsAreLoaded={listingsAreLoaded}
-                resultsCount={totalItems}
-                searchInProgress={searchInProgress}
-                searchListingsError={searchListingsError}
-                showAsModalMaxWidth={MODAL_BREAKPOINT}
-                onManageDisableScrolling={onManageDisableScrolling}
-                onOpenModal={this.onOpenMobileModal}
-                onCloseModal={this.onCloseMobileModal}
-                resetAll={this.resetAll}
-                selectedFiltersCount={selectedFiltersCountForMobile}
-                isMapVariant={false}
-                noResultsInfo={noResultsInfo}
-                location={location}
-              >
-                {availableFilters.map(filterConfig => {
-                  const key = `SearchFiltersMobile.${filterConfig.scope || 'built-in'}.${
-                    filterConfig.key
-                  }`;
-                  const filterId = `SearchFiltersMobile.${filterConfig.key.toLowerCase()}`;
+          <div className={journeyCss.layout}>
+            <FilterPanel
+              isOpen={this.state.isFilterSheetOpen}
+              onCancel={this.cancelFilterSheet}
+              onApply={this.applyFilterSheet}
+              onClearAll={this.resetAll}
+              resultsCount={totalItems}
+              searchInProgress={searchInProgress}
+              onManageDisableScrolling={onManageDisableScrolling}
+            >
+              <div data-testid="filterColumnAside">{filterGroups}</div>
+            </FilterPanel>
 
-                  return (
-                    <FilterComponent
-                      key={key}
-                      id={filterId}
-                      config={filterConfig}
-                      containerId="SearchPage_MobileFilters"
-                      listingCategories={listingCategories}
-                      marketplaceCurrency={marketplaceCurrency}
-                      urlQueryParams={validQueryParams}
-                      initialValues={initialValues(this.props, this.state.currentQueryParams)}
-                      getHandleChangedValueFn={this.getHandleChangedValueFn}
-                      intl={intl}
-                      liveEdit
-                      showAsPopup={false}
-                    />
-                  );
-                })}
-              </SearchFiltersMobile>
-              <MainPanelHeader
-                className={css.mainPanel}
-                sortByComponent={sortBy('desktop')}
-                isSortByActive={sortConfig.active}
-                listingsAreLoaded={listingsAreLoaded}
-                resultsCount={totalItems}
-                searchInProgress={searchInProgress}
-                searchListingsError={searchListingsError}
-                noResultsInfo={noResultsInfo}
+            <section
+              className={journeyCss.results}
+              aria-label={intl.formatMessage({ id: 'SearchPage.resultsLabel' })}
+            >
+              <MobileFilterBar
+                activeCount={chips.length}
+                onOpenFilters={this.openFilterSheet}
+                sortSelect={
+                  <SortSelect options={sortOptions} value={sortValue} onChange={handleSort} />
+                }
               />
-              <div
-                className={classNames(css.listingsForGridVariant, {
-                  [css.newSearchInProgress]: !(listingsAreLoaded || searchListingsError),
-                })}
-              >
-                <SearchErrors
-                  searchListingsError={searchListingsError}
-                  isValidDatesFilter={isValidDatesFilter}
-                />
-                <SearchResultsPanel
-                  className={css.searchListingsPanel}
-                  listings={listings}
-                  pagination={listingsAreLoaded ? pagination : null}
-                  search={parse(location.search)}
-                  isMapVariant={false}
-                  listingTypeParam={listingTypePathParam}
-                  intl={intl}
+              <div className={journeyCss.resultsBar}>
+                <p className={journeyCss.resultsCount} aria-live="polite">
+                  {resultsCountMessage}
+                </p>
+                <SortSelect
+                  options={sortOptions}
+                  value={sortValue}
+                  onChange={handleSort}
+                  prefixed
                 />
               </div>
-            </div>
+              <ActiveFilterChips
+                chips={chips}
+                onRemove={chip => handleFilterChange({ [chip.paramName]: chip.nextValue })}
+                onClearAll={this.resetAll}
+              />
+              <SearchErrors
+                searchListingsError={searchListingsError}
+                isValidDatesFilter={isValidDatesFilter}
+              />
+              {showEmptyState ? (
+                <SearchEmptyState hasFilters={hasFilters} onClearFilters={this.resetAll} />
+              ) : (
+                <div
+                  className={classNames({
+                    [journeyCss.loading]: !(listingsAreLoaded || searchListingsError),
+                  })}
+                >
+                  <SearchResultsPanel
+                    listings={listings}
+                    pagination={listingsAreLoaded ? pagination : null}
+                    search={parse(location.search)}
+                    isMapVariant={false}
+                    listingTypeParam={listingTypePathParam}
+                    intl={intl}
+                    cardVariant="search"
+                    showAvailability={hasDates}
+                    gridClassName={journeyCss.grid}
+                    gridItemClassName={journeyCss.gridItem}
+                    paginationClassName={journeyCss.pagination}
+                  />
+                </div>
+              )}
+            </section>
           </div>
         </div>
         <FooterContainer />
@@ -348,6 +455,7 @@ export class SearchPageComponent extends Component {
 const SearchPage = props => {
   const dispatch = useDispatch();
   const selectListingsById = useMemo(makeGetListingsByIdSelector, []);
+  const isPhone = useIsPhoneLayout();
 
   const currentUser = useSelector(state => state.user?.currentUser);
   const { pagination, searchInProgress, searchListingsError, searchParams } = useSelector(
@@ -376,6 +484,7 @@ const SearchPage = props => {
       searchListingsError={searchListingsError}
       searchParams={searchParams}
       onManageDisableScrolling={onManageDisableScrolling}
+      isPhone={isPhone}
     />
   );
 };

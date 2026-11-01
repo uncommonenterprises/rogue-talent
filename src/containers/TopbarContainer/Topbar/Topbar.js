@@ -163,6 +163,7 @@ const TopbarComponent = props => {
     config,
     routeConfiguration,
     accountStatus,
+    hideSearchForm = false,
   } = props;
 
   const handleSubmit = values => {
@@ -316,8 +317,10 @@ const TopbarComponent = props => {
   const showSearchNotOnLandingPage =
     searchFormDisplay === SEARCH_DISPLAY_NOT_LANDING_PAGE && resolvedCurrentPage !== 'LandingPage';
 
+  // The search page has its own city and dates controls in its header (B01), so it hides this one.
   const showSearchForm =
-    showSearchOnAllPages || showSearchOnSearchPage || showSearchNotOnLandingPage;
+    !hideSearchForm &&
+    (showSearchOnAllPages || showSearchOnSearchPage || showSearchNotOnLandingPage);
 
   const mobileSearchButtonMaybe = showSearchForm ? (
     <Button
@@ -505,6 +508,7 @@ const TopbarComponent = props => {
  * @param {string} props.location.search '?foo=bar'
  * @param {string?} props.accountStatus account-status lifecycle status to show as the compact
  *   rt-status chip (the account-status page passes it)
+ * @param {boolean?} props.hideSearchForm hide the topbar search (the search page has its own)
  * @returns {JSX.Element} topbar component
  */
 const Topbar = props => {
