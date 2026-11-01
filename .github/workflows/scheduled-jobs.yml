@@ -16,10 +16,10 @@
 name: Scheduled jobs
 
 on:
-  # Schedules are enabled after the first manual dry run succeeds (cutover Stage B, 01/11/2026).
-  # schedule:
-  #   - cron: '*/10 * * * *'
-  #   - cron: '0 9 * * *'
+  # Enabled 01/11/2026 after both manual dry runs succeeded (cutover Stage B).
+  schedule:
+    - cron: '*/10 * * * *'
+    - cron: '0 9 * * *'
   workflow_dispatch:
     inputs:
       job:
