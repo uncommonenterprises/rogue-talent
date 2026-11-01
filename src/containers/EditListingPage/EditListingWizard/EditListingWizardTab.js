@@ -20,19 +20,35 @@ import EditListingPricingAndStockPanel from './EditListingPricingAndStockPanel/E
 import EditListingProfilePanel from './EditListingProfilePanel/EditListingProfilePanel';
 import EditListingReviewPanel from './EditListingReviewPanel/EditListingReviewPanel';
 import EditListingStylePanel from './EditListingStylePanel/EditListingStylePanel';
+import {
+  DETAILS,
+  PROFILE,
+  PRICING,
+  PRICING_AND_STOCK,
+  DELIVERY,
+  LOCATION,
+  AVAILABILITY,
+  PHOTOS,
+  REVIEW,
+  STYLE,
+} from './wizardSteps';
 
 import css from './EditListingWizardTab.module.css';
 
-export const DETAILS = 'details';
-export const PROFILE = 'profile';
-export const PRICING = 'pricing';
-export const PRICING_AND_STOCK = 'pricing-and-stock';
-export const DELIVERY = 'delivery';
-export const LOCATION = 'location';
-export const AVAILABILITY = 'availability';
-export const PHOTOS = 'photos';
-export const REVIEW = 'review';
-export const STYLE = 'style';
+// Tab names live in wizardSteps.js (a light module other pages can import); re-exported here
+// for existing callers.
+export {
+  DETAILS,
+  PROFILE,
+  PRICING,
+  PRICING_AND_STOCK,
+  DELIVERY,
+  LOCATION,
+  AVAILABILITY,
+  PHOTOS,
+  REVIEW,
+  STYLE,
+};
 
 // EditListingWizardTab component supports these tabs
 export const SUPPORTED_TABS = [

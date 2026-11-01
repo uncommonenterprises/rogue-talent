@@ -3,14 +3,19 @@ import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 
+import { useConfiguration } from '../../context/configurationContext';
 import { FormattedMessage, useIntl } from '../../util/reactIntl';
 import { propTypes } from '../../util/types';
 import { parse } from '../../util/urlHelpers';
 import { ensureCurrentUser } from '../../util/data';
 import { clientNeedsBusinessDetails } from '../../util/clientBusinessDetails';
+import { isAccountStatusFlowEnabled, isModelUser } from '../../util/accountStatus';
+import { isUserAuthorized } from '../../util/userHelpers';
 import { verify } from '../../ducks/emailVerification.duck';
 import { isScrollingDisabled } from '../../ducks/ui.duck';
 import { Page, NamedRedirect, AuthShell } from '../../components';
+
+import { getModelProfileRoute } from '../EditListingPage/modelProfileRoute';
 
 import EmailVerificationForm from './EmailVerificationForm/EmailVerificationForm';
 
@@ -39,21 +44,33 @@ const parseVerificationToken = search => {
 };
 
 /**
- * Where a user lands straight after verifying their email (screen 05 / RT-FB-08): models continue
- * into the profile wizard; clients continue to "Your business details" (screen 18, sign-up
- * stage 3) until they've submitted it, then Browse models (SearchPage), not the marketing
- * homepage. The one-off "Your email is verified." banner is shown on arrival (see
- * emailVerification.duck).
+ * Where a user lands straight after verifying their email (screen 05 / RT-FB-08). The one-off
+ * "Your email is verified." banner is shown on arrival (see emailVerification.duck).
+ * - Models go to their profile (run-through 01/11/2026, finding 1): a model with no profile
+ *   starts a new one; a model with a draft continues it at the first incomplete step (or Review
+ *   & submit); a model who has submitted goes to their account status (or the "Your profile"
+ *   dashboard with the account-status flow off). See getModelProfileRoute.
+ * - Clients continue to "Your business details" (screen 18, sign-up stage 3) until they've
+ *   submitted it, then Browse models (SearchPage), not the marketing homepage.
  *
- * @param {Object} user current user entity
- * @returns {'NewListingPage'|'BusinessDetailsPage'|'SearchPage'} route name
+ * @param {Object} params
+ * @param {Object} params.user current user entity
+ * @param {Object} [params.profileListing] a model's own profile listing (null if none)
+ * @param {Object} [params.config] marketplace config (needed for a model's draft)
+ * @param {boolean} [params.flagEnabled] account-status flow flag; defaults to the env flag
+ * @returns {{ name: string, params?: Object }} NamedRedirect props
  */
-export const getVerifiedDestinationRouteName = user =>
-  user?.attributes?.profile?.publicData?.userType === 'model'
-    ? 'NewListingPage'
+export const getVerifiedDestination = ({
+  user,
+  profileListing,
+  config,
+  flagEnabled = isAccountStatusFlowEnabled(),
+}) =>
+  isModelUser(user)
+    ? getModelProfileRoute({ profileListing, config, flagEnabled })
     : clientNeedsBusinessDetails(user)
-    ? 'BusinessDetailsPage'
-    : 'SearchPage';
+    ? { name: 'BusinessDetailsPage' }
+    : { name: 'SearchPage' };
 
 /**
  * The EmailVerificationPage component.
@@ -68,10 +85,13 @@ export const getVerifiedDestinationRouteName = user =>
  * @param {propTypes.error} props.verificationError - The verification error
  * @param {Object} props.location - The location object
  * @param {string} props.location.search - The search object
+ * @param {Object} [props.profileListing] - a model's own profile listing (null if none)
+ * @param {boolean} [props.profileListingReady] - has a model's profile listing been looked up?
  * @returns {JSX.Element} email verification page component
  */
 export const EmailVerificationPageComponent = props => {
   const intl = useIntl();
+  const config = useConfiguration();
   const {
     currentUser,
     scrollingDisabled,
@@ -80,6 +100,8 @@ export const EmailVerificationPageComponent = props => {
     emailVerificationInProgress,
     verificationError,
     location,
+    profileListing = null,
+    profileListingReady = true,
   } = props;
 
   const initialValues = {
@@ -90,10 +112,19 @@ export const EmailVerificationPageComponent = props => {
   // The first attempt to verify email is done when the page is loaded
   // If the verify API call is successfull and the user has verified email
   // We can redirect user forward from email verification page.
-  if (isVerified && user.attributes.emailVerified && user.attributes.pendingEmail == null) {
+  const isVerifiedNow =
+    isVerified && user.attributes.emailVerified && user.attributes.pendingEmail == null;
+  // A model's destination depends on their own profile listing, so wait until it has been looked
+  // up rather than guessing "no profile". (A user who isn't active can't have one fetched; they
+  // keep today's route and the new-profile page handles their access.)
+  const waitForProfileListing = isModelUser(user) && isUserAuthorized(user) && !profileListingReady;
+
+  if (isVerifiedNow && !waitForProfileListing) {
     // Drop the user straight into the platform rather than a generic page.
-    return <NamedRedirect name={getVerifiedDestinationRouteName(user)} />;
+    const destination = getVerifiedDestination({ user, profileListing, config });
+    return <NamedRedirect name={destination.name} params={destination.params} />;
   }
+  const showLoading = !user.id || (isVerifiedNow && waitForProfileListing);
 
   return (
     <Page
@@ -105,7 +136,7 @@ export const EmailVerificationPageComponent = props => {
     >
       <AuthShell variant="verify">
         <div className={css.content}>
-          {user.id ? (
+          {!showLoading ? (
             <EmailVerificationForm
               initialValues={initialValues}
               onSubmit={submitVerification}
@@ -125,9 +156,18 @@ export const EmailVerificationPageComponent = props => {
 };
 
 const mapStateToProps = state => {
-  const { currentUser } = state.user;
+  const {
+    currentUser,
+    currentUserProfileListing,
+    currentUserProfileListingFetched,
+    currentUserProfileListingInProgress,
+  } = state.user;
   const { isVerified, verificationError, verificationInProgress } = state.emailVerification;
   return {
+    profileListing: currentUserProfileListing,
+    // Ready once looked up and no newer lookup is running (verifying re-fetches the user, which
+    // refreshes the listing too).
+    profileListingReady: currentUserProfileListingFetched && !currentUserProfileListingInProgress,
     isVerified,
     verificationError,
     emailVerificationInProgress: verificationInProgress,

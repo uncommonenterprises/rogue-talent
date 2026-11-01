@@ -23,7 +23,7 @@ import { LISTING_STATE_DRAFT, LISTING_STATE_PENDING_APPROVAL, propTypes } from '
 import { isErrorNoPermissionToPostListings } from '../../util/errors';
 import { ensureOwnListing } from '../../util/data';
 import { hasPermissionToPostListings, isUserAuthorized } from '../../util/userHelpers';
-import { isAccountStatusFlowEnabled } from '../../util/accountStatus';
+import { isAccountStatusFlowEnabled, isModelUser } from '../../util/accountStatus';
 import { getMarketplaceEntities } from '../../ducks/marketplaceData.duck';
 import { manageDisableScrolling, isScrollingDisabled } from '../../ducks/ui.duck';
 import { sendVerificationEmail } from '../../ducks/user.duck';
@@ -51,6 +51,7 @@ import {
   savePayoutDetails,
 } from './EditListingPage.duck';
 import EditListingWizard, { isOnboardingShellFlow } from './EditListingWizard/EditListingWizard';
+import { getModelProfileRoute } from './modelProfileRoute';
 import css from './EditListingPage.module.css';
 
 const STRIPE_ONBOARDING_RETURN_URL_SUCCESS = 'success';
@@ -174,6 +175,9 @@ export const EditListingPageComponent = props => {
     onResendVerificationEmail,
     sendVerificationEmailInProgress,
     sendVerificationEmailError,
+    profileListing = null,
+    profileListingFetched = true,
+    profileListingInProgress = false,
   } = props;
 
   const { id, type, returnURLType } = params;
@@ -193,8 +197,21 @@ export const EditListingPageComponent = props => {
   const isPastDraft = currentListingState && currentListingState !== LISTING_STATE_DRAFT;
   const shouldRedirectAfterPosting = isNewListingFlow && listingId && isPastDraft;
 
+  // Run-through 01/11/2026, finding 1: a model who already has a profile (draft or submitted)
+  // must never start a blank new one, whichever link brought them here. Hold the new-profile
+  // form until their own listing has been looked up (this page's loadData refreshes it), then
+  // send them to it if there is one.
+  const isModelOnNewURI = isNewURI && isModelUser(currentUser) && isUserAuthorized(currentUser);
+  const waitForProfileListing =
+    isModelOnNewURI && (!profileListingFetched || profileListingInProgress);
+  const existingProfileRoute =
+    isModelOnNewURI && profileListingFetched && profileListing?.id
+      ? getModelProfileRoute({ profileListing, config })
+      : null;
+
   const hasStripeOnboardingDataIfNeeded = returnURLType ? !!currentUser?.id : true;
-  const showWizard = hasStripeOnboardingDataIfNeeded && (isNewURI || currentListing.id);
+  const showWizard =
+    hasStripeOnboardingDataIfNeeded && !waitForProfileListing && (isNewURI || currentListing.id);
 
   if (!isUserAuthorized(currentUser)) {
     return (
@@ -203,6 +220,8 @@ export const EditListingPageComponent = props => {
         params={{ missingAccessRight: NO_ACCESS_PAGE_USER_PENDING_APPROVAL }}
       />
     );
+  } else if (existingProfileRoute) {
+    return <NamedRedirect name={existingProfileRoute.name} params={existingProfileRoute.params} />;
   } else if (shouldRedirectNoPostingRights) {
     return (
       <NamedRedirect
@@ -391,7 +410,13 @@ const mapStateToProps = state => {
     updateInProgress: profileUpdateInProgress,
     updateProfileError,
   } = state.ProfileSettingsPage;
-  const { sendVerificationEmailInProgress, sendVerificationEmailError } = state.user;
+  const {
+    sendVerificationEmailInProgress,
+    sendVerificationEmailError,
+    currentUserProfileListing,
+    currentUserProfileListingFetched,
+    currentUserProfileListingInProgress,
+  } = state.user;
 
   return {
     getAccountLinkInProgress,
@@ -411,6 +436,9 @@ const mapStateToProps = state => {
     authScopes,
     sendVerificationEmailInProgress,
     sendVerificationEmailError,
+    profileListing: currentUserProfileListing,
+    profileListingFetched: currentUserProfileListingFetched,
+    profileListingInProgress: currentUserProfileListingInProgress,
   };
 };
 
