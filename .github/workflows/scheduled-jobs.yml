@@ -1,0 +1,81 @@
+# Scheduled jobs for the TEST site (ndstealth1-test on Railway).
+#
+# Calls the two protected cron endpoints on a schedule:
+#   - review-decision-emails: every 10 minutes (approved / not approved emails, once each)
+#   - verify-nudge: daily at 09:00 UTC (reminds approved-but-unverified accounts to verify)
+#
+# The endpoints check the X-Cron-Secret header against CRON_SECRET on Railway. The same value is
+# stored as the GitHub Actions secret CRON_SECRET (repo Settings > Secrets and variables > Actions).
+# It is never written in this file or printed in logs.
+#
+# Manual runs: Actions > Scheduled jobs > Run workflow. "dry_run" defaults to true, so a manual run
+# only reports what WOULD be sent. Untick it to send for real.
+#
+# Note: GitHub pauses scheduled workflows in public repos after 60 days without repo activity.
+
+name: Scheduled jobs
+
+on:
+  # Schedules are enabled after the first manual dry run succeeds (cutover Stage B, 01/11/2026).
+  # schedule:
+  #   - cron: '*/10 * * * *'
+  #   - cron: '0 9 * * *'
+  workflow_dispatch:
+    inputs:
+      job:
+        description: 'Which job to run'
+        type: choice
+        options:
+          - review-decision-emails
+          - verify-nudge
+        default: review-decision-emails
+      dry_run:
+        description: 'Dry run (report only, send nothing)'
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: scheduled-jobs-${{ github.event.schedule || inputs.job }}
+  cancel-in-progress: false
+
+env:
+  SITE_URL: https://rogue-talent-production.up.railway.app
+
+jobs:
+  call:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Work out which job and mode
+        id: pick
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            JOB="${{ inputs.job }}"
+            if [ "${{ inputs.dry_run }}" = "true" ]; then QUERY="?dryRun=true"; else QUERY=""; fi
+          elif [ "${{ github.event.schedule }}" = "0 9 * * *" ]; then
+            JOB="verify-nudge"; QUERY=""
+          else
+            JOB="review-decision-emails"; QUERY=""
+          fi
+          echo "job=$JOB" >> "$GITHUB_OUTPUT"
+          echo "query=$QUERY" >> "$GITHUB_OUTPUT"
+          echo "Running $JOB ${QUERY:-(live)}"
+
+      - name: Call the endpoint
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          if [ -z "$CRON_SECRET" ]; then
+            echo "CRON_SECRET is not set in GitHub Actions secrets." >&2
+            exit 1
+          fi
+          URL="$SITE_URL/api/cron/${{ steps.pick.outputs.job }}${{ steps.pick.outputs.query }}"
+          STATUS=$(curl -sS -o response.json -w '%{http_code}' -X POST -H "X-Cron-Secret: $CRON_SECRET" "$URL")
+          echo "HTTP $STATUS"
+          cat response.json; echo
+          if [ "$STATUS" != "200" ]; then
+            exit 1
+          fi
