@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>R07 · States and edge cases - Rogue Talent review tool mockups</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Hanken+Grotesk:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="review.css">
+</head>
+<body>
+
+<div class="mock-toolbar mock-only">
+  <span class="tag">Mock</span>
+  <a href="index.html">Review tool map</a>
+  <span class="divider">·</span>
+  <span class="title">Reviewer · R07 · States and edge cases</span>
+  <span class="mock-flag">Example data</span>
+  <span class="spacer"></span>
+  <a href="R06-team.html">← Prev</a>
+  <a href="index.html">Index →</a>
+</div>
+
+<main class="container--editorial" style="padding-top:var(--space-7);padding-bottom:var(--space-6);">
+
+  <div class="stack stack--sm" style="margin-bottom:var(--space-6);">
+    <span class="rt-eyebrow">Reviewer · R07</span>
+    <h1 class="page-title">States and edge cases</h1>
+    <p class="small muted" style="max-width:62ch;">What a person sees when something is not the happy path. Each box below is a separate view.</p>
+  </div>
+
+  <div class="state-label" style="margin-top:0;">1 · Not a reviewer. Someone without permission opens a review link. Nothing is revealed: no names, no hint that a review tool exists.</div>
+  <div class="view-frame">
+    <div class="view-frame__bar">Logged-in model or client (standard Rogue Talent nav)</div>
+    <header class="app-nav">
+      <a class="rt-nav__brand" href="index.html">Rogue<span>.</span></a>
+      <nav class="app-nav__links" aria-label="Main">
+        <a href="B01-search-results.html" onclick="return false">Browse models</a>
+        <a href="B09-booking-status.html" onclick="return false">Your bookings</a>
+      </nav>
+      <div class="app-nav__actions"><a class="icon-btn" href="#" aria-label="Account menu"><span class="rt-avatar rt-avatar--sm">B</span></a></div>
+    </header>
+    <div class="view-frame__body">
+      <div class="plain-page" style="padding:var(--space-6) 0;">
+        <h1>You don't have access to this page</h1>
+        <a class="rt-btn rt-btn--primary" href="#">Go to the home page</a>
+      </div>
+    </div>
+  </div>
+  <p class="small muted" style="margin-top:var(--space-3);max-width:70ch;">The same page is shown whether the link is a real review page or a made-up one, so it cannot be used to find out what exists. A person who is not logged in goes to log-in first (R05) and then sees this if they are not a reviewer.</p>
+
+  <div class="state-label">2 · Already decided by someone else. A reviewer opens an old email link, or two reviewers open the same one.</div>
+  <div class="view-frame">
+    <div class="view-frame__bar">Review page (R02 or R04), opened after a decision</div>
+    <div class="view-frame__body">
+      <div class="notice"><i class="ico ico-info"></i><div><p><strong>Already decided.</strong> Sam Okafor approved this profile today at 14:12. Nothing more to do here.</p><div class="notice__links"><a href="R01-review-queue.html">Back to the queue</a></div></div></div>
+      <div class="rv-cols" style="margin-top:var(--space-5);padding-bottom:0;">
+        <div class="empty-state" style="padding:var(--space-6) var(--space-5);"><p>The profile is shown as normal, read only.</p></div>
+        <div class="panel rv-panel">
+          <div class="rv-panel__head"><span class="rt-eyebrow">Review</span><span class="rt-status rt-status--lg rt-status--approved"><span class="rt-status__dot"></span>Approved</span></div>
+          <dl class="rv-kv rv-kv--top">
+            <div><dt>Decided by</dt><dd>Sam Okafor</dd></div>
+            <div><dt>When</dt><dd>04/11/2026, 14:12</dd></div>
+            <div><dt>Email</dt><dd><span class="q-email"><i class="ico ico-clock ico--sm"></i>Will be sent shortly</span></dd></div>
+          </dl>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="state-label">3 · Decided while you were looking. Two reviewers on the same person at once: the first decision wins and the second is not saved.</div>
+  <div class="state-grid">
+    <div class="view-frame">
+      <div class="view-frame__bar">After pressing Approve or Decline</div>
+      <div class="view-frame__body">
+        <div class="notice notice--error"><i class="ico ico-alert"></i><div><p><strong>Your decision wasn't saved.</strong> Sam Okafor approved this profile at 14:12, while you were looking. No second email is sent.</p><div class="notice__links"><a href="R01-review-queue.html">Back to the queue</a></div></div></div>
+      </div>
+    </div>
+
+    <div class="view-frame">
+      <div class="view-frame__bar">Saving failed (network or server)</div>
+      <div class="view-frame__body">
+        <div class="stack">
+          <div class="notice notice--error"><i class="ico ico-alert"></i><p><strong>We couldn't save your decision.</strong> Nothing was changed and no email will be sent. Check your connection and try again.</p></div>
+          <a class="rt-btn rt-btn--primary rt-btn--lg" href="#">Try again</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="view-frame">
+      <div class="view-frame__bar">Logged out while deciding</div>
+      <div class="view-frame__body">
+        <div class="stack">
+          <div class="notice"><i class="ico ico-lock"></i><p><strong>You've been logged out.</strong> Log in again to save your decision. You'll come back to this page, and your note is kept.</p></div>
+          <a class="rt-btn rt-btn--primary rt-btn--lg" href="R05-reviewer-email.html">Log in</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <p class="small muted" style="margin-top:var(--space-3);max-width:70ch;">Red appears only on these failure notices, where it is the right signal: something did not happen. "Your note is kept" is a nice-to-have; if it cannot be built, drop that clause rather than promise it.</p>
+
+  <div class="state-label">4 · Not waiting for review. A link to someone who has since deleted their account, or whose profile is no longer pending.</div>
+  <div class="view-frame">
+    <div class="view-frame__bar">Review link for a person who is not in the queue</div>
+    <div class="view-frame__body">
+      <div class="plain-page" style="padding:var(--space-6) 0;">
+        <h1>This isn't waiting for review</h1>
+        <p>The person may have deleted their account or withdrawn their submission.</p>
+        <a class="rt-btn rt-btn--secondary" href="R01-review-queue.html">Back to the queue</a>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<div class="notes-dock mock-only">
+  <details class="design-notes">
+    <summary>Design notes</summary>
+    <ul>
+      <li><strong>"You don't have access to this page" and nothing else,</strong> as asked. One heading, one way out. No "contact an admin", no mention of reviewers, no profile name. The action is the cobalt button because it is the only action on that view.</li>
+      <li><strong>The first decision wins.</strong> Every reviewer is emailed, so two people will sometimes open the same person. The server must refuse the second decision, and the page tells them plainly, rather than silently overwriting or sending two emails. This is a build requirement, not only a design one.</li>
+      <li><strong>Red is only for things that failed</strong> (decision not saved). Decided-by-someone-else when you only opened the page is information, so it uses the neutral notice.</li>
+      <li><strong>A made-up link and a real one look the same</strong> to people without access. Do not use different wording for "doesn't exist" and "not allowed".</li>
+    </ul>
+  </details>
+</div>
+<div class="container--editorial mock-only"><div class="mock-pager"><a href="R06-team.html">← R06 Team</a><a href="index.html">Index →</a></div></div>
+
+</body>
+</html>

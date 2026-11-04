@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>R01 · Review queue - Rogue Talent review tool mockups</title>
+<script>if (/[?&]embed/.test(location.search)) document.documentElement.classList.add('is-embedded');</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Hanken+Grotesk:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="review.css">
+</head>
+<body>
+
+<div class="mock-toolbar mock-only">
+  <span class="tag">Mock</span>
+  <a href="index.html">Review tool map</a>
+  <span class="divider">·</span>
+  <span class="title">Reviewer · R01 · Review queue</span>
+  <span class="mock-flag">Example data</span>
+  <span class="spacer"></span>
+  <a href="index.html">← Index</a>
+  <a href="R02-model-review.html">Next: Model review →</a>
+</div>
+
+<header class="app-nav">
+  <a class="rt-nav__brand" href="index.html">Rogue<span>.</span></a>
+  <nav class="app-nav__links" aria-label="Main">
+    <a class="is-active" href="R01-review-queue.html">Review queue</a>
+    <a href="R06-team.html">Team</a>
+  </nav>
+  <div class="app-nav__actions">
+    <span class="rt-badge rt-badge--ink app-nav__status">Reviewer</span>
+    <a class="icon-btn" href="#" aria-label="Account menu"><span class="rt-avatar rt-avatar--sm">N</span></a>
+  </div>
+</header>
+
+<main class="page">
+  <div class="q-wrap">
+
+    <div class="q-title-row">
+      <div class="stack stack--sm">
+        <h1 class="page-title">Review queue</h1>
+        <p class="q-summary" id="q-summary"><b>7 waiting</b>, oldest first. The longest wait is 5 days.</p>
+      </div>
+      <button class="mock-flag mock-btn mock-only" type="button" data-demo-empty>Preview empty state</button>
+    </div>
+
+    <div class="rt-tabs" role="tablist" aria-label="Filter the queue">
+      <button class="rt-tab rt-tab--active" type="button" role="tab" aria-selected="true" data-tab="all">All waiting <span class="rt-tab__count">7</span></button>
+      <button class="rt-tab" type="button" role="tab" aria-selected="false" data-tab="model">Models <span class="rt-tab__count">5</span></button>
+      <button class="rt-tab" type="button" role="tab" aria-selected="false" data-tab="client">Clients <span class="rt-tab__count">2</span></button>
+      <button class="rt-tab" type="button" role="tab" aria-selected="false" data-tab="decided">Recently decided</button>
+    </div>
+
+    <!-- WAITING: oldest first. Models open R02, clients open R04. -->
+    <div class="q-list" id="q-waiting">
+      <div class="q-head" aria-hidden="true"><span>Name</span><span>Type</span><span>Submitted</span><span>ID verification</span><span>Flag</span><span></span></div>
+
+      <a class="q-row" data-type="model" href="R02-model-review.html">
+        <span class="q-who"><span class="rt-avatar">CW</span><span class="q-who__text"><b>Chloe Whitaker</b><small>Leeds</small></span></span>
+        <span class="q-tags">
+          <span class="rt-tag">Model</span>
+          <span class="rt-status rt-status--verified"><span class="rt-status__dot"></span>Verified</span>
+          <span></span>
+        </span>
+        <span class="q-sub"><span>30/10/2026</span><small class="q-age is-late">5 days ago</small></span>
+        <i class="ico ico-chev-right q-chev"></i>
+      </a>
+
+      <a class="q-row" data-type="model" href="R02-model-review.html">
+        <span class="q-who"><span class="rt-avatar">MB</span><span class="q-who__text"><b>Marcus Bell</b><small>Bristol</small></span></span>
+        <span class="q-tags">
+          <span class="rt-tag">Model</span>
+          <span class="rt-status rt-status--draft"><span class="rt-status__dot"></span>Not started</span>
+          <span class="rt-tag rt-tag--outline">Resubmission</span>
+        </span>
+        <span class="q-sub"><span>31/10/2026</span><small class="q-age is-late">4 days ago</small></span>
+        <i class="ico ico-chev-right q-chev"></i>
+      </a>
+
+      <a class="q-row" data-type="client" href="R04-client-review.html">
+        <span class="q-who"><span class="rt-avatar">HR</span><span class="q-who__text"><b>Hannah Reeve</b><small>Northlight Studio Ltd</small></span></span>
+        <span class="q-tags">
+          <span class="rt-tag">Client</span>
+          <span class="rt-status rt-status--draft"><span class="rt-status__dot"></span>Not started</span>
+          <span></span>
+        </span>
+        <span class="q-sub"><span>01/11/2026</span><small class="q-age is-late">3 days ago</small></span>
+        <i class="ico ico-chev-right q-chev"></i>
+      </a>
+
+      <a class="q-row" data-type="model" href="R02-model-review.html">
+        <span class="q-who"><span class="rt-avatar">IH</span><span class="q-who__text"><b>Imogen Hart</b><small>Manchester</small></span></span>
+        <span class="q-tags">
+          <span class="rt-tag">Model</span>
+          <span class="rt-status rt-status--pending"><span class="rt-status__dot"></span>In progress</span>
+          <span></span>
+        </span>
+        <span class="q-sub"><span>02/11/2026</span><small class="q-age">2 days ago</small></span>
+        <i class="ico ico-chev-right q-chev"></i>
+      </a>
+
+      <a class="q-row" data-type="client" href="R04-client-review.html">
+        <span class="q-who"><span class="rt-avatar">DO</span><span class="q-who__text"><b>Daniel Osei</b><small>Osei Creative (sole trader)</small></span></span>
+        <span class="q-tags">
+          <span class="rt-tag">Client</span>
+          <span class="rt-status rt-status--pending"><span class="rt-status__dot"></span>In progress</span>
+          <span></span>
+        </span>
+        <span class="q-sub"><span>03/11/2026</span><small class="q-age">1 day ago</small></span>
+        <i class="ico ico-chev-right q-chev"></i>
+      </a>
+
+      <a class="q-row" data-type="model" href="R02-model-review.html">
+        <span class="q-who"><span class="rt-avatar">FL</span><span class="q-who__text"><b>Freya Lindqvist</b><small>Edinburgh</small></span></span>
+        <span class="q-tags">
+          <span class="rt-tag">Model</span>
+          <span class="rt-status rt-status--verified"><span class="rt-status__dot"></span>Verified</span>
+          <span></span>
+        </span>
+        <span class="q-sub"><span>03/11/2026</span><small class="q-age">1 day ago</small></span>
+        <i class="ico ico-chev-right q-chev"></i>
+      </a>
+
+      <a class="q-row" data-type="model" href="R02-model-review.html">
+        <span class="q-who"><span class="rt-avatar">AJ</span><span class="q-who__text"><b>Amara Johnson</b><small>London</small></span></span>
+        <span class="q-tags">
+          <span class="rt-tag">Model</span>
+          <span class="rt-status rt-status--draft"><span class="rt-status__dot"></span>Not started</span>
+          <span></span>
+        </span>
+        <span class="q-sub"><span>04/11/2026</span><small class="q-age">3 hours ago</small></span>
+        <i class="ico ico-chev-right q-chev"></i>
+      </a>
+    </div>
+
+    <!-- Empty state (shown by the tab filters when a list is empty, and by the preview button) -->
+    <div class="empty-state" id="q-empty" hidden>
+      <h2 id="q-empty-title">Nothing waiting</h2>
+      <p id="q-empty-text">Every submission has a decision. When someone submits, it appears here and you get an email.</p>
+      <a class="rt-btn rt-btn--secondary" href="#" data-tab-link="decided">See recent decisions</a>
+    </div>
+
+    <!-- RECENTLY DECIDED: last 7 days, newest first, with who decided and where the email is -->
+    <div class="q-list" id="q-decided" hidden>
+      <div class="q-head" aria-hidden="true"><span>Name</span><span>Type</span><span>Decided by</span><span>Decision</span><span>Email</span><span></span></div>
+
+      <a class="q-row" href="R03-decision-flow.html#after-decision">
+        <span class="q-who"><span class="rt-avatar">RA</span><span class="q-who__text"><b>Ruby Alder</b><small>Glasgow</small></span></span>
+        <span class="q-tags">
+          <span class="rt-tag">Model</span>
+          <span class="rt-status rt-status--approved"><span class="rt-status__dot"></span>Approved</span>
+          <span class="q-email"><i class="ico ico-clock ico--sm"></i>Email due shortly</span>
+        </span>
+        <span class="q-sub"><span>Sam Okafor</span><small>Today, 14:12</small></span>
+        <i class="ico ico-chev-right q-chev"></i>
+      </a>
+
+      <a class="q-row" href="R03-decision-flow.html#after-decision">
+        <span class="q-who"><span class="rt-avatar">JC</span><span class="q-who__text"><b>Joe Calloway</b><small>Calloway &amp; Reed Ltd</small></span></span>
+        <span class="q-tags">
+          <span class="rt-tag">Client</span>
+          <span class="rt-status rt-status--declined"><span class="rt-status__dot"></span>Declined</span>
+          <span class="q-email"><i class="ico ico-check ico--sm"></i>Email sent 11:46</span>
+        </span>
+        <span class="q-sub"><span>Neil Dobbins</span><small>Today, 11:40</small></span>
+        <i class="ico ico-chev-right q-chev"></i>
+      </a>
+
+      <a class="q-row" href="R03-decision-flow.html#after-decision">
+        <span class="q-who"><span class="rt-avatar">TM</span><span class="q-who__text"><b>Tia Mensah</b><small>Birmingham</small></span></span>
+        <span class="q-tags">
+          <span class="rt-tag">Model</span>
+          <span class="rt-status rt-status--approved"><span class="rt-status__dot"></span>Approved</span>
+          <span class="q-email"><i class="ico ico-check ico--sm"></i>Email sent 16:09</span>
+        </span>
+        <span class="q-sub"><span>Neil Dobbins</span><small>03/11/2026, 16:02</small></span>
+        <i class="ico ico-chev-right q-chev"></i>
+      </a>
+
+      <a class="q-row" href="R03-decision-flow.html#after-decision">
+        <span class="q-who"><span class="rt-avatar">JP</span><span class="q-who__text"><b>Jordan Pike</b><small>Cardiff</small></span></span>
+        <span class="q-tags">
+          <span class="rt-tag">Model</span>
+          <span class="rt-status rt-status--declined"><span class="rt-status__dot"></span>Declined</span>
+          <span class="q-email"><i class="ico ico-check ico--sm"></i>Email sent 09:21</span>
+        </span>
+        <span class="q-sub"><span>Sam Okafor</span><small>02/11/2026, 09:14</small></span>
+        <i class="ico ico-chev-right q-chev"></i>
+      </a>
+
+      <a class="q-row" href="R03-decision-flow.html#after-decision">
+        <span class="q-who"><span class="rt-avatar">ER</span><span class="q-who__text"><b>Elena Rossi</b><small>Rossi Casting</small></span></span>
+        <span class="q-tags">
+          <span class="rt-tag">Client</span>
+          <span class="rt-status rt-status--approved"><span class="rt-status__dot"></span>Approved</span>
+          <span class="q-email"><i class="ico ico-check ico--sm"></i>Email sent 15:33</span>
+        </span>
+        <span class="q-sub"><span>Sam Okafor</span><small>01/11/2026, 15:27</small></span>
+        <i class="ico ico-chev-right q-chev"></i>
+      </a>
+
+      <a class="q-row" href="R03-decision-flow.html#after-decision">
+        <span class="q-who"><span class="rt-avatar">MB</span><span class="q-who__text"><b>Marcus Bell</b><small>Bristol · now resubmitted, see the queue</small></span></span>
+        <span class="q-tags">
+          <span class="rt-tag">Model</span>
+          <span class="rt-status rt-status--declined"><span class="rt-status__dot"></span>Declined</span>
+          <span class="q-email"><i class="ico ico-check ico--sm"></i>Email sent 13:05</span>
+        </span>
+        <span class="q-sub"><span>Neil Dobbins</span><small>29/10/2026, 12:58</small></span>
+        <i class="ico ico-chev-right q-chev"></i>
+      </a>
+    </div>
+
+  </div>
+</main>
+
+<!-- ============ Mockup-only: states and the phone-width view ============ -->
+<div class="page mock-only">
+
+  <div class="state-label">State · empty queue ("Nothing waiting"). Also shown per tab: "No models waiting", "No clients waiting". Try the "Preview empty state" button above.</div>
+  <div class="empty-state" style="max-width:640px;margin-bottom:var(--space-7);">
+    <h2>Nothing waiting</h2>
+    <p>Every submission has a decision. When someone submits, it appears here and you get an email.</p>
+    <a class="rt-btn rt-btn--secondary" href="#">See recent decisions</a>
+  </div>
+
+  <div class="phone-demo">
+    <div class="state-label">Phone width (375px) · this is the same page in a 375px frame. Rows become two-line cards, the tabs scroll sideways, and every row is a 72px+ tap target.</div>
+    <div class="phone-demo__row">
+      <div class="phone-frame"><iframe src="R01-review-queue.html?embed=1" title="R01 at phone width"></iframe></div>
+      <div class="phone-demo__text">
+        <p><strong>What changes on a phone.</strong> The column header disappears. Each row stacks: name and city, then type, ID verification and the resubmission flag as chips, then the submitted date and how long ago.</p>
+        <p><strong>Age colour.</strong> Anything waiting 3 days or more shows its age in amber. The profile page promises "usually within one working day", so the queue should make slow ones obvious. Threshold is a draft for Neil.</p>
+        <p><strong>Cobalt.</strong> The only cobalt on this view is the active tab underline. Rows are links, not buttons.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="notes-dock mock-only">
+  <details class="design-notes">
+    <summary>Design notes</summary>
+    <ul>
+      <li><strong>Built for "open it, tap the oldest, decide".</strong> Oldest first, no sorting controls, no search. With a queue this short, a filter box would be more to learn than to use. Tabs filter Models and Clients; "Recently decided" is the fourth tab so there is one place to look, not two pages.</li>
+      <li><strong>Each row answers the four questions a reviewer asks before opening it:</strong> who, what kind, how long have they waited, and is Stripe already done. A reviewer can skip a not-yet-verified person if they want, but nothing is hidden.</li>
+      <li><strong>ID verification is one chip per row.</strong> For models it is Verified only when both identity and bank are done; the split is on the review page. Green means done, amber in progress, grey not started. It is the existing <code>rt-status</code> set, no new colours.</li>
+      <li><strong>Resubmission</strong> is an outlined tag on the row, with the previous decline shown inside the review page itself (R02).</li>
+      <li><strong>Recently decided</strong> shows the last 7 days, newest first: decision, who decided, when, and where the email is ("Email due shortly" until the background job has run, then "Email sent 11:46"). Decline shows a neutral grey chip, not red (see R02 notes).</li>
+      <li><strong>Team link</strong> in the nav only appears for admins. A reviewer who is not an admin sees "Review queue" alone.</li>
+      <li>Names, dates and cities are example data. No real people, no photographs: avatars are monograms.</li>
+    </ul>
+  </details>
+</div>
+<div class="container--editorial mock-only"><div class="mock-pager"><a href="index.html">← Index</a><a href="R02-model-review.html">Next: Model review →</a></div></div>
+
+<script src="review.js"></script>
+<script>
+  /* "See recent decisions" link inside the empty state */
+  document.querySelectorAll('[data-tab-link]').forEach(function (l) {
+    l.addEventListener('click', function (e) {
+      e.preventDefault();
+      var t = document.querySelector('[data-tab="' + l.getAttribute('data-tab-link') + '"]');
+      if (t) t.click();
+    });
+  });
+</script>
+</body>
+</html>

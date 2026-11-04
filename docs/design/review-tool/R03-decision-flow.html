@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>R03 · Decision flow - Rogue Talent review tool mockups</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Hanken+Grotesk:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="review.css">
+</head>
+<body>
+
+<div class="mock-toolbar mock-only">
+  <span class="tag">Mock</span>
+  <a href="index.html">Review tool map</a>
+  <span class="divider">·</span>
+  <span class="title">Reviewer · R03 · Decision flow</span>
+  <span class="mock-flag">Example data</span>
+  <span class="spacer"></span>
+  <a href="R02-model-review.html">← Prev</a>
+  <a href="R04-client-review.html">Next: Client review →</a>
+</div>
+
+<header class="app-nav">
+  <a class="rt-nav__brand" href="index.html">Rogue<span>.</span></a>
+  <nav class="app-nav__links" aria-label="Main">
+    <a class="is-active" href="R01-review-queue.html">Review queue</a>
+    <a href="R06-team.html">Team</a>
+  </nav>
+  <div class="app-nav__actions">
+    <span class="rt-badge rt-badge--ink app-nav__status">Reviewer</span>
+    <a class="icon-btn" href="#" aria-label="Account menu"><span class="rt-avatar rt-avatar--sm">N</span></a>
+  </div>
+</header>
+
+<!-- =====================================================================
+     1. DECLINE PAGE (live: pick a reason, type a note, watch the preview)
+     This is a page of its own, so Back works and the preview has room.
+     ===================================================================== -->
+<main class="page" id="decline">
+
+  <a class="back-link" href="R02-model-review.html"><i class="ico ico-arrow-left"></i>Back to Imogen's profile</a>
+
+  <div class="stack stack--sm" style="padding-bottom:var(--space-4);">
+    <h1 class="page-title">Decline Imogen Hart</h1>
+    <p class="small muted" style="max-width:56ch;">Tell Imogen what to fix. She gets an email, and she can edit her profile and resubmit as often as she needs to.</p>
+    <p class="mock-only" style="padding-top:var(--space-2);"><button class="mock-flag mock-btn" type="button" data-fill-example>Fill an example</button></p>
+  </div>
+
+  <div class="dc-grid">
+
+    <form id="decline-form" class="stack stack--lg" onsubmit="return false;" style="grid-area:form;">
+      <fieldset style="border:0;padding:0;margin:0;min-width:0;">
+        <legend class="rt-field__label" style="padding:0 0 var(--space-3);">Main reason <span class="rt-req">*</span> <span class="draft-flag mock-only" style="margin-left:6px;">Draft list</span></legend>
+        <div class="radio-list">
+          <label class="radio-card rt-check rt-check--radio"><input type="radio" name="reason" value="photo-quality"><span class="rt-check__box"></span><span>Photo quality<small>Too small, dark or blurry to review</small></span></label>
+          <label class="radio-card rt-check rt-check--radio"><input type="radio" name="reason" value="photos-mismatch"><span class="rt-check__box"></span><span>Photos do not match<small>They don't all look like the same person</small></span></label>
+          <label class="radio-card rt-check rt-check--radio"><input type="radio" name="reason" value="missing-info"><span class="rt-check__box"></span><span>Missing information<small>Details or photos are missing or incomplete</small></span></label>
+          <label class="radio-card rt-check rt-check--radio"><input type="radio" name="reason" value="contact-details"><span class="rt-check__box"></span><span>Contact details or social handles<small>In the photos or the text</small></span></label>
+          <label class="radio-card rt-check rt-check--radio"><input type="radio" name="reason" value="display-name"><span class="rt-check__box"></span><span>Display name<small>Looks like a business or a contact detail</small></span></label>
+          <label class="radio-card rt-check rt-check--radio"><input type="radio" name="reason" value="not-suitable"><span class="rt-check__box"></span><span>Not suitable for the platform<small>A note is required for this one</small></span></label>
+        </div>
+      </fieldset>
+
+      <div class="rt-field">
+        <label class="rt-field__label" for="decline-note">Add a note <span class="rt-opt" id="note-optional">(optional)</span><span class="rt-opt" id="note-required" hidden>(required for this reason)</span></label>
+        <textarea class="rt-textarea" id="decline-note" maxlength="300" placeholder="e.g. Photos 2 and 5 look like a different person to the others."></textarea>
+        <div style="display:flex;justify-content:space-between;gap:var(--space-3);">
+          <span class="rt-field__hint">Sent word for word, in quotes. Be specific and kind.</span>
+          <span class="char-count" id="note-count">0 / 300</span>
+        </div>
+      </div>
+    </form>
+
+    <div class="dc-preview stack stack--sm" style="grid-area:preview;">
+      <span class="rt-eyebrow">Exactly what Imogen will be told</span>
+      <div class="mail" aria-live="polite">
+        <div class="mail__meta">
+          <span>To: <b>Imogen Hart</b></span>
+          <span>Subject: <b>Your Rogue Talent profile wasn't approved this time</b></span>
+        </div>
+        <div class="mail__body">
+          <div class="mail__brand">Rogue<span>.</span></div>
+          <p>Hi Imogen,</p>
+          <p>Thanks for submitting your profile. We can't approve it yet.</p>
+          <div class="mail__label">What to change</div>
+          <p id="pv-reason" class="mail__placeholder">Pick a reason and the sentence we send appears here.</p>
+          <div id="pv-note-wrap" hidden>
+            <div class="mail__label" style="margin-bottom:var(--space-2);">A note from our reviewer</div>
+            <p class="mail__quote">"<span id="pv-note"></span>"</p>
+          </div>
+          <p>That's not a permanent decision. Update your profile and resubmit. There's no limit on attempts.</p>
+          <p><span class="mail__link">Edit your profile</span></p>
+          <p class="mail__fine">The Rogue Talent team</p>
+        </div>
+      </div>
+      <p class="rv-hint">The same reason and note also appear on Imogen's account status page, under "What our reviewer noted". Your name is not shown to her. The email is sent by a background job, usually within about 10 minutes.</p>
+    </div>
+
+    <div class="stack" style="grid-area:actions;">
+      <div class="rv-actions">
+        <a class="rt-btn rt-btn--primary rt-btn--lg rt-btn--block rt-btn--disabled" data-confirm aria-disabled="true" href="#decline-success">Decline profile</a>
+        <a class="rt-btn rt-btn--secondary rt-btn--lg rt-btn--block" href="R02-model-review.html">Cancel</a>
+        <p class="rv-hint" id="decline-help">Pick a reason to continue.</p>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<!-- =====================================================================
+     Everything below is a reference of the other states
+     ===================================================================== -->
+<div class="page mock-only">
+
+  <div class="state-label" id="decline-success">State · Decline confirmed. The review page reloads like this. "Email will be sent shortly" because a background job sends it, usually within about 10 minutes.</div>
+  <div class="view-frame" style="margin-bottom:var(--space-7);">
+    <div class="view-frame__bar">Review page, just after Decline (desktop)</div>
+    <div class="view-frame__body">
+      <div class="notice notice--ok"><i class="ico ico-check"></i><div><p><strong>Declined.</strong> Imogen Hart will be emailed shortly.</p><div class="notice__links"><a href="R01-review-queue.html">Back to the queue</a></div></div></div>
+      <div class="rv-cols" style="margin-top:var(--space-5);padding-bottom:0;">
+        <div class="stack">
+          <span class="rt-eyebrow">Manchester</span>
+          <h2 class="page-title" style="font-size:var(--text-3xl);">Imogen Hart</h2>
+          <div class="empty-state" style="padding:var(--space-6) var(--space-5);"><p>The photos and profile carry on below, exactly as on R02. Reviewers can still read everything after deciding.</p></div>
+        </div>
+        <div class="panel rv-panel">
+          <div class="rv-panel__head"><span class="rt-eyebrow">Review</span><span class="rt-status rt-status--lg rt-status--declined"><span class="rt-status__dot"></span>Declined</span></div>
+          <dl class="rv-kv rv-kv--top">
+            <div><dt>Decided by</dt><dd>Sam Okafor</dd></div>
+            <div><dt>When</dt><dd>04/11/2026, 14:12</dd></div>
+            <div><dt>Email</dt><dd><span class="q-email"><i class="ico ico-clock ico--sm"></i>Will be sent shortly</span></dd></div>
+          </dl>
+          <div class="prev-decline">
+            <span class="rt-eyebrow">What Imogen was told</span>
+            <span><b>Reason:</b> Photos do not match</span>
+            <q>Photos 2 and 5 look like a different person to the others.</q>
+          </div>
+          <p class="rv-hint">Imogen can edit her profile and resubmit. It comes back into the queue marked Resubmission, with this decision shown to whoever reviews it.</p>
+          <div class="rv-actions">
+            <a class="rt-btn rt-btn--primary rt-btn--lg rt-btn--block" href="R02-model-review.html">Review next (6 waiting)</a>
+            <a class="rt-btn rt-btn--secondary rt-btn--lg rt-btn--block" href="R01-review-queue.html">Back to the queue</a>
+            <p class="rv-hint">Next in the queue: Chloe Whitaker, model, waiting 5 days.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="state-label" id="approve-confirm">State · Approve, confirm. A short dialog on desktop, a bottom sheet on phones. Approve has no preview step, so this is where the reviewer sees what will happen.</div>
+  <div class="dim-stage" style="margin-bottom:var(--space-4);">
+    <div class="dialog-card" role="dialog" aria-labelledby="ap-title">
+      <div class="dialog-card__head"><h2 id="ap-title">Approve Imogen Hart?</h2></div>
+      <div class="dialog-card__body">
+        <ul class="then-list">
+          <li><i class="ico ico-mail ico--sm"></i><span>Imogen is emailed shortly to say she's approved.</span></li>
+          <li><i class="ico ico-clock ico--sm"></i><span>Her identity is verified but her bank is still in progress, so she goes live once her bank is verified.</span></li>
+          <li><i class="ico ico-user ico--sm"></i><span>Your name is recorded as the reviewer. She doesn't see it.</span></li>
+        </ul>
+      </div>
+      <div class="dialog-card__foot">
+        <a class="rt-btn rt-btn--secondary" href="R02-model-review.html">Cancel</a>
+        <a class="rt-btn rt-btn--primary" href="#approve-success">Approve profile</a>
+      </div>
+    </div>
+  </div>
+  <p class="small muted" style="margin-bottom:var(--space-7);max-width:70ch;">If both Stripe checks are already done, the second line reads "Her profile goes live straight away." If neither has started, it reads "She'll be asked to verify with Stripe before her profile goes live." The line always says what approving will actually do.</p>
+
+  <div class="state-label" id="approve-success">State · Approve confirmed. The review page reloads like this.</div>
+  <div class="view-frame" style="margin-bottom:var(--space-7);">
+    <div class="view-frame__bar">Review page, just after Approve (desktop)</div>
+    <div class="view-frame__body">
+      <div class="notice notice--ok"><i class="ico ico-check"></i><div><p><strong>Approved.</strong> Imogen Hart will be emailed shortly.</p><div class="notice__links"><a href="R01-review-queue.html">Back to the queue</a></div></div></div>
+      <div class="rv-cols" style="margin-top:var(--space-5);padding-bottom:0;">
+        <div class="stack">
+          <span class="rt-eyebrow">Manchester</span>
+          <h2 class="page-title" style="font-size:var(--text-3xl);">Imogen Hart</h2>
+          <div class="empty-state" style="padding:var(--space-6) var(--space-5);"><p>The photos and profile carry on below, exactly as on R02.</p></div>
+        </div>
+        <div class="panel rv-panel">
+          <div class="rv-panel__head"><span class="rt-eyebrow">Review</span><span class="rt-status rt-status--lg rt-status--approved"><span class="rt-status__dot"></span>Approved</span></div>
+          <dl class="rv-kv rv-kv--top">
+            <div><dt>Decided by</dt><dd>Sam Okafor</dd></div>
+            <div><dt>When</dt><dd>04/11/2026, 14:12</dd></div>
+            <div><dt>Checklist</dt><dd>5 of 5 ticked</dd></div>
+            <div><dt>Email</dt><dd><span class="q-email"><i class="ico ico-clock ico--sm"></i>Will be sent shortly</span></dd></div>
+          </dl>
+          <p class="rv-hint">Imogen goes live once her bank is verified. We email her a reminder to finish.</p>
+          <div class="rv-actions">
+            <a class="rt-btn rt-btn--primary rt-btn--lg rt-btn--block" href="R02-model-review.html">Review next (6 waiting)</a>
+            <a class="rt-btn rt-btn--secondary rt-btn--lg rt-btn--block" href="R01-review-queue.html">Back to the queue</a>
+            <p class="rv-hint">Next in the queue: Chloe Whitaker, model, waiting 5 days.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="state-label" id="after-decision">State · The decided panel over time, and when the queue is empty. Anyone opening the link later sees this; there are no Approve or Decline buttons once a decision exists.</div>
+  <div class="state-grid" style="margin-bottom:var(--space-7);">
+
+    <div class="stack stack--sm">
+      <span class="rt-eyebrow">Moments after deciding</span>
+      <div class="panel rv-panel">
+        <div class="rv-panel__head"><span class="rt-eyebrow">Review</span><span class="rt-status rt-status--lg rt-status--approved"><span class="rt-status__dot"></span>Approved</span></div>
+        <dl class="rv-kv rv-kv--top">
+          <div><dt>Decided by</dt><dd>Sam Okafor</dd></div>
+          <div><dt>When</dt><dd>04/11/2026, 14:12</dd></div>
+          <div><dt>Email</dt><dd><span class="q-email"><i class="ico ico-clock ico--sm"></i>Will be sent shortly</span></dd></div>
+        </dl>
+      </div>
+    </div>
+
+    <div class="stack stack--sm">
+      <span class="rt-eyebrow">A few minutes later</span>
+      <div class="panel rv-panel">
+        <div class="rv-panel__head"><span class="rt-eyebrow">Review</span><span class="rt-status rt-status--lg rt-status--approved"><span class="rt-status__dot"></span>Approved</span></div>
+        <dl class="rv-kv rv-kv--top">
+          <div><dt>Decided by</dt><dd>Sam Okafor</dd></div>
+          <div><dt>When</dt><dd>04/11/2026, 14:12</dd></div>
+          <div><dt>Email</dt><dd><span class="q-email"><i class="ico ico-check ico--sm"></i>Sent at 14:16</span></dd></div>
+        </dl>
+      </div>
+    </div>
+
+    <div class="stack stack--sm">
+      <span class="rt-eyebrow">Declined, and nothing else waiting</span>
+      <div class="panel rv-panel">
+        <div class="rv-panel__head"><span class="rt-eyebrow">Review</span><span class="rt-status rt-status--lg rt-status--declined"><span class="rt-status__dot"></span>Declined</span></div>
+        <dl class="rv-kv rv-kv--top">
+          <div><dt>Decided by</dt><dd>Neil Dobbins</dd></div>
+          <div><dt>When</dt><dd>04/11/2026, 14:12</dd></div>
+          <div><dt>Email</dt><dd><span class="q-email"><i class="ico ico-clock ico--sm"></i>Will be sent shortly</span></dd></div>
+        </dl>
+        <div class="rv-actions">
+          <a class="rt-btn rt-btn--primary rt-btn--lg rt-btn--block" href="R01-review-queue.html">Back to the queue</a>
+          <p class="rv-hint">Nothing else is waiting. Good work.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="state-label" id="reasons">Reference · reasons and the sentence each one sends. Draft list for Neil to approve: these words go to real people, and the same sentence shows on their account status page.</div>
+  <div class="state-grid" style="margin-bottom:var(--space-7);">
+    <div class="stack stack--sm">
+      <span class="rt-eyebrow">Models (in the form above)</span>
+      <div class="inv-list">
+        <div class="inv-item"><b>Photo quality</b><span>Some of your photos are too small, dark or blurry for us to review properly. Please add clear, well-lit photos that show your face and your full look.</span></div>
+        <div class="inv-item"><b>Photos do not match</b><span>We couldn't confirm that the photos in your portfolio are all of the same person. Please remove any that aren't you, and add a clear, recent photo of your face.</span></div>
+        <div class="inv-item"><b>Missing information</b><span>Some details on your profile are missing or incomplete. Please fill in the gaps and resubmit.</span></div>
+        <div class="inv-item"><b>Contact details or social handles</b><span>Your profile includes contact details or social handles in your photos or text. Please remove them. Messages and bookings all happen on Rogue Talent.</span></div>
+        <div class="inv-item"><b>Display name</b><span>Your display name looks like a business name or contact detail. Please use your own name, as you'd like clients to see it.</span></div>
+        <div class="inv-item"><b>Not suitable for the platform (note required)</b><span>Your profile isn't a fit for Rogue Talent at the moment.</span></div>
+      </div>
+    </div>
+    <div class="stack stack--sm">
+      <span class="rt-eyebrow">Clients (same page, opened from R04)</span>
+      <div class="inv-list">
+        <div class="inv-item"><b>Company not found on Companies House</b><span>We couldn't match the company registration number to an active company on Companies House. Please check the number and resubmit.</span></div>
+        <div class="inv-item"><b>Company name doesn't match</b><span>The company name you entered doesn't match the company registered under that number. Please check both and resubmit.</span></div>
+        <div class="inv-item"><b>Missing information</b><span>Some of your business details are missing or incomplete. Please fill in the gaps and resubmit.</span></div>
+        <div class="inv-item"><b>Can't confirm the business (sole traders)</b><span>We couldn't confirm your business from the website or social link you gave. Please add a link that shows your work and resubmit.</span></div>
+        <div class="inv-item"><b>Not suitable for the platform (note required)</b><span>Your business isn't a fit for Rogue Talent at the moment.</span></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="notes-dock mock-only">
+  <details class="design-notes">
+    <summary>Design notes</summary>
+    <ul>
+      <li><strong>Decline is a page, not a pop-up.</strong> Back works, the message preview has room beside the form on desktop, and on a phone it sits between the form and the button so the reviewer reads before committing. The preview is the confirmation: it shows the actual subject and body, filled in live as the reviewer picks and types, which is why there is no separate "Are you sure?" step. The button is disabled until a reason is picked (and a note, for "not suitable"). Try it: pick a reason, or press "Fill an example".</li>
+      <li><strong>The one cobalt action on the decline page is "Decline profile".</strong> It is the page's single purpose, so it takes the primary slot; Cancel is secondary. The label is explicit and the preview sits right beside it. It is not red, for the same reason as on R02: this is a routine outcome that the person can fix.</li>
+      <li><strong>A fixed list, plus a free note.</strong> The list gives every decline a clear, consistent, kind sentence even when the reviewer is in a hurry; the note adds the specific detail. The note is shown to the user word for word in quotes, so the hint says so. Reviewer names are never shown to the user.</li>
+      <li><strong>Honest about timing.</strong> The decision is saved at once; the email goes out from a background job within about 10 minutes. So the page says "Will be sent shortly", never "sent", and changes to "Sent at 14:16" only if the job records that. If it cannot, the page keeps saying "will be sent shortly" and never claims more than it knows (see the flags on the index page).</li>
+      <li><strong>After a decision there are no Approve or Decline buttons.</strong> The panel shows who decided, when, the checklist result for an approval, the reason and note for a decline, and the email state. A reviewer who opens a stale email link sees the decision, not a second chance to act. One cobalt action remains: "Review next", which takes the oldest waiting person and is how a reviewer clears the queue in one sitting.</li>
+      <li><strong>Approve gets a short dialog</strong> (bottom sheet on phones) because approving makes someone visible to clients and cannot be quietly undone. It states exactly what will happen next, which depends on the Stripe status: nothing is promised that is not true.</li>
+      <li><strong>Reversing a decision</strong> is deliberately not on this page. See open question 2.</li>
+      <li>Reason wording follows the existing "Not approved" copy on the account status page ("wasn't approved this time", "not a permanent decision"). It is draft and is public-facing, so it needs Neil's approval.</li>
+    </ul>
+  </details>
+</div>
+<div class="container--editorial mock-only"><div class="mock-pager"><a href="R02-model-review.html">← R02 Model review</a><a href="R04-client-review.html">Next: Client review →</a></div></div>
+
+<script src="review.js"></script>
+</body>
+</html>

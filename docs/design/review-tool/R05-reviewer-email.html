@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>R05 · Reviewer email and log-in step - Rogue Talent review tool mockups</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Hanken+Grotesk:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="review.css">
+</head>
+<body>
+
+<div class="mock-toolbar mock-only">
+  <span class="tag">Mock</span>
+  <a href="index.html">Review tool map</a>
+  <span class="divider">·</span>
+  <span class="title">Reviewer · R05 · Reviewer email and log-in</span>
+  <span class="mock-flag">Example data</span>
+  <span class="spacer"></span>
+  <a href="R04-client-review.html">← Prev</a>
+  <a href="R06-team.html">Next: Team →</a>
+</div>
+
+<main class="container--editorial" style="padding-top:var(--space-7);padding-bottom:var(--space-8);">
+
+  <div class="stack stack--sm" style="margin-bottom:var(--space-6);">
+    <span class="rt-eyebrow">Reviewer · R05</span>
+    <h1 class="page-title">The email, and getting in</h1>
+    <p class="small muted" style="max-width:62ch;">Every reviewer gets one short email for each new submission. The link goes to the review page. If they are not logged in, they log in first and land on that same page.</p>
+  </div>
+
+  <!-- The email -->
+  <div class="state-label" style="margin-top:0;">The email · model submission (what lands in a reviewer's inbox)</div>
+  <div class="mail">
+    <div class="mail__meta">
+      <span>From: <b>Rogue Talent</b></span>
+      <span>To: <b>sam@example.com</b> (example reviewer)</span>
+      <span>Subject: <b>New model profile to review: Imogen Hart</b></span>
+    </div>
+    <div class="mail__body">
+      <div class="mail__brand">Rogue<span>.</span></div>
+      <h2 class="mail__h">New model profile to review</h2>
+      <p>Imogen Hart has submitted a profile and is waiting for a decision.</p>
+      <dl class="mail__kv">
+        <div><dt>Name</dt><dd>Imogen Hart</dd></div>
+        <div><dt>Based in</dt><dd>Manchester</dd></div>
+        <div><dt>Submitted</dt><dd>02/11/2026</dd></div>
+      </dl>
+      <a class="rt-btn rt-btn--primary rt-btn--lg" style="align-self:flex-start;" href="R02-model-review.html">Review profile</a>
+      <p class="mail__fine">You're getting this because you're a reviewer on Rogue Talent. The button opens the profile in Rogue Talent, and you'll be asked to log in first if you aren't already.</p>
+    </div>
+  </div>
+
+  <div class="state-label">Other versions · only the subject, heading, sentence and button label change</div>
+  <div class="state-grid">
+
+    <div class="mail">
+      <div class="mail__meta"><span>Subject: <b>New client to review: Northlight Studio Ltd</b></span></div>
+      <div class="mail__body">
+        <h2 class="mail__h">New client to review</h2>
+        <p>Hannah Reeve has submitted business details for Northlight Studio Ltd and is waiting for a decision.</p>
+        <span class="rt-btn rt-btn--secondary" style="align-self:flex-start;">Review client</span>
+      </div>
+    </div>
+
+    <div class="mail">
+      <div class="mail__meta"><span>Subject: <b>Resubmitted model profile to review: Marcus Bell</b></span></div>
+      <div class="mail__body">
+        <h2 class="mail__h">Resubmitted model profile to review</h2>
+        <p>Marcus Bell has updated their profile after a decline on 29/10/2026 and is waiting for a decision.</p>
+        <span class="rt-btn rt-btn--secondary" style="align-self:flex-start;">Review profile</span>
+      </div>
+    </div>
+
+  </div>
+  <p class="small muted" style="margin-top:var(--space-3);max-width:64ch;">In these two reference cards the button is drawn as an outline only so this page shows one cobalt button per view. In the real emails it is the same cobalt button as above.</p>
+
+  <!-- Not logged in -->
+  <div class="state-label">Not logged in · the link lands on log-in, then returns to the review page</div>
+  <div class="flow">
+
+    <div class="flow__step">
+      <span class="rt-eyebrow">1 · Click the link</span>
+      <div class="callout callout--muted">
+        <h3>Opens in the browser</h3>
+        <p>The reviewer taps "Review profile". There is no session yet, so Rogue Talent remembers where they were heading and sends them to log in.</p>
+      </div>
+    </div>
+
+    <div class="flow__step">
+      <span class="rt-eyebrow">2 · Log in</span>
+      <div class="login-mock">
+        <h2>Log in to continue</h2>
+        <div class="rt-field"><label class="rt-field__label" for="l-email">Email</label><input class="rt-input" id="l-email" type="email" value="sam@example.com" readonly></div>
+        <div class="rt-field"><label class="rt-field__label" for="l-pw">Password</label><input class="rt-input" id="l-pw" type="password" value="password" readonly></div>
+        <a class="rt-btn rt-btn--primary rt-btn--block" href="R02-model-review.html">Log in</a>
+        <a class="small" href="#" style="font-weight:700;">Forgot your password?</a>
+      </div>
+      <p class="rv-hint">The standard Rogue Talent log-in page. It says nothing about review, so a forwarded link reveals nothing.</p>
+    </div>
+
+    <div class="flow__step">
+      <span class="rt-eyebrow">3 · Land on the profile</span>
+      <div class="callout callout--muted">
+        <h3>Straight to the review page</h3>
+        <p>After log-in the reviewer arrives on Imogen's review page (R02), not the home page or the queue. If they were already logged in, step 2 is skipped.</p>
+        <a class="rt-btn rt-btn--secondary" style="align-self:flex-start;" href="R02-model-review.html">See the review page</a>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="state-label">What if</div>
+  <ul class="plain-list">
+    <li><strong>The person logs in but is not a reviewer:</strong> they see "You don't have access to this page" and nothing else (<a href="R07-states.html">R07</a>).</li>
+    <li><strong>Someone else has already decided:</strong> they land on the review page showing that decision, with no buttons (<a href="R07-states.html">R07</a>).</li>
+    <li><strong>The session runs out while they are deciding:</strong> the decision is not lost silently; they are asked to log in and come back to the same review (<a href="R07-states.html">R07</a>).</li>
+  </ul>
+
+</main>
+
+<div class="notes-dock mock-only">
+  <details class="design-notes">
+    <summary>Design notes</summary>
+    <ul>
+      <li><strong>Plain and short, as asked.</strong> A heading, one sentence, three facts (name, city, submitted date), one button, one line of explanation. No photos or profile text in the email: the reviewer sees those on the page, behind a log-in. An email can be forwarded or read on a lock screen, so it carries as little personal detail as possible.</li>
+      <li><strong>The subject line carries the useful bit,</strong> in the exact form asked for ("New model profile to review: Imogen Hart"), with matching versions for a client and for a resubmission so a reviewer can triage from the inbox.</li>
+      <li><strong>One cobalt button per email.</strong> The wordmark's cobalt full stop is the brand, not an action.</li>
+      <li><strong>Everyone who reviews gets every email.</strong> First decision wins; anyone who opens the link afterwards sees the decision (R07). See open question 4.</li>
+      <li><strong>Log-in is the standard page.</strong> The return-to-page behaviour is the one real build requirement here: after log-in the reviewer must land on the review page, not the default landing page. The Developer should check how the current post-log-in redirect behaves.</li>
+      <li><strong>Email layout and sending</strong> should follow the existing Postmark templates; this page shows the content and hierarchy, not final HTML.</li>
+      <li>Names, dates and the address are example data.</li>
+    </ul>
+  </details>
+</div>
+<div class="container--editorial mock-only"><div class="mock-pager"><a href="R04-client-review.html">← R04 Client review</a><a href="R06-team.html">Next: Team →</a></div></div>
+
+</body>
+</html>

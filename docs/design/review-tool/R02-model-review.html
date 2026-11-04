@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>R02 · Model review - Rogue Talent review tool mockups</title>
+<script>if (/[?&]embed/.test(location.search)) document.documentElement.classList.add('is-embedded');</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Hanken+Grotesk:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="review.css">
+</head>
+<body class="has-bar">
+
+<div class="mock-toolbar mock-only">
+  <span class="tag">Mock</span>
+  <a href="index.html">Review tool map</a>
+  <span class="divider">·</span>
+  <span class="title">Reviewer · R02 · Model review</span>
+  <span class="mock-flag">Example data</span>
+  <span class="spacer"></span>
+  <a href="R01-review-queue.html">← Prev</a>
+  <a href="R03-decision-flow.html">Next: Decision flow →</a>
+</div>
+
+<header class="app-nav">
+  <a class="rt-nav__brand" href="index.html">Rogue<span>.</span></a>
+  <nav class="app-nav__links" aria-label="Main">
+    <a class="is-active" href="R01-review-queue.html">Review queue</a>
+    <a href="R06-team.html">Team</a>
+  </nav>
+  <div class="app-nav__actions">
+    <span class="rt-badge rt-badge--ink app-nav__status">Reviewer</span>
+    <a class="icon-btn" href="#" aria-label="Account menu"><span class="rt-avatar rt-avatar--sm">N</span></a>
+  </div>
+</header>
+
+<main class="page">
+
+  <a class="back-link" href="R01-review-queue.html"><i class="ico ico-arrow-left"></i>Review queue</a>
+
+  <div class="notice rv-banner"><i class="ico ico-lock"></i><p><strong>Reviewer view.</strong> This is Imogen's profile as clients will see it once she is approved and verified. It is not visible to clients yet.</p></div>
+
+  <!-- Phone only: the facts you need before scrolling, and a jump to the decision -->
+  <div class="rv-mini" aria-label="Review summary">
+    <div class="rv-panel__head">
+      <span class="rt-eyebrow">Review</span>
+      <span class="rt-status rt-status--pending"><span class="rt-status__dot"></span>Pending approval</span>
+    </div>
+    <dl class="rv-kv">
+      <div><dt>Submitted</dt><dd>02/11/2026 · 2 days ago</dd></div>
+      <div><dt>Stripe identity</dt><dd><span class="rt-status rt-status--verified"><span class="rt-status__dot"></span>Verified</span></dd></div>
+      <div><dt>Stripe bank</dt><dd><span class="rt-status rt-status--pending"><span class="rt-status__dot"></span>In progress</span></dd></div>
+    </dl>
+    <a class="rv-mini__jump" href="#review-panel">Go to checklist and decision<i class="ico ico-chev-down ico--sm"></i></a>
+  </div>
+
+  <div class="gallery" aria-label="Portfolio" style="margin-top:var(--space-3);">
+    <div class="gallery__track" data-gallery-track>
+      <div class="gallery__item"><div class="photo-stripe"><span class="photo-stripe__label">Portfolio photo 1 (placeholder)</span></div></div>
+      <div class="gallery__item"><div class="photo-stripe"><span class="photo-stripe__label">Portfolio photo 2 (placeholder)</span></div></div>
+      <div class="gallery__item"><div class="photo-stripe"><span class="photo-stripe__label">Portfolio photo 3 (placeholder)</span></div></div>
+      <div class="gallery__item"><div class="photo-stripe"><span class="photo-stripe__label">Portfolio photo 4 (placeholder)</span></div></div>
+      <div class="gallery__item"><div class="photo-stripe"><span class="photo-stripe__label">Portfolio photo 5 (placeholder)</span></div></div>
+      <div class="gallery__item"><div class="photo-stripe"><span class="photo-stripe__label">Portfolio photo 6 (placeholder)</span></div></div>
+    </div>
+    <span class="gallery__count" data-gallery-count>1 / 6</span>
+    <div class="gallery__mosaic">
+      <div class="photo-stripe big"><span class="photo-stripe__label">Portfolio photo 1 (placeholder)</span></div>
+      <div class="photo-stripe"><span class="photo-stripe__label">Photo 2</span></div>
+      <div class="photo-stripe"><span class="photo-stripe__label">Photo 3</span></div>
+      <div class="photo-stripe"><span class="photo-stripe__label">Photo 4</span></div>
+      <div class="photo-stripe"><span class="photo-stripe__label">Photo 5</span></div>
+    </div>
+    <button class="rt-btn rt-btn--secondary rt-btn--sm gallery__all" type="button"><i class="ico ico-image ico--sm"></i>View all photos (6)</button>
+  </div>
+
+  <div class="profile-grid">
+
+    <article>
+
+      <header class="profile-head">
+        <span class="rt-eyebrow">Manchester</span>
+        <h1 class="profile-name">Imogen Hart</h1>
+        <div class="chip-row" aria-label="Modelling categories">
+          <span class="rt-tag">Fashion</span><span class="rt-tag">Editorial</span><span class="rt-tag">Commercial</span>
+        </div>
+      </header>
+
+      <section class="psection" aria-labelledby="h-stats">
+        <h2 id="h-stats">Stats</h2>
+        <h3>Look</h3>
+        <dl class="facts">
+          <div><dt>Gender</dt><dd>Female</dd></div>
+          <div><dt>Height</dt><dd>175 cm</dd></div>
+          <div><dt>Hair</dt><dd>Blonde</dd></div>
+          <div><dt>Eyes</dt><dd>Blue</dd></div>
+          <div><dt>Ethnicity</dt><dd>White</dd></div>
+          <div><dt>Experience</dt><dd>Semi-professional</dd></div>
+        </dl>
+        <h3>Measurements</h3>
+        <dl class="facts">
+          <div><dt>Bust / chest</dt><dd>84 cm</dd></div>
+          <div><dt>Waist</dt><dd>61 cm</dd></div>
+          <div><dt>Hips</dt><dd>89 cm</dd></div>
+          <div><dt>Shoe size</dt><dd>UK 5</dd></div>
+        </dl>
+        <h3>More</h3>
+        <dl class="facts facts--3">
+          <div><dt>Languages</dt><dd>English</dd></div>
+          <div><dt>Special skills</dt><dd>Dance, runway</dd></div>
+          <div><dt>Links</dt><dd><a href="#">Website</a></dd></div>
+        </dl>
+      </section>
+
+      <section class="psection" aria-labelledby="h-rates">
+        <h2 id="h-rates">Rates</h2>
+        <div class="rate-grid">
+          <div class="rate-cell rate-cell--main"><span class="rate-cell__lbl">Day rate</span><span class="rate-cell__amt">£380</span><span class="rate-cell__sub">What bookings are charged at</span></div>
+          <div class="rate-cell"><span class="rate-cell__lbl">Half-day</span><span class="rate-cell__amt">£220</span><span class="rate-cell__sub">For reference</span></div>
+          <div class="rate-cell"><span class="rate-cell__lbl">Hourly</span><span class="rate-cell__amt">£55</span><span class="rate-cell__sub">For reference</span></div>
+        </div>
+      </section>
+
+      <section class="psection" aria-labelledby="h-travel">
+        <h2 id="h-travel">Travel and notice</h2>
+        <dl class="kv-rows">
+          <div class="kv-row"><dt>Based in</dt><dd>Manchester</dd></div>
+          <div class="kv-row"><dt>How far Imogen will travel</dt><dd>Regional</dd></div>
+          <div class="kv-row"><dt>Travel costs</dt><dd>Charged separately</dd></div>
+          <div class="kv-row"><dt>Minimum notice</dt><dd>72 hours</dd></div>
+        </dl>
+      </section>
+
+      <section class="psection" aria-labelledby="h-loc">
+        <h2 id="h-loc">Location</h2>
+        <p class="trust-line"><i class="ico ico-pin"></i><span>Imogen is based in <strong>Manchester</strong>. Only the city is ever shown.</span></p>
+      </section>
+
+    </article>
+
+    <!-- Review panel: right column and sticky on desktop; below the profile on phones -->
+    <aside class="profile-aside rv-aside" aria-label="Review">
+      <div class="panel rv-panel" id="review-panel" data-interactive>
+
+        <div class="rv-panel__head">
+          <span class="rt-eyebrow">Review</span>
+          <span class="rt-status rt-status--lg rt-status--pending"><span class="rt-status__dot"></span>Pending approval</span>
+        </div>
+
+        <dl class="rv-kv">
+          <div><dt>Submitted</dt><dd>02/11/2026<small>2 days ago</small></dd></div>
+        </dl>
+
+        <div class="rv-sec">
+          <div class="rv-sec__title"><span>Stripe verification</span></div>
+          <dl class="rv-kv">
+            <div><dt>Identity</dt><dd><span class="rt-status rt-status--verified"><span class="rt-status__dot"></span>Verified</span></dd></div>
+            <div><dt>Bank</dt><dd><span class="rt-status rt-status--pending"><span class="rt-status__dot"></span>In progress</span></dd></div>
+          </dl>
+          <p class="rv-hint">This does not stop you deciding. Imogen goes live once she is approved and both are verified.</p>
+        </div>
+
+        <div class="rv-sec">
+          <div class="rv-sec__title"><span>Checklist</span><span class="draft-flag">Draft wording</span></div>
+          <div class="rv-checklist" role="group" aria-label="Review checklist">
+            <label class="rt-check"><input type="checkbox"><span class="rt-check__box"><i class="ico ico-check"></i></span><span>Photos clearly show the same person</span></label>
+            <label class="rt-check"><input type="checkbox"><span class="rt-check__box"><i class="ico ico-check"></i></span><span>Appears to be over 18</span></label>
+            <label class="rt-check"><input type="checkbox"><span class="rt-check__box"><i class="ico ico-check"></i></span><span>No nudity, and no contact details or social handles in photos or text</span></label>
+            <label class="rt-check"><input type="checkbox"><span class="rt-check__box"><i class="ico ico-check"></i></span><span>Display name looks like a real name, not a business or contact detail</span></label>
+            <label class="rt-check"><input type="checkbox"><span class="rt-check__box"><i class="ico ico-check"></i></span><span>Rates look plausible</span></label>
+          </div>
+          <div class="rv-progress"><span><b data-checked-count>0</b> of 5 ticked</span></div>
+        </div>
+
+        <div class="rv-actions">
+          <a class="rt-btn rt-btn--primary rt-btn--lg rt-btn--block rt-btn--disabled" data-approve aria-disabled="true" href="R03-decision-flow.html#approve-confirm">Approve profile</a>
+          <a class="rt-btn rt-btn--secondary rt-btn--lg rt-btn--block" href="R03-decision-flow.html#decline">Decline</a>
+          <p class="rv-hint" data-approve-hint>Tick all 5 to approve.</p>
+        </div>
+
+      </div>
+    </aside>
+
+  </div>
+
+  <!-- ============ Mockup-only: panel states ============ -->
+  <div class="mock-only">
+    <div class="state-label">States · review panel (the page above is the "Pending approval, nothing ticked" state; try ticking the boxes). Each panel is its own view in product, so each has one cobalt action.</div>
+    <div class="state-grid" style="margin-bottom:var(--space-7);">
+
+      <div class="stack stack--sm">
+        <span class="rt-eyebrow">Ready to approve · both Stripe checks done</span>
+        <div class="panel rv-panel">
+          <div class="rv-panel__head"><span class="rt-eyebrow">Review</span><span class="rt-status rt-status--lg rt-status--pending"><span class="rt-status__dot"></span>Pending approval</span></div>
+          <dl class="rv-kv"><div><dt>Submitted</dt><dd>30/10/2026<small>5 days ago</small></dd></div></dl>
+          <div class="rv-sec">
+            <div class="rv-sec__title"><span>Stripe verification</span></div>
+            <dl class="rv-kv">
+              <div><dt>Identity</dt><dd><span class="rt-status rt-status--verified"><span class="rt-status__dot"></span>Verified</span></dd></div>
+              <div><dt>Bank</dt><dd><span class="rt-status rt-status--verified"><span class="rt-status__dot"></span>Verified</span></dd></div>
+            </dl>
+            <p class="rv-hint">Approving makes this profile visible and bookable straight away.</p>
+          </div>
+          <div class="rv-sec">
+            <div class="rv-sec__title"><span>Checklist</span><span class="draft-flag">Draft wording</span></div>
+            <div class="rv-checklist">
+              <label class="rt-check"><input type="checkbox" checked onclick="return false"><span class="rt-check__box"><i class="ico ico-check"></i></span><span>Photos clearly show the same person</span></label>
+              <label class="rt-check"><input type="checkbox" checked onclick="return false"><span class="rt-check__box"><i class="ico ico-check"></i></span><span>Appears to be over 18</span></label>
+              <label class="rt-check"><input type="checkbox" checked onclick="return false"><span class="rt-check__box"><i class="ico ico-check"></i></span><span>No nudity, and no contact details or social handles in photos or text</span></label>
+              <label class="rt-check"><input type="checkbox" checked onclick="return false"><span class="rt-check__box"><i class="ico ico-check"></i></span><span>Display name looks like a real name, not a business or contact detail</span></label>
+              <label class="rt-check"><input type="checkbox" checked onclick="return false"><span class="rt-check__box"><i class="ico ico-check"></i></span><span>Rates look plausible</span></label>
+            </div>
+            <div class="rv-progress"><span><b>5</b> of 5 ticked</span></div>
+          </div>
+          <div class="rv-actions">
+            <a class="rt-btn rt-btn--primary rt-btn--lg rt-btn--block" href="R03-decision-flow.html#approve-confirm">Approve profile</a>
+            <a class="rt-btn rt-btn--secondary rt-btn--lg rt-btn--block" href="R03-decision-flow.html#decline">Decline</a>
+            <p class="rv-hint">All 5 ticked. You can approve.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="stack stack--sm">
+        <span class="rt-eyebrow">Resubmitted after a decline</span>
+        <div class="panel rv-panel">
+          <div class="rv-panel__head"><span class="rt-eyebrow">Review</span><span class="rt-status rt-status--lg rt-status--pending"><span class="rt-status__dot"></span>Resubmitted</span></div>
+          <dl class="rv-kv"><div><dt>Resubmitted</dt><dd>03/11/2026<small>1 day ago</small></dd></div></dl>
+          <div class="prev-decline">
+            <span class="rt-eyebrow">Last time</span>
+            <span><b>Declined</b> by Neil Dobbins on 29/10/2026</span>
+            <span><b>Reason:</b> Photos do not match</span>
+            <q>Photos 2 and 5 look like a different person to the others. Please check.</q>
+          </div>
+          <div class="rv-sec">
+            <div class="rv-sec__title"><span>Stripe verification</span></div>
+            <dl class="rv-kv">
+              <div><dt>Identity</dt><dd><span class="rt-status rt-status--draft"><span class="rt-status__dot"></span>Not started</span></dd></div>
+              <div><dt>Bank</dt><dd><span class="rt-status rt-status--draft"><span class="rt-status__dot"></span>Not started</span></dd></div>
+            </dl>
+            <p class="rv-hint">This does not stop you deciding. If you approve, Marcus is asked to verify before the profile goes live.</p>
+          </div>
+          <div class="rv-sec">
+            <div class="rv-sec__title"><span>Checklist</span><span class="draft-flag">Draft wording</span></div>
+            <div class="rv-checklist">
+              <label class="rt-check"><input type="checkbox" checked onclick="return false"><span class="rt-check__box"><i class="ico ico-check"></i></span><span>Photos clearly show the same person</span></label>
+              <label class="rt-check"><input type="checkbox" onclick="return false"><span class="rt-check__box"><i class="ico ico-check"></i></span><span>Appears to be over 18</span></label>
+              <label class="rt-check"><input type="checkbox" onclick="return false"><span class="rt-check__box"><i class="ico ico-check"></i></span><span>No nudity, and no contact details or social handles in photos or text</span></label>
+              <label class="rt-check"><input type="checkbox" onclick="return false"><span class="rt-check__box"><i class="ico ico-check"></i></span><span>Display name looks like a real name, not a business or contact detail</span></label>
+              <label class="rt-check"><input type="checkbox" onclick="return false"><span class="rt-check__box"><i class="ico ico-check"></i></span><span>Rates look plausible</span></label>
+            </div>
+            <div class="rv-progress"><span><b>1</b> of 5 ticked</span></div>
+          </div>
+          <div class="rv-actions">
+            <a class="rt-btn rt-btn--primary rt-btn--lg rt-btn--block rt-btn--disabled" aria-disabled="true" href="#">Approve profile</a>
+            <a class="rt-btn rt-btn--secondary rt-btn--lg rt-btn--block" href="R03-decision-flow.html#decline">Decline</a>
+            <p class="rv-hint">Tick all 5 to approve.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="stack stack--sm">
+        <span class="rt-eyebrow">Already decided (after you or someone else decides)</span>
+        <div class="panel rv-panel">
+          <div class="rv-panel__head"><span class="rt-eyebrow">Review</span><span class="rt-status rt-status--lg rt-status--approved"><span class="rt-status__dot"></span>Approved</span></div>
+          <dl class="rv-kv rv-kv--top">
+            <div><dt>Decided by</dt><dd>Sam Okafor</dd></div>
+            <div><dt>When</dt><dd>04/11/2026, 14:12</dd></div>
+            <div><dt>Email</dt><dd>Will be sent shortly</dd></div>
+          </dl>
+          <p class="rv-hint">Full layout of this panel, and the declined version, are on R03.</p>
+          <div class="rv-actions"><a class="rt-btn rt-btn--secondary rt-btn--lg rt-btn--block" href="R03-decision-flow.html#after-decision">See the full decided page</a></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</main>
+
+<!-- Phone: sticky bottom bar. Secondary on purpose: the one cobalt action is Approve in the panel. -->
+<div class="book-bar">
+  <div class="book-bar__price"><b><span data-checked-count>0</span> of 5</b><small>checked</small></div>
+  <a class="rt-btn rt-btn--secondary rt-btn--lg" href="#review-panel">Checklist and decision</a>
+</div>
+
+<div class="page mock-only">
+  <div class="phone-demo">
+    <div class="state-label">Phone width (375px) · the same page in a 375px frame. Scroll inside it.</div>
+    <div class="phone-demo__row">
+      <div class="phone-frame"><iframe src="R02-model-review.html?embed=1" title="R02 at phone width"></iframe></div>
+      <div class="phone-demo__text">
+        <p><strong>Order on a phone.</strong> A small summary card first (status, submitted date, both Stripe checks), then the photos, then the profile, then the checklist and the two buttons at the end. A reviewer scrolls the profile the way a client would, then decides without hunting for the buttons.</p>
+        <p><strong>Bottom bar.</strong> Shows how many boxes are ticked and jumps to the decision. It is a secondary button on purpose: the only cobalt button on the page is Approve, once it is enabled.</p>
+        <p><strong>Tap targets.</strong> Every checklist row is at least 44px tall; both decision buttons are 48px.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="notes-dock mock-only">
+  <details class="design-notes">
+    <summary>Design notes</summary>
+    <ul>
+      <li><strong>The profile is the B03 model-profile layout, unchanged,</strong> so the reviewer sees exactly what a client will. The booking panel is swapped for the review panel in the same 380px sticky column. Removed for review: reviews (a pending model has none), the "Checked before going live" section (it would claim a review that has not happened yet), and the booking bar.</li>
+      <li><strong>One cobalt action: Approve.</strong> Decline is a secondary (ink keyline) button directly beneath it. Decline is not red: it is a normal, reversible outcome (the person can fix and resubmit with no limit), not a destructive act. Red here would make an honest decline feel like an error and push reviewers towards approving to avoid it. Red stays reserved for real danger, such as a failed save.</li>
+      <li><strong>Approve is disabled until all five boxes are ticked,</strong> with a plain line saying why. This makes the checklist a real check instead of decoration. Decline is always available and needs no ticks, because "I looked and it is wrong" is the point. See open question 1.</li>
+      <li><strong>Stripe status never blocks a decision.</strong> It matches the approved lifecycle: Gate A (this review) is independent of Gate B (Stripe). The hint under it says what will happen next, so the reviewer is not guessing whether approving makes someone public.</li>
+      <li><strong>Resubmitted</strong> shows the previous decline (who, reason, note) inside the panel, so the reviewer can check the specific thing that was wrong instead of starting again.</li>
+      <li><strong>Checklist wording is draft</strong> (flag shown on the panel). Item 3 combines nudity and contact details because they are one scan of the photos and text. Note for the PM: the profile has a Links field (website, Instagram). If social handles are banned from "text", that field contradicts item 3, so a rule is needed (see the flags on the index page).</li>
+      <li><strong>Two buttons in the live product link to a decision page,</strong> not a pop-up: Decline goes to its own page (R03) so Back works, the preview has room, and it is easy to build. Approve opens a short confirm dialog.</li>
+      <li>Photos are labelled placeholders. Imogen Hart and all details are example data.</li>
+    </ul>
+  </details>
+</div>
+<div class="container--editorial mock-only"><div class="mock-pager"><a href="R01-review-queue.html">← R01 Review queue</a><a href="R03-decision-flow.html">Next: Decision flow →</a></div></div>
+
+<script src="review.js"></script>
+</body>
+</html>

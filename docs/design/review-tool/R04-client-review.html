@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>R04 · Client review - Rogue Talent review tool mockups</title>
+<script>if (/[?&]embed/.test(location.search)) document.documentElement.classList.add('is-embedded');</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Hanken+Grotesk:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="review.css">
+</head>
+<body>
+
+<div class="mock-toolbar mock-only">
+  <span class="tag">Mock</span>
+  <a href="index.html">Review tool map</a>
+  <span class="divider">·</span>
+  <span class="title">Reviewer · R04 · Client review</span>
+  <span class="mock-flag">Example data</span>
+  <span class="spacer"></span>
+  <a href="R03-decision-flow.html">← Prev</a>
+  <a href="R05-reviewer-email.html">Next: Reviewer email →</a>
+</div>
+
+<header class="app-nav">
+  <a class="rt-nav__brand" href="index.html">Rogue<span>.</span></a>
+  <nav class="app-nav__links" aria-label="Main">
+    <a class="is-active" href="R01-review-queue.html">Review queue</a>
+    <a href="R06-team.html">Team</a>
+  </nav>
+  <div class="app-nav__actions">
+    <span class="rt-badge rt-badge--ink app-nav__status">Reviewer</span>
+    <a class="icon-btn" href="#" aria-label="Account menu"><span class="rt-avatar rt-avatar--sm">N</span></a>
+  </div>
+</header>
+
+<main class="page">
+
+  <a class="back-link" href="R01-review-queue.html"><i class="ico ico-arrow-left"></i>Review queue</a>
+
+  <div class="who-head">
+    <span class="rt-avatar rt-avatar--lg" style="width:64px;height:64px;font-size:var(--text-2xl);">HR</span>
+    <div class="stack stack--sm">
+      <span class="rt-eyebrow">Client · Limited company</span>
+      <h1 class="page-title">Hannah Reeve</h1>
+      <p class="small muted">Northlight Studio Ltd</p>
+    </div>
+  </div>
+
+  <div class="rv-cols">
+
+    <article>
+
+      <section class="psection" aria-labelledby="h-biz">
+        <h2 id="h-biz">Business</h2>
+        <dl class="kv-rows kv-rows--wide">
+          <div class="kv-row"><dt>Company name</dt><dd>Northlight Studio Ltd</dd></div>
+          <div class="kv-row"><dt>Company number</dt><dd><span class="mono-id">01234567</span><small>Example number</small><a class="rv-ext" href="#" target="_blank" rel="noopener">Search Companies House<i class="ico ico-ext ico--sm"></i></a></dd></div>
+          <div class="kv-row"><dt>Registered office</dt><dd>Unit 4, Mill Lane, Leeds LS1 2AB<small>Example address</small></dd></div>
+          <div class="kv-row"><dt>Industry</dt><dd>Fashion e-commerce</dd></div>
+          <div class="kv-row"><dt>Website</dt><dd>northlight-studio.example</dd></div>
+        </dl>
+        <p class="rv-hint">Companies House opens in a new tab with the number already searched. Check that the company is active, the name matches, and the number is the one above.</p>
+      </section>
+
+      <section class="psection" aria-labelledby="h-use">
+        <h2 id="h-use">Who and why</h2>
+        <dl class="kv-rows kv-rows--wide">
+          <div class="kv-row"><dt>Contact name</dt><dd>Hannah Reeve</dd></div>
+          <div class="kv-row"><dt>Role or use case</dt><dd>Head of production. Seasonal lookbook and e-commerce shoots, about ten days a year.</dd></div>
+        </dl>
+      </section>
+
+      <section class="psection" aria-labelledby="h-acct">
+        <h2 id="h-acct">Account</h2>
+        <dl class="kv-rows kv-rows--wide">
+          <div class="kv-row"><dt>Signed up</dt><dd>01/11/2026</dd></div>
+          <div class="kv-row"><dt>Business details submitted</dt><dd>01/11/2026, 17:42<small>3 days ago</small></dd></div>
+        </dl>
+      </section>
+
+    </article>
+
+    <aside class="rv-aside" aria-label="Review" style="margin-top:var(--space-5);">
+      <div class="panel rv-panel" id="review-panel" data-interactive>
+
+        <div class="rv-panel__head">
+          <span class="rt-eyebrow">Review</span>
+          <span class="rt-status rt-status--lg rt-status--pending"><span class="rt-status__dot"></span>Pending approval</span>
+        </div>
+
+        <dl class="rv-kv">
+          <div><dt>Submitted</dt><dd>01/11/2026<small>3 days ago</small></dd></div>
+        </dl>
+
+        <div class="rv-sec">
+          <div class="rv-sec__title"><span>Stripe verification</span></div>
+          <dl class="rv-kv">
+            <div><dt>Identity</dt><dd><span class="rt-status rt-status--draft"><span class="rt-status__dot"></span>Not started</span></dd></div>
+          </dl>
+          <p class="rv-hint">This does not stop you deciding. If you approve, Hannah is asked to verify her identity before her first booking.</p>
+        </div>
+
+        <div class="rv-sec">
+          <div class="rv-sec__title"><span>Checklist</span><span class="draft-flag">Draft wording</span></div>
+          <div class="rv-checklist" role="group" aria-label="Review checklist">
+            <label class="rt-check"><input type="checkbox"><span class="rt-check__box"><i class="ico ico-check"></i></span><span>Company number found on Companies House</span></label>
+            <label class="rt-check"><input type="checkbox"><span class="rt-check__box"><i class="ico ico-check"></i></span><span>Company name matches what they entered</span></label>
+            <label class="rt-check"><input type="checkbox"><span class="rt-check__box"><i class="ico ico-check"></i></span><span>Company is active, not dissolved</span></label>
+            <label class="rt-check"><input type="checkbox"><span class="rt-check__box"><i class="ico ico-check"></i></span><span>Role or use case is believable for booking models</span></label>
+            <label class="rt-check"><input type="checkbox"><span class="rt-check__box"><i class="ico ico-check"></i></span><span>Contact name looks like a real person, not a placeholder</span></label>
+          </div>
+          <div class="rv-progress"><span><b data-checked-count>0</b> of 5 ticked</span></div>
+        </div>
+
+        <div class="rv-actions">
+          <a class="rt-btn rt-btn--primary rt-btn--lg rt-btn--block rt-btn--disabled" data-approve aria-disabled="true" href="R03-decision-flow.html#approve-confirm">Approve client</a>
+          <a class="rt-btn rt-btn--secondary rt-btn--lg rt-btn--block" href="R03-decision-flow.html#decline">Decline</a>
+          <p class="rv-hint" data-approve-hint>Tick all 5 to approve.</p>
+        </div>
+
+      </div>
+    </aside>
+
+  </div>
+
+  <!-- ============ Mockup-only: sole trader variant ============ -->
+  <div class="mock-only">
+    <div class="state-label">State · sole trader or self-employed. No company number exists, so the Companies House row and checks are replaced by the address and website or social link the form asks for. Same panel, same buttons.</div>
+    <div class="rv-cols" style="padding-bottom:var(--space-7);">
+      <div class="stack">
+        <div class="who-head" style="padding-top:0;">
+          <span class="rt-avatar rt-avatar--lg" style="width:64px;height:64px;font-size:var(--text-2xl);">DO</span>
+          <div class="stack stack--sm">
+            <span class="rt-eyebrow">Client · Sole trader</span>
+            <h2 class="page-title">Daniel Osei</h2>
+            <p class="small muted">Osei Creative</p>
+          </div>
+        </div>
+        <dl class="kv-rows kv-rows--wide">
+          <div class="kv-row"><dt>Trading name</dt><dd>Osei Creative</dd></div>
+          <div class="kv-row"><dt>Companies House</dt><dd>Not applicable<small>Sole traders have no company number. Check the website or social link instead.</small></dd></div>
+          <div class="kv-row"><dt>Business address</dt><dd>12 Example Road, Bristol BS1 1AA<small>Example address</small></dd></div>
+          <div class="kv-row"><dt>Website or social link</dt><dd>osei-creative.example<a class="rv-ext" href="#" target="_blank" rel="noopener">Open in a new tab<i class="ico ico-ext ico--sm"></i></a></dd></div>
+          <div class="kv-row"><dt>Role or use case</dt><dd>Freelance art director. Small campaign shoots for independent brands.</dd></div>
+          <div class="kv-row"><dt>Signed up</dt><dd>03/11/2026</dd></div>
+        </dl>
+      </div>
+      <div class="panel rv-panel">
+        <div class="rv-panel__head"><span class="rt-eyebrow">Review</span><span class="rt-status rt-status--lg rt-status--pending"><span class="rt-status__dot"></span>Pending approval</span></div>
+        <dl class="rv-kv"><div><dt>Submitted</dt><dd>03/11/2026<small>1 day ago</small></dd></div></dl>
+        <div class="rv-sec">
+          <div class="rv-sec__title"><span>Stripe verification</span></div>
+          <dl class="rv-kv"><div><dt>Identity</dt><dd><span class="rt-status rt-status--pending"><span class="rt-status__dot"></span>In progress</span></dd></div></dl>
+        </div>
+        <div class="rv-sec">
+          <div class="rv-sec__title"><span>Checklist</span><span class="draft-flag">Draft wording</span></div>
+          <div class="rv-checklist">
+            <label class="rt-check"><input type="checkbox" onclick="return false"><span class="rt-check__box"><i class="ico ico-check"></i></span><span>Website or social link shows a real business</span></label>
+            <label class="rt-check"><input type="checkbox" onclick="return false"><span class="rt-check__box"><i class="ico ico-check"></i></span><span>Trading name matches the website or social link</span></label>
+            <label class="rt-check"><input type="checkbox" onclick="return false"><span class="rt-check__box"><i class="ico ico-check"></i></span><span>Business address looks genuine, not a placeholder</span></label>
+            <label class="rt-check"><input type="checkbox" onclick="return false"><span class="rt-check__box"><i class="ico ico-check"></i></span><span>Role or use case is believable for booking models</span></label>
+            <label class="rt-check"><input type="checkbox" onclick="return false"><span class="rt-check__box"><i class="ico ico-check"></i></span><span>Contact name looks like a real person, not a placeholder</span></label>
+          </div>
+          <div class="rv-progress"><span><b>0</b> of 5 ticked</span></div>
+        </div>
+        <div class="rv-actions">
+          <a class="rt-btn rt-btn--primary rt-btn--lg rt-btn--block rt-btn--disabled" aria-disabled="true" href="#">Approve client</a>
+          <a class="rt-btn rt-btn--secondary rt-btn--lg rt-btn--block" href="R03-decision-flow.html#decline">Decline</a>
+          <p class="rv-hint">Tick all 5 to approve.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<div class="notes-dock mock-only">
+  <details class="design-notes">
+    <summary>Design notes</summary>
+    <ul>
+      <li><strong>Clients have no public profile, so the page is the facts a reviewer decides on, and nothing else.</strong> Company name and number, registered office, industry, website, who the person is and what they will use Rogue Talent for, and when they signed up. Email address and phone number are deliberately not shown: they are not needed for the decision, and fewer personal details on screen is the safer default.</li>
+      <li><strong>The Companies House check is one tap.</strong> The number is set in the mono face (it is an ID, which is what the mono face is for), with a "Search Companies House" link that opens in a new tab with the number already searched. The Developer builds the link as <code>https://find-and-update.company-information.service.gov.uk/search/companies?q={number}</code>; please confirm the URL still works at build time. Nothing is fetched or checked automatically: v1 is a manual check, as the lifecycle spec says.</li>
+      <li><strong>Same panel, same two buttons, same rules as R02:</strong> Approve is the only cobalt action and stays disabled until the five checks are ticked; Decline is secondary. The client checklist is different because the risk is different (is this a real business, not are these photos fine). Draft wording again.</li>
+      <li><strong>Sole traders</strong> (state below) get a different row set because the business-details form asks for different things: no number, but an address and a website or social link. The checklist swaps the three company checks for checks on the link and the address.</li>
+      <li><strong>Stripe Identity</strong> shows as one row (clients have no bank step). The hint says what approving will cause next: the client is asked to verify before their first booking, never before being approved.</li>
+      <li><strong>"Role or use case"</strong> is in the brief but I could not find it as a field in the business-details form (signup screen 18). Either the form gains it, or this row is dropped. Flagged on the index page.</li>
+      <li>All names, numbers and addresses are example data. The company number and addresses are made up and are not real businesses.</li>
+    </ul>
+  </details>
+</div>
+<div class="container--editorial mock-only"><div class="mock-pager"><a href="R03-decision-flow.html">← R03 Decision flow</a><a href="R05-reviewer-email.html">Next: Reviewer email →</a></div></div>
+
+<script src="review.js"></script>
+</body>
+</html>
