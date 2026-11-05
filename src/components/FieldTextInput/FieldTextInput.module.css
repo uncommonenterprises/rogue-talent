@@ -24,6 +24,8 @@
 .root .validationErrorInFlow {
   position: static;
   margin-top: var(--space-2);
+  line-height: var(--leading-snug);
+  padding: 0;
 }
 
 .input {
