@@ -13,6 +13,19 @@
   margin-top: 2px;
 }
 
+/* hintBelowInput: the help text sits under the control as a design-system rt-field__hint. */
+.hintBelow {
+  composes: rtFieldHint from global;
+}
+
+/* hintBelowInput: the help text already occupies the space under the control, so the error
+   stays in normal flow and takes its own line below the hint (rt-field gap) rather than being
+   absolutely positioned on top of it. Descendant selector beats ValidationError's own margin. */
+.root .validationErrorInFlow {
+  position: static;
+  margin-top: var(--space-2);
+}
+
 .selectError {
   border: var(--borderErrorField);
 }

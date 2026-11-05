@@ -15,6 +15,7 @@ const FieldTextInputComponent = props => {
     labelClassName,
     customErrorText,
     helpText,
+    hintBelowInput,
     id,
     label,
     input,
@@ -87,11 +88,16 @@ const FieldTextInputComponent = props => {
           {label}
         </label>
       ) : null}
-      {/* Help text sits directly under the field label, above the input. */}
-      <HelpText helpText={helpText} />
+      {/* Help text sits directly under the field label, above the input, unless
+          hintBelowInput moves it under the input (with the error on its own line below). */}
+      {hintBelowInput ? null : <HelpText helpText={helpText} />}
       {isTextarea ? <ExpandingTextarea {...inputProps} /> : <input {...inputProps} />}
+      {hintBelowInput ? <HelpText rootClassName={css.hintBelow} helpText={helpText} /> : null}
       {hideErrorMessage ? null : (
-        <ValidationError className={css.validationError} fieldMeta={fieldMeta} />
+        <ValidationError
+          className={hintBelowInput ? css.validationErrorInFlow : css.validationError}
+          fieldMeta={fieldMeta}
+        />
       )}
     </div>
   );
@@ -112,6 +118,9 @@ const FieldTextInputComponent = props => {
  * @param {string} props.name Name of the input in Final Form
  * @param {string} props.id
  * @param {string?} props.label Label is optional, but if it is given, an id is also required.
+ * @param {string?} props.helpText Muted help text, shown under the label by default
+ * @param {boolean?} props.hintBelowInput Show the help text under the input instead, with the
+ * validation error in normal flow on its own line below it (so the two never overlap)
  * @param {string?} props.customErrorText Error message that can be manually passed to input field, overrides default validation message
  * @param {boolean} props.isUncontrolled is value tracked by parent component
  * @param {Object} props.inputRef a ref object passed for input element.
