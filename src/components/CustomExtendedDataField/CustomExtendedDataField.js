@@ -25,7 +25,6 @@ import {
   FieldSelect,
   FieldTextInput,
   FieldBoolean,
-  HelpText,
 } from '../../components';
 // Import modules from this directory
 import css from './CustomExtendedDataField.module.css';
@@ -36,6 +35,22 @@ export const DISPLAY_AS_CHIPS = 'chips';
 export const DISPLAY_AS_DROPDOWN = 'dropdown';
 
 const createFilterOptions = options => options.map(o => ({ key: `${o.option}`, label: o.label }));
+
+// Units we can name in the friendlier min/max messages, keyed by the abbreviation the field
+// label shows in brackets at its end, e.g. "Hips (cm)". Anything else (e.g. "Shoe size (UK)")
+// falls back to the plain message, so we never guess at what a bracket means.
+const UNIT_NAME_MESSAGE_IDS = {
+  cm: 'CustomExtendedDataField.unitCentimetres',
+  mm: 'CustomExtendedDataField.unitMillimetres',
+  kg: 'CustomExtendedDataField.unitKilograms',
+  in: 'CustomExtendedDataField.unitInches',
+};
+
+const getUnitNameMessageId = label => {
+  const match = typeof label === 'string' ? label.match(/\(([^()]+)\)\s*$/) : null;
+  const unit = match ? match[1].trim().toLowerCase() : null;
+  return unit ? UNIT_NAME_MESSAGE_IDS[unit] || null : null;
+};
 
 const getLabel = (fieldConfig, intl) => {
   const label = fieldConfig?.saveConfig?.label || fieldConfig?.label;
@@ -71,6 +86,7 @@ const CustomFieldEnum = props => {
     intl,
     fieldClassName,
     displayAs,
+    hintBelowInput,
   } = props;
   const { enumOptions = [], saveConfig } = fieldConfig || {};
   const { placeholderMessage, isRequired, requiredMessage } = saveConfig || {};
@@ -106,6 +122,7 @@ const CustomFieldEnum = props => {
       id={formId ? `${formId}.${name}` : name}
       label={label}
       helpText={fieldConfig?.helpText}
+      hintBelowInput={hintBelowInput}
       {...validateMaybe}
     >
       <option disabled value="">
@@ -179,7 +196,15 @@ const CustomFieldMultiEnum = props => {
 };
 
 const CustomFieldShortText = props => {
-  const { name, fieldConfig, defaultRequiredMessage, formId, intl, fieldClassName } = props;
+  const {
+    name,
+    fieldConfig,
+    defaultRequiredMessage,
+    formId,
+    intl,
+    fieldClassName,
+    hintBelowInput,
+  } = props;
   const { placeholderMessage, isRequired, requiredMessage } = fieldConfig?.saveConfig || {};
   const label = getLabel(fieldConfig, intl);
   const validateMaybe = isRequired
@@ -197,6 +222,7 @@ const CustomFieldShortText = props => {
       maxLength={70}
       label={label}
       helpText={fieldConfig?.helpText}
+      hintBelowInput={hintBelowInput}
       placeholder={placeholder}
       {...validateMaybe}
     />
@@ -204,7 +230,15 @@ const CustomFieldShortText = props => {
 };
 
 const CustomFieldText = props => {
-  const { name, fieldConfig, defaultRequiredMessage, formId, intl, fieldClassName } = props;
+  const {
+    name,
+    fieldConfig,
+    defaultRequiredMessage,
+    formId,
+    intl,
+    fieldClassName,
+    hintBelowInput,
+  } = props;
   const { placeholderMessage, isRequired, requiredMessage } = fieldConfig?.saveConfig || {};
   const label = getLabel(fieldConfig, intl);
   const validateMaybe = isRequired
@@ -221,6 +255,7 @@ const CustomFieldText = props => {
       type="textarea"
       label={label}
       helpText={fieldConfig?.helpText}
+      hintBelowInput={hintBelowInput}
       placeholder={placeholder}
       {...validateMaybe}
     />
@@ -228,20 +263,37 @@ const CustomFieldText = props => {
 };
 
 const CustomFieldLong = props => {
-  const { name, fieldConfig, defaultRequiredMessage, formId, intl, fieldClassName } = props;
+  const {
+    name,
+    fieldConfig,
+    defaultRequiredMessage,
+    formId,
+    intl,
+    fieldClassName,
+    hintBelowInput,
+  } = props;
   const { minimum, maximum, saveConfig } = fieldConfig;
   const { placeholderMessage, isRequired, requiredMessage } = saveConfig || {};
   const label = getLabel(fieldConfig, intl);
   const placeholder =
     placeholderMessage || intl.formatMessage({ id: 'CustomExtendedDataField.placeholderLong' });
-  const numberTooSmallMessage = intl.formatMessage(
-    { id: 'CustomExtendedDataField.numberTooSmall' },
-    { min: minimum }
-  );
-  const numberTooBigMessage = intl.formatMessage(
-    { id: 'CustomExtendedDataField.numberTooBig' },
-    { max: maximum }
-  );
+  // Plain-English min/max messages. If the label ends in a unit we can name, e.g. "(cm)",
+  // the message mentions it ("too small for centimetres"). The limits themselves come from
+  // Console; nothing here suggests a typical range.
+  const unitNameMessageId = getUnitNameMessageId(saveConfig?.label || fieldConfig?.label);
+  const unit = unitNameMessageId ? intl.formatMessage({ id: unitNameMessageId }) : null;
+  const numberTooSmallMessage = unit
+    ? intl.formatMessage(
+        { id: 'CustomExtendedDataField.numberTooSmallWithUnit' },
+        { min: minimum, unit }
+      )
+    : intl.formatMessage({ id: 'CustomExtendedDataField.numberTooSmall' }, { min: minimum });
+  const numberTooBigMessage = unit
+    ? intl.formatMessage(
+        { id: 'CustomExtendedDataField.numberTooBigWithUnit' },
+        { max: maximum, unit }
+      )
+    : intl.formatMessage({ id: 'CustomExtendedDataField.numberTooBig' }, { max: maximum });
 
   // Field with schema type 'long' will always be validated against min & max
   const validate = (value, min, max) => {
@@ -259,6 +311,7 @@ const CustomFieldLong = props => {
       type="number"
       step="1"
       helpText={fieldConfig?.helpText}
+      hintBelowInput={hintBelowInput}
       parse={value => {
         const parsed = Number.parseInt(value, 10);
         return Number.isNaN(parsed) ? null : parsed;
@@ -283,7 +336,15 @@ const CustomFieldLong = props => {
 };
 
 const CustomFieldBoolean = props => {
-  const { name, fieldConfig, defaultRequiredMessage, formId, intl, fieldClassName } = props;
+  const {
+    name,
+    fieldConfig,
+    defaultRequiredMessage,
+    formId,
+    intl,
+    fieldClassName,
+    hintBelowInput,
+  } = props;
   const { placeholderMessage, isRequired, requiredMessage } = fieldConfig?.saveConfig || {};
   const label = getLabel(fieldConfig, intl);
   const validateMaybe = isRequired
@@ -299,6 +360,7 @@ const CustomFieldBoolean = props => {
       name={name}
       label={label}
       helpText={fieldConfig?.helpText}
+      hintBelowInput={hintBelowInput}
       placeholder={placeholder}
       {...validateMaybe}
     />
@@ -306,7 +368,15 @@ const CustomFieldBoolean = props => {
 };
 
 const CustomFieldYoutube = props => {
-  const { name, fieldConfig, defaultRequiredMessage, formId, intl, fieldClassName } = props;
+  const {
+    name,
+    fieldConfig,
+    defaultRequiredMessage,
+    formId,
+    intl,
+    fieldClassName,
+    hintBelowInput,
+  } = props;
   const { placeholderMessage, isRequired, requiredMessage } = fieldConfig?.saveConfig || {};
   const label = getLabel(fieldConfig, intl);
   const placeholder =
@@ -332,6 +402,7 @@ const CustomFieldYoutube = props => {
       type="text"
       label={label}
       helpText={fieldConfig?.helpText}
+      hintBelowInput={hintBelowInput}
       placeholder={placeholder}
       validate={value => validate(value)}
     />
@@ -350,8 +421,8 @@ const CustomFieldYoutube = props => {
  * - displayAs: 'chips' renders an enum or multi-enum as rt-chip pills; 'dropdown' renders a
  *   multi-enum as a full-width dropdown of tick boxes.
  * - hintBelowInput: for single-input fields (select, text, number), show the help text under
- *   the input instead of under the label. Groups (chips, checkboxes, dropdown) keep it under
- *   the label.
+ *   the input instead of under the label, with any validation error on its own line below it.
+ *   Groups (chips, checkboxes, dropdown) keep it under the label.
  *
  * @param {Object} props should contain fieldConfig that defines schemaType, enumOptions?, and
  * saveConfig for the field.
@@ -359,7 +430,7 @@ const CustomFieldYoutube = props => {
 const CustomExtendedDataField = props => {
   const intl = useIntl();
   const { className, displayAs, hintBelowInput = false, ...rest } = props;
-  const { enumOptions = [], schemaType, helpText } = props?.fieldConfig || {};
+  const { enumOptions = [], schemaType } = props?.fieldConfig || {};
   const defaultRequiredMessage = intl.formatMessage({
     id: 'CustomExtendedDataField.required',
   });
@@ -385,28 +456,15 @@ const CustomExtendedDataField = props => {
     return null;
   }
 
+  // Groups (chips, checkboxes, dropdown) keep their help text under the label.
   const isGroupControl = schemaType === SCHEMA_TYPE_MULTI_ENUM || displayAs === DISPLAY_AS_CHIPS;
-  if (hintBelowInput && helpText && !isGroupControl) {
-    return (
-      <div className={className || css.customField}>
-        <FieldComponent
-          {...rest}
-          fieldConfig={{ ...rest.fieldConfig, helpText: undefined }}
-          fieldClassName={css.fieldWithHintBelow}
-          displayAs={displayAs}
-          defaultRequiredMessage={defaultRequiredMessage}
-          intl={intl}
-        />
-        <HelpText rootClassName={css.hintBelow} helpText={helpText} />
-      </div>
-    );
-  }
 
   return (
     <FieldComponent
       {...rest}
       fieldClassName={className}
       displayAs={displayAs}
+      hintBelowInput={hintBelowInput && !isGroupControl}
       defaultRequiredMessage={defaultRequiredMessage}
       intl={intl}
     />

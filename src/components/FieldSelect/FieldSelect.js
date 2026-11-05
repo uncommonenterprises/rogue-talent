@@ -14,6 +14,7 @@ const FieldSelectComponent = props => {
     id,
     label,
     helpText,
+    hintBelowInput,
     input,
     meta,
     children,
@@ -58,10 +59,15 @@ const FieldSelectComponent = props => {
           {label}
         </label>
       ) : null}
-      {/* Help text sits directly under the field label, above the input. */}
-      <HelpText helpText={helpText} />
+      {/* Help text sits directly under the field label, above the input, unless
+          hintBelowInput moves it under the input (with the error on its own line below). */}
+      {hintBelowInput ? null : <HelpText helpText={helpText} />}
       <select {...selectProps}>{children}</select>
-      <ValidationError className={css.validationError} fieldMeta={meta} />
+      {hintBelowInput ? <HelpText rootClassName={css.hintBelow} helpText={helpText} /> : null}
+      <ValidationError
+        className={hintBelowInput ? css.validationErrorInFlow : css.validationError}
+        fieldMeta={meta}
+      />
     </div>
   );
 };
@@ -78,6 +84,9 @@ const FieldSelectComponent = props => {
  * @param {string} props.id Label is optional, but if it is given, an id is also required so the label can reference the input in the `for` attribute
  * @param {ReactNode} props.label
  * @param {ReactNode} props.children
+ * @param {string?} props.helpText Muted help text, shown under the label by default
+ * @param {boolean?} props.hintBelowInput Show the help text under the select instead, with the
+ * validation error in normal flow on its own line below it (so the two never overlap)
  * @param {boolean} props.disabled Whether the select element is disabled
  * @param {boolean} props.showLabelAsDisabled Whether the label is disabled
  * @returns {JSX.Element} Final Form Field containing <select> input
