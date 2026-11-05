@@ -52,8 +52,11 @@ force: **only Neil sets an `APPROVED` status** on anything that reaches a sign-o
 ## Ways of working (established — see CLAUDE.md + AGENTS.md, do not re-derive)
 - **Dev conventions:** `AGENTS.md` (React 18 / Redux Toolkit / Final Form / Express SSR; ducks +
   `loadData`, no `useEffect` for data; local utils over libraries — ask before adding one; i18n via
-  `en.json`; Prettier single-quote / 2-space / 100-col). **Transaction-process changes need Neil's
-  approval** (escalation category 1/5).
+  `en.json`; Prettier single-quote / 2-space / 100-col). **Transaction-process logic changes need
+  Neil's approval** (escalation category 1/5).
+  - **Since 05/11/2026** (Neil in chat: "Yes, happy to do both"), the team runs `flex-cli` pushes and alias moves on the TEST marketplace itself, and may edit test Console settings through the browser while Neil is signed in.
+  - It tells Neil afterwards what changed and how to undo it.
+  - Live is never touched. See CLAUDE.md "Environments & agent boundaries".
 - **Design:** `design-system/DESIGN_SYSTEM.md` + CLAUDE.md brand rules (cobalt `#2B57FF`,
   Bricolage/Hanken/IBM Plex Mono, `rt-*` components; one cobalt action per view, hairlines over
   shadows, no gradients/emoji, green for availability).

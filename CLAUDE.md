@@ -16,6 +16,13 @@ Rogue Talent (roguetalent.co) is a two-sided marketplace for professional models
 - test.roguetalent.co is the **test** env. "Never touch live" is currently vacuous because there is no live env; that is not a reason to relax the rule.
 - When a live environment is created: its credentials stay OUT of the dev environment, no browser automation is ever pointed at it, and any agent (incl. the future PM agent) tests the test env only.
 - This repo is **PUBLIC** — no secret values in any committed file (see Environment variables below).
+- **Test-marketplace changes by the team (Neil approved in chat 05/11/2026: "Yes, happy to do both").** On `ndstealth1-test` ONLY, the team may:
+  - run `flex-cli process push` / `update-alias` itself, e.g. booking-email wording;
+  - edit test Console settings through the browser while Neil is signed in, e.g. built-in email texts.
+  - Conditions: tell Neil afterwards what changed and how to undo it, and log it in `docs/team-decision-log.md`.
+  - Changes to booking-process *logic* (`process.edn` states, transitions, actions) still need Neil's approval of the change before it is made. Only the running of the commands is delegated.
+  - Never on a live marketplace.
+- **Own emails over built-in ones:** where Sharetribe lets a built-in email be switched off, replace it with our own email, sent from our server and kept in the repo. Only the unavoidable ones (verify email, reset password) stay in Console.
 
 ## Agent team
 An experimental four-agent team runs development under Neil's direction — see
