@@ -30,17 +30,79 @@
   color: var(--text-muted);
 }
 
-/* Mode-switch confirmation modal */
-.confirmModal {
+/* Mode-switch confirmation modal.
+   Its own container, not .modalContainer: that one zeroes the side padding because the
+   exception form pads its own rows, which left this dialog's text flush to the edge.
+   Matches the booking confirm dialogs (TransactionPage/ConfirmActionModal). */
+.confirmModalContainer {
+  composes: marketplaceModalBaseStyles from global;
+  /* Clear the fixed close button */
+  padding-top: 70px;
+
+  @media (--viewportMedium) {
+    flex-basis: 480px;
+  }
+}
+.confirmModalContent {
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
+  flex-grow: 1;
+  font-family: var(--font-sans);
 }
+.confirmTitle {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-display);
+  font-weight: var(--weight-extrabold);
+  font-size: var(--text-xl);
+  letter-spacing: var(--tracking-tight);
+  line-height: var(--leading-snug);
+  color: var(--text-primary);
+}
+.confirmBody {
+  margin: 0;
+  padding: 0;
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
+  color: var(--text-secondary);
+}
+/* Stacked at every width so both actions are always fully visible */
 .confirmActions {
   display: flex;
-  align-items: center;
-  gap: var(--space-5);
+  flex-direction: column;
+  gap: var(--space-2);
   margin-top: var(--space-2);
+}
+.confirmButton {
+  min-height: 48px;
+}
+.confirmCancel {
+  min-height: 44px;
+  padding: 0 var(--space-4);
+  font-family: var(--font-sans);
+  font-weight: var(--weight-semibold);
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+
+  &:hover {
+    color: var(--text-primary);
+    background: var(--ink-50);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--shadow-focus);
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: default;
+  }
 }
 
 .root {

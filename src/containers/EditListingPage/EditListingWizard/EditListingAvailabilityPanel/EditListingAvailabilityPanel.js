@@ -8,7 +8,7 @@ import { LISTING_STATE_DRAFT } from '../../../../util/types';
 import { isFullDay } from '../../../../transactions/transaction';
 
 // Import shared components
-import { Button, H3, InlineTextButton, ListingLink, Modal } from '../../../../components';
+import { H3, InlineTextButton, ListingLink, Modal, PrimaryButton } from '../../../../components';
 
 // Import modules from this directory
 import EditListingAvailabilityExceptionForm from './EditListingAvailabilityExceptionForm';
@@ -288,24 +288,34 @@ const EditListingAvailabilityPanel = props => {
           isOpen={!!pendingMode}
           onClose={() => setPendingMode(null)}
           onManageDisableScrolling={onManageDisableScrolling}
-          containerClassName={css.modalContainer}
+          containerClassName={css.confirmModalContainer}
+          contentClassName={css.confirmModalContent}
           usePortal
         >
-          <div className={css.confirmModal}>
-            <H3 as="h2">
-              <FormattedMessage id="EditListingAvailabilityPanel.modeSwitchTitle" />
-            </H3>
-            <p>
-              <FormattedMessage id="EditListingAvailabilityPanel.modeSwitchBody" />
-            </p>
-            <div className={css.confirmActions}>
-              <Button onClick={confirmModeSwitch} inProgress={updateInProgress}>
-                <FormattedMessage id="EditListingAvailabilityPanel.modeSwitchConfirm" />
-              </Button>
-              <InlineTextButton onClick={() => setPendingMode(null)}>
-                <FormattedMessage id="EditListingAvailabilityPanel.modeSwitchCancel" />
-              </InlineTextButton>
-            </div>
+          <h2 className={css.confirmTitle}>
+            <FormattedMessage id="EditListingAvailabilityPanel.modeSwitchTitle" />
+          </h2>
+          <p className={css.confirmBody}>
+            <FormattedMessage id="EditListingAvailabilityPanel.modeSwitchBody" />
+          </p>
+          <div className={css.confirmActions}>
+            <PrimaryButton
+              type="button"
+              className={css.confirmButton}
+              onClick={confirmModeSwitch}
+              inProgress={updateInProgress}
+              disabled={updateInProgress}
+            >
+              <FormattedMessage id="EditListingAvailabilityPanel.modeSwitchConfirm" />
+            </PrimaryButton>
+            <button
+              type="button"
+              className={css.confirmCancel}
+              onClick={() => setPendingMode(null)}
+              disabled={updateInProgress}
+            >
+              <FormattedMessage id="EditListingAvailabilityPanel.modeSwitchCancel" />
+            </button>
           </div>
         </Modal>
       ) : null}
