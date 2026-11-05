@@ -3,8 +3,10 @@ import { types as sdkTypes } from '../../../../util/sdkLoader';
 import {
   defaultDisplayName,
   getInitialValues,
+  getProfileBioUpdate,
   getProfileListingValues,
 } from './EditListingProfilePanel';
+import { BIO_MAX_LENGTH, bioLengthValidator } from './EditListingProfileForm';
 
 const { LatLng } = sdkTypes;
 
@@ -104,5 +106,33 @@ describe('EditListingProfilePanel getProfileListingValues', () => {
     const values = getProfileListingValues(formValues, listing, config);
     expect(values).not.toHaveProperty('availabilityPlan');
     expect(values.title).toEqual('Lucy S.');
+  });
+});
+
+describe('EditListingProfilePanel optional bio (tester F, F4)', () => {
+  const userWithBio = bio => ({ attributes: { profile: { firstName: 'Jane', bio } } });
+
+  it('pre-fills the bio saved on the user profile', () => {
+    expect(getInitialValues({ listing: null, currentUser: userWithBio('Hello') }).bio).toEqual(
+      'Hello'
+    );
+    expect(getInitialValues({ listing: null, currentUser: userWithBio(null) }).bio).toEqual('');
+  });
+
+  it('only saves the bio when it changed, trimmed', () => {
+    expect(getProfileBioUpdate('Hello', userWithBio('Hello'))).toBeNull();
+    expect(getProfileBioUpdate(' Hello \n', userWithBio('Hello'))).toBeNull();
+    expect(getProfileBioUpdate(undefined, userWithBio(null))).toBeNull();
+    expect(getProfileBioUpdate('  New bio ', userWithBio('Hello'))).toEqual({ bio: 'New bio' });
+    expect(getProfileBioUpdate('', userWithBio('Hello'))).toEqual({ bio: '' });
+  });
+
+  it('limits the bio length, without blocking an untouched longer bio', () => {
+    const long = 'a'.repeat(BIO_MAX_LENGTH + 1);
+    expect(bioLengthValidator('too long')('a'.repeat(BIO_MAX_LENGTH))).toBeUndefined();
+    expect(bioLengthValidator('too long')(long)).toEqual('too long');
+    expect(bioLengthValidator('too long', long)(long)).toBeUndefined();
+    expect(bioLengthValidator('too long', long)(`${long}b`)).toEqual('too long');
+    expect(bioLengthValidator('too long')(undefined)).toBeUndefined();
   });
 });

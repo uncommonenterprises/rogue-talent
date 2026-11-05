@@ -58,11 +58,33 @@ export const defaultDisplayName = currentUser => {
 };
 
 /**
+ * The bio saved on the user's profile (profile.bio), or '' when there is none.
+ *
+ * @param {Object} currentUser
+ * @returns {string}
+ */
+const savedBio = currentUser => currentUser?.attributes?.profile?.bio || '';
+
+/**
+ * The user-profile update for the optional bio, or null when nothing changed. The bio lives on
+ * the user (profile.bio), the same value Profile settings edits, so the two stay in sync. It is
+ * trimmed; an emptied field clears the saved bio.
+ *
+ * @param {string} bio the bio as typed in the form
+ * @param {Object} currentUser
+ * @returns {Object|null} { bio } for updateProfile, or null to skip the profile save
+ */
+export const getProfileBioUpdate = (bio, currentUser) => {
+  const nextBio = (bio || '').trim();
+  return nextBio === savedBio(currentUser).trim() ? null : { bio: nextBio };
+};
+
+/**
  * Initial values for the "About you" form: the saved display name (listing title), or the
- * "First L." default when the listing has no title yet, and the saved city.
+ * "First L." default when the listing has no title yet, the saved city and the saved bio.
  *
  * @param {Object} props { listing, currentUser }
- * @returns {Object} { title, location }
+ * @returns {Object} { title, location, bio }
  */
 export const getInitialValues = props => {
   const { listing, currentUser } = props;
@@ -79,6 +101,8 @@ export const getInitialValues = props => {
     location: locationFieldsPresent
       ? { search: address, selectedPlace: { address, origin: geolocation } }
       : null,
+    // Optional bio from the user's profile, so a bio written on Profile settings shows here.
+    bio: savedBio(currentUser),
   };
 };
 
@@ -105,11 +129,13 @@ export const getProfileListingValues = ({ title, address, origin }, listing, con
 });
 
 /**
- * The EditListingProfilePanel — the "About you" wizard step (the first step). It collects
- * just the model's display name and the city they're based in. The display name becomes
- * the listing title (and creates the draft in the new-listing flow); the city becomes the
- * listing geolocation (powering location search). The model's attribute fields live on the
- * next step ("Your profile"). The parent persists the returned listing values via onSubmit.
+ * The EditListingProfilePanel - the "About you" wizard step (the first step). It collects
+ * the model's display name, the city they're based in and an optional bio. The display name
+ * becomes the listing title (and creates the draft in the new-listing flow); the city becomes
+ * the listing geolocation (powering location search); the bio is saved to the user's
+ * profile.bio. The model's attribute fields live on the next step ("Your profile"). The parent
+ * persists both via onSubmit(listingValues, profileValues); profileValues is null when the bio
+ * is unchanged. The bio is optional, so it plays no part in the step's completion check.
  *
  * @component
  * @param {Object} props
@@ -117,12 +143,13 @@ export const getProfileListingValues = ({ title, address, origin }, listing, con
  * @param {string} [props.rootClassName] - Custom class that overrides the default class for the root element
  * @param {propTypes.ownListing} props.listing - The listing (source of the title + city)
  * @param {Object} props.config - The marketplace config (provides the listing type)
+ * @param {Object} props.currentUser - The current user (source of the default name and the bio)
  * @param {boolean} props.disabled - Whether the form is disabled
  * @param {boolean} props.ready - Whether the form is ready
  * @param {boolean} props.panelUpdated - Whether the panel was just updated
  * @param {boolean} props.updateInProgress - Whether a save is in progress
- * @param {Object} props.errors - Errors object ({ updateListingError })
- * @param {Function} props.onSubmit - Save handler; receives the listing update values
+ * @param {Object} props.errors - Errors object ({ updateListingError, updateProfileError })
+ * @param {Function} props.onSubmit - Save handler; receives (listingValues, profileValues)
  * @param {string} props.submitButtonText - The submit button label
  * @returns {JSX.Element}
  */
@@ -136,6 +163,7 @@ const EditListingProfilePanel = props => {
     rootClassName,
     listing,
     config,
+    currentUser,
     disabled,
     ready,
     onSubmit,
@@ -173,7 +201,7 @@ const EditListingProfilePanel = props => {
         fetchErrors={errors}
         autoFocus
         onSubmit={values => {
-          const { title, location } = values;
+          const { title, location, bio } = values;
           const { selectedPlace } = location || {};
           const { address, origin } = selectedPlace || {};
 
@@ -188,10 +216,11 @@ const EditListingProfilePanel = props => {
             initialValues: {
               title,
               location: { search: address, selectedPlace: { address, origin } },
+              bio: bio || '',
             },
           });
 
-          onSubmit(listingValues);
+          onSubmit(listingValues, getProfileBioUpdate(bio, currentUser));
         }}
       />
     </main>

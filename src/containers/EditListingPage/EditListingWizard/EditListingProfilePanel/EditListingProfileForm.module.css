@@ -24,6 +24,20 @@
   composes: rtFieldHint from global;
 }
 
+/* Bio: the hint on the left, the character counter on the right. */
+.hintRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--space-4);
+}
+
+.counter {
+  composes: rtFieldHint from global;
+  flex: none;
+  font-variant-numeric: tabular-nums;
+}
+
 .req {
   color: var(--accent-500);
 }

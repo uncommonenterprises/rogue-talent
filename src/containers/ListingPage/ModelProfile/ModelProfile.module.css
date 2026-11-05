@@ -606,3 +606,15 @@
   margin-top: 2px;
   color: var(--ink-900);
 }
+
+/* About: the model's bio, plain text with their line breaks kept */
+.bio {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
+  color: var(--text-secondary);
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
