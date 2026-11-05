@@ -708,7 +708,7 @@
   "EditListingAvailabilityPanel.exceptionAvailable": "Available",
   "EditListingAvailabilityPanel.exceptionNotAvailable": "Not available",
   "EditListingAvailabilityPanel.setAvailabilityPlan": "Set default schedule",
-  "EditListingAvailabilityPanel.showListingFailed": "Fetching listing data failed.",
+  "EditListingAvailabilityPanel.showListingFailed": "Loading your profile failed.",
   "EditListingAvailabilityPanel.title": "Your calendar",
   "EditListingAvailabilityPlanForm.addAnother": "+ Add another",
   "EditListingAvailabilityPlanForm.dayOfWeek.fri": "Friday",
