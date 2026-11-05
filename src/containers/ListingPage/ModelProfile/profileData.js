@@ -64,3 +64,16 @@ export const getAverageRating = (reviews = []) => {
   }
   return ratings.reduce((sum, n) => sum + n, 0) / ratings.length;
 };
+
+/**
+ * The model's bio (the author's profile.bio) for the profile's "About" section, trimmed, or
+ * null when there is none, so the section can be hidden.
+ *
+ * @param {Object} author user entity (the listing author)
+ * @returns {string|null}
+ */
+export const getProfileBio = author => {
+  const bio = author?.attributes?.profile?.bio;
+  const trimmed = typeof bio === 'string' ? bio.trim() : '';
+  return trimmed || null;
+};

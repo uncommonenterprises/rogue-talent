@@ -123,6 +123,9 @@ const EditListingWizardTab = props => {
     onAddAvailabilityException,
     onDeleteAvailabilityException,
     onUpdateListing,
+    onUpdateProfile,
+    profileUpdateInProgress = false,
+    updateProfileError,
     onCreateListingDraft,
     onImageUpload,
     onManageDisableScrolling,
@@ -212,17 +215,27 @@ const EditListingWizardTab = props => {
       });
   };
 
-  // The "About you" (PROFILE) tab is the first step. It saves everything to the listing:
-  // the display name (title), the city (geolocation), and the model's attribute fields
-  // (listing custom fields). Because it's first, in the new-listing flow it CREATES the
-  // draft (onCreateListingDraft); otherwise it updates the existing listing. On success it
-  // advances the new-listing flow to the next tab using the listing's id.
-  const onCompleteEditListingProfileTab = (tab, listingValues) => {
-    const listingUpdate = isNewURI
-      ? onCreateListingDraft(listingValues, config)
-      : onUpdateListing(tab, { ...listingValues, id: currentListing.id }, config);
+  // The "About you" (PROFILE) tab is the first step. The display name (title) and the city
+  // (geolocation) save to the listing. Because it's first, in the new-listing flow it CREATES
+  // the draft (onCreateListingDraft); otherwise it updates the existing listing. The optional
+  // bio saves to the user's profile (onUpdateProfile), only when it changed (profileValues is
+  // null otherwise). The bio is saved first: if it fails, the listing is left alone and the
+  // form shows the error, so a retry can't create a second draft. On success it advances the
+  // new-listing flow to the next tab using the listing's id.
+  const onCompleteEditListingProfileTab = (tab, listingValues, profileValues) => {
+    const profileUpdate =
+      profileValues && onUpdateProfile ? onUpdateProfile(profileValues) : Promise.resolve(null);
 
-    return listingUpdate
+    return profileUpdate
+      .then(profileResponse => {
+        // onUpdateProfile resolves with the rejected action (carrying `error`) on failure.
+        if (profileResponse?.error) {
+          return null;
+        }
+        return isNewURI
+          ? onCreateListingDraft(listingValues, config)
+          : onUpdateListing(tab, { ...listingValues, id: currentListing.id }, config);
+      })
       .then(response => {
         const listingId = response?.data?.data?.id;
         if (isNewListingFlow && listingId) {
@@ -280,7 +293,11 @@ const EditListingWizardTab = props => {
           {...panelProps(PROFILE)}
           config={config}
           currentUser={currentUser}
-          onSubmit={values => onCompleteEditListingProfileTab(PROFILE, values)}
+          updateInProgress={updateInProgress || profileUpdateInProgress}
+          errors={{ ...errors, updateProfileError }}
+          onSubmit={(listingValues, profileValues) =>
+            onCompleteEditListingProfileTab(PROFILE, listingValues, profileValues)
+          }
         />
       );
     }

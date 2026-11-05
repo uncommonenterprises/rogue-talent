@@ -7,7 +7,7 @@ import { getModelCity, getOptionLabel } from '../../../util/modelProfile';
 
 import { Avatar, ExternalLink, RtIcon, UserDisplayName } from '../../../components';
 
-import { getWebsiteHref, getInstagramHref, getAverageRating } from './profileData';
+import { getWebsiteHref, getInstagramHref, getAverageRating, getProfileBio } from './profileData';
 
 import css from './ModelProfile.module.css';
 
@@ -91,12 +91,40 @@ export const ProfileHead = props => {
 };
 
 /**
+ * "About" section: the model's bio (the author's profile.bio, written in the wizard's "About
+ * you" step or on Profile settings). Plain text with line breaks kept; nothing is turned into
+ * a link, so contact details or handles in a bio never become one-click off-platform contact.
+ * Renders nothing when the bio is empty.
+ *
+ * @param {Object} props
+ * @param {Object} props.author the listing author (user entity)
+ * @returns {JSX.Element|null}
+ */
+export const ProfileAbout = props => {
+  const bio = getProfileBio(props.author);
+  return bio ? (
+    <Section id="profile-about" titleId="ListingPage.aboutTitle">
+      <p className={css.bio}>{bio}</p>
+    </Section>
+  ) : null;
+};
+
+/**
  * Model profile sections (B03): stats, rates, travel and notice, location, reviews and
  * "Checked before going live". Replaces the template's map, generic field list and "About the
- * listing author" (run-through finding 10; open question 7: no Contact button).
+ * listing author" (run-through finding 10; open question 7: no Contact button). The model's bio
+ * leads as an "About" section when there is one (tester F, F4).
  */
 const ProfileDetails = props => {
-  const { publicData = {}, price, config, modelName, reviews = [], fetchReviewsError } = props;
+  const {
+    publicData = {},
+    price,
+    config,
+    modelName,
+    author,
+    reviews = [],
+    fetchReviewsError,
+  } = props;
   const intl = useIntl();
   const opt = key =>
     publicData[key] != null ? getOptionLabel(intl, config, key, publicData[key]) : null;
@@ -151,6 +179,8 @@ const ProfileDetails = props => {
 
   return (
     <>
+      <ProfileAbout author={author} />
+
       <Section id="profile-stats" titleId="ListingPage.statsTitle">
         <h3 className={css.subTitle}>
           <FormattedMessage id="ListingPage.lookTitle" />

@@ -1,5 +1,5 @@
 import { getOptionLabel } from '../../../util/modelProfile';
-import { getWebsiteHref, getInstagramHref, getAverageRating } from './profileData';
+import { getWebsiteHref, getInstagramHref, getAverageRating, getProfileBio } from './profileData';
 
 describe('model profile data helpers', () => {
   const config = {
@@ -54,5 +54,13 @@ describe('model profile data helpers', () => {
     const r = rating => ({ attributes: { rating } });
     expect(getAverageRating([r(5), r(4)])).toEqual(4.5);
     expect(getAverageRating([])).toBeNull();
+  });
+
+  it('reads the trimmed bio from the author, or null when there is none', () => {
+    const author = bio => ({ attributes: { profile: { bio } } });
+    expect(getProfileBio(author('  Line one\nLine two  '))).toEqual('Line one\nLine two');
+    expect(getProfileBio(author('  '))).toBeNull();
+    expect(getProfileBio(author(null))).toBeNull();
+    expect(getProfileBio(null)).toBeNull();
   });
 });

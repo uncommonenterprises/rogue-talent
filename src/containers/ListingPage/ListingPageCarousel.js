@@ -242,6 +242,7 @@ export const ListingPageComponent = props => {
                 price={price}
                 config={config}
                 modelName={modelName}
+                author={ensuredAuthor}
                 reviews={reviews}
                 fetchReviewsError={fetchReviewsError}
               />

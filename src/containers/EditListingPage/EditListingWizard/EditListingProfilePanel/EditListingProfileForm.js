@@ -32,12 +32,29 @@ const identity = v => v;
 // stations or street addresses (run-through 01/11/2026, finding 4).
 const CITY_PLACE_TYPES = ['(cities)'];
 const DISPLAY_NAME_MAX_LENGTH = 60;
+// The optional bio ("About you" text) saved to the user's profile.bio. Sharetribe allows up to
+// 5000 characters; a few short lines read best on the profile page, so the wizard caps it here.
+export const BIO_MAX_LENGTH = 600;
+
+/**
+ * Validator for the optional bio: only the length is checked, and only once the model changes
+ * the text. A longer bio written earlier on Profile settings (which has no cap) never blocks
+ * this step while it is left as it is.
+ *
+ * @param {string} message error shown when the bio is too long
+ * @param {string} initialBio the bio the form was opened with
+ * @returns {Function} final-form field validator
+ */
+export const bioLengthValidator = (message, initialBio = '') => value =>
+  typeof value === 'string' && value.length > BIO_MAX_LENGTH && value !== initialBio
+    ? message
+    : undefined;
 
 const ErrorMessages = props => {
   const { fetchErrors } = props;
-  const { updateListingError, createListingDraftError } = fetchErrors || {};
+  const { updateListingError, createListingDraftError, updateProfileError } = fetchErrors || {};
 
-  return updateListingError || createListingDraftError ? (
+  return updateListingError || createListingDraftError || updateProfileError ? (
     <p className={css.error}>
       <FormattedMessage id="EditListingProfileForm.updateFailed" />
     </p>
@@ -82,10 +99,11 @@ const IconPin = () => (
 );
 
 /**
- * The EditListingProfileForm component. Renders the model's display name and a city-level
- * location autocomplete for the "About you" wizard step (sign-up journey screen 08). Both save
- * to the listing (title + geolocation). The model's attribute fields are collected on the next
- * step ("Your profile").
+ * The EditListingProfileForm component. Renders the model's display name, a city-level
+ * location autocomplete and an optional bio for the "About you" wizard step (sign-up journey
+ * screen 08). The name and city save to the listing (title + geolocation); the bio saves to the
+ * user's profile.bio (the same value Profile settings edits). The model's attribute fields are
+ * collected on the next step ("Your profile").
  *
  * @component
  * @param {Object} props
@@ -100,7 +118,7 @@ const IconPin = () => (
  * @param {Object} [props.backLinkProps] - NamedLink props for the wizard's "Back" link
  * @param {boolean} [props.updated] - Whether the form was just updated
  * @param {boolean} [props.updateInProgress] - Whether the save is in progress
- * @param {Object} [props.fetchErrors] - The fetch errors ({ updateListingError })
+ * @param {Object} [props.fetchErrors] - The fetch errors ({ updateListingError, updateProfileError })
  * @returns {JSX.Element}
  */
 export const EditListingProfileForm = props => (
@@ -124,6 +142,7 @@ export const EditListingProfileForm = props => (
         updateInProgress = false,
         fetchErrors,
         values,
+        initialValues,
       } = formRenderProps;
 
       const intl = useIntl();
@@ -145,6 +164,12 @@ export const EditListingProfileForm = props => (
         { id: 'EditListingProfileForm.displayNameTooLong' },
         { maxLength: DISPLAY_NAME_MAX_LENGTH }
       );
+      const bioTooLongMessage = intl.formatMessage(
+        { id: 'EditListingProfileForm.bioTooLong' },
+        { maxLength: BIO_MAX_LENGTH }
+      );
+      const bioLength = (values.bio || '').length;
+      const bioHintId = `${formId}.bioHint`;
 
       return (
         <Form className={classes} onSubmit={handleSubmit}>
@@ -197,6 +222,29 @@ export const EditListingProfileForm = props => (
             <p className={css.hint}>
               <FormattedMessage id="EditListingProfileForm.cityHint" />
             </p>
+          </div>
+
+          <div className={css.field}>
+            <FieldTextInput
+              id={`${formId}.bio`}
+              name="bio"
+              type="textarea"
+              label={intl.formatMessage({ id: 'EditListingProfileForm.bioLabel' })}
+              maxLength={BIO_MAX_LENGTH}
+              aria-describedby={bioHintId}
+              validate={bioLengthValidator(bioTooLongMessage, initialValues?.bio)}
+            />
+            <div id={bioHintId} className={css.hintRow}>
+              <p className={css.hint}>
+                <FormattedMessage id="EditListingProfileForm.bioHint" />
+              </p>
+              <p className={css.counter}>
+                <FormattedMessage
+                  id="EditListingProfileForm.bioCounter"
+                  values={{ count: bioLength, maxLength: BIO_MAX_LENGTH }}
+                />
+              </p>
+            </div>
           </div>
 
           <WizardActions backLinkProps={backLinkProps}>
