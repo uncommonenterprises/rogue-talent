@@ -6,11 +6,15 @@
 
 // Import configs and util modules
 import { LISTING_STATE_DRAFT } from '../../util/types';
-import { LISTING_PAGE_PARAM_TYPE_DRAFT, createSlug } from '../../util/urlHelpers';
+import {
+  LISTING_PAGE_PARAM_TYPE_DRAFT,
+  LISTING_PAGE_PARAM_TYPE_EDIT,
+  createSlug,
+} from '../../util/urlHelpers';
 import { isAccountStatusFlowEnabled } from '../../util/accountStatus';
 
 // Import modules from this directory
-import { getResumeTab } from './EditListingWizard/wizardSteps';
+import { PROFILE, getResumeTab } from './EditListingWizard/wizardSteps';
 
 /**
  * Route (NamedLink / NamedRedirect props) for a model's profile:
@@ -50,4 +54,34 @@ export const getModelProfileRoute = ({
   }
 
   return { name: flagEnabled ? 'AccountStatusPage' : 'ManageListingsPage' };
+};
+
+/**
+ * Route for a model's "Edit profile" links (tester feedback F5, part C: models have no Profile
+ * settings page). Goes to the wizard's "About you" step, where the display name, city and bio
+ * are edited:
+ * - no listing: the new-profile flow (which starts on "About you");
+ * - a draft: that draft's "About you" step;
+ * - submitted (pending approval, published or closed): the edit wizard's "About you" step.
+ *
+ * @param {Object} params
+ * @param {Object} [params.profileListing] the model's own listing, or null
+ * @returns {{ name: string, params?: Object }}
+ */
+export const getModelEditProfileRoute = ({ profileListing } = {}) => {
+  const id = profileListing?.id?.uuid;
+  if (!id) {
+    return { name: 'NewListingPage' };
+  }
+  const isDraft = profileListing.attributes?.state === LISTING_STATE_DRAFT;
+  const slug = createSlug(profileListing.attributes?.title || '') || 'draft';
+  return {
+    name: 'EditListingPage',
+    params: {
+      id,
+      slug,
+      type: isDraft ? LISTING_PAGE_PARAM_TYPE_DRAFT : LISTING_PAGE_PARAM_TYPE_EDIT,
+      tab: PROFILE,
+    },
+  };
 };

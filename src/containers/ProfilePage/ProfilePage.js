@@ -28,6 +28,7 @@ import {
   isUserAuthorized,
 } from '../../util/userHelpers';
 import { richText } from '../../util/richText';
+import { isModelUser } from '../../util/accountStatus';
 
 import { isScrollingDisabled } from '../../ducks/ui.duck';
 import { getMarketplaceEntities } from '../../ducks/marketplaceData.duck';
@@ -49,6 +50,7 @@ import {
 import TopbarContainer from '../../containers/TopbarContainer/TopbarContainer';
 import FooterContainer from '../../containers/FooterContainer/FooterContainer';
 import NotFoundPage from '../../containers/NotFoundPage/NotFoundPage';
+import { getModelEditProfileRoute } from '../EditListingPage/modelProfileRoute';
 
 import css from './ProfilePage.module.css';
 
@@ -56,7 +58,12 @@ const MAX_MOBILE_SCREEN_WIDTH = 768;
 const MIN_LENGTH_FOR_LONG_WORDS = 20;
 
 export const AsideContent = props => {
-  const { user, displayName, showLinkToProfileSettingsPage } = props;
+  const {
+    user,
+    displayName,
+    showLinkToProfileSettingsPage,
+    editProfileLinkProps = { name: 'ProfileSettingsPage' },
+  } = props;
   return (
     <div className={css.asideContent}>
       <AvatarLarge className={css.avatar} user={user} disableProfileLink />
@@ -67,10 +74,10 @@ export const AsideContent = props => {
       </H2>
       {showLinkToProfileSettingsPage ? (
         <>
-          <NamedLink className={css.editLinkMobile} name="ProfileSettingsPage">
+          <NamedLink className={css.editLinkMobile} {...editProfileLinkProps}>
             <FormattedMessage id="ProfilePage.editProfileLinkMobile" />
           </NamedLink>
-          <NamedLink className={css.editLinkDesktop} name="ProfileSettingsPage">
+          <NamedLink className={css.editLinkDesktop} {...editProfileLinkProps}>
             <FormattedMessage id="ProfilePage.editProfileLinkDesktop" />
           </NamedLink>
         </>
@@ -365,6 +372,7 @@ export const ProfilePageComponent = props => {
     scrollingDisabled,
     params: pathParams,
     currentUser,
+    currentUserProfileListing,
     useCurrentUser,
     userShowError,
     user,
@@ -397,6 +405,11 @@ export const ProfilePageComponent = props => {
   const hasNoViewingRightsOnPrivateMarketplace = isPrivateMarketplace && hasNoViewingRightsUser;
 
   const userTypeRoles = getCurrentUserTypeRoles(config, profileUser);
+  // Tester F F5 part C: a model's own "Edit profile" goes to the "Your profile" wizard, not to
+  // Profile settings (models don't have it). Clients keep Profile settings.
+  const editProfileLinkProps = isModelUser(currentUser)
+    ? getModelEditProfileRoute({ profileListing: currentUserProfileListing })
+    : { name: 'ProfileSettingsPage' };
 
   const isDataLoaded = isPreview
     ? currentUser != null || userShowError != null
@@ -471,6 +484,7 @@ export const ProfilePageComponent = props => {
           <AsideContent
             user={profileUser}
             showLinkToProfileSettingsPage={mounted && isCurrentUser}
+            editProfileLinkProps={editProfileLinkProps}
             displayName={displayName}
           />
         }
@@ -494,7 +508,7 @@ export const ProfilePageComponent = props => {
 };
 
 const mapStateToProps = state => {
-  const { currentUser } = state.user;
+  const { currentUser, currentUserProfileListing } = state.user;
   const {
     userId,
     userShowError,
@@ -514,6 +528,7 @@ const mapStateToProps = state => {
   return {
     scrollingDisabled: isScrollingDisabled(state),
     currentUser,
+    currentUserProfileListing,
     useCurrentUser,
     user,
     userShowError,

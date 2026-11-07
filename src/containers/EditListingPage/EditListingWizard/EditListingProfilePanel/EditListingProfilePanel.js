@@ -3,6 +3,7 @@ import classNames from 'classnames';
 
 // Import configs and util modules
 import { FormattedMessage, useIntl } from '../../../../util/reactIntl';
+import { isModelUser } from '../../../../util/accountStatus';
 
 // Import modules from parent directory
 import { defaultAvailabilityPlanMaybe } from '../EditListingAvailabilityPanel/availability.helpers';
@@ -80,6 +81,47 @@ export const getProfileBioUpdate = (bio, currentUser) => {
 };
 
 /**
+ * The user-profile update for the display name, or null when nothing changed (tester feedback
+ * F5, part C). A model's user display name (profile.displayName - what the inbox and messages
+ * show) is kept in sync with their profile display name (the listing title set on this step), so
+ * models have one name to manage. Only for models, and never with an empty name (the form
+ * requires one; an empty displayName would make Sharetribe reset it to "First L.").
+ *
+ * Existing models whose two names differ are synced the next time they save this step.
+ *
+ * @param {string} title the display name as typed in the form
+ * @param {Object} currentUser
+ * @returns {Object|null} { displayName } for updateProfile, or null to skip it
+ */
+export const getProfileDisplayNameUpdate = (title, currentUser) => {
+  if (!isModelUser(currentUser)) {
+    return null;
+  }
+  const nextDisplayName = (title || '').trim();
+  const savedDisplayName = currentUser?.attributes?.profile?.displayName || '';
+  return !nextDisplayName || nextDisplayName === savedDisplayName
+    ? null
+    : { displayName: nextDisplayName };
+};
+
+/**
+ * Everything the "About you" step saves to the user's profile: the bio and the synced display
+ * name, each only when it changed. Null when neither changed, so the step skips the profile
+ * save altogether.
+ *
+ * @param {Object} values { title, bio } as typed in the form
+ * @param {Object} currentUser
+ * @returns {Object|null} e.g. { bio, displayName } for updateProfile, or null
+ */
+export const getProfileUpdate = ({ title, bio }, currentUser) => {
+  const update = {
+    ...getProfileBioUpdate(bio, currentUser),
+    ...getProfileDisplayNameUpdate(title, currentUser),
+  };
+  return Object.keys(update).length > 0 ? update : null;
+};
+
+/**
  * Initial values for the "About you" form: the saved display name (listing title), or the
  * "First L." default when the listing has no title yet, the saved city and the saved bio.
  *
@@ -133,9 +175,11 @@ export const getProfileListingValues = ({ title, address, origin }, listing, con
  * the model's display name, the city they're based in and an optional bio. The display name
  * becomes the listing title (and creates the draft in the new-listing flow); the city becomes
  * the listing geolocation (powering location search); the bio is saved to the user's
- * profile.bio. The model's attribute fields live on the next step ("Your profile"). The parent
- * persists both via onSubmit(listingValues, profileValues); profileValues is null when the bio
- * is unchanged. The bio is optional, so it plays no part in the step's completion check.
+ * profile.bio, and the display name is also copied to the user's profile.displayName so the
+ * inbox shows the same name (F5 part C). The model's attribute fields live on the next step
+ * ("Your profile"). The parent persists both via onSubmit(listingValues, profileValues);
+ * profileValues is null when neither the bio nor the synced display name changed. The bio is
+ * optional, so it plays no part in the step's completion check.
  *
  * @component
  * @param {Object} props
@@ -220,7 +264,7 @@ const EditListingProfilePanel = props => {
             },
           });
 
-          onSubmit(listingValues, getProfileBioUpdate(bio, currentUser));
+          onSubmit(listingValues, getProfileUpdate({ title, bio }, currentUser));
         }}
       />
     </main>

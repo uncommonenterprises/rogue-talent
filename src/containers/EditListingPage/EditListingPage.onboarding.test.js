@@ -14,7 +14,7 @@ import { createCurrentUser, createImage, createOwnListing } from '../../util/tes
 import { renderWithProviders as render, testingLibrary } from '../../util/testHelpers';
 
 import { EditListingPageComponent } from './EditListingPage';
-import { PHOTOS, REVIEW } from './EditListingWizard/EditListingWizardTab';
+import { PHOTOS, PROFILE, REVIEW } from './EditListingWizard/EditListingWizardTab';
 
 const { screen, userEvent, waitFor } = testingLibrary;
 const { Money, LatLng } = sdkTypes;
@@ -268,5 +268,76 @@ describe('EditListingPage model onboarding (sign-up journey stage 2)', () => {
     expect(screen.getByText('EditListingWizard.tabLabelAvailability')).toBeInTheDocument();
     expect(screen.queryByText('EditListingWizard.tabLabelReview')).not.toBeInTheDocument();
     expect(screen.queryByText('EditListingWizard.shell.saveAndExit')).not.toBeInTheDocument();
+  });
+});
+
+// Tester F, F5 part C: saving "About you" also copies the display name to the model's user
+// profile (profile.displayName, shown in the inbox). The profile saves first and the listing only
+// after it succeeds, so a failed profile save can never leave a half-saved step (or, in the new
+// flow, a second draft on retry).
+describe('EditListingPage "About you" display-name sync (F5 part C)', () => {
+  const modelUser = () =>
+    createCurrentUser('model-user', {
+      profile: {
+        firstName: 'Jane',
+        lastName: 'Doe',
+        displayName: 'Jane D.',
+        bio: '',
+        publicData: { userType: 'model' },
+      },
+    });
+
+  beforeEach(() => {
+    window.scrollTo = jest.fn();
+  });
+
+  const renameAndSave = async props => {
+    const user = userEvent.setup();
+    render(<EditListingPageComponent {...props} />);
+    const nameInput = await screen.findByLabelText(/EditListingProfileForm.displayNameLabel/);
+    await user.clear(nameInput);
+    await user.type(nameInput, 'Janey');
+    await user.click(screen.getByRole('button', { name: /saveProfile/ }));
+  };
+
+  it('saves the new display name to the user first, then the listing', async () => {
+    const listing = completeDraft();
+    const onUpdateProfile = jest.fn(() => Promise.resolve({ payload: {} }));
+    const onUpdateListing = jest.fn(() => Promise.resolve({ data: { data: listing } }));
+    await renameAndSave(
+      pageProps({
+        listing,
+        tab: PROFILE,
+        currentUser: modelUser(),
+        onUpdateProfile,
+        onUpdateListing,
+      })
+    );
+
+    await waitFor(() => expect(onUpdateListing).toHaveBeenCalledTimes(1));
+    expect(onUpdateProfile).toHaveBeenCalledTimes(1);
+    expect(onUpdateProfile).toHaveBeenCalledWith({ displayName: 'Janey' });
+    expect(onUpdateListing.mock.calls[0][1].title).toEqual('Janey');
+    expect(onUpdateProfile.mock.invocationCallOrder[0]).toBeLessThan(
+      onUpdateListing.mock.invocationCallOrder[0]
+    );
+  });
+
+  it('leaves the listing alone when the profile save fails', async () => {
+    const listing = completeDraft();
+    const onUpdateProfile = jest.fn(() => Promise.resolve({ error: { message: 'failed' } }));
+    const onUpdateListing = jest.fn(() => Promise.resolve({ data: { data: listing } }));
+    await renameAndSave(
+      pageProps({
+        listing,
+        tab: PROFILE,
+        currentUser: modelUser(),
+        onUpdateProfile,
+        onUpdateListing,
+      })
+    );
+
+    await waitFor(() => expect(onUpdateProfile).toHaveBeenCalledTimes(1));
+    expect(onUpdateListing).not.toHaveBeenCalled();
   });
 });

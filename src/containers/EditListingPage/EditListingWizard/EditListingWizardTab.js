@@ -219,9 +219,12 @@ const EditListingWizardTab = props => {
   // The "About you" (PROFILE) tab is the first step. The display name (title) and the city
   // (geolocation) save to the listing. Because it's first, in the new-listing flow it CREATES
   // the draft (onCreateListingDraft); otherwise it updates the existing listing. The optional
-  // bio saves to the user's profile (onUpdateProfile), only when it changed (profileValues is
-  // null otherwise). The bio is saved first: if it fails, the listing is left alone and the
-  // form shows the error, so a retry can't create a second draft. On success it advances the
+  // bio, and for models the display name copied to the user's profile.displayName (F5 part C,
+  // so the inbox shows the same name), save to the user's profile (onUpdateProfile), only when
+  // they changed (profileValues is null otherwise). The profile is saved first: if it fails,
+  // the listing is left alone and the form shows the error, so a retry can't create a second
+  // draft. If the profile saves but the listing doesn't, the retry sees the profile already up
+  // to date (profileValues is null) and only saves the listing. On success it advances the
   // new-listing flow to the next tab using the listing's id.
   const onCompleteEditListingProfileTab = (tab, listingValues, profileValues) => {
     const profileUpdate =

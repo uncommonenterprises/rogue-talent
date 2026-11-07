@@ -8,6 +8,7 @@ import { useConfiguration } from '../../context/configurationContext';
 import { FormattedMessage, useIntl } from '../../util/reactIntl';
 import { pathByRouteName } from '../../util/routes';
 import { hasPermissionToPostListings, showCreateListingLinkForUser } from '../../util/userHelpers';
+import { showProfileSettingsForUser } from '../../util/settingsPages';
 import { NO_ACCESS_PAGE_POST_LISTINGS } from '../../util/urlHelpers';
 import { propTypes } from '../../util/types';
 import { isErrorNoPermissionToPostListings } from '../../util/errors';
@@ -213,6 +214,7 @@ export const ManageListingsPageComponent = props => {
             <UserNav
               currentPage="ManageListingsPage"
               showManageListingsLink={showManageListingsLink}
+              showProfileSettingsLink={showProfileSettingsForUser(currentUser)}
             />
           </>
         }

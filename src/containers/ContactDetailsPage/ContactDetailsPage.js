@@ -7,7 +7,9 @@ import { useConfiguration } from '../../context/configurationContext';
 import { FormattedMessage, useIntl } from '../../util/reactIntl';
 import { propTypes } from '../../util/types';
 import { ensureCurrentUser } from '../../util/data';
+import { isModelUser } from '../../util/accountStatus';
 import { showCreateListingLinkForUser, showPaymentDetailsForUser } from '../../util/userHelpers';
+import { showProfileSettingsForUser, showSafetySettingsForUser } from '../../util/settingsPages';
 
 import { sendVerificationEmail } from '../../ducks/user.duck';
 import { isScrollingDisabled } from '../../ducks/ui.duck';
@@ -18,10 +20,12 @@ import TopbarContainer from '../../containers/TopbarContainer/TopbarContainer';
 import FooterContainer from '../../containers/FooterContainer/FooterContainer';
 
 import ContactDetailsForm from './ContactDetailsForm/ContactDetailsForm';
+import ContactNameForm from './ContactNameForm/ContactNameForm';
 
 import {
   saveContactDetails,
   saveContactDetailsClear,
+  saveName,
   resetPassword,
 } from './ContactDetailsPage.duck';
 import css from './ContactDetailsPage.module.css';
@@ -42,6 +46,10 @@ import css from './ContactDetailsPage.module.css';
  * @param {Function} props.onResetPassword - The reset password function
  * @param {boolean} [props.resetPasswordInProgress] - Whether the reset password is in progress
  * @param {propTypes.error} [props.resetPasswordError] - The reset password error
+ * @param {Function} [props.onSaveName] - Saves a model's { firstName, lastName }
+ * @param {boolean} [props.saveNameInProgress] - Whether the name save is in progress
+ * @param {propTypes.error} [props.saveNameError] - The name save error
+ * @param {boolean} [props.nameChanged] - Whether the last name save succeeded
  * @returns {JSX.Element}
  */
 export const ContactDetailsPageComponent = props => {
@@ -62,6 +70,10 @@ export const ContactDetailsPageComponent = props => {
     onResetPassword,
     resetPasswordInProgress = false,
     resetPasswordError,
+    onSaveName,
+    saveNameInProgress = false,
+    saveNameError,
+    nameChanged = false,
   } = props;
   const { userTypes = [] } = config.user;
 
@@ -81,6 +93,24 @@ export const ContactDetailsPageComponent = props => {
     const phoneNumber = values.phoneNumber ? values.phoneNumber : null;
     return onSubmitContactDetails({ ...values, phoneNumber, currentEmail, currentPhoneNumber });
   };
+
+  // Tester F F5 part C: models have no Profile settings page, so their name is edited here.
+  // Clients keep editing theirs on Profile settings.
+  const { firstName = '', lastName = '' } = user.attributes.profile;
+  const handleSaveName = values =>
+    onSaveName({ firstName: values.firstName.trim(), lastName: values.lastName.trim() }).catch(
+      () => null
+    );
+  const nameForm =
+    user.id && isModelUser(user) ? (
+      <ContactNameForm
+        initialValues={{ firstName, lastName }}
+        onSubmit={handleSaveName}
+        inProgress={saveNameInProgress}
+        ready={nameChanged}
+        saveError={saveNameError}
+      />
+    ) : null;
 
   const contactInfoForm = user.id ? (
     <ContactDetailsForm
@@ -111,6 +141,7 @@ export const ContactDetailsPageComponent = props => {
     currentPage: 'ContactDetailsPage',
     showPaymentMethods,
     showPayoutDetails,
+    showSafety: showSafetySettingsForUser(currentUser),
   };
 
   return (
@@ -125,6 +156,7 @@ export const ContactDetailsPageComponent = props => {
             <UserNav
               currentPage="ContactDetailsPage"
               showManageListingsLink={showManageListingsLink}
+              showProfileSettingsLink={showProfileSettingsForUser(currentUser)}
             />
           </>
         }
@@ -138,6 +170,7 @@ export const ContactDetailsPageComponent = props => {
           <H3 as="h1">
             <FormattedMessage id="ContactDetailsPage.heading" />
           </H3>
+          {nameForm}
           {contactInfoForm}
         </div>
       </LayoutSideNavigation>
@@ -155,6 +188,9 @@ const mapStateToProps = state => {
     contactDetailsChanged,
     resetPasswordInProgress,
     resetPasswordError,
+    saveNameInProgress,
+    saveNameError,
+    nameChanged,
   } = state.ContactDetailsPage;
   return {
     saveEmailError,
@@ -167,6 +203,9 @@ const mapStateToProps = state => {
     sendVerificationEmailError,
     resetPasswordInProgress,
     resetPasswordError,
+    saveNameInProgress,
+    saveNameError,
+    nameChanged,
   };
 };
 
@@ -175,6 +214,7 @@ const mapDispatchToProps = dispatch => ({
   onResendVerificationEmail: () => dispatch(sendVerificationEmail()),
   onSubmitContactDetails: values => dispatch(saveContactDetails(values)),
   onResetPassword: values => dispatch(resetPassword(values)),
+  onSaveName: values => dispatch(saveName(values)),
 });
 
 const ContactDetailsPage = compose(

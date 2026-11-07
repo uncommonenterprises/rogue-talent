@@ -16,7 +16,7 @@ import {
   REVIEW,
   getResumeTab,
 } from './EditListingWizard/wizardSteps';
-import { getModelProfileRoute } from './modelProfileRoute';
+import { getModelEditProfileRoute, getModelProfileRoute } from './modelProfileRoute';
 
 const { Money } = sdkTypes;
 
@@ -152,5 +152,30 @@ describe('getModelProfileRoute: where "my profile" is for a model (run-through f
     expect(getModelProfileRoute({ profileListing, config, flagEnabled: true }).name).toEqual(
       'AccountStatusPage'
     );
+  });
+});
+
+describe('getModelEditProfileRoute: a model\'s "Edit profile" links (F5 part C)', () => {
+  it('no listing: the new-profile flow, which starts on "About you"', () => {
+    expect(getModelEditProfileRoute({ profileListing: null })).toEqual({ name: 'NewListingPage' });
+    expect(getModelEditProfileRoute()).toEqual({ name: 'NewListingPage' });
+  });
+
+  it('draft: the draft\'s "About you" step', () => {
+    expect(getModelEditProfileRoute({ profileListing: draft(profileDone) })).toEqual({
+      name: 'EditListingPage',
+      params: { id: 'draft-1', slug: 'ava-c', type: 'draft', tab: PROFILE },
+    });
+  });
+
+  it('submitted or live: the edit wizard\'s "About you" step, never Profile settings', () => {
+    const profileListing = createOwnListing('l1', {
+      state: LISTING_STATE_PUBLISHED,
+      title: 'Ava C',
+    });
+    expect(getModelEditProfileRoute({ profileListing })).toEqual({
+      name: 'EditListingPage',
+      params: { id: 'l1', slug: 'ava-c', type: 'edit', tab: PROFILE },
+    });
   });
 });

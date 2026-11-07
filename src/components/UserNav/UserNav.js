@@ -14,10 +14,19 @@ import css from './UserNav.module.css';
  * @param {string} [props.className] - Custom class that extends the default class for the root element
  * @param {string} [props.rootClassName] - Custom class that overrides the default class for the root element
  * @param {string} props.currentPage - The current page (e.g. 'ManageListingsPage')
+ * @param {boolean} [props.showManageListingsLink] - Whether to show the "Your listings" tab
+ * @param {boolean} [props.showProfileSettingsLink] - Whether to show the "Profile settings" tab.
+ *   Models don't have Profile settings (tester feedback F5, part C); see util/settingsPages.js.
  * @returns {JSX.Element} User navigation component
  */
 const UserNav = props => {
-  const { className, rootClassName, currentPage, showManageListingsLink } = props;
+  const {
+    className,
+    rootClassName,
+    currentPage,
+    showManageListingsLink,
+    showProfileSettingsLink = true,
+  } = props;
   const intl = useIntl();
   const classes = classNames(rootClassName || css.root, className);
 
@@ -33,16 +42,22 @@ const UserNav = props => {
       ]
     : [];
 
+  const profileSettingsTabMaybe = showProfileSettingsLink
+    ? [
+        {
+          text: <FormattedMessage id="UserNav.profileSettings" />,
+          selected: currentPage === 'ProfileSettingsPage',
+          disabled: false,
+          linkProps: {
+            name: 'ProfileSettingsPage',
+          },
+        },
+      ]
+    : [];
+
   const tabs = [
     ...manageListingsTabMaybe,
-    {
-      text: <FormattedMessage id="UserNav.profileSettings" />,
-      selected: currentPage === 'ProfileSettingsPage',
-      disabled: false,
-      linkProps: {
-        name: 'ProfileSettingsPage',
-      },
-    },
+    ...profileSettingsTabMaybe,
     {
       text: <FormattedMessage id="UserNav.accountSettings" />,
       selected: ACCOUNT_SETTINGS_PAGES.includes(currentPage),

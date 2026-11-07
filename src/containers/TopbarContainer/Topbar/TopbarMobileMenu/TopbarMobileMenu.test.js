@@ -102,4 +102,22 @@ describe('TopbarMobileMenu for a logged-in model', () => {
       screen.queryByRole('link', { name: 'TopbarMobileMenu.accountStatusLink' })
     ).not.toBeInTheDocument();
   });
+
+  // Tester F F5 part C: Topbar passes showProfileSettingsLink={false} for models.
+  it('hides "Profile settings" when told to (models), but keeps "Account settings"', () => {
+    const primaryLink = primaryActionLink({ profileListing: pending(), config });
+    const { unmount } = renderMenu({ primaryLink, showProfileSettingsLink: false });
+    expect(
+      screen.queryByRole('link', { name: 'TopbarMobileMenu.profileSettingsLink' })
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByRole('link', { name: 'TopbarMobileMenu.accountSettingsLink' })
+    ).toBeInTheDocument();
+    unmount();
+
+    renderMenu({ primaryLink, showProfileSettingsLink: true });
+    expect(
+      screen.getByRole('link', { name: 'TopbarMobileMenu.profileSettingsLink' })
+    ).toBeInTheDocument();
+  });
 });

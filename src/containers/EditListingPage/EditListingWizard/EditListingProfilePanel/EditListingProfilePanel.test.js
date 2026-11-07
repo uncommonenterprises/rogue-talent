@@ -4,7 +4,9 @@ import {
   defaultDisplayName,
   getInitialValues,
   getProfileBioUpdate,
+  getProfileDisplayNameUpdate,
   getProfileListingValues,
+  getProfileUpdate,
 } from './EditListingProfilePanel';
 import { BIO_MAX_LENGTH, bioLengthValidator } from './EditListingProfileForm';
 
@@ -134,5 +136,58 @@ describe('EditListingProfilePanel optional bio (tester F, F4)', () => {
     expect(bioLengthValidator('too long', long)(long)).toBeUndefined();
     expect(bioLengthValidator('too long', long)(`${long}b`)).toEqual('too long');
     expect(bioLengthValidator('too long')(undefined)).toBeUndefined();
+  });
+});
+
+describe('EditListingProfilePanel display name kept in sync with the user (tester F, F5 part C)', () => {
+  const userOf = (userType, profile = {}) => ({
+    attributes: {
+      profile: {
+        firstName: 'Jane',
+        lastName: 'Doe',
+        displayName: 'Jane D.',
+        bio: 'Hello',
+        publicData: { userType },
+        ...profile,
+      },
+    },
+  });
+
+  it("copies a changed display name to the model's user profile, trimmed", () => {
+    expect(getProfileDisplayNameUpdate('  Janey  ', userOf('model'))).toEqual({
+      displayName: 'Janey',
+    });
+  });
+
+  it('skips the save when the names already match (so a retry never saves twice)', () => {
+    expect(getProfileDisplayNameUpdate('Jane D.', userOf('model'))).toBeNull();
+    expect(getProfileDisplayNameUpdate(' Jane D. ', userOf('model'))).toBeNull();
+  });
+
+  it('syncs an existing model whose two names differ on their next save', () => {
+    const existing = userOf('model', { displayName: 'Jane D.' });
+    expect(getProfileDisplayNameUpdate('Jane Doe Models', existing)).toEqual({
+      displayName: 'Jane Doe Models',
+    });
+  });
+
+  it('never sends an empty name, and never touches non-models', () => {
+    expect(getProfileDisplayNameUpdate('   ', userOf('model'))).toBeNull();
+    expect(getProfileDisplayNameUpdate(undefined, userOf('model'))).toBeNull();
+    expect(getProfileDisplayNameUpdate('Janey', userOf('client'))).toBeNull();
+    expect(getProfileDisplayNameUpdate('Janey', null)).toBeNull();
+  });
+
+  it('combines the bio and display name into one profile save, or none', () => {
+    const model = userOf('model');
+    expect(getProfileUpdate({ title: 'Jane D.', bio: 'Hello' }, model)).toBeNull();
+    expect(getProfileUpdate({ title: 'Janey', bio: 'Hello' }, model)).toEqual({
+      displayName: 'Janey',
+    });
+    expect(getProfileUpdate({ title: 'Jane D.', bio: 'New' }, model)).toEqual({ bio: 'New' });
+    expect(getProfileUpdate({ title: 'Janey', bio: 'New' }, model)).toEqual({
+      bio: 'New',
+      displayName: 'Janey',
+    });
   });
 });

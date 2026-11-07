@@ -40,6 +40,7 @@ const PrivacyPolicyPage = loadable(() => import(/* webpackChunkName: "PrivacyPol
 const ProfilePage = loadable(() => import(/* webpackChunkName: "ProfilePage" */ '../containers/ProfilePage/ProfilePage'));
 const ProfileSettingsPage = loadable(() => import(/* webpackChunkName: "ProfileSettingsPage" */ '../containers/ProfileSettingsPage/ProfileSettingsPage'));
 const RequestQuotePage = loadable(() => import(/* webpackChunkName: "RequestQuotePage" */ '../containers/RequestQuotePage/RequestQuotePage'));
+const SafetySettingsPage = loadable(() => import(/* webpackChunkName: "SafetySettingsPage" */ '../containers/SafetySettingsPage/SafetySettingsPage'));
 const SafetyReportPage = loadable(() => import(/* webpackChunkName: "SafetyReportPage" */ '../containers/SafetyReportPage/SafetyReportPage'));
 const SearchPageWithMap = loadable(() => import(/* webpackChunkName: "SearchPageWithMap" */ /* webpackPrefetch: true */  '../containers/SearchPage/SearchPageWithMap'));
 const SearchPageWithGrid = loadable(() => import(/* webpackChunkName: "SearchPageWithGrid" */ /* webpackPrefetch: true */  '../containers/SearchPage/SearchPageWithGrid'));
@@ -56,6 +57,7 @@ export const ACCOUNT_SETTINGS_PAGES = [
   'PasswordChangePage',
   'StripePayoutPage',
   'PaymentMethodsPage',
+  'SafetySettingsPage',
   'ManageAccountPage'
 ];
 
@@ -414,6 +416,16 @@ const routeConfiguration = (layoutConfig, accessControlConfig) => {
       prioritizeLibraryLoading: {
         stripe: true,
       },
+    },
+    {
+      // Tester F F5 part C: models' SAF-13 private-residence boundary (models only; the page
+      // sends anyone else to Contact details).
+      path: '/account/safety',
+      name: 'SafetySettingsPage',
+      auth: true,
+      authPage: 'LoginPage',
+      component: SafetySettingsPage,
+      loadData: pageDataLoadingAPI.SafetySettingsPage.loadData,
     },
     {
       path: '/account/manage',
