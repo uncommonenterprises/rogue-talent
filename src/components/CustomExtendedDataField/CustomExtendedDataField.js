@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 // Import config and utils
 import { useIntl } from '../../util/reactIntl';
@@ -17,6 +17,15 @@ import {
   validateInteger,
   validateYoutubeURL,
 } from '../../util/validators';
+import {
+  UNIT_IN,
+  formatCmAsInches,
+  maxInchesForCm,
+  minInchesForCm,
+  parseInchesToCm,
+  swapLabelUnit,
+  swapUnitWord,
+} from '../../util/lengthUnits';
 // Import shared components
 import {
   FieldCheckboxGroup,
@@ -262,16 +271,39 @@ const CustomFieldText = props => {
   );
 };
 
+// Field config with the visible unit swapped from centimetres to inches: "Waist (cm)" ->
+// "Waist (in)", and "centimetres" -> "inches" in the help text. Console is unchanged.
+const withInchesWording = (fieldConfig, intl) => {
+  const { label, helpText, saveConfig } = fieldConfig || {};
+  const centimetres = intl.formatMessage({ id: 'CustomExtendedDataField.unitCentimetres' });
+  const inches = intl.formatMessage({ id: 'CustomExtendedDataField.unitInches' });
+  const saveConfigMaybe = saveConfig
+    ? { saveConfig: { ...saveConfig, label: swapLabelUnit(saveConfig.label, UNIT_IN) } }
+    : {};
+  return {
+    ...fieldConfig,
+    label: swapLabelUnit(label, UNIT_IN),
+    helpText: swapUnitWord(helpText, centimetres, inches),
+    ...saveConfigMaybe,
+  };
+};
+
 const CustomFieldLong = props => {
   const {
     name,
-    fieldConfig,
+    fieldConfig: fieldConfigRaw,
     defaultRequiredMessage,
     formId,
     intl,
     fieldClassName,
     hintBelowInput,
+    displayInInches = false,
   } = props;
+  // In inches mode the input shows inches but the form value stays whole centimetres, so what
+  // is saved (and searched on) never changes. `inchesDraft` keeps exactly what was typed (e.g.
+  // "32.5") so the input doesn't jump to the re-converted value while the user is typing.
+  const [inchesDraft, setInchesDraft] = useState(null);
+  const fieldConfig = displayInInches ? withInchesWording(fieldConfigRaw, intl) : fieldConfigRaw;
   const { minimum, maximum, saveConfig } = fieldConfig;
   const { placeholderMessage, isRequired, requiredMessage } = saveConfig || {};
   const label = getLabel(fieldConfig, intl);
@@ -279,21 +311,24 @@ const CustomFieldLong = props => {
     placeholderMessage || intl.formatMessage({ id: 'CustomExtendedDataField.placeholderLong' });
   // Plain-English min/max messages. If the label ends in a unit we can name, e.g. "(cm)",
   // the message mentions it ("too small for centimetres"). The limits themselves come from
-  // Console; nothing here suggests a typical range.
+  // Console; nothing here suggests a typical range. In inches mode the limits are still checked
+  // in cm, but the message gives them in inches ("the lowest we accept is 16").
   const unitNameMessageId = getUnitNameMessageId(saveConfig?.label || fieldConfig?.label);
   const unit = unitNameMessageId ? intl.formatMessage({ id: unitNameMessageId }) : null;
+  const minShown = displayInInches ? minInchesForCm(minimum) : minimum;
+  const maxShown = displayInInches ? maxInchesForCm(maximum) : maximum;
   const numberTooSmallMessage = unit
     ? intl.formatMessage(
         { id: 'CustomExtendedDataField.numberTooSmallWithUnit' },
-        { min: minimum, unit }
+        { min: minShown, unit }
       )
-    : intl.formatMessage({ id: 'CustomExtendedDataField.numberTooSmall' }, { min: minimum });
+    : intl.formatMessage({ id: 'CustomExtendedDataField.numberTooSmall' }, { min: minShown });
   const numberTooBigMessage = unit
     ? intl.formatMessage(
         { id: 'CustomExtendedDataField.numberTooBigWithUnit' },
-        { max: maximum, unit }
+        { max: maxShown, unit }
       )
-    : intl.formatMessage({ id: 'CustomExtendedDataField.numberTooBig' }, { max: maximum });
+    : intl.formatMessage({ id: 'CustomExtendedDataField.numberTooBig' }, { max: maxShown });
 
   // Field with schema type 'long' will always be validated against min & max
   const validate = (value, min, max) => {
@@ -303,19 +338,38 @@ const CustomFieldLong = props => {
       : validateInteger(value, max, min, numberTooSmallMessage, numberTooBigMessage);
   };
 
+  const parseCm = value => {
+    const parsed = Number.parseInt(value, 10);
+    return Number.isNaN(parsed) ? null : parsed;
+  };
+  const inchesProps = displayInInches
+    ? {
+        step: '0.5',
+        inputMode: 'decimal',
+        parse: value => {
+          setInchesDraft(value);
+          return parseInchesToCm(value);
+        },
+        // Show the typed text while it still matches the stored cm value; otherwise (e.g. the
+        // value was set in cm mode) show the stored value converted to the nearest half inch.
+        format: value => {
+          const cm = value == null || value === '' ? null : value;
+          return inchesDraft != null && parseInchesToCm(inchesDraft) === cm
+            ? inchesDraft
+            : formatCmAsInches(cm);
+        },
+      }
+    : { step: '1', parse: parseCm };
+
   return (
     <FieldTextInput
       className={fieldClassName || css.customField}
       id={formId ? `${formId}.${name}` : name}
       name={name}
       type="number"
-      step="1"
       helpText={fieldConfig?.helpText}
       hintBelowInput={hintBelowInput}
-      parse={value => {
-        const parsed = Number.parseInt(value, 10);
-        return Number.isNaN(parsed) ? null : parsed;
-      }}
+      {...inchesProps}
       label={label}
       placeholder={placeholder}
       validate={value => validate(value, minimum, maximum)}
@@ -423,13 +477,17 @@ const CustomFieldYoutube = props => {
  * - hintBelowInput: for single-input fields (select, text, number), show the help text under
  *   the input instead of under the label, with any validation error on its own line below it.
  *   Groups (chips, checkboxes, dropdown) keep it under the label.
+ * - displayInInches: for a number (long) field stored in whole centimetres, show and accept
+ *   inches instead. The saved value stays whole cm (converted on input, nearest cm) and the cm
+ *   min/max still apply; the label's "(cm)" and the help text's "centimetres" read as inches.
+ *   Ignored by every other schema type.
  *
  * @param {Object} props should contain fieldConfig that defines schemaType, enumOptions?, and
  * saveConfig for the field.
  */
 const CustomExtendedDataField = props => {
   const intl = useIntl();
-  const { className, displayAs, hintBelowInput = false, ...rest } = props;
+  const { className, displayAs, hintBelowInput = false, displayInInches, ...rest } = props;
   const { enumOptions = [], schemaType } = props?.fieldConfig || {};
   const defaultRequiredMessage = intl.formatMessage({
     id: 'CustomExtendedDataField.required',
@@ -458,6 +516,9 @@ const CustomExtendedDataField = props => {
 
   // Groups (chips, checkboxes, dropdown) keep their help text under the label.
   const isGroupControl = schemaType === SCHEMA_TYPE_MULTI_ENUM || displayAs === DISPLAY_AS_CHIPS;
+  // Only number fields can be shown in inches.
+  const displayInInchesMaybe =
+    schemaType === SCHEMA_TYPE_LONG && displayInInches ? { displayInInches: true } : {};
 
   return (
     <FieldComponent
@@ -465,6 +526,7 @@ const CustomExtendedDataField = props => {
       fieldClassName={className}
       displayAs={displayAs}
       hintBelowInput={hintBelowInput && !isGroupControl}
+      {...displayInInchesMaybe}
       defaultRequiredMessage={defaultRequiredMessage}
       intl={intl}
     />
