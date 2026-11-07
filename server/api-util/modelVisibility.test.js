@@ -366,16 +366,35 @@ describe('reconcileFromConnectEvent', () => {
     expect(result).toMatchObject({ reconciled: true, action: 'approve' });
   });
 
-  it('skips a non-model user', async () => {
+  const userWithType = userType => ({
+    data: { data: { attributes: { state: 'active', profile: { publicData: { userType } } } } },
+  });
+
+  it('is a no-op for a user with no model listing (e.g. a client)', async () => {
     mockSdk.listings.query.mockResolvedValue({ data: { data: [] } });
-    mockSdk.users.show.mockResolvedValue({
-      data: { data: { attributes: { state: 'active', profile: { publicData: { userType: 'client' } } } } },
-    });
+    mockSdk.users.show.mockResolvedValue(userWithType('client'));
     const result = await reconcileFromConnectEvent({
       account: 'acct_1',
       data: { object: { metadata: { user_id: 'c1' }, charges_enabled: true, payouts_enabled: true } },
     });
-    expect(result).toMatchObject({ skipped: true, why: 'not-a-model' });
+    expect(result).toMatchObject({ skipped: true, why: 'no-listing' });
+    expect(mockSdk.listings.approve).not.toHaveBeenCalled();
+    expect(mockSdk.listings.open).not.toHaveBeenCalled();
+    expect(mockSdk.listings.close).not.toHaveBeenCalled();
+  });
+
+  it('still hides the listing of a model who set their userType to something else', async () => {
+    // userType is user-writable: it must not stop a Stripe lapse from hiding the profile.
+    mockSdk.listings.query.mockResolvedValue(
+      modelListing('published', { authorId: 'u1', publicData: { stripeAccountId: 'acct_1' } })
+    );
+    mockSdk.users.show.mockResolvedValue(userWithType('client'));
+    const result = await reconcileFromConnectEvent({
+      account: 'acct_1',
+      data: { object: { metadata: {}, charges_enabled: false, payouts_enabled: false } },
+    });
+    expect(mockSdk.listings.close).toHaveBeenCalledWith({ id: 'listing-1' });
+    expect(result).toMatchObject({ reconciled: true, action: 'close' });
   });
 });
 

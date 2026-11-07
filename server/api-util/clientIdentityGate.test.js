@@ -6,6 +6,7 @@ jest.mock('../log', () => ({ error: jest.fn() }));
 const {
   enforceClientIdentityVerification,
   ACCOUNT_APPROVAL_REQUIRED_CODE,
+  CLIENT_ACCOUNT_REQUIRED_CODE,
   IDENTITY_VERIFICATION_REQUIRED_CODE,
 } = require('./clientIdentityGate');
 
@@ -27,7 +28,10 @@ const sdkFor = ({ userType = 'client', state = 'active', metadata = {} } = {}) =
       data: {
         data: {
           id: { uuid: 'client-1' },
-          attributes: { state, profile: { publicData: { userType }, metadata } },
+          attributes: {
+            state,
+            profile: { publicData: userType === undefined ? {} : { userType }, metadata },
+          },
         },
       },
     }),
@@ -41,6 +45,10 @@ const approvalBlocked = {
 const identityBlocked = {
   status: 403,
   data: { errors: [{ code: IDENTITY_VERIFICATION_REQUIRED_CODE }] },
+};
+const modelRefused = {
+  status: 403,
+  data: { errors: [{ code: CLIENT_ACCOUNT_REQUIRED_CODE }] },
 };
 
 const approvedVerified = { reviewDecision: 'approved', identity_verified: true };
@@ -98,11 +106,49 @@ describe('client booking gate: flag ON + identity configured (the cutover state)
     ).resolves.toBeUndefined();
   });
 
-  it('does not gate a non-client (models fall through to the native gates)', async () => {
-    const sdk = sdkFor({ userType: 'model' });
+  it('refuses a model account booking as a customer (models cannot book)', async () => {
+    // Even an approved, identity-verified model: the account says it is a model.
+    const sdk = sdkFor({ userType: 'model', metadata: approvedVerified });
+    await expect(
+      enforceClientIdentityVerification({ sdk, isSpeculative: false })
+    ).rejects.toMatchObject(modelRefused);
+  });
+
+  // userType is user-writable: it must never exempt anyone from the client gate.
+  describe.each([
+    ['model', modelRefused, modelRefused],
+    ['foo', approvalBlocked, identityBlocked],
+    ['', approvalBlocked, identityBlocked],
+    [undefined, approvalBlocked, identityBlocked],
+  ])('a customer whose self-set userType is %p', (userType, unapprovedResult, unverifiedResult) => {
+    it('is still refused when not review-approved', async () => {
+      const sdk = sdkFor({ userType, metadata: { identity_verified: true } });
+      await expect(
+        enforceClientIdentityVerification({ sdk, isSpeculative: false })
+      ).rejects.toMatchObject(unapprovedResult);
+    });
+
+    it('is still refused when approved but not identity-verified (18+)', async () => {
+      const sdk = sdkFor({ userType, metadata: { reviewDecision: 'approved' } });
+      await expect(
+        enforceClientIdentityVerification({ sdk, isSpeculative: false })
+      ).rejects.toMatchObject(unverifiedResult);
+    });
+  });
+
+  it('a non-model userType that is approved + verified gets the full gate and passes', async () => {
+    const sdk = sdkFor({ userType: 'foo', metadata: approvedVerified });
     await expect(
       enforceClientIdentityVerification({ sdk, isSpeculative: false })
     ).resolves.toBeUndefined();
+  });
+
+  it('never refuses a model on a speculative (price preview) call', async () => {
+    const sdk = sdkFor({ userType: 'model' });
+    await expect(
+      enforceClientIdentityVerification({ sdk, isSpeculative: true })
+    ).resolves.toBeUndefined();
+    expect(sdk.currentUser.show).not.toHaveBeenCalled();
   });
 
   it('always allows speculative (price preview) calls, without a lookup', async () => {
@@ -134,6 +180,13 @@ describe('client booking gate: flag ON, identity NOT configured', () => {
     ).rejects.toMatchObject(approvalBlocked);
   });
 
+  it('still gates a client who set their userType to something else', async () => {
+    const sdk = sdkFor({ userType: 'foo' });
+    await expect(
+      enforceClientIdentityVerification({ sdk, isSpeculative: false })
+    ).rejects.toMatchObject(approvalBlocked);
+  });
+
   it('allows an approved client (identity fails open while unconfigured, as today)', async () => {
     const sdk = sdkFor({ metadata: { reviewDecision: 'approved' } });
     await expect(
@@ -160,6 +213,14 @@ describe('client booking gate: flag OFF (unchanged behaviour)', () => {
     await expect(
       enforceClientIdentityVerification({ sdk, isSpeculative: false })
     ).resolves.toBeUndefined();
+  });
+
+  it('identity configured: a client who set userType to "foo" is still gated', async () => {
+    process.env.STRIPE_SECRET_KEY = 'configured-in-test';
+    const sdk = sdkFor({ userType: 'foo' });
+    await expect(
+      enforceClientIdentityVerification({ sdk, isSpeculative: false })
+    ).rejects.toMatchObject(identityBlocked);
   });
 
   it('identity configured: an unverified client is blocked for identity, as today', async () => {

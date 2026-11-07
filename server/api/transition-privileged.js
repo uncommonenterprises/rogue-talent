@@ -9,6 +9,7 @@ const {
   isIntentionToUpdateOffer,
   throwErrorIfNegotiationOfferHasInvalidHistory,
 } = require('../api-util/negotiation');
+const { enforceBookingGates, isBookingRequestTransition } = require('../api-util/bookingGates');
 const {
   getSdk,
   getTrustedSdk,
@@ -19,13 +20,18 @@ const {
 
 const { Money } = sharetribeSdk.types;
 
-const transactionPromise = (sdk, id) => sdk.transactions.show({ id, include: ['listing'] });
+// The provider is included so the booking gates can resolve it from the transaction itself.
+const transactionPromise = (sdk, id) =>
+  sdk.transactions.show({ id, include: ['listing', 'provider'] });
 const getListingRelationShip = transactionShowAPIData => {
   const { data, included } = transactionShowAPIData;
   const { relationships } = data;
   const { listing: listingRef } = relationships;
   return included.find(i => i.id.uuid === listingRef.data.id.uuid);
 };
+// The transaction's provider (the model being booked), read from the transaction the
+// Marketplace API returned, never from the request body.
+const getProviderId = transaction => transaction?.relationships?.provider?.data?.id?.uuid;
 
 // When a provider is making an offer, make sure that customer related
 // protected data is not being saved
@@ -150,6 +156,25 @@ module.exports = (req, res) => {
       );
 
       metadataMaybe = getUpdatedMetadata(orderData, transitionName, existingMetadata);
+
+      // SAFETY: a transition that turns an existing transaction into a payable booking
+      // request (booking after an enquiry) runs the SAME booking gates as
+      // initiate-privileged, in the same order, with the same speculative/fail-open/
+      // fail-closed rules (api-util/bookingGates.js). Listing, provider and protectedData
+      // come from the transaction fetched above with the caller's own session; the customer
+      // is the caller (Sharetribe only lets the transaction's customer perform these
+      // transitions). Every other privileged transition is unaffected.
+      if (isBookingRequestTransition(transitionName)) {
+        return enforceBookingGates({
+          sdk,
+          listing,
+          providerId: getProviderId(transaction),
+          existingProtectedData: transaction?.attributes?.protectedData,
+          orderData,
+          bodyParams,
+          isSpeculative,
+        }).then(() => getTrustedSdk(req));
+      }
 
       return getTrustedSdk(req);
     })

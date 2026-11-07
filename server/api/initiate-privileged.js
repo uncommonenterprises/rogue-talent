@@ -1,9 +1,7 @@
 const sharetribeSdk = require('sharetribe-flex-sdk');
 const { transactionLineItems } = require('../api-util/lineItems');
 const { isIntentionToMakeOffer } = require('../api-util/negotiation');
-const { enforceResidenceBoundary } = require('../api-util/residenceBoundary');
-const { enforceClientIdentityVerification } = require('../api-util/clientIdentityGate');
-const { enforceProviderVerified } = require('../api-util/providerVerifiedGate');
+const { enforceBookingGates } = require('../api-util/bookingGates');
 const {
   getSdk,
   getTrustedSdk,
@@ -90,10 +88,11 @@ module.exports = (req, res) => {
       //      with a neutral message (don't rely only on the implicit Stripe-charge failure).
       //      Speculative allowed; engages only when configured (fails OPEN otherwise).
       //      With the flag ON, Gate A includes reviewDecision 'approved' (providerVerifiedGate).
-      return enforceResidenceBoundary({ listing, orderData, bodyParams })
-        .then(() => enforceClientIdentityVerification({ sdk, isSpeculative }))
-        .then(() => enforceProviderVerified({ listing, isSpeculative }))
-        .then(() => getTrustedSdk(req));
+      // The sequence lives in api-util/bookingGates.js, shared with transition-privileged.js
+      // (booking after an enquiry) so the two routes cannot drift apart.
+      return enforceBookingGates({ sdk, listing, orderData, bodyParams, isSpeculative }).then(() =>
+        getTrustedSdk(req)
+      );
     })
     .then(trustedSdk => {
       const { params } = bodyParams;

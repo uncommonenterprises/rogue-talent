@@ -164,6 +164,14 @@ export const isAccountApprovalRequiredError = error =>
   hasErrorWithCode(error, 'account-approval-required');
 
 /**
+ * Check if a booking was refused because the requesting account is a model (models cannot
+ * book). The server (server/api-util/clientIdentityGate.js) returns the code
+ * `client-account-required`; the checkout shows the same wording as the booking panel.
+ */
+export const isClientAccountRequiredError = error =>
+  hasErrorWithCode(error, 'client-account-required');
+
+/**
  * Check if the given API error (from `sdk.transaction.initiate()` or
  * `sdk.transaction.initiateSpeculative()`) is due to insufficient stock.
  */

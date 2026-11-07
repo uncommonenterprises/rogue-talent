@@ -457,11 +457,10 @@ const reconcileFromConnectEvent = event => {
       .then(res => {
         const user = res?.data?.data;
         const userState = user?.attributes?.state;
-        const userType = user?.attributes?.profile?.publicData?.userType;
-        // Only models have a discoverable listing to reconcile.
-        if (userType && userType !== MODEL_USER_TYPE) {
-          return { reconciled: false, skipped: true, why: 'not-a-model' };
-        }
+        // No publicData.userType check here: it is user-writable, and skipping on it would let
+        // a model stop this webhook from hiding their listing when Stripe lapses. Whether
+        // there is anything to reconcile is decided by the account having a model-profile
+        // listing (findModelListing); a client has none, so it is a no-op ('no-listing').
         const verified = computeModelVerified({
           userState,
           reviewDecision: getReviewDecision(user),

@@ -40,8 +40,15 @@ const getIntegrationSdk = () => {
 
 // The requested location type is captured at checkout as a customer listing field and
 // lands in the order protectedData; fall back to orderData for safety.
-const getRequestedLocationType = (orderData, bodyParams) => {
-  const protectedData = bodyParams?.params?.protectedData || {};
+// On a transition from an existing transaction (booking after an enquiry), the effective
+// protectedData is the existing one with the new keys merged over it (that is what
+// Sharetribe's update-protected-data action does), so a location type saved at the enquiry
+// step still counts even if the booking request leaves it out.
+const getRequestedLocationType = (orderData, bodyParams, existingProtectedData) => {
+  const protectedData = {
+    ...(existingProtectedData || {}),
+    ...(bodyParams?.params?.protectedData || {}),
+  };
   return protectedData.location_type || orderData?.location_type || null;
 };
 
@@ -76,12 +83,21 @@ const isBookingUnavailableError = e =>
  *
  * @param {Object} params
  * @param {Object} params.listing - the listing resource from sdk.listings.show
+ * @param {string} [params.providerId] - the provider's user id resolved server-side from an
+ *   existing transaction; takes precedence over the listing author when given
+ * @param {Object} [params.existingProtectedData] - the existing transaction's protectedData
  * @param {Object} params.orderData - order data from the checkout request body
  * @param {Object} params.bodyParams - body params from the checkout request body
  * @returns {Promise<void>}
  */
-const enforceResidenceBoundary = ({ listing, orderData, bodyParams }) => {
-  const locationType = getRequestedLocationType(orderData, bodyParams);
+const enforceResidenceBoundary = ({
+  listing,
+  providerId: providerIdParam,
+  existingProtectedData,
+  orderData,
+  bodyParams,
+}) => {
+  const locationType = getRequestedLocationType(orderData, bodyParams, existingProtectedData);
 
   // Only private-residence bookings can be blocked. Every other location type — and the
   // whole non-residence booking flow — is untouched (no Integration API call at all).
@@ -101,7 +117,7 @@ const enforceResidenceBoundary = ({ listing, orderData, bodyParams }) => {
     return Promise.resolve();
   }
 
-  const providerId = listing?.relationships?.author?.data?.id?.uuid;
+  const providerId = providerIdParam || listing?.relationships?.author?.data?.id?.uuid;
   if (!providerId) {
     // With creds present, an unresolved provider is anomalous. Fail CLOSED for a
     // residence booking: a boundary must not be bypassed by a lookup gap.

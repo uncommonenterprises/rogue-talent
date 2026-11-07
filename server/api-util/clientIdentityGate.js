@@ -5,7 +5,8 @@
  * (via Stripe Identity — see stripeIdentity.js) before a REAL booking can initiate.
  *
  * This is the authoritative, un-bypassable check. It runs inside the privileged
- * initiate chokepoint (server/api/initiate-privileged.js) ALONGSIDE:
+ * booking chokepoints (server/api/initiate-privileged.js, and transition-privileged.js for a
+ * booking after an enquiry; sequence in api-util/bookingGates.js) ALONGSIDE:
  *   - Sharetribe's own email-verification / `initiateTransactions` permission gate
  *     (enforced natively during the trusted initiate), and
  *   - SAF-14's residence-boundary filter (enforceResidenceBoundary).
@@ -27,6 +28,14 @@
  * So, with both switches on, a client can book only when approved + identity-verified; and
  * `identity_verified` is only ever written true together with a passed 18+ check on the
  * verified ID (stripeIdentity.writeIdentityVerifiedFlag), so the 18+ input is unchanged.
+ *
+ * WHO IS GATED (07/11/2026, SAFETY): whoever is booking as the customer, i.e. the caller's own
+ * currentUser. The account's profile publicData.userType is user-writable, so it must never
+ * EXEMPT anyone from the gate: a client who sets userType to 'model' or to anything else is
+ * still gated in full. userType may only ever ADD a refusal: an account that says it is a
+ * model is refused outright with `client-account-required` ("Only client accounts can book
+ * models", the same wording the booking panel shows). A model who rewrites their userType to
+ * 'client' then meets the full client gate (approval + identity + 18+), like any client.
  */
 
 const stripeIdentity = require('./stripeIdentity');
@@ -47,9 +56,14 @@ const IDENTITY_VERIFICATION_REQUIRED_CODE = 'identity-verification-required';
 // (see src/util/errors.js isAccountApprovalRequiredError + CheckoutPage/ErrorMessages.js).
 const ACCOUNT_APPROVAL_REQUIRED_CODE = 'account-approval-required';
 
-// Only gate the buyer role. Providers (models) are the sellers here; they are
-// ID-verified via Stripe Connect, not this flow.
-const CLIENT_USER_TYPE = 'client';
+// Client-detectable error code for a model account trying to book as a customer. The checkout
+// shows "Only client accounts can book models." (see src/util/errors.js
+// isClientAccountRequiredError + CheckoutPage/ErrorMessages.js).
+const CLIENT_ACCOUNT_REQUIRED_CODE = 'client-account-required';
+
+// Models are the sellers here and cannot book. Used ONLY to refuse, never to exempt: the value
+// is user-writable (see the module header).
+const MODEL_USER_TYPE = 'model';
 
 const identityRequiredError = () => {
   const error = new Error('Please verify your identity before booking.');
@@ -76,12 +90,26 @@ const isApprovalRequiredError = e =>
   Array.isArray(e?.data?.errors) &&
   e.data.errors.some(err => err.code === ACCOUNT_APPROVAL_REQUIRED_CODE);
 
+const clientAccountRequiredError = () => {
+  const error = new Error('Only client accounts can book models.');
+  error.status = 403;
+  error.statusText = 'Client account required';
+  error.data = { errors: [{ code: CLIENT_ACCOUNT_REQUIRED_CODE }] };
+  return error;
+};
+
+const isClientAccountRequiredError = e =>
+  Array.isArray(e?.data?.errors) &&
+  e.data.errors.some(err => err.code === CLIENT_ACCOUNT_REQUIRED_CODE);
+
 /**
  * Enforce the client booking gate before a real booking initiate: review approval (Gate A,
  * flag ON only) and identity verification (SAF-03, when configured).
  * Resolves when the booking may proceed; rejects with a client-facing 403 when an active
- * check fails: code `account-approval-required` (not approved; checked first, since approval
- * is the next step) or `identity-verification-required` (not identity-verified).
+ * check fails: code `client-account-required` (a model account), `account-approval-required`
+ * (not approved; checked before identity, since approval is the next step) or
+ * `identity-verification-required` (not identity-verified).
+ * Applies to the caller (the customer), whatever their self-set publicData.userType says.
  *
  * @param {Object} params
  * @param {Object} params.sdk - a request-scoped Marketplace SDK (getSdk(req,res))
@@ -117,10 +145,16 @@ const enforceClientIdentityVerification = ({ sdk, isSpeculative }) => {
       const user = res?.data?.data;
       const userType = user?.attributes?.profile?.publicData?.userType;
 
-      // Only clients (buyers) are gated. If we cannot resolve a client, do not
-      // invent a block — providers/edge roles fall through to the native gates.
-      if (userType && userType !== CLIENT_USER_TYPE) {
-        return undefined;
+      // Whoever books as the customer is gated, whatever userType says (it is user-writable,
+      // so it can never exempt anyone). A self-declared model is refused outright: models
+      // cannot book. Every other value (client, missing, or anything else) gets the full gate.
+      if (userType === MODEL_USER_TYPE) {
+        log.error(
+          new Error('Booking blocked: a model account tried to book as a customer'),
+          'client-gate-model-account-blocked',
+          { userId: user?.id?.uuid }
+        );
+        return Promise.reject(clientAccountRequiredError());
       }
 
       // Gate A (flag ON only): the client must be active AND review-approved by the
@@ -147,7 +181,11 @@ const enforceClientIdentityVerification = ({ sdk, isSpeculative }) => {
       return Promise.reject(identityRequiredError());
     })
     .catch(e => {
-      if (isIdentityRequiredError(e) || isApprovalRequiredError(e)) {
+      if (
+        isIdentityRequiredError(e) ||
+        isApprovalRequiredError(e) ||
+        isClientAccountRequiredError(e)
+      ) {
         // Our own block — rethrow unchanged.
         throw e;
       }
@@ -162,6 +200,8 @@ module.exports = {
   enforceClientIdentityVerification,
   isIdentityRequiredError,
   isApprovalRequiredError,
+  isClientAccountRequiredError,
   IDENTITY_VERIFICATION_REQUIRED_CODE,
   ACCOUNT_APPROVAL_REQUIRED_CODE,
+  CLIENT_ACCOUNT_REQUIRED_CODE,
 };

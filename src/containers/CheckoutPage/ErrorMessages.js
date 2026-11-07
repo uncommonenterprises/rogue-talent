@@ -5,6 +5,7 @@ import { NamedLink } from '../../components';
 import {
   isAccountApprovalRequiredError,
   isBookingUnavailableError,
+  isClientAccountRequiredError,
   isIdentityVerificationRequiredError,
   isTransactionInitiateAmountTooLowError,
   isTransactionInitiateMissingStripeAccountError,
@@ -43,6 +44,9 @@ export const getErrorMessages = (
   } else if (isBookingUnavailableError(initiateOrderError)) {
     // SAF-14: generic, reason-free "not available" message. Never reveals the boundary.
     initiateOrderErrorMessage = <FormattedMessage id="CheckoutPage.bookingUnavailableMessage" />;
+  } else if (isClientAccountRequiredError(initiateOrderError)) {
+    // A model account tried to book. Same wording as the booking panel (OrderPanel).
+    initiateOrderErrorMessage = <FormattedMessage id="CheckoutPage.clientAccountRequired" />;
   } else if (isAccountApprovalRequiredError(initiateOrderError)) {
     // Gate A: the client's account hasn't been approved at review yet. Link to their status.
     initiateOrderErrorMessage = (
