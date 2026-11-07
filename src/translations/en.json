@@ -451,6 +451,7 @@
   "CheckoutPage.bookingTimeNotAvailableMessage": "Unfortunately, the requested time has just been booked.",
   "CheckoutPage.bookingUnavailableMessage": "This booking isn't available. Please try different dates, a different location, or another model.",
   "CheckoutPage.chargeDisabledMessage": "This model can't take bookings right now. You haven't been charged. Please contact support.",
+  "CheckoutPage.clientAccountRequired": "Only client accounts can book models.",
   "CheckoutPage.correctQuantityInformationMissing": "The order data is missing correct quantity information",
   "CheckoutPage.identityVerificationRequired": "Please verify your identity before booking. {verifyLink} to continue.",
   "CheckoutPage.identityVerificationLinkText": "Verify your identity",

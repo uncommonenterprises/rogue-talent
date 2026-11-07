@@ -37,7 +37,6 @@ const { BOOKING_UNAVAILABLE_CODE } = require('./residenceBoundary');
 const { isGateAPassed, getReviewDecision } = require('./reviewDecision');
 const log = require('../log');
 
-const MODEL_USER_TYPE = 'model';
 const LISTING_STATE_PUBLISHED = 'published';
 
 let cachedIntegrationSdk = null;
@@ -74,10 +73,12 @@ const isProviderUnavailableError = e =>
  *
  * @param {Object} params
  * @param {Object} params.listing - the listing resource (from sdk.listings.show)
+ * @param {string} [params.providerId] - the provider's user id resolved server-side from an
+ *   existing transaction; takes precedence over the listing author when given
  * @param {boolean} params.isSpeculative - whether this is a speculative (preview) call
  * @returns {Promise<void>}
  */
-const enforceProviderVerified = ({ listing, isSpeculative }) => {
+const enforceProviderVerified = ({ listing, providerId: providerIdParam, isSpeculative }) => {
   // Never block a price preview.
   if (isSpeculative) {
     return Promise.resolve();
@@ -105,7 +106,7 @@ const enforceProviderVerified = ({ listing, isSpeculative }) => {
     return Promise.reject(providerUnavailableError());
   }
 
-  const providerId = listing?.relationships?.author?.data?.id?.uuid;
+  const providerId = providerIdParam || listing?.relationships?.author?.data?.id?.uuid;
   if (!providerId) {
     // With creds present, an unresolved provider is anomalous. Fail CLOSED: a safety gate
     // must not be bypassed by a lookup gap.
@@ -121,12 +122,11 @@ const enforceProviderVerified = ({ listing, isSpeculative }) => {
     .then(res => {
       const user = res?.data?.data;
       const userState = user?.attributes?.state;
-      const userType = user?.attributes?.profile?.publicData?.userType;
 
-      // Only gate models (providers). If the author is not a model, do not invent a block.
-      if (userType && userType !== MODEL_USER_TYPE) {
-        return undefined;
-      }
+      // Every provider of a booking is gated, whatever their profile publicData.userType says:
+      // userType is user-writable, so a model must not be able to step outside this gate by
+      // changing it. Only models post bookable listings, so this never blocks a legitimate
+      // non-model provider.
 
       // Gate A: flag ON = provider active AND reviewDecision 'approved' (amendment
       // 30/09/2026); flag OFF = active only. A Stripe-verified provider without an approved

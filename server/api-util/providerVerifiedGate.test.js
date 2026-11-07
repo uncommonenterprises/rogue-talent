@@ -59,11 +59,37 @@ describe('enforceProviderVerified (configured)', () => {
     expect(mockSdk.users.show).not.toHaveBeenCalled();
   });
 
-  it('does not gate a non-model author', async () => {
-    mockSdk.users.show.mockResolvedValue(providerUser('pending-approval', 'client'));
+  // userType is user-writable: a model must not escape the gate by changing it.
+  it.each(['client', 'foo', ''])(
+    'still gates an author whose self-set userType is %p',
+    async userType => {
+      mockSdk.users.show.mockResolvedValue(providerUser('pending-approval', userType));
+      await expect(
+        enforceProviderVerified({ listing: listing('published'), isSpeculative: false })
+      ).rejects.toMatchObject({
+        status: 409,
+        data: { errors: [{ code: 'booking-not-available' }] },
+      });
+    }
+  );
+
+  it('uses a server-resolved providerId in preference to the listing author', async () => {
+    mockSdk.users.show.mockResolvedValue(providerUser('active'));
     await expect(
-      enforceProviderVerified({ listing: listing('published'), isSpeculative: false })
+      enforceProviderVerified({
+        listing: listing('published', 'author-x'),
+        providerId: 'tx-provider-1',
+        isSpeculative: false,
+      })
     ).resolves.toBeUndefined();
+    expect(mockSdk.users.show).toHaveBeenCalledWith({ id: 'tx-provider-1' });
+  });
+
+  it('fails CLOSED when no provider can be resolved (no author, no providerId)', async () => {
+    await expect(
+      enforceProviderVerified({ listing: { attributes: {} }, isSpeculative: false })
+    ).rejects.toMatchObject({ status: 409, data: { errors: [{ code: 'booking-not-available' }] } });
+    expect(mockSdk.users.show).not.toHaveBeenCalled();
   });
 
   it('fails CLOSED when the provider lookup errors (with creds present)', async () => {
