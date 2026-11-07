@@ -166,7 +166,7 @@
           <div class="rv-checklist" role="group" aria-label="Review checklist">
             <label class="rt-check"><input type="checkbox"><span class="rt-check__box"><i class="ico ico-check"></i></span><span>Photos clearly show the same person</span></label>
             <label class="rt-check"><input type="checkbox"><span class="rt-check__box"><i class="ico ico-check"></i></span><span>Appears to be over 18</span></label>
-            <label class="rt-check"><input type="checkbox"><span class="rt-check__box"><i class="ico ico-check"></i></span><span>No nudity, and no contact details or social handles in photos or text</span></label>
+            <label class="rt-check"><input type="checkbox"><span class="rt-check__box"><i class="ico ico-check"></i></span><span>No nudity in photos</span></label>
             <label class="rt-check"><input type="checkbox"><span class="rt-check__box"><i class="ico ico-check"></i></span><span>Display name looks like a real name, not a business or contact detail</span></label>
             <label class="rt-check"><input type="checkbox"><span class="rt-check__box"><i class="ico ico-check"></i></span><span>Rates look plausible</span></label>
           </div>
@@ -177,6 +177,12 @@
           <a class="rt-btn rt-btn--primary rt-btn--lg rt-btn--block rt-btn--disabled" data-approve aria-disabled="true" href="R03-decision-flow.html#approve-confirm">Approve profile</a>
           <a class="rt-btn rt-btn--secondary rt-btn--lg rt-btn--block" href="R03-decision-flow.html#decline">Decline</a>
           <p class="rv-hint" data-approve-hint>Tick all 5 to approve.</p>
+        </div>
+
+        <!-- Third action: quiet, text-style, set apart by a hairline. Not cobalt, not red. -->
+        <div class="rv-flag">
+          <a class="rv-flag__btn" href="R03-decision-flow.html#flag">Flag a safety concern</a>
+          <p class="rv-hint">Hides this profile and alerts the safety team straight away. Imogen is not emailed.</p>
         </div>
 
       </div>
@@ -207,7 +213,7 @@
             <div class="rv-checklist">
               <label class="rt-check"><input type="checkbox" checked onclick="return false"><span class="rt-check__box"><i class="ico ico-check"></i></span><span>Photos clearly show the same person</span></label>
               <label class="rt-check"><input type="checkbox" checked onclick="return false"><span class="rt-check__box"><i class="ico ico-check"></i></span><span>Appears to be over 18</span></label>
-              <label class="rt-check"><input type="checkbox" checked onclick="return false"><span class="rt-check__box"><i class="ico ico-check"></i></span><span>No nudity, and no contact details or social handles in photos or text</span></label>
+              <label class="rt-check"><input type="checkbox" checked onclick="return false"><span class="rt-check__box"><i class="ico ico-check"></i></span><span>No nudity in photos</span></label>
               <label class="rt-check"><input type="checkbox" checked onclick="return false"><span class="rt-check__box"><i class="ico ico-check"></i></span><span>Display name looks like a real name, not a business or contact detail</span></label>
               <label class="rt-check"><input type="checkbox" checked onclick="return false"><span class="rt-check__box"><i class="ico ico-check"></i></span><span>Rates look plausible</span></label>
             </div>
@@ -217,6 +223,10 @@
             <a class="rt-btn rt-btn--primary rt-btn--lg rt-btn--block" href="R03-decision-flow.html#approve-confirm">Approve profile</a>
             <a class="rt-btn rt-btn--secondary rt-btn--lg rt-btn--block" href="R03-decision-flow.html#decline">Decline</a>
             <p class="rv-hint">All 5 ticked. You can approve.</p>
+          </div>
+          <div class="rv-flag">
+            <a class="rv-flag__btn" href="R03-decision-flow.html#flag">Flag a safety concern</a>
+            <p class="rv-hint">Hides this profile and alerts the safety team straight away. The person is not emailed.</p>
           </div>
         </div>
       </div>
@@ -245,7 +255,7 @@
             <div class="rv-checklist">
               <label class="rt-check"><input type="checkbox" checked onclick="return false"><span class="rt-check__box"><i class="ico ico-check"></i></span><span>Photos clearly show the same person</span></label>
               <label class="rt-check"><input type="checkbox" onclick="return false"><span class="rt-check__box"><i class="ico ico-check"></i></span><span>Appears to be over 18</span></label>
-              <label class="rt-check"><input type="checkbox" onclick="return false"><span class="rt-check__box"><i class="ico ico-check"></i></span><span>No nudity, and no contact details or social handles in photos or text</span></label>
+              <label class="rt-check"><input type="checkbox" onclick="return false"><span class="rt-check__box"><i class="ico ico-check"></i></span><span>No nudity in photos</span></label>
               <label class="rt-check"><input type="checkbox" onclick="return false"><span class="rt-check__box"><i class="ico ico-check"></i></span><span>Display name looks like a real name, not a business or contact detail</span></label>
               <label class="rt-check"><input type="checkbox" onclick="return false"><span class="rt-check__box"><i class="ico ico-check"></i></span><span>Rates look plausible</span></label>
             </div>
@@ -255,6 +265,10 @@
             <a class="rt-btn rt-btn--primary rt-btn--lg rt-btn--block rt-btn--disabled" aria-disabled="true" href="#">Approve profile</a>
             <a class="rt-btn rt-btn--secondary rt-btn--lg rt-btn--block" href="R03-decision-flow.html#decline">Decline</a>
             <p class="rv-hint">Tick all 5 to approve.</p>
+          </div>
+          <div class="rv-flag">
+            <a class="rv-flag__btn" href="R03-decision-flow.html#flag">Flag a safety concern</a>
+            <p class="rv-hint">Hides this profile and alerts the safety team straight away. The person is not emailed.</p>
           </div>
         </div>
       </div>
@@ -268,8 +282,22 @@
             <div><dt>When</dt><dd>04/11/2026, 14:12</dd></div>
             <div><dt>Email</dt><dd>Will be sent shortly</dd></div>
           </dl>
-          <p class="rv-hint">Full layout of this panel, and the declined version, are on R03.</p>
+          <p class="rv-hint">Full layout of this panel (including "Flag a safety concern" after approval, and the admin-only "Reopen review"), and the declined version, are on R03.</p>
           <div class="rv-actions"><a class="rt-btn rt-btn--secondary rt-btn--lg rt-btn--block" href="R03-decision-flow.html#after-decision">See the full decided page</a></div>
+        </div>
+      </div>
+
+      <div class="stack stack--sm">
+        <span class="rt-eyebrow">Flagged - with the safety team</span>
+        <div class="panel rv-panel">
+          <div class="rv-panel__head"><span class="rt-eyebrow">Review</span><span class="rt-status rt-status--lg rt-status--draft"><span class="rt-status__dot"></span>Flagged - with the safety team</span></div>
+          <dl class="rv-kv rv-kv--top">
+            <div><dt>Flagged by</dt><dd>Sam Okafor</dd></div>
+            <div><dt>When</dt><dd>04/11/2026, 14:31</dd></div>
+            <div><dt>Email</dt><dd>None sent, by design</dd></div>
+          </dl>
+          <p class="rv-hint">The profile is hidden and cannot be approved or booked. Full layout on R03.</p>
+          <div class="rv-actions"><a class="rt-btn rt-btn--secondary rt-btn--lg rt-btn--block" href="R03-decision-flow.html#flagged-state">See the full flagged page</a></div>
         </div>
       </div>
 
@@ -290,9 +318,9 @@
     <div class="phone-demo__row">
       <div class="phone-frame"><iframe src="R02-model-review.html?embed=1" title="R02 at phone width"></iframe></div>
       <div class="phone-demo__text">
-        <p><strong>Order on a phone.</strong> A small summary card first (status, submitted date, both Stripe checks), then the photos, then the profile, then the checklist and the two buttons at the end. A reviewer scrolls the profile the way a client would, then decides without hunting for the buttons.</p>
-        <p><strong>Bottom bar.</strong> Shows how many boxes are ticked and jumps to the decision. It is a secondary button on purpose: the only cobalt button on the page is Approve, once it is enabled.</p>
-        <p><strong>Tap targets.</strong> Every checklist row is at least 44px tall; both decision buttons are 48px.</p>
+        <p><strong>Order on a phone.</strong> A small summary card first (status, submitted date, both Stripe checks), then the photos, then the profile, then the checklist and the two buttons at the end, with the quiet "Flag a safety concern" link below them, separated by a hairline. A reviewer scrolls the profile the way a client would, then decides without hunting for the buttons.</p>
+        <p><strong>Bottom bar.</strong> Shows how many boxes are ticked and jumps to the decision. It is a secondary button on purpose: the only cobalt button on the page is Approve, once it is enabled. The flag link is never in the bottom bar, so it cannot be tapped by accident.</p>
+        <p><strong>Tap targets.</strong> Every checklist row is at least 44px tall; both decision buttons are 48px; the flag link is 44px tall.</p>
       </div>
     </div>
   </div>
@@ -304,11 +332,12 @@
     <ul>
       <li><strong>The profile is the B03 model-profile layout, unchanged,</strong> so the reviewer sees exactly what a client will. The booking panel is swapped for the review panel in the same 380px sticky column. Removed for review: reviews (a pending model has none), the "Checked before going live" section (it would claim a review that has not happened yet), and the booking bar.</li>
       <li><strong>One cobalt action: Approve.</strong> Decline is a secondary (ink keyline) button directly beneath it. Decline is not red: it is a normal, reversible outcome (the person can fix and resubmit with no limit), not a destructive act. Red here would make an honest decline feel like an error and push reviewers towards approving to avoid it. Red stays reserved for real danger, such as a failed save.</li>
-      <li><strong>Approve is disabled until all five boxes are ticked,</strong> with a plain line saying why. This makes the checklist a real check instead of decoration. Decline is always available and needs no ticks, because "I looked and it is wrong" is the point. See open question 1.</li>
+      <li><strong>"Flag a safety concern" is a third action (decided 07/11/2026).</strong> It is a quiet underlined text action below a hairline, apart from Approve and Decline so it is not clicked by accident. It is not cobalt (that is Approve) and not red (red is for errors). It opens a short form on R03: a reason and a required note, then a confirmation. What it does: the profile stays hidden (it cannot be approved or booked); <strong>no email goes to the person</strong>, so their status page keeps saying it is under review; an immediate alert goes to safety@ (the existing safeguarding alert); and the case stays open until Neil or a named safety lead decides. It covers suspected under-18, stolen photos and signs of coercion. The reason list and guidance are DRAFT (going to the solicitor).</li>
+      <li><strong>Approve is disabled until all five boxes are ticked,</strong> with a plain line saying why. This makes the checklist a real check instead of decoration. Decline and Flag are always available and need no ticks, because "I looked and it is wrong" is the point. Decided: the checklist stays at five items, all required before Approve.</li>
       <li><strong>Stripe status never blocks a decision.</strong> It matches the approved lifecycle: Gate A (this review) is independent of Gate B (Stripe). The hint under it says what will happen next, so the reviewer is not guessing whether approving makes someone public.</li>
       <li><strong>Resubmitted</strong> shows the previous decline (who, reason, note) inside the panel, so the reviewer can check the specific thing that was wrong instead of starting again.</li>
-      <li><strong>Checklist wording is draft</strong> (flag shown on the panel). Item 3 combines nudity and contact details because they are one scan of the photos and text. Note for the PM: the profile has a Links field (website, Instagram). If social handles are banned from "text", that field contradicts item 3, so a rule is needed (see the flags on the index page).</li>
-      <li><strong>Two buttons in the live product link to a decision page,</strong> not a pop-up: Decline goes to its own page (R03) so Back works, the preview has room, and it is easy to build. Approve opens a short confirm dialog.</li>
+      <li><strong>Checklist wording is still draft</strong> (flag shown on the panel). Item 3 is now "No nudity in photos" only. Neil decided that models keep their website and Instagram fields, so contact details and handles are no longer checked or declined. The Links field on the profile stays.</li>
+      <li><strong>Two buttons in the live product link to a decision page,</strong> not a pop-up: Decline and Flag each go to their own page (R03) so Back works, the preview has room, and it is easy to build. Approve opens a short confirm dialog.</li>
       <li>Photos are labelled placeholders. Imogen Hart and all details are example data.</li>
     </ul>
   </details>

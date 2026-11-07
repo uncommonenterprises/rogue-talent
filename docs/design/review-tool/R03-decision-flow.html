@@ -52,12 +52,11 @@
 
     <form id="decline-form" class="stack stack--lg" onsubmit="return false;" style="grid-area:form;">
       <fieldset style="border:0;padding:0;margin:0;min-width:0;">
-        <legend class="rt-field__label" style="padding:0 0 var(--space-3);">Main reason <span class="rt-req">*</span> <span class="draft-flag mock-only" style="margin-left:6px;">Draft list</span></legend>
+        <legend class="rt-field__label" style="padding:0 0 var(--space-3);">Main reason <span class="rt-req">*</span></legend>
         <div class="radio-list">
           <label class="radio-card rt-check rt-check--radio"><input type="radio" name="reason" value="photo-quality"><span class="rt-check__box"></span><span>Photo quality<small>Too small, dark or blurry to review</small></span></label>
           <label class="radio-card rt-check rt-check--radio"><input type="radio" name="reason" value="photos-mismatch"><span class="rt-check__box"></span><span>Photos do not match<small>They don't all look like the same person</small></span></label>
           <label class="radio-card rt-check rt-check--radio"><input type="radio" name="reason" value="missing-info"><span class="rt-check__box"></span><span>Missing information<small>Details or photos are missing or incomplete</small></span></label>
-          <label class="radio-card rt-check rt-check--radio"><input type="radio" name="reason" value="contact-details"><span class="rt-check__box"></span><span>Contact details or social handles<small>In the photos or the text</small></span></label>
           <label class="radio-card rt-check rt-check--radio"><input type="radio" name="reason" value="display-name"><span class="rt-check__box"></span><span>Display name<small>Looks like a business or a contact detail</small></span></label>
           <label class="radio-card rt-check rt-check--radio"><input type="radio" name="reason" value="not-suitable"><span class="rt-check__box"></span><span>Not suitable for the platform<small>A note is required for this one</small></span></label>
         </div>
@@ -192,12 +191,16 @@
             <a class="rt-btn rt-btn--secondary rt-btn--lg rt-btn--block" href="R01-review-queue.html">Back to the queue</a>
             <p class="rv-hint">Next in the queue: Chloe Whitaker, model, waiting 5 days.</p>
           </div>
+          <div class="rv-flag">
+            <a class="rv-flag__btn" href="#flag">Flag a safety concern</a>
+            <p class="rv-hint">Still available after approving. It hides the profile again straight away. Imogen is not emailed.</p>
+          </div>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="state-label" id="after-decision">State · The decided panel over time, and when the queue is empty. Anyone opening the link later sees this; there are no Approve or Decline buttons once a decision exists.</div>
+  <div class="state-label" id="after-decision">State · The decided panel over time, and when the queue is empty. Anyone opening the link later sees this; there are no Approve or Decline buttons once a decision exists. After an approval, "Flag a safety concern" stays available (see the decided page below).</div>
   <div class="state-grid" style="margin-bottom:var(--space-7);">
 
     <div class="stack stack--sm">
@@ -242,7 +245,191 @@
 
   </div>
 
-  <div class="state-label" id="reasons">Reference · reasons and the sentence each one sends. Draft list for Neil to approve: these words go to real people, and the same sentence shows on their account status page.</div>
+  <!-- =================================================================
+       FLAG A SAFETY CONCERN (decided 07/11/2026). Reason list and guidance are DRAFT (solicitor).
+       ================================================================= -->
+  <div class="state-label" id="flag">State · Flag a safety concern, step 1: reason and note. Reached from R02 or R04, and from the decided page after an approval. A page of its own, like Decline. Try it: pick a reason and type a note. <span class="draft-flag">Draft, going to the solicitor</span></div>
+  <div class="view-frame" style="margin-bottom:var(--space-7);">
+    <div class="view-frame__bar">Flag a safety concern (desktop)</div>
+    <div class="view-frame__body">
+      <div class="flag-page">
+        <a class="back-link" href="R02-model-review.html"><i class="ico ico-arrow-left"></i>Back to Imogen's profile</a>
+        <div class="stack stack--sm" style="padding-bottom:var(--space-4);">
+          <h2 class="page-title">Flag a safety concern about Imogen Hart</h2>
+          <p class="small muted" style="max-width:56ch;">Use this if something about this person worries you for their safety or anyone else's. You do not need to be certain, and you do not have to decide anything yourself. <span class="draft-flag">Draft guidance</span></p>
+        </div>
+
+        <div class="notice" style="margin-bottom:var(--space-5);"><i class="ico ico-info"></i><div>
+          <p><strong>What happens when you flag.</strong></p>
+          <ul class="then-list" style="margin-top:var(--space-2);">
+            <li><i class="ico ico-lock ico--sm"></i><span>The profile stays hidden. It cannot be approved or booked.</span></li>
+            <li><i class="ico ico-mail ico--sm"></i><span>Imogen is not emailed. Her status page keeps saying her profile is under review.</span></li>
+            <li><i class="ico ico-alert ico--sm"></i><span>The safety team is alerted at once, at safety@.</span></li>
+            <li><i class="ico ico-clock ico--sm"></i><span>The case stays open until Neil or a named safety lead decides.</span></li>
+          </ul>
+          <p style="margin-top:var(--space-2);">Please do not contact Imogen about this yourself. <span class="draft-flag">Draft guidance</span></p>
+        </div></div>
+
+        <form id="flag-form" class="flag-form" onsubmit="return false;">
+          <fieldset style="border:0;padding:0;margin:0;min-width:0;">
+            <legend class="rt-field__label" style="padding:0 0 var(--space-3);">What is the concern? <span class="rt-req">*</span> <span class="draft-flag" style="margin-left:6px;">Draft list</span></legend>
+            <div class="radio-list">
+              <label class="radio-card rt-check rt-check--radio"><input type="radio" name="flagreason" value="under-18"><span class="rt-check__box"></span><span>Suspected under 18<small>They may be a child</small></span></label>
+              <label class="radio-card rt-check rt-check--radio"><input type="radio" name="flagreason" value="photos-not-theirs"><span class="rt-check__box"></span><span>Photos may not be theirs<small>They look stolen, copied or taken from someone else</small></span></label>
+              <label class="radio-card rt-check rt-check--radio"><input type="radio" name="flagreason" value="coercion"><span class="rt-check__box"></span><span>Signs of coercion or pressure<small>Someone else may be controlling or pushing this profile</small></span></label>
+              <label class="radio-card rt-check rt-check--radio"><input type="radio" name="flagreason" value="other"><span class="rt-check__box"></span><span>Other<small>Anything else that worries you about their safety</small></span></label>
+            </div>
+          </fieldset>
+
+          <div class="rt-field">
+            <label class="rt-field__label" for="flag-note">Note for the safety team <span class="rt-req">*</span></label>
+            <textarea class="rt-textarea" id="flag-note" maxlength="500" placeholder="What did you see? Say what you noticed, not what you assume."></textarea>
+            <div style="display:flex;justify-content:space-between;gap:var(--space-3);">
+              <span class="rt-field__hint">Only the safety team sees this. It is never sent to Imogen.</span>
+              <span class="char-count" id="flag-count">0 / 500</span>
+            </div>
+          </div>
+
+          <div class="rv-actions">
+            <!-- Not cobalt, not red: an ink-keyline secondary button, like Cancel. -->
+            <a class="rt-btn rt-btn--secondary rt-btn--lg rt-btn--block rt-btn--disabled" data-flag-continue aria-disabled="true" href="#flag-confirm">Continue</a>
+            <a class="rv-flag__btn" style="align-self:center;" href="R02-model-review.html">Cancel</a>
+            <p class="rv-hint" id="flag-help">Pick a reason to continue.</p>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="state-label" id="flag-confirm">State · Flag a safety concern, step 2: confirm. A short dialog on desktop, a bottom sheet on phones. It restates the four effects, because flagging acts at once and sends an alert.</div>
+  <div class="dim-stage" style="margin-bottom:var(--space-7);">
+    <div class="dialog-card" role="dialog" aria-labelledby="fl-title">
+      <div class="dialog-card__head"><h2 id="fl-title">Flag Imogen Hart as a safety concern?</h2></div>
+      <div class="dialog-card__body">
+        <div class="case-box"><span><b>Reason:</b> Photos may not be theirs</span><q>Photos 3 and 4 look like they come from a stock site. Reverse image search matches.</q></div>
+        <ul class="then-list">
+          <li><i class="ico ico-lock ico--sm"></i><span>Her profile is hidden now and cannot be approved or booked.</span></li>
+          <li><i class="ico ico-mail ico--sm"></i><span>She is not emailed. Her status page keeps saying it is under review.</span></li>
+          <li><i class="ico ico-alert ico--sm"></i><span>The safety team is alerted straight away at safety@.</span></li>
+          <li><i class="ico ico-user ico--sm"></i><span>The case stays open until Neil or a named safety lead decides. Your name is recorded.</span></li>
+        </ul>
+      </div>
+      <div class="dialog-card__foot">
+        <a class="rt-btn rt-btn--secondary" href="#flag">Go back</a>
+        <a class="rt-btn rt-btn--secondary" href="#flagged-state">Flag concern</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="state-label" id="flagged-state">State · Flagged - with the safety team. The review page reloads like this, for the reviewer and for anyone opening the link later. No Approve, Decline or Flag buttons: the profile is hidden and the case is with the safety team. The reviewer is not shown anything that implies a verdict.</div>
+  <div class="view-frame" style="margin-bottom:var(--space-7);">
+    <div class="view-frame__bar">Review page, after flagging (desktop)</div>
+    <div class="view-frame__body">
+      <div class="notice notice--ok"><i class="ico ico-check"></i><div><p><strong>Flagged.</strong> The safety team has been alerted. Imogen Hart's profile is hidden and she has not been emailed.</p><div class="notice__links"><a href="R01-review-queue.html">Back to the queue</a></div></div></div>
+      <div class="rv-cols" style="margin-top:var(--space-5);padding-bottom:0;">
+        <div class="stack">
+          <span class="rt-eyebrow">Manchester</span>
+          <h2 class="page-title" style="font-size:var(--text-3xl);">Imogen Hart</h2>
+          <div class="empty-state" style="padding:var(--space-6) var(--space-5);"><p>The photos and profile carry on below, exactly as on R02, read only.</p></div>
+        </div>
+        <div class="panel rv-panel">
+          <div class="rv-panel__head"><span class="rt-eyebrow">Review</span><span class="rt-status rt-status--lg rt-status--draft"><span class="rt-status__dot"></span>Flagged - with the safety team</span></div>
+          <dl class="rv-kv rv-kv--top">
+            <div><dt>Flagged by</dt><dd>Sam Okafor</dd></div>
+            <div><dt>When</dt><dd>04/11/2026, 14:31</dd></div>
+            <div><dt>Case</dt><dd>Open</dd></div>
+            <div><dt>Safety alert</dt><dd><span class="q-email"><i class="ico ico-check ico--sm"></i>Sent to safety@ at 14:31</span></dd></div>
+            <div><dt>Email to Imogen</dt><dd>None, by design</dd></div>
+          </dl>
+          <div class="case-box">
+            <span class="rt-eyebrow">What was flagged</span>
+            <span><b>Reason:</b> Photos may not be theirs</span>
+            <q>Photos 3 and 4 look like they come from a stock site. Reverse image search matches.</q>
+          </div>
+          <p class="rv-hint">The profile stays hidden. It cannot be approved or booked until Neil or a named safety lead decides. Imogen's status page still says her profile is under review.</p>
+          <div class="rv-actions">
+            <a class="rt-btn rt-btn--primary rt-btn--lg rt-btn--block" href="R01-review-queue.html">Back to the queue</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =================================================================
+       DECIDED PAGE AFTER AN APPROVAL: flag stays available; admin-only Reopen review
+       ================================================================= -->
+  <div class="state-label" id="reopen">State · The decided page after an approval, reviewer view and admin view side by side. Both can still "Flag a safety concern", which hides the profile again. Only an admin sees "Reopen review". Reviewers never see it, and the page does not mention it.</div>
+  <div class="state-grid" style="margin-bottom:var(--space-7);">
+
+    <div class="stack stack--sm">
+      <span class="rt-eyebrow">Reviewer view · after approval</span>
+      <div class="panel rv-panel">
+        <div class="rv-panel__head"><span class="rt-eyebrow">Review</span><span class="rt-status rt-status--lg rt-status--approved"><span class="rt-status__dot"></span>Approved</span></div>
+        <dl class="rv-kv rv-kv--top">
+          <div><dt>Decided by</dt><dd>Sam Okafor</dd></div>
+          <div><dt>When</dt><dd>04/11/2026, 14:12</dd></div>
+          <div><dt>Checklist</dt><dd>5 of 5 ticked</dd></div>
+          <div><dt>Email</dt><dd><span class="q-email"><i class="ico ico-check ico--sm"></i>Sent at 14:16</span></dd></div>
+        </dl>
+        <div class="rv-actions">
+          <a class="rt-btn rt-btn--primary rt-btn--lg rt-btn--block" href="R02-model-review.html">Review next (6 waiting)</a>
+          <a class="rt-btn rt-btn--secondary rt-btn--lg rt-btn--block" href="R01-review-queue.html">Back to the queue</a>
+        </div>
+        <div class="rv-flag">
+          <a class="rv-flag__btn" href="#flag">Flag a safety concern</a>
+          <p class="rv-hint">Hides this profile again straight away and alerts the safety team. Imogen is not emailed.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="stack stack--sm">
+      <span class="rt-eyebrow">Admin view · after approval</span>
+      <div class="panel rv-panel">
+        <div class="rv-panel__head"><span class="rt-eyebrow">Review</span><span class="rt-status rt-status--lg rt-status--approved"><span class="rt-status__dot"></span>Approved</span></div>
+        <dl class="rv-kv rv-kv--top">
+          <div><dt>Decided by</dt><dd>Sam Okafor</dd></div>
+          <div><dt>When</dt><dd>04/11/2026, 14:12</dd></div>
+          <div><dt>Checklist</dt><dd>5 of 5 ticked</dd></div>
+          <div><dt>Email</dt><dd><span class="q-email"><i class="ico ico-check ico--sm"></i>Sent at 14:16</span></dd></div>
+        </dl>
+        <div class="rv-actions">
+          <a class="rt-btn rt-btn--primary rt-btn--lg rt-btn--block" href="R02-model-review.html">Review next (6 waiting)</a>
+          <a class="rt-btn rt-btn--secondary rt-btn--lg rt-btn--block" href="R01-review-queue.html">Back to the queue</a>
+        </div>
+        <div class="rv-flag">
+          <a class="rv-flag__btn" href="#flag">Flag a safety concern</a>
+          <p class="rv-hint">Hides this profile again straight away and alerts the safety team. Imogen is not emailed.</p>
+        </div>
+        <div class="rv-admin">
+          <div class="rv-admin__title"><span>Admin only</span></div>
+          <a class="rt-btn rt-btn--secondary rt-btn--lg rt-btn--block" href="#reopen-confirm">Reopen review</a>
+          <p class="rv-hint">Hides the profile again immediately and puts Imogen back in the queue. No email is sent.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="state-label" id="reopen-confirm">State · Reopen review, confirm (admin only). A short dialog. This is the only action in this view, so its button takes the one cobalt slot.</div>
+  <div class="dim-stage" style="margin-bottom:var(--space-4);">
+    <div class="dialog-card" role="dialog" aria-labelledby="ro-title">
+      <div class="dialog-card__head"><h2 id="ro-title">Reopen the review of Imogen Hart?</h2></div>
+      <div class="dialog-card__body">
+        <ul class="then-list">
+          <li><i class="ico ico-lock ico--sm"></i><span>Her profile is hidden again straight away.</span></li>
+          <li><i class="ico ico-clock ico--sm"></i><span>She goes back into the queue as waiting, with the earlier approval shown to whoever reviews it.</span></li>
+          <li><i class="ico ico-mail ico--sm"></i><span>No email is sent to her.</span></li>
+        </ul>
+      </div>
+      <div class="dialog-card__foot">
+        <a class="rt-btn rt-btn--secondary" href="#reopen">Cancel</a>
+        <a class="rt-btn rt-btn--primary" href="#reopened">Reopen review</a>
+      </div>
+    </div>
+  </div>
+  <p class="small muted" id="reopened" style="margin-bottom:var(--space-7);max-width:70ch;">After confirming, the page reloads with a green notice: "Review reopened. Imogen Hart is back in the queue and her profile is hidden. No email was sent." She then appears in the waiting queue marked Resubmission-style, with the previous decision (who, when) shown in the panel, as on R02.</p>
+
+  <div class="state-label" id="reasons">Reference · decline reasons and the sentence each one sends. Wording approved by Neil (07/11/2026) as written; the same sentence shows on the person's account status page. "Contact details or social handles" has been removed for models.</div>
   <div class="state-grid" style="margin-bottom:var(--space-7);">
     <div class="stack stack--sm">
       <span class="rt-eyebrow">Models (in the form above)</span>
@@ -250,7 +437,6 @@
         <div class="inv-item"><b>Photo quality</b><span>Some of your photos are too small, dark or blurry for us to review properly. Please add clear, well-lit photos that show your face and your full look.</span></div>
         <div class="inv-item"><b>Photos do not match</b><span>We couldn't confirm that the photos in your portfolio are all of the same person. Please remove any that aren't you, and add a clear, recent photo of your face.</span></div>
         <div class="inv-item"><b>Missing information</b><span>Some details on your profile are missing or incomplete. Please fill in the gaps and resubmit.</span></div>
-        <div class="inv-item"><b>Contact details or social handles</b><span>Your profile includes contact details or social handles in your photos or text. Please remove them. Messages and bookings all happen on Rogue Talent.</span></div>
         <div class="inv-item"><b>Display name</b><span>Your display name looks like a business name or contact detail. Please use your own name, as you'd like clients to see it.</span></div>
         <div class="inv-item"><b>Not suitable for the platform (note required)</b><span>Your profile isn't a fit for Rogue Talent at the moment.</span></div>
       </div>
@@ -267,6 +453,14 @@
     </div>
   </div>
 
+  <div class="state-label">Reference · safety-concern reasons. These are never sent to the person; they go to the safety team only. <span class="draft-flag">Draft, going to the solicitor</span></div>
+  <div class="inv-list" style="max-width:640px;margin-bottom:var(--space-7);">
+    <div class="inv-item"><b>Suspected under 18</b><span>Covers a person who may be a child.</span></div>
+    <div class="inv-item"><b>Photos may not be theirs</b><span>Covers stolen or copied photos.</span></div>
+    <div class="inv-item"><b>Signs of coercion or pressure</b><span>Covers someone else appearing to control or push the profile.</span></div>
+    <div class="inv-item"><b>Other (note required, like every flag)</b><span>Anything else that worries the reviewer for someone's safety.</span></div>
+  </div>
+
 </div>
 
 <div class="notes-dock mock-only">
@@ -276,11 +470,16 @@
       <li><strong>Decline is a page, not a pop-up.</strong> Back works, the message preview has room beside the form on desktop, and on a phone it sits between the form and the button so the reviewer reads before committing. The preview is the confirmation: it shows the actual subject and body, filled in live as the reviewer picks and types, which is why there is no separate "Are you sure?" step. The button is disabled until a reason is picked (and a note, for "not suitable"). Try it: pick a reason, or press "Fill an example".</li>
       <li><strong>The one cobalt action on the decline page is "Decline profile".</strong> It is the page's single purpose, so it takes the primary slot; Cancel is secondary. The label is explicit and the preview sits right beside it. It is not red, for the same reason as on R02: this is a routine outcome that the person can fix.</li>
       <li><strong>A fixed list, plus a free note.</strong> The list gives every decline a clear, consistent, kind sentence even when the reviewer is in a hurry; the note adds the specific detail. The note is shown to the user word for word in quotes, so the hint says so. Reviewer names are never shown to the user.</li>
+      <li><strong>Decline wording is approved (Neil, 07/11/2026).</strong> Five model reasons and five client reasons, as written. "Contact details or social handles" was removed from the model list because models keep their website and Instagram fields. The DRAFT flags on the decline list are gone.</li>
+      <li><strong>Flag a safety concern is a page, then a dialog, then a state.</strong> Reason (four options) and a required note; a confirmation that restates the four effects; then "Flagged - with the safety team". Neither cobalt nor red: Continue and Flag concern are ink-keyline secondary buttons, so the one cobalt action on R02 and R04 stays Approve, and red stays for errors. These views have no cobalt button by design. The reason list and the guidance wording are marked DRAFT because they go to the solicitor.</li>
+      <li><strong>Flag sends nothing to the person.</strong> No email, and their status page keeps saying it is under review. The alert goes to safety@ (the existing safeguarding alert). The note is for the safety team only. The case stays open until Neil or a named safety lead decides; the screen where they record that outcome is not part of this set (see the flags for the PM on the index page).</li>
+      <li><strong>Flag is available after approval, too.</strong> On the decided page it sits below the buttons, behind a hairline, and hides the profile again straight away. It is not offered after a decline, because a declined profile is already hidden. Reviewers and admins both see it.</li>
+      <li><strong>"Reopen review" is admin only.</strong> It sits in its own "Admin only" block at the bottom of the decided page. It hides the profile again immediately, puts the person back in the queue and sends no email. Reviewers never see it, and nothing on their page hints it exists. The confirm dialog is a small design addition, because it hides a live profile; drop it if Neil prefers a single click.</li>
       <li><strong>Honest about timing.</strong> The decision is saved at once; the email goes out from a background job within about 10 minutes. So the page says "Will be sent shortly", never "sent", and changes to "Sent at 14:16" only if the job records that. If it cannot, the page keeps saying "will be sent shortly" and never claims more than it knows (see the flags on the index page).</li>
       <li><strong>After a decision there are no Approve or Decline buttons.</strong> The panel shows who decided, when, the checklist result for an approval, the reason and note for a decline, and the email state. A reviewer who opens a stale email link sees the decision, not a second chance to act. One cobalt action remains: "Review next", which takes the oldest waiting person and is how a reviewer clears the queue in one sitting.</li>
-      <li><strong>Approve gets a short dialog</strong> (bottom sheet on phones) because approving makes someone visible to clients and cannot be quietly undone. It states exactly what will happen next, which depends on the Stripe status: nothing is promised that is not true.</li>
-      <li><strong>Reversing a decision</strong> is deliberately not on this page. See open question 2.</li>
-      <li>Reason wording follows the existing "Not approved" copy on the account status page ("wasn't approved this time", "not a permanent decision"). It is draft and is public-facing, so it needs Neil's approval.</li>
+      <li><strong>Approve gets a short dialog</strong> (bottom sheet on phones) because approving makes someone visible to clients. It states exactly what will happen next, which depends on the Stripe status: nothing is promised that is not true.</li>
+      <li><strong>Reversing a decision (decided 07/11/2026):</strong> there is no undo on a decision for reviewers. Admins can reopen a review, and anyone can flag a safety concern after approval.</li>
+      <li>Reason wording follows the existing "Not approved" copy on the account status page ("wasn't approved this time", "not a permanent decision").</li>
     </ul>
   </details>
 </div>

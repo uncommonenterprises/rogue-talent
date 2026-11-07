@@ -65,10 +65,9 @@
       </section>
 
       <section class="psection" aria-labelledby="h-use">
-        <h2 id="h-use">Who and why</h2>
+        <h2 id="h-use">Contact</h2>
         <dl class="kv-rows kv-rows--wide">
           <div class="kv-row"><dt>Contact name</dt><dd>Hannah Reeve</dd></div>
-          <div class="kv-row"><dt>Role or use case</dt><dd>Head of production. Seasonal lookbook and e-commerce shoots, about ten days a year.</dd></div>
         </dl>
       </section>
 
@@ -108,7 +107,7 @@
             <label class="rt-check"><input type="checkbox"><span class="rt-check__box"><i class="ico ico-check"></i></span><span>Company number found on Companies House</span></label>
             <label class="rt-check"><input type="checkbox"><span class="rt-check__box"><i class="ico ico-check"></i></span><span>Company name matches what they entered</span></label>
             <label class="rt-check"><input type="checkbox"><span class="rt-check__box"><i class="ico ico-check"></i></span><span>Company is active, not dissolved</span></label>
-            <label class="rt-check"><input type="checkbox"><span class="rt-check__box"><i class="ico ico-check"></i></span><span>Role or use case is believable for booking models</span></label>
+            <label class="rt-check"><input type="checkbox"><span class="rt-check__box"><i class="ico ico-check"></i></span><span>Industry and website look like a business that would book models</span></label>
             <label class="rt-check"><input type="checkbox"><span class="rt-check__box"><i class="ico ico-check"></i></span><span>Contact name looks like a real person, not a placeholder</span></label>
           </div>
           <div class="rv-progress"><span><b data-checked-count>0</b> of 5 ticked</span></div>
@@ -118,6 +117,12 @@
           <a class="rt-btn rt-btn--primary rt-btn--lg rt-btn--block rt-btn--disabled" data-approve aria-disabled="true" href="R03-decision-flow.html#approve-confirm">Approve client</a>
           <a class="rt-btn rt-btn--secondary rt-btn--lg rt-btn--block" href="R03-decision-flow.html#decline">Decline</a>
           <p class="rv-hint" data-approve-hint>Tick all 5 to approve.</p>
+        </div>
+
+        <!-- Third action: quiet, text-style, set apart by a hairline. Not cobalt, not red. -->
+        <div class="rv-flag">
+          <a class="rv-flag__btn" href="R03-decision-flow.html#flag">Flag a safety concern</a>
+          <p class="rv-hint">Blocks this account from being approved and alerts the safety team straight away. Hannah is not emailed.</p>
         </div>
 
       </div>
@@ -143,7 +148,6 @@
           <div class="kv-row"><dt>Companies House</dt><dd>Not applicable<small>Sole traders have no company number. Check the website or social link instead.</small></dd></div>
           <div class="kv-row"><dt>Business address</dt><dd>12 Example Road, Bristol BS1 1AA<small>Example address</small></dd></div>
           <div class="kv-row"><dt>Website or social link</dt><dd>osei-creative.example<a class="rv-ext" href="#" target="_blank" rel="noopener">Open in a new tab<i class="ico ico-ext ico--sm"></i></a></dd></div>
-          <div class="kv-row"><dt>Role or use case</dt><dd>Freelance art director. Small campaign shoots for independent brands.</dd></div>
           <div class="kv-row"><dt>Signed up</dt><dd>03/11/2026</dd></div>
         </dl>
       </div>
@@ -160,7 +164,7 @@
             <label class="rt-check"><input type="checkbox" onclick="return false"><span class="rt-check__box"><i class="ico ico-check"></i></span><span>Website or social link shows a real business</span></label>
             <label class="rt-check"><input type="checkbox" onclick="return false"><span class="rt-check__box"><i class="ico ico-check"></i></span><span>Trading name matches the website or social link</span></label>
             <label class="rt-check"><input type="checkbox" onclick="return false"><span class="rt-check__box"><i class="ico ico-check"></i></span><span>Business address looks genuine, not a placeholder</span></label>
-            <label class="rt-check"><input type="checkbox" onclick="return false"><span class="rt-check__box"><i class="ico ico-check"></i></span><span>Role or use case is believable for booking models</span></label>
+            <label class="rt-check"><input type="checkbox" onclick="return false"><span class="rt-check__box"><i class="ico ico-check"></i></span><span>The business looks like one that would book models</span></label>
             <label class="rt-check"><input type="checkbox" onclick="return false"><span class="rt-check__box"><i class="ico ico-check"></i></span><span>Contact name looks like a real person, not a placeholder</span></label>
           </div>
           <div class="rv-progress"><span><b>0</b> of 5 ticked</span></div>
@@ -169,6 +173,10 @@
           <a class="rt-btn rt-btn--primary rt-btn--lg rt-btn--block rt-btn--disabled" aria-disabled="true" href="#">Approve client</a>
           <a class="rt-btn rt-btn--secondary rt-btn--lg rt-btn--block" href="R03-decision-flow.html#decline">Decline</a>
           <p class="rv-hint">Tick all 5 to approve.</p>
+        </div>
+        <div class="rv-flag">
+          <a class="rv-flag__btn" href="R03-decision-flow.html#flag">Flag a safety concern</a>
+          <p class="rv-hint">Blocks this account from being approved and alerts the safety team straight away. Daniel is not emailed.</p>
         </div>
       </div>
     </div>
@@ -180,12 +188,13 @@
   <details class="design-notes">
     <summary>Design notes</summary>
     <ul>
-      <li><strong>Clients have no public profile, so the page is the facts a reviewer decides on, and nothing else.</strong> Company name and number, registered office, industry, website, who the person is and what they will use Rogue Talent for, and when they signed up. Email address and phone number are deliberately not shown: they are not needed for the decision, and fewer personal details on screen is the safer default.</li>
+      <li><strong>Clients have no public profile, so the page is the facts a reviewer decides on, and nothing else.</strong> Company name and number, registered office, industry, website, contact name, and when they signed up. Email address and phone number are deliberately not shown: they are not needed for the decision, and fewer personal details on screen is the safer default.</li>
+      <li><strong>"Role or use case" is dropped (decided 07/11/2026): it is not collected.</strong> The row is gone from both variants. Its checklist item is replaced so the list stays at five, all required before Approve: "Industry and website look like a business that would book models" for companies, and "The business looks like one that would book models" for sole traders. This is a design call for Neil's confirmation, since checklist wording is still draft.</li>
       <li><strong>The Companies House check is one tap.</strong> The number is set in the mono face (it is an ID, which is what the mono face is for), with a "Search Companies House" link that opens in a new tab with the number already searched. The Developer builds the link as <code>https://find-and-update.company-information.service.gov.uk/search/companies?q={number}</code>; please confirm the URL still works at build time. Nothing is fetched or checked automatically: v1 is a manual check, as the lifecycle spec says.</li>
-      <li><strong>Same panel, same two buttons, same rules as R02:</strong> Approve is the only cobalt action and stays disabled until the five checks are ticked; Decline is secondary. The client checklist is different because the risk is different (is this a real business, not are these photos fine). Draft wording again.</li>
+      <li><strong>Same panel, same buttons, same rules as R02:</strong> Approve is the only cobalt action and stays disabled until the five checks are ticked; Decline is secondary. The client checklist is different because the risk is different (is this a real business, not are these photos fine). Draft wording again.</li>
+      <li><strong>"Flag a safety concern" is the third action here too (decided 07/11/2026),</strong> in the same quiet text style, apart from Approve and Decline, not cobalt and not red. It opens the same form and confirmation as R02 (R03). It blocks the account from being approved, sends no email, alerts safety@ at once, and keeps the case open until Neil or a named safety lead decides. The reason list is the same four and is DRAFT (going to the solicitor); the Photos reason will rarely apply to a client, which is worth the solicitor's view.</li>
       <li><strong>Sole traders</strong> (state below) get a different row set because the business-details form asks for different things: no number, but an address and a website or social link. The checklist swaps the three company checks for checks on the link and the address.</li>
       <li><strong>Stripe Identity</strong> shows as one row (clients have no bank step). The hint says what approving will cause next: the client is asked to verify before their first booking, never before being approved.</li>
-      <li><strong>"Role or use case"</strong> is in the brief but I could not find it as a field in the business-details form (signup screen 18). Either the form gains it, or this row is dropped. Flagged on the index page.</li>
       <li>All names, numbers and addresses are example data. The company number and addresses are made up and are not real businesses.</li>
     </ul>
   </details>

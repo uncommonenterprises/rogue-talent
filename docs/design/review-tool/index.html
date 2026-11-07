@@ -20,9 +20,9 @@
 
 <header class="map-hero">
   <div class="container--editorial">
-    <span class="rt-eyebrow rt-eyebrow--inverse">Design review · ux-designer → PM → Neil · 04/11/2026</span>
+    <span class="rt-eyebrow rt-eyebrow--inverse">Design review · ux-designer → PM → Neil · updated 07/11/2026</span>
     <h1>Approve or decline someone in <span>one tap from the email.</span></h1>
-    <p>An in-site tool for reviewers to approve or decline models and clients, replacing hand-edited metadata in Console. The reviewer clicks the link in the email, lands on the person in Rogue Talent, ticks a short checklist and decides. Sharetribe changes happen in the background. Built on the same tokens and <code>rt-*</code> components as the booking set. Nothing here is live; it is for approval before the build. All names, numbers, addresses and photos are example data, and every picture is a labelled placeholder.</p>
+    <p>An in-site tool for reviewers to approve or decline models and clients, replacing hand-edited metadata in Console. The reviewer clicks the link in the email, lands on the person in Rogue Talent, ticks a short checklist and decides. Sharetribe changes happen in the background. Built on the same tokens and <code>rt-*</code> components as the booking set. Nothing here is live. All names, numbers, addresses and photos are example data, and every picture is a labelled placeholder. This version includes Neil's decisions of 07/11/2026.</p>
   </div>
 </header>
 
@@ -33,17 +33,17 @@
     <p class="group-sub">Email, log in if needed, look, decide. Reviewers may well do this on a phone, so R01 and R02 are shown at 375px inside each page.</p>
     <div class="map-list">
       <a class="map-card" href="R05-reviewer-email.html"><span class="num">R05</span><h3>Reviewer email and log-in step</h3><p>"New model profile to review: Imogen Hart" with one button. Client and resubmission versions. The link lands on log-in if needed, then returns to the review page.</p></a>
-      <a class="map-card" href="R01-review-queue.html"><span class="num">R01</span><h3>Review queue</h3><p>Everything waiting, oldest first. Tabs for Models, Clients and Recently decided (with who decided and the email state). Empty state, and a phone view.</p></a>
-      <a class="map-card" href="R02-model-review.html"><span class="num">R02</span><h3>Model review</h3><p>The profile as a client sees it, plus a review panel: status, Stripe checks, a five-point checklist, Approve and Decline. Live: tick the boxes. Phone view included.</p></a>
-      <a class="map-card" href="R04-client-review.html"><span class="num">R04</span><h3>Client review</h3><p>Company name and number with a Companies House link, role or use case, ID status. Same panel and buttons. Sole trader variant.</p></a>
+      <a class="map-card" href="R01-review-queue.html"><span class="num">R01</span><h3>Review queue</h3><p>Everything waiting, oldest first, amber after more than 1 working day. Tabs for Models, Clients and Recently decided (with who decided and the email state). Empty state, and a phone view.</p></a>
+      <a class="map-card" href="R02-model-review.html"><span class="num">R02</span><h3>Model review</h3><p>The profile as a client sees it, plus a review panel: status, Stripe checks, a five-point checklist, Approve, Decline and a quiet "Flag a safety concern". Live: tick the boxes. Phone view included.</p></a>
+      <a class="map-card" href="R04-client-review.html"><span class="num">R04</span><h3>Client review</h3><p>Company name and number with a Companies House link, ID status. Same panel and buttons, including the safety flag. Sole trader variant.</p></a>
     </div>
   </section>
 
   <section class="map-group">
     <h2>Deciding</h2>
-    <p class="group-sub">The decline page with a live message preview, the approve dialog, both success states, and the page after a decision.</p>
+    <p class="group-sub">The decline page with a live message preview, the approve dialog, the safety-concern flag, both success states, and the page after a decision.</p>
     <div class="map-list">
-      <a class="map-card" href="R03-decision-flow.html"><span class="num">R03</span><h3>Decision flow</h3><p>Pick a reason and add a note; watch exactly what the person will be told. "Email will be sent shortly" states, who decided and when, and the draft reason list for models and clients.</p></a>
+      <a class="map-card" href="R03-decision-flow.html"><span class="num">R03</span><h3>Decision flow</h3><p>Pick a reason and add a note; watch exactly what the person will be told. Flag a safety concern (form, confirmation, "Flagged - with the safety team"). The decided page for reviewers and admins, with the admin-only "Reopen review". The approved reason list for models and clients.</p></a>
     </div>
   </section>
 
@@ -51,7 +51,7 @@
     <h2>Access, team and edge cases</h2>
     <p class="group-sub">Who can get in, how reviewers are added, and what goes wrong gracefully.</p>
     <div class="map-list">
-      <a class="map-card" href="R06-team.html"><span class="num">R06</span><h3>Team / reviewers (admin)</h3><p>Add or remove reviewers by email address. Minimal, and subject to the developer's feasibility check.</p></a>
+      <a class="map-card" href="R06-team.html"><span class="num">R06</span><h3>Team / reviewers (admin)</h3><p>Add or remove reviewers by email address. Decided for build stage 3; until then the PM adds reviewers in Console.</p></a>
       <a class="map-card" href="R07-states.html"><span class="num">R07</span><h3>States and edge cases</h3><p>"You don't have access to this page", already decided by someone else, decision not saved, logged out mid-decision, not in the queue.</p></a>
     </div>
   </section>
@@ -59,66 +59,46 @@
 </div>
 
 <div class="container--editorial" style="padding: var(--space-7) 0; border-top: var(--border-hair) solid var(--border-hairline);">
+  <h2 style="font-family:var(--font-display); font-weight:800; font-size:var(--text-2xl); margin-bottom: var(--space-4);">Decisions (Neil, 07/11/2026)</h2>
+  <ul class="plain-list">
+    <li><strong>Flag a safety concern</strong> is a third action on the model and client review pages (R02, R04). The profile stays hidden and cannot be approved or booked. No email goes to the person, and their status page keeps saying it is under review. An immediate alert goes to safety@ (the existing safeguarding alert). The case stays open until Neil or a named safety lead decides. It covers suspected under-18, stolen photos and signs of coercion. It has a short form (reason, plus a required note), a confirmation step and a "Flagged - with the safety team" state, and it is also available after approval, where it hides the profile again. It is a quiet text action, apart from Approve and Decline, neither cobalt nor red. The reason list and guidance are DRAFT, going to the solicitor.</li>
+    <li><strong>Admin-only "Reopen review"</strong> on the decided page. It hides the profile again immediately, puts the person back in the queue and sends no email. Reviewers never see it.</li>
+    <li><strong>Checklist item 3</strong> is now "No nudity in photos". Models keep their website and Instagram fields. The checklist stays at five items, all required before Approve.</li>
+    <li><strong>Decline reasons:</strong> "Contact details or social handles" is removed for models. All other decline wording is approved as written.</li>
+    <li><strong>Queue amber:</strong> anything waiting more than 1 working day (weekends excluded) shows amber. No red.</li>
+    <li><strong>Reviewer emails:</strong> every reviewer gets every submission email. The first decision wins.</li>
+    <li><strong>Team page (R06):</strong> decided for build stage 3. Until then the PM adds reviewers in Console.</li>
+    <li><strong>Resolved flags:</strong> the Links flag (links stay, checklist changed); the under-18 flag (handled through "Flag a safety concern"); "role or use case" for clients is dropped, because it is not collected.</li>
+  </ul>
+</div>
+
+<div class="container--editorial" style="padding: var(--space-7) 0; border-top: var(--border-hair) solid var(--border-hairline);">
   <h2 style="font-family:var(--font-display); font-weight:800; font-size:var(--text-2xl); margin-bottom: var(--space-4);">Key design decisions</h2>
   <div class="principle-grid">
     <div><h3>One cobalt action: Approve</h3><p>Approve is the only cobalt button on a review page. Decline sits directly under it as a secondary (ink keyline) button. On the decline page, "Decline profile" is the single primary because it is that page's one job.</p></div>
     <div><h3>Decline is not red</h3><p>Red is for danger. A decline is a routine outcome the person can fix and resubmit, with no limit, so it is neutral grey in the queue and secondary on the page. Red appears only when something fails (a decision not saved).</p></div>
-    <div><h3>The checklist gates Approve</h3><p>Approve stays disabled until all five boxes are ticked, with a plain line saying why. Decline never needs ticks. This makes the checklist a real check, not decoration (open question 1).</p></div>
-    <div><h3>The preview is the confirmation</h3><p>Decline shows the actual email subject and body, filled in live. No extra "are you sure" step. Approve gets a short dialog that says what will happen, which depends on the Stripe status.</p></div>
-    <div><h3>Honest about the email</h3><p>The email goes from a background job in about 10 minutes, so every screen says "will be sent shortly", never "sent". It changes to "Sent at 14:16" only if the job records it.</p></div>
-    <div><h3>Calm and functional</h3><p>No marketing voice. Hairlines, the existing status chips, no new colours, no gradients, no emoji. Amber marks only slow waits and draft flags. Photos are placeholders.</p></div>
+    <div><h3>Flag is quiet, not loud</h3><p>"Flag a safety concern" is an underlined text action below a hairline, away from Approve and Decline so it is not clicked by accident. It is neither cobalt nor red. It acts at once and says exactly what happens, including that the person is not emailed.</p></div>
+    <div><h3>The checklist gates Approve</h3><p>Approve stays disabled until all five boxes are ticked, with a plain line saying why. Decline and Flag never need ticks. This makes the checklist a real check, not decoration.</p></div>
+    <div><h3>The preview is the confirmation</h3><p>Decline shows the actual email subject and body, filled in live. No extra "are you sure" step. Approve and Flag each get a short dialog that says what will happen.</p></div>
+    <div><h3>Honest about the email</h3><p>The email goes from a background job in about 10 minutes, so every screen says "will be sent shortly", never "sent". It changes to "Sent at 14:16" only if the job records it. A flag sends no email, and says so.</p></div>
+    <div><h3>Calm and functional</h3><p>No marketing voice. Hairlines, the existing status chips, no new colours, no gradients, no emoji. Amber marks only slow waits (more than 1 working day) and draft flags. Photos are placeholders.</p></div>
     <div><h3>Phone first for R01 and R02</h3><p>Rows become two-line cards; the profile page puts a summary card first and the checklist and buttons at the end, with a bottom bar that jumps to them. 44px minimum tap targets, nothing scrolls sideways.</p></div>
-    <div><h3>Only what the decision needs</h3><p>Clients show company, number, role and ID status. No email, phone or date of birth on screen. Fewer personal details is the safer default for people who are not Neil.</p></div>
-  </div>
-</div>
-
-<div class="container--editorial" style="padding: 0 0 var(--space-7);">
-  <h2 style="font-family:var(--font-display); font-weight:800; font-size:var(--text-2xl); margin-bottom: var(--space-5);">Open questions for Neil</h2>
-  <div class="oq-list">
-
-    <div class="oq-item">
-      <h3>1. Should ticking the whole checklist be required before Approve works?</h3>
-      <p>As designed, Approve is disabled until all five boxes are ticked. It stops a rushed approve and gives you something to point to if a bad profile gets through. The cost is a few extra taps on every approval. Decline never needs ticks.</p>
-      <p class="oq-rec"><strong>Recommendation:</strong> yes, required. Five taps is a small price for a safety-facing gate, and it is what makes "reviewed by our team" true in practice. Relax it later if the wording proves too fussy.</p>
-    </div>
-
-    <div class="oq-item">
-      <h3>2. Can a decision be reversed from the page?</h3>
-      <p>As designed there is no undo. After a decision the page shows who decided and when, and no buttons. A mistaken decline can be fixed by the person resubmitting (no limit on attempts). A mistaken approve would be fixed in Console by suspending the account.</p>
-      <p class="oq-rec"><strong>Recommendation:</strong> no undo in v1. The Approve dialog and the decline preview are the safeguards. Add an admin-only "Reopen review" button only if mistakes actually happen.</p>
-    </div>
-
-    <div class="oq-item">
-      <h3>3. Are the decline reasons and their wording right? (public-facing)</h3>
-      <p>The six model reasons and five client reasons on R03 each send a fixed sentence, plus the reviewer's optional note word for word in quotes, to a real person by email and on their account status page. The reviewer's name is never shown to them. The tone follows the existing "wasn't approved this time" copy.</p>
-      <p class="oq-rec"><strong>Recommendation:</strong> approve the list as a draft and read the sentences yourself, since they speak for the company. Keep the note visible in the preview so reviewers see exactly what goes out.</p>
-    </div>
-
-    <div class="oq-item">
-      <h3>4. Does every reviewer get every email?</h3>
-      <p>As designed, each new submission emails all reviewers. The first decision wins; anyone opening the link afterwards sees the decision (R07), and the server refuses a second one. The alternative is assigning each submission to one reviewer.</p>
-      <p class="oq-rec"><strong>Recommendation:</strong> everyone gets everything while there are three reviewers or fewer. It is simpler to build and nobody becomes a bottleneck. Move to assignment if you grow past that.</p>
-    </div>
-
-    <div class="oq-item">
-      <h3>5. Build the Team page now, or add reviewers in Console for launch?</h3>
-      <p>R06 lets an admin add or remove reviewers by email. The developer is checking how hard that is without Console. The review screens do not depend on it.</p>
-      <p class="oq-rec"><strong>Recommendation:</strong> if it is more than a small job, add the first few reviewers in Console and build R06 later. It will be used rarely, and a handful of reviewers is a one-minute Console job each.</p>
-    </div>
-
+    <div><h3>Only what the decision needs</h3><p>Clients show company, number, contact name and ID status. No email, phone or date of birth on screen. Fewer personal details is the safer default for people who are not Neil.</p></div>
   </div>
 </div>
 
 <div class="container--editorial" style="padding: 0 0 var(--space-7);">
   <h2 style="font-family:var(--font-display); font-weight:800; font-size:var(--text-2xl); margin-bottom: var(--space-4);">Flags for the PM (not questions for Neil)</h2>
   <ul class="plain-list">
-    <li><strong>Links field versus "no social handles".</strong> The B03 profile shows a Links field (website, Instagram). If handles are banned from "photos or text", that field contradicts checklist item 3. A rule is needed: either Links is exempt (and the checklist says so) or the field changes.</li>
-    <li><strong>Under-18 rule.</strong> The checklist asks "appears to be over 18", but the decline list has no under-18 reason, on purpose (we should not tell a possible minor why). What a reviewer does when this box cannot be ticked needs an agreed procedure. The lifecycle spec says an under-18 account stays blocked for operator review. Safety surface.</li>
-    <li><strong>"Role or use case" for clients</strong> is in the brief but is not a field in the business-details form (signup screen 18). Add it to the form or drop the row on R04.</li>
+    <li><strong>Safety outcome screen.</strong> The brief says the flagged case stays open until Neil or a named safety lead decides. This set shows the flag and the flagged state, not the screen where that person records the outcome (clear and restore, or close the account). Needs scoping with the safety framework.</li>
+    <li><strong>Flag on client accounts.</strong> R04 uses the same four reasons. "Photos may not be theirs" will rarely apply to a client. Worth the solicitor's view when the list goes to them.</li>
+    <li><strong>Client checklist after dropping "role or use case".</strong> The checklist item that relied on it was replaced so the list stays at five: "Industry and website look like a business that would book models" (companies) and "The business looks like one that would book models" (sole traders). Checklist wording is still draft.</li>
+    <li><strong>Working days in the queue.</strong> The amber rule counts working days, weekends excluded. Bank holidays are not mentioned in the decision; the build needs a rule (suggest: weekends only for v1).</li>
+    <li><strong>Reopen review confirmation.</strong> I added a short confirm dialog because it hides a live profile. It is easy to drop if Neil wants a single click.</li>
     <li><strong>Email sent state.</strong> "Sent at 14:16" needs the background job to record a timestamp the page can read. If it cannot, the page keeps saying "will be sent shortly" and the queue's email column shows only that.</li>
-    <li><strong>Public claim now backed by the tool.</strong> B03 says "Profile and portfolio reviewed by the Rogue Talent team". This tool, with the checklist ticks recorded against each decision, is what makes that sentence evidence-based. Recommend storing who decided, when, the checklist result and the reason with every decision.</li>
+    <li><strong>Public claim now backed by the tool.</strong> B03 says "Profile and portfolio reviewed by the Rogue Talent team". This tool, with the checklist ticks recorded against each decision, is what makes that sentence evidence-based. Recommend storing who decided, when, the checklist result and the reason with every decision, and who flagged, when, why and the note with every flag.</li>
     <li><strong>Reviewer accounts.</strong> They are ordinary Rogue Talent accounts with a reviewer flag. Which user type they hold, and where the log-in redirect sends them (it must return to the review page), are Developer questions.</li>
-    <li><strong>Where the decline reason lives.</strong> The account status page currently shows one quoted note ("What our reviewer noted"). This design sends a fixed sentence plus an optional note, so that page must show both. Store the reason code and the note separately.</li>
+    <li><strong>Where the decline reason lives.</strong> The account status page currently shows one quoted note ("What our reviewer noted"). This design sends a fixed sentence plus an optional note, so that page must show both. Store the reason code and the note separately. A flagged person's status page must keep showing "under review", with no hint of the flag.</li>
     <li><strong>Shared styles.</strong> <code>review.css</code> imports <code>../booking-journey/journey.css</code> instead of copying it a third time. Keep both folders together, or copy the file if this folder is moved.</li>
   </ul>
 </div>
@@ -128,27 +108,28 @@
   <ul class="plain-list">
     <li><strong>Decision and gating:</strong> Approve and Decline write the existing operator decision (<code>reviewDecision</code> and the private note) per the account status lifecycle amendment. This is the safety-critical gate; human review before real users.</li>
     <li><strong>First decision wins:</strong> the server must refuse a second decision on someone already decided, and the page must show the R07 message.</li>
+    <li><strong>Flag a safety concern:</strong> keeps the profile hidden, sends no email to the person, fires the existing safeguarding alert to safety@ immediately, and leaves the case open. Allowed before and after approval (after approval it hides the profile again). The person's status page must not change.</li>
+    <li><strong>Reopen review:</strong> admin only, enforced on the server, not just hidden in the page. Hides the profile immediately, returns the person to the queue, sends no email.</li>
+    <li><strong>Queue amber:</strong> more than 1 working day since submission, weekends excluded.</li>
     <li><strong>Return to page after log-in:</strong> a reviewer who clicks the email link while logged out must land on the review page after logging in.</li>
     <li><strong>No access page:</strong> identical for a real review URL and a made-up one, for anyone who is not a reviewer.</li>
     <li><strong>Companies House link:</strong> built from the company number as <code>https://find-and-update.company-information.service.gov.uk/search/companies?q={number}</code>, opening in a new tab. Please confirm the URL still works when you build it. No automatic lookup in v1.</li>
-    <li><strong>Reviewer emails:</strong> one per submission to every reviewer, with the three subjects shown on R05. Sent from the same transport as the other lifecycle emails.</li>
+    <li><strong>Reviewer emails:</strong> one per submission to every reviewer (decided), with the three subjects shown on R05. Sent from the same transport as the other lifecycle emails.</li>
     <li><strong>Profile reuse:</strong> R02 is the B03 profile with the booking panel replaced by the review panel and the reviews and "Checked before going live" sections removed.</li>
-    <li><strong>Components used:</strong> existing <code>rt-btn</code>, <code>rt-field</code>, <code>rt-check</code>, <code>rt-tag</code>, <code>rt-status</code>, <code>rt-avatar</code>, <code>rt-badge</code>. New and small: <code>rt-tab</code> with a count, the queue row, the review panel, the message preview card, and the dialog. No new colours, fonts, spacing or radii.</li>
+    <li><strong>Components used:</strong> existing <code>rt-btn</code>, <code>rt-field</code>, <code>rt-check</code>, <code>rt-tag</code>, <code>rt-status</code>, <code>rt-avatar</code>, <code>rt-badge</code>. New and small: <code>rt-tab</code> with a count, the queue row, the review panel, the message preview card, the dialog, and the quiet flag link (<code>rv-flag</code>). No new colours, fonts, spacing or radii.</li>
   </ul>
 </div>
 
 <div class="container--editorial" style="padding: 0 0 var(--space-7);">
   <h2 style="font-family:var(--font-display); font-weight:800; font-size:var(--text-2xl); margin-bottom: var(--space-4);">Escalations (not mine to decide)</h2>
   <ul class="plain-list">
-    <li><strong>Public-facing words:</strong> the decline reasons and their sentences (question 3), which reach real people.</li>
-    <li><strong>Safety surfaces:</strong> the age check procedure and the checklist wording, which is marked DRAFT on every panel.</li>
+    <li><strong>Safety surfaces, still DRAFT:</strong> the checklist wording, and the safety-concern reason list and guidance (going to the solicitor).</li>
     <li><strong>Privacy and legal:</strong> reviewers other than Neil see identity-adjacent details (photos, ID verification status, company details). Who gets access, and what they may see, should be confirmed before real users.</li>
-    <li><strong>Product rules:</strong> questions 1, 2 and 4 each set a rule for how reviewing works.</li>
   </ul>
 </div>
 
 <footer class="map-foot">
-  <div class="container--editorial">Rogue Talent - review tool design mockups, for review only. Not built. ux-designer, 04/11/2026. Test-environment context only: no live data. Sample data is marked as such; no real people or photographs. Checklist wording and the decline reasons are DRAFT for Neil. Em dashes and en dashes: none in these files (checked by search).</div>
+  <div class="container--editorial">Rogue Talent - review tool design mockups, for review only. Not built. ux-designer, updated 07/11/2026. Test-environment context only: no live data. Sample data is marked as such; no real people or photographs. Decline wording is approved; checklist wording and the safety-concern reasons and guidance are DRAFT. Em dashes and en dashes: none in these files (checked by search).</div>
 </footer>
 
 </body>

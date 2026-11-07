@@ -156,6 +156,31 @@ a.q-row:focus-visible { outline: none; box-shadow: inset 0 0 0 2px var(--accent-
 .decision-line { font-size: var(--text-sm); color: var(--text-secondary); line-height: 1.5; }
 
 /* ---------------------------------------------------------------
+   Safety-concern flag and admin Reopen (decided 07/11/2026)
+   A quiet text-style action, set apart from Approve and Decline by a
+   hairline and space. Not cobalt (that is Approve) and not red (red is
+   for errors). Ink text, underlined, so it reads as a link not a button.
+   --------------------------------------------------------------- */
+.rv-flag { border-top: var(--border-hair) solid var(--border-hairline); margin-top: var(--space-2); padding-top: var(--space-4); display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-1); }
+.rv-flag__btn {
+  display: inline-flex; align-items: center; gap: var(--space-2); min-height: 44px; padding: 0; background: none; border: 0; cursor: pointer;
+  font-family: var(--font-sans); font-weight: var(--weight-semibold); font-size: var(--text-sm); color: var(--text-secondary);
+  text-decoration: underline; text-underline-offset: 3px; transition: color var(--dur-fast);
+}
+.rv-flag__btn:hover { color: var(--text-primary); }
+.rv-flag__btn:focus-visible { outline: none; box-shadow: var(--shadow-focus); border-radius: var(--radius-md); }
+.rv-flag .rv-hint { text-align: left; }
+.rv-admin { border-top: var(--border-hair) solid var(--border-hairline); padding-top: var(--space-4); display: flex; flex-direction: column; gap: var(--space-2); }
+.rv-admin .rt-btn { min-height: 48px; }
+.rv-admin__title { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); font-weight: 700; font-size: var(--text-2xs); letter-spacing: var(--tracking-wider); text-transform: uppercase; color: var(--text-muted); }
+.case-box { background: var(--surface-subtle); border-radius: var(--radius-lg); padding: var(--space-4); display: flex; flex-direction: column; gap: var(--space-2); font-size: var(--text-sm); color: var(--text-secondary); line-height: 1.5; }
+.case-box b { color: var(--text-primary); }
+.case-box q { display: block; color: var(--text-primary); quotes: none; border-left: var(--border-bold) solid var(--ink-300); padding-left: var(--space-3); }
+.flag-page { max-width: 640px; padding-bottom: var(--space-7); }
+.flag-form { display: flex; flex-direction: column; gap: var(--space-5); }
+.flag-form .rv-actions .rt-btn { min-height: 48px; }
+
+/* ---------------------------------------------------------------
    R03 decline flow, dialogs, email preview
    --------------------------------------------------------------- */
 /* Phone order: form, then the message preview, then the buttons (so the reviewer reads before committing).

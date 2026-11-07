@@ -41,7 +41,7 @@
     <div class="q-title-row">
       <div class="stack stack--sm">
         <h1 class="page-title">Review queue</h1>
-        <p class="q-summary" id="q-summary"><b>7 waiting</b>, oldest first. The longest wait is 5 days.</p>
+        <p class="q-summary" id="q-summary"><b>7 waiting</b>, oldest first. The longest wait is 5 days. Amber means waiting more than 1 working day.</p>
       </div>
       <button class="mock-flag mock-btn mock-only" type="button" data-demo-empty>Preview empty state</button>
     </div>
@@ -53,7 +53,7 @@
       <button class="rt-tab" type="button" role="tab" aria-selected="false" data-tab="decided">Recently decided</button>
     </div>
 
-    <!-- WAITING: oldest first. Models open R02, clients open R04. -->
+    <!-- WAITING: oldest first. Models open R02, clients open R04. Amber = waiting more than 1 working day (weekends excluded). -->
     <div class="q-list" id="q-waiting">
       <div class="q-head" aria-hidden="true"><span>Name</span><span>Type</span><span>Submitted</span><span>ID verification</span><span>Flag</span><span></span></div>
 
@@ -97,7 +97,7 @@
           <span class="rt-status rt-status--pending"><span class="rt-status__dot"></span>In progress</span>
           <span></span>
         </span>
-        <span class="q-sub"><span>02/11/2026</span><small class="q-age">2 days ago</small></span>
+        <span class="q-sub"><span>02/11/2026</span><small class="q-age is-late">2 days ago</small></span>
         <i class="ico ico-chev-right q-chev"></i>
       </a>
 
@@ -145,6 +145,17 @@
     <!-- RECENTLY DECIDED: last 7 days, newest first, with who decided and where the email is -->
     <div class="q-list" id="q-decided" hidden>
       <div class="q-head" aria-hidden="true"><span>Name</span><span>Type</span><span>Decided by</span><span>Decision</span><span>Email</span><span></span></div>
+
+      <a class="q-row" href="R03-decision-flow.html#flagged-state">
+        <span class="q-who"><span class="rt-avatar">ZQ</span><span class="q-who__text"><b>Zara Quinn</b><small>Liverpool</small></span></span>
+        <span class="q-tags">
+          <span class="rt-tag">Model</span>
+          <span class="rt-status rt-status--draft"><span class="rt-status__dot"></span>Flagged</span>
+          <span class="q-email"><i class="ico ico-lock ico--sm"></i>No email, by design</span>
+        </span>
+        <span class="q-sub"><span>Sam Okafor</span><small>Today, 14:31</small></span>
+        <i class="ico ico-chev-right q-chev"></i>
+      </a>
 
       <a class="q-row" href="R03-decision-flow.html#after-decision">
         <span class="q-who"><span class="rt-avatar">RA</span><span class="q-who__text"><b>Ruby Alder</b><small>Glasgow</small></span></span>
@@ -232,7 +243,8 @@
       <div class="phone-frame"><iframe src="R01-review-queue.html?embed=1" title="R01 at phone width"></iframe></div>
       <div class="phone-demo__text">
         <p><strong>What changes on a phone.</strong> The column header disappears. Each row stacks: name and city, then type, ID verification and the resubmission flag as chips, then the submitted date and how long ago.</p>
-        <p><strong>Age colour.</strong> Anything waiting 3 days or more shows its age in amber. The profile page promises "usually within one working day", so the queue should make slow ones obvious. Threshold is a draft for Neil.</p>
+        <p><strong>Age colour (decided).</strong> Anything waiting <strong>more than 1 working day</strong> shows its age in amber. Weekends are not counted, so something submitted on a Friday evening is not amber on Saturday or Sunday. The profile page promises "usually within one working day", so the queue makes the ones past that obvious. There is no red: a slow wait is not an error.</p>
+        <p><strong>In this example</strong> (Wednesday 04/11/2026): Chloe, Marcus, Hannah and Imogen are amber. Daniel and Freya, submitted yesterday (1 working day), and Amara, submitted today, are not.</p>
         <p><strong>Cobalt.</strong> The only cobalt on this view is the active tab underline. Rows are links, not buttons.</p>
       </div>
     </div>
@@ -245,9 +257,11 @@
     <ul>
       <li><strong>Built for "open it, tap the oldest, decide".</strong> Oldest first, no sorting controls, no search. With a queue this short, a filter box would be more to learn than to use. Tabs filter Models and Clients; "Recently decided" is the fourth tab so there is one place to look, not two pages.</li>
       <li><strong>Each row answers the four questions a reviewer asks before opening it:</strong> who, what kind, how long have they waited, and is Stripe already done. A reviewer can skip a not-yet-verified person if they want, but nothing is hidden.</li>
+      <li><strong>Amber age marker (decided 07/11/2026):</strong> a wait of more than 1 working day, weekends excluded, turns the "ago" text amber and bold. Amber only, never red. The build must count working days, not 24-hour periods.</li>
       <li><strong>ID verification is one chip per row.</strong> For models it is Verified only when both identity and bank are done; the split is on the review page. Green means done, amber in progress, grey not started. It is the existing <code>rt-status</code> set, no new colours.</li>
       <li><strong>Resubmission</strong> is an outlined tag on the row, with the previous decline shown inside the review page itself (R02).</li>
       <li><strong>Recently decided</strong> shows the last 7 days, newest first: decision, who decided, when, and where the email is ("Email due shortly" until the background job has run, then "Email sent 11:46"). Decline shows a neutral grey chip, not red (see R02 notes).</li>
+      <li><strong>Flagged cases</strong> appear in Recently decided with a grey "Flagged" chip and "No email, by design", because a flag never emails the person. A flagged case is not in the waiting queue: it stays open with the safety team until Neil or a named safety lead decides. Example row: Zara Quinn.</li>
       <li><strong>Team link</strong> in the nav only appears for admins. A reviewer who is not an admin sees "Review queue" alone.</li>
       <li>Names, dates and cities are example data. No real people, no photographs: avatars are monograms.</li>
     </ul>

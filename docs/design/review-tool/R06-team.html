@@ -44,7 +44,7 @@
 <main class="page">
   <div class="q-wrap">
 
-    <div class="notice notice--warn mock-only"><i class="ico ico-info"></i><p><strong>Subject to the developer's feasibility check.</strong> This screen needs a way to mark an account as a reviewer without opening Console. If that is not feasible for v1, reviewers are added in Console and this page waits for a later release. The review screens (R01 to R05) do not depend on it.</p></div>
+    <div class="notice mock-only"><i class="ico ico-info"></i><p><strong>Decided (Neil, 07/11/2026): this page is for build stage 3.</strong> Until then, reviewers are added by the PM through Console. The review screens (R01 to R05) do not depend on it, and nothing on this page is needed for launch.</p></div>
 
     <div class="stack stack--sm">
       <h1 class="page-title">Team</h1>
@@ -165,10 +165,11 @@
   <details class="design-notes">
     <summary>Design notes</summary>
     <ul>
+      <li><strong>Build timing (decided 07/11/2026):</strong> this page is built in stage 3. Until then the PM adds reviewers through Console. Every reviewer gets every submission email, and the first decision wins.</li>
       <li><strong>As small as it can be:</strong> one field, one button, one list. Nothing to learn. Only admins see this page and the "Team" link; a reviewer who opens it directly gets the plain "no access" page (R07).</li>
       <li><strong>One cobalt action: Add reviewer.</strong> Remove is secondary, not red: it is reversible in ten seconds by adding the person again, so it is not danger. It still asks once, inline, and says exactly what changes.</li>
-      <li><strong>Adding needs an existing account,</strong> because reviewers use their own Rogue Talent log-in (as briefed). If there is no account, the error says what to do next. Inviting a brand-new person by email would be a larger build; see the feasibility banner.</li>
-      <li><strong>Admins cannot be removed from here,</strong> so the last admin can never lock everyone out. Who is an admin is set outside this page.</li>
+      <li><strong>Adding needs an existing account,</strong> because reviewers use their own Rogue Talent log-in (as briefed). If there is no account, the error says what to do next. Inviting a brand-new person by email would be a larger build.</li>
+      <li><strong>Admins cannot be removed from here,</strong> so the last admin can never lock everyone out. Who is an admin is set outside this page. Admins also see "Reopen review" on decided pages (R03); reviewers do not.</li>
       <li><strong>Removing someone does not delete their past decisions.</strong> The queue's "Recently decided" still shows who decided, so the record stays whole.</li>
       <li>Addresses use the reserved example.com domain. Names are example data.</li>
     </ul>

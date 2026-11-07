@@ -104,7 +104,6 @@
       'photo-quality': "Some of your photos are too small, dark or blurry for us to review properly. Please add clear, well-lit photos that show your face and your full look.",
       'photos-mismatch': "We couldn't confirm that the photos in your portfolio are all of the same person. Please remove any that aren't you, and add a clear, recent photo of your face.",
       'missing-info': "Some details on your profile are missing or incomplete. Please fill in the gaps and resubmit.",
-      'contact-details': "Your profile includes contact details or social handles in your photos or text. Please remove them. Messages and bookings all happen on Rogue Talent.",
       'display-name': "Your display name looks like a business name or contact detail. Please use your own name, as you'd like clients to see it.",
       'not-suitable': "Your profile isn't a fit for Rogue Talent at the moment."
     };
@@ -154,5 +153,28 @@
       });
     }
     refresh();
+  }
+
+  /* Flag a safety concern: reason + required note -> Continue (R03). No email is involved. */
+  var flagForm = document.getElementById('flag-form');
+  if (flagForm) {
+    var flagBtn = flagForm.querySelector('[data-flag-continue]');
+    var flagNote = document.getElementById('flag-note');
+    var flagCount = document.getElementById('flag-count');
+    var flagHelp = document.getElementById('flag-help');
+    var flagRefresh = function () {
+      var chosen = flagForm.querySelector('input[name="flagreason"]:checked');
+      var text = flagNote.value.trim();
+      flagCount.textContent = flagNote.value.length + ' / 500';
+      var ok = !!chosen && !!text;
+      flagBtn.classList.toggle('rt-btn--disabled', !ok);
+      flagBtn.setAttribute('aria-disabled', ok ? 'false' : 'true');
+      flagBtn.setAttribute('tabindex', ok ? '0' : '-1');
+      flagHelp.textContent = !chosen ? 'Pick a reason to continue.' : (!text ? 'Add a note for the safety team.' : 'You will be asked to confirm on the next step.');
+    };
+    flagForm.querySelectorAll('input[name="flagreason"]').forEach(function (r) { r.addEventListener('change', flagRefresh); });
+    flagNote.addEventListener('input', flagRefresh);
+    flagBtn.addEventListener('click', function (e) { if (flagBtn.getAttribute('aria-disabled') === 'true') e.preventDefault(); });
+    flagRefresh();
   }
 })();
