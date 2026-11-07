@@ -24,7 +24,18 @@ import {
   updateStripeAccount,
   fetchStripeAccount,
 } from '../../ducks/stripeConnectAccount.duck';
-import { fetchCurrentUser } from '../../ducks/user.duck';
+import { fetchCurrentUser, setCurrentUser } from '../../ducks/user.duck';
+
+import {
+  COVER_FETCH_ACCEPT,
+  COVER_SOURCE_VARIANT,
+  PROFILE_IMAGE_FROM_COVER_KEY,
+  coverFileName,
+  getCoverImage,
+  getCoverImageUrl,
+  getImageKey,
+  shouldSyncProfileImageFromCover,
+} from './coverProfileImage';
 
 const { UUID } = sdkTypes;
 
@@ -254,7 +265,106 @@ export const requestUpdateListing = (tab, data, config) => (dispatch, getState, 
   return dispatch(updateListingThunk({ tab, data, config }))
     .unwrap()
     .then(({ response, tab }) => {
+      // Portfolio saves: a model's cover photo doubles as their profile picture (F5). Runs in
+      // the background and never blocks or fails the save.
+      if (typeof data?.images !== 'undefined') {
+        const listing = denormalisedResponseEntities(response)[0];
+        dispatch(syncProfileImageFromCover(listing));
+      }
       return response;
+    });
+};
+
+////////////////////////////////////////////
+// Cover photo doubles as profile picture //
+////////////////////////////////////////////
+
+// The cover most recently asked for. If the model saves again with another cover while a copy
+// is still in flight, the older copy stops before it touches the profile.
+let latestCoverSyncKey = null;
+
+/**
+ * Tester feedback F5, part B: for models, the profile picture (nav, inbox, booking pages,
+ * messages) is their cover photo. After a portfolio save, if the cover isn't the image the
+ * profile picture was last made from, copy it: fetch the cover's 'scaled-large' file from the
+ * image CDN (which allows cross-origin reads), upload it as a new image, and set it as the
+ * user's profileImage. The source cover's id is kept in privateData so an unchanged cover is
+ * never copied twice, and a failed copy is retried on the next portfolio save.
+ *
+ * Never throws: a failure is logged and the portfolio save is unaffected. Clients and users
+ * without a cover are left alone.
+ *
+ * @param {Object} listing the saved listing, denormalised with its images
+ * @returns {Promise<Object|null>} the updated current user, or null when nothing changed
+ */
+export const syncProfileImageFromCover = listing => (dispatch, getState, sdk) => {
+  const currentUser = getState()?.user?.currentUser;
+  const coverKey = getImageKey(getCoverImage(listing));
+  const canFetch = typeof fetch === 'function' && typeof File === 'function';
+
+  if (!listing?.id || !canFetch || !shouldSyncProfileImageFromCover(currentUser, coverKey)) {
+    return Promise.resolve(null);
+  }
+
+  latestCoverSyncKey = coverKey;
+  const isStale = () => latestCoverSyncKey !== coverKey;
+
+  // Read the saved listing again for an uncropped copy of its cover.
+  return sdk.ownListings
+    .show({
+      id: listing.id,
+      include: ['images'],
+      'fields.image': [`variants.${COVER_SOURCE_VARIANT}`],
+    })
+    .then(response => {
+      const savedListing = denormalisedResponseEntities(response)[0];
+      const cover = getCoverImage(savedListing);
+      const url = getCoverImageUrl(cover);
+      if (isStale() || getImageKey(cover) !== coverKey || !url) {
+        return null;
+      }
+      return fetch(url, { headers: { Accept: COVER_FETCH_ACCEPT } }).then(res => {
+        if (!res.ok) {
+          throw new Error(`Cover photo download failed with status ${res.status}`);
+        }
+        return res.blob();
+      });
+    })
+    .then(blob => {
+      if (!blob || isStale()) {
+        return null;
+      }
+      const type = blob.type || 'image/jpeg';
+      const file = new File([blob], coverFileName(type), { type });
+      return sdk.images.upload({ image: file }, { expand: true });
+    })
+    .then(uploadResponse => {
+      if (!uploadResponse || isStale()) {
+        return null;
+      }
+      const profileImageId = uploadResponse.data.data.id;
+      return sdk.currentUser.updateProfile(
+        { profileImageId, privateData: { [PROFILE_IMAGE_FROM_COVER_KEY]: coverKey } },
+        {
+          expand: true,
+          include: ['profileImage'],
+          'fields.image': ['variants.square-small', 'variants.square-small2x'],
+        }
+      );
+    })
+    .then(updateResponse => {
+      if (!updateResponse) {
+        return null;
+      }
+      const updatedUser = denormalisedResponseEntities(updateResponse)[0];
+      if (updatedUser) {
+        dispatch(setCurrentUser(updatedUser));
+      }
+      return updatedUser || null;
+    })
+    .catch(e => {
+      log.error(e, 'sync-profile-image-from-cover-failed', { coverKey });
+      return null;
     });
 };
 
@@ -564,6 +674,9 @@ const initialState = {
   uploadedImages: {},
   uploadedImagesOrder: [],
   removedImageIds: [],
+  // Portfolio order chosen in the photos form (image keys, see portfolioOrder.js), until it
+  // is saved. null = the listing's own order.
+  imageOrder: null,
   addExceptionError: null,
   addExceptionInProgress: false,
   weeklyExceptionQueries: {
@@ -620,6 +733,11 @@ const editListingPageSlice = createSlice({
       state.uploadedImagesOrder = uploadedImagesOrder;
       state.removedImageIds = removedImageIds;
     },
+    // F5: the model chose a new photo order ("Make cover", move or drag). Saved with the
+    // next photos save.
+    setListingImageOrder: (state, action) => {
+      state.imageOrder = Array.isArray(action.payload) ? action.payload : null;
+    },
   },
   extraReducers: builder => {
     builder
@@ -674,6 +792,10 @@ const editListingPageSlice = createSlice({
         state.uploadedImagesOrder = updatedImagesState.uploadedImagesOrder;
         state.updateInProgress = false;
         state.updatedTab = action.payload.tab;
+        // A photos save stores the chosen order on the listing itself.
+        if (typeof action.meta.arg?.data?.images !== 'undefined') {
+          state.imageOrder = null;
+        }
       })
       .addCase(updateListingThunk.rejected, (state, action) => {
         state.updateInProgress = false;
@@ -852,6 +974,7 @@ export const {
   clearUpdatedTab,
   clearPublishError,
   removeListingImage,
+  setListingImageOrder,
 } = editListingPageSlice.actions;
 export default editListingPageSlice.reducer;
 

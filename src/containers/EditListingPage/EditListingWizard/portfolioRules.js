@@ -7,7 +7,7 @@ export const MIN_PORTFOLIO_PHOTOS = 3;
 // An image in the photos form counts once its upload has finished: it's either already
 // attached to the listing (has attributes) or has been uploaded and given an imageId. Images
 // still uploading (a local file with neither) don't count yet.
-const isUploadedImage = image => !!(image && (image.attributes || image.imageId));
+export const isUploadedImage = image => !!(image && (image.attributes || image.imageId));
 
 /**
  * Number of finished uploads in a list of images (listing images and/or form images).

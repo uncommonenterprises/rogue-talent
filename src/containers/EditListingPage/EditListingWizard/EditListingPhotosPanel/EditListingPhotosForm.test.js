@@ -83,6 +83,106 @@ describe('EditListingDeliveryForm', () => {
     });
   });
 
+  describe('choosing the cover and the order (tester feedback F5)', () => {
+    const renderForOrder = ({ onReorderImages = jest.fn(), onSubmit = jest.fn() } = {}) => {
+      render(
+        <EditListingPhotosForm
+          initialValues={{
+            images: Array.from({ length: 3 }, (_, i) => createImage(`image-${i}`)),
+          }}
+          intl={fakeIntl}
+          dispatch={noop}
+          onImageUpload={v => Promise.resolve(v)}
+          onSubmit={onSubmit}
+          saveActionMsg="Continue"
+          updated={false}
+          ready={false}
+          updateInProgress={false}
+          disabled={false}
+          onRemoveImage={noop}
+          onReorderImages={onReorderImages}
+          listingImageConfig={{ aspectWidth: 1, aspectHeight: 1, variantPrefix: 'listing-card' }}
+        />
+      );
+      return { onReorderImages, onSubmit };
+    };
+    const submittedImageIds = onSubmit => onSubmit.mock.calls[0][0].images.map(i => i.id.uuid);
+
+    it('every photo except the cover has a labelled "Make cover" button', () => {
+      renderForOrder();
+      expect(screen.getByText('EditListingPhotosForm.coverTip')).toBeInTheDocument();
+      expect(
+        screen.getAllByRole('button', { name: 'EditListingPhotosForm.makeCoverLabel' })
+      ).toHaveLength(2);
+      const earlier = screen.getAllByRole('button', { name: 'EditListingPhotosForm.moveEarlier' });
+      const later = screen.getAllByRole('button', { name: 'EditListingPhotosForm.moveLater' });
+      // The cover can't move earlier and the last photo can't move later.
+      expect(earlier[0]).toBeDisabled();
+      expect(later[2]).toBeDisabled();
+      expect(earlier[1]).toBeEnabled();
+      expect(later[0]).toBeEnabled();
+    });
+
+    it('"Make cover" moves the photo to the front, and the save sends the new order', async () => {
+      const user = userEvent.setup();
+      const { onReorderImages, onSubmit } = renderForOrder();
+
+      const makeCoverButtons = screen.getAllByRole('button', {
+        name: 'EditListingPhotosForm.makeCoverLabel',
+      });
+      await user.click(makeCoverButtons[1]); // the third photo
+      expect(onReorderImages).toHaveBeenCalledWith(['image-2', 'image-0', 'image-1']);
+      expect(screen.getByText('EditListingPhotosForm.announceCover')).toBeInTheDocument();
+
+      await user.click(screen.getByRole('button', { name: 'Continue' }));
+      await waitFor(() => expect(onSubmit).toHaveBeenCalled());
+      expect(submittedImageIds(onSubmit)).toEqual(['image-2', 'image-0', 'image-1']);
+    });
+
+    it('the arrow buttons move a photo one place and keep focus on the moved photo', async () => {
+      const user = userEvent.setup();
+      const { onReorderImages, onSubmit } = renderForOrder();
+
+      const later = screen.getAllByRole('button', { name: 'EditListingPhotosForm.moveLater' });
+      await user.click(later[0]); // the cover moves to second place
+      expect(onReorderImages).toHaveBeenCalledWith(['image-1', 'image-0', 'image-2']);
+      expect(screen.getByText('EditListingPhotosForm.announceMoved')).toBeInTheDocument();
+
+      // Focus follows the photo: the second tile's "move later" button.
+      const laterAfter = screen.getAllByRole('button', { name: 'EditListingPhotosForm.moveLater' });
+      await waitFor(() => expect(laterAfter[1]).toHaveFocus());
+
+      await user.click(screen.getByRole('button', { name: 'Continue' }));
+      await waitFor(() => expect(onSubmit).toHaveBeenCalled());
+      expect(submittedImageIds(onSubmit)).toEqual(['image-1', 'image-0', 'image-2']);
+    });
+
+    it('a single photo has no order controls', () => {
+      render(
+        <EditListingPhotosForm
+          initialValues={{ images: [createImage('only')] }}
+          intl={fakeIntl}
+          dispatch={noop}
+          onImageUpload={v => Promise.resolve(v)}
+          onSubmit={noop}
+          saveActionMsg="Continue"
+          updated={false}
+          ready={false}
+          updateInProgress={false}
+          disabled={false}
+          onRemoveImage={noop}
+          listingImageConfig={{ aspectWidth: 1, aspectHeight: 1, variantPrefix: 'listing-card' }}
+        />
+      );
+      expect(
+        screen.queryByRole('button', { name: 'EditListingPhotosForm.moveLater' })
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole('button', { name: 'EditListingPhotosForm.makeCoverLabel' })
+      ).not.toBeInTheDocument();
+    });
+  });
+
   // TODO to test this fully, we would need to check that store's state changes correctly.
 
   it('Check that FieldAddImage works', async () => {
