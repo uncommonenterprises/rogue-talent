@@ -75,6 +75,7 @@ const CustomLinkComponent = ({ linkConfig, currentPage }) => {
  * @param {boolean} props.showAccountStatusLink add the "Account status" link
  * @param {boolean} [props.showProfileSettingsLink] add the "Profile settings" link (default true;
  *   models don't get it, see util/settingsPages.js)
+ * @param {boolean} [props.showReviewQueueLink] add the "Review queue" link (reviewers and admins)
  * @returns {JSX.Element} search icon
  */
 const TopbarMobileMenu = props => {
@@ -92,6 +93,7 @@ const TopbarMobileMenu = props => {
     primaryLink: primaryLinkProp,
     showAccountStatusLink = false,
     showProfileSettingsLink = true,
+    showReviewQueueLink = false,
   } = props;
 
   const user = ensureCurrentUser(currentUser);
@@ -199,6 +201,14 @@ const TopbarMobileMenu = props => {
     </li>
   ) : null;
 
+  const reviewQueueLinkMaybe = showReviewQueueLink ? (
+    <li className={classNames(css.navigationLink, currentPageClass('ReviewQueuePage'))}>
+      <NamedLink name="ReviewQueuePage">
+        <FormattedMessage id="TopbarMobileMenu.reviewQueueLink" />
+      </NamedLink>
+    </li>
+  ) : null;
+
   return (
     <div className={css.root}>
       <AvatarLarge className={css.avatar} user={currentUser} />
@@ -217,6 +227,7 @@ const TopbarMobileMenu = props => {
               {notificationCountBadge}
             </NamedLink>
           </li>
+          {reviewQueueLinkMaybe}
           {accountStatusLinkMaybe}
           {manageListingsLinkMaybe}
           {showProfileSettingsLink ? (

@@ -165,6 +165,7 @@ const TopbarComponent = props => {
     routeConfiguration,
     accountStatus,
     hideSearchForm = false,
+    currentUserCanReview = false,
   } = props;
 
   // The server renders the topbar before the current user is loaded (logged-out view); the
@@ -241,6 +242,8 @@ const TopbarComponent = props => {
   // Tester F F5 part C: models have no "Profile settings" page. Hidden until the current user
   // has loaded, so a model never sees it flash up.
   const showProfileSettingsLink = showProfileSettingsForUser(currentUser);
+  // Review tool: "Review queue" for reviewers and admins only (display only; the server checks).
+  const showReviewQueueLink = isAuthenticated && mounted && currentUserCanReview;
   const { customer: isCustomer, provider: isProvider } = getCurrentUserTypeRoles(
     config,
     currentUser
@@ -296,6 +299,7 @@ const TopbarComponent = props => {
       primaryLink={primaryLink}
       showAccountStatusLink={showAccountStatusLink}
       showProfileSettingsLink={showProfileSettingsLink}
+      showReviewQueueLink={showReviewQueueLink}
     />
   );
 
@@ -442,6 +446,7 @@ const TopbarComponent = props => {
           primaryLink={primaryLink}
           showAccountStatusLink={showAccountStatusLink}
           showProfileSettingsLink={showProfileSettingsLink}
+          showReviewQueueLink={showReviewQueueLink}
         />
       </div>
       <Modal
@@ -510,6 +515,7 @@ const TopbarComponent = props => {
  * @param {boolean} props.currentUserHasListings
  * @param {boolean} props.currentUserHasOrders
  * @param {Object?} props.currentUserProfileListing a model's own profile listing (any state)
+ * @param {boolean} [props.currentUserCanReview] reviewer or admin: show the "Review queue" link
  * @param {string} props.currentPage
  * @param {number} props.notificationCount
  * @param {Function} props.onLogout
