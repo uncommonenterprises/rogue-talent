@@ -1,0 +1,82 @@
+/* B03b - profile availability. Additions on top of journey.css. Tokens only; no gradients; no shadows.
+   Free = green (brand rule: green, not red, for availability). Unavailable = muted ink with a hairline strike
+   (so it never relies on colour alone). Selection = ink, exactly as B04. The only cobalt is the panel CTA. */
+
+.pcal { background: var(--white); display: flex; flex-direction: column; gap: var(--space-3); }
+
+/* compact on desktop (40px), 44px tap targets on phones */
+.pcal .cal__day { height: 40px; border: 2px solid var(--white); background-clip: padding-box; border-radius: var(--radius-md); }
+@media (max-width: 899px) { .pcal .cal__day { height: 44px; } }
+.pcal .cal__blank { height: 40px; }
+.pcal .cal__title { font-size: var(--text-md, var(--text-lg)); }
+
+/* free days */
+.pcal .cal__day.is-free { background-color: rgba(30, 127, 82, 0.12); color: var(--status-success); font-weight: 700; }
+.pcal .cal__day.is-free:hover:not(.is-start):not(.is-end) { background-color: rgba(30, 127, 82, 0.12); box-shadow: inset 0 0 0 1px var(--status-success); border-radius: var(--radius-md); }
+.pcal .cal__day.is-free:focus-visible { box-shadow: inset 0 0 0 2px var(--accent-500); }
+
+/* unavailable and past days: muted, struck (past: no strike, as B04) */
+.pcal .cal__day.is-unavailable { color: var(--ink-300); font-weight: 500; }
+.pcal .cal__day.is-past { color: var(--ink-300); font-weight: 500; text-decoration: none; }
+
+/* selected range (B04 treatment: ink ends, faint tint between) */
+.pcal .cal__day.is-in { background-color: var(--accent-50); color: var(--text-primary); border-left-width: 0; border-right-width: 0; background-clip: border-box; border-radius: 0; }
+.pcal .cal__day.is-start, .pcal .cal__day.is-end { background-color: var(--ink-900); color: var(--white); }
+.pcal .cal__day.is-start { border-radius: var(--radius-md) 0 0 var(--radius-md); }
+.pcal .cal__day.is-end { border-radius: 0 var(--radius-md) var(--radius-md) 0; }
+.pcal .cal__day.is-start.is-end { border-radius: var(--radius-md); border-width: 2px; }
+
+/* read-only (model viewing their own profile): same look, no hand cursor, no hover */
+.pcal .cal__day.is-readonly { cursor: default; }
+
+/* legend */
+.cal__legend i.fre { background: rgba(30, 127, 82, 0.12); border-color: rgba(30, 127, 82, 0.4); }
+
+/* honesty note under the legend */
+.pcal-note { font-size: var(--text-xs); color: var(--text-muted); line-height: 1.5; }
+
+/* empty month message */
+.pcal-empty { padding: var(--space-3) var(--space-4); border: var(--border-hair) solid var(--border-hairline); border-radius: var(--radius-lg); background: var(--surface-subtle); font-size: var(--text-sm); color: var(--text-secondary); line-height: 1.5; }
+.pcal-empty p { margin: 0; }
+.pcal-empty strong { color: var(--text-primary); }
+
+/* text button: ink, underlined. Never cobalt, so it cannot compete with the panel CTA. */
+.link-btn { background: none; border: 0; padding: 0; min-height: 44px; display: inline-flex; align-items: center; font-family: var(--font-sans); font-weight: 700; font-size: inherit; color: var(--text-primary); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.link-btn:hover { text-decoration-thickness: 2px; }
+.link-btn:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--accent-500); border-radius: var(--radius-sm); }
+.pcal-empty .link-btn, .notice .link-btn { min-height: 0; display: inline; }
+
+/* inside an availability panel, a ghost button is ink, not cobalt (one cobalt action per view) */
+[data-pscope] .rt-btn--ghost { --_fg: var(--text-primary); }
+[data-pscope] .rt-btn--ghost:hover { --_bg: var(--ink-100); }
+
+/* next free dates row */
+.nextfree { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
+.nextfree:empty { display: none; }
+.nf-lbl { font-weight: 700; font-size: var(--text-2xs); letter-spacing: var(--tracking-wider); text-transform: uppercase; color: var(--text-muted); margin-right: var(--space-1); }
+.nextfree .rt-chip { min-height: 36px; padding: 6px 12px; }
+@media (max-width: 899px) { .nextfree .rt-chip { min-height: 44px; } }
+
+/* loading skeleton: flat ink-100 blocks, a slow fade, no gradient shimmer */
+.pcal-skel { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; padding: var(--space-2) 0; }
+.skel { display: block; height: 32px; border-radius: var(--radius-md); background: var(--ink-100); animation: skel-fade 1.4s ease-in-out infinite; }
+.skel--title { height: 22px; width: 140px; }
+@keyframes skel-fade { 0%, 100% { opacity: 1; } 50% { opacity: 0.45; } }
+@media (prefers-reduced-motion: reduce) { .skel { animation: none; } }
+
+/* panel pieces */
+.panel__rule { border: 0; border-top: var(--border-hair) solid var(--border-hairline); margin: 0; }
+.panel__sectionhead { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-3); }
+.panel__sectionhead h3 { font-family: var(--font-sans); font-weight: 700; font-size: var(--text-2xs); letter-spacing: var(--tracking-wider); text-transform: uppercase; color: var(--text-muted); margin: 0; }
+
+/* phone: calendar section in the profile body */
+.avail-section .pcal { border: var(--border-hair) solid var(--border-hairline); border-radius: var(--radius-lg); padding: var(--space-3) var(--space-3) var(--space-2); }
+.avail-hint { font-size: var(--text-xs); color: var(--text-secondary); line-height: 1.5; }
+
+/* comparison frames */
+.frames-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 375px), 375px)); gap: var(--space-6); align-items: start; }
+.device-frame .frame-body { padding: var(--space-4); display: flex; flex-direction: column; gap: var(--space-4); }
+.device-frame .sheet { position: static; height: auto; max-height: none; box-shadow: none; border-radius: 0; }
+
+/* the phone body section is hidden on desktop, where the calendar lives in the booking panel */
+@media (min-width: 900px) { .only-phone { display: none !important; } }

@@ -15,7 +15,7 @@
   <span class="tag">Mock</span>
   <span>Rogue Talent - discovery &amp; booking journey</span>
   <span class="spacer"></span>
-  <span class="title">9 screens · click any card to open</span>
+  <span class="title">9 screens + B03b · click any card to open</span>
 </div>
 
 <header class="map-hero">
@@ -35,6 +35,7 @@
       <a class="map-card" href="B01-search-results.html"><span class="num">B01</span><h3>Search results</h3><p>Desktop sidebar and 3-up grid. On phones a 2-up grid with a compact card, so two rows fit on one screen. City and dates always visible; filters in a sheet.</p></a>
       <a class="map-card" href="B02-filters.html"><span class="num">B02</span><h3>Filters</h3><p>The mobile full-height filter sheet and the desktop sidebar, every group open, with the list of what clients can filter by.</p></a>
       <a class="map-card" href="B03-model-profile.html"><span class="num">B03</span><h3>Model profile</h3><p>Gallery first, stats, rates, travel and notice, city-level location, reviews and "checked before going live". Sticky booking panel on desktop; bottom bar and sheet on phones. Panel states included.</p></a>
+      <a class="map-card" href="B03b-profile-availability.html"><span class="num">B03b</span><h3>Profile availability (proposed)</h3><p>Tester F8. A compact free-dates calendar in the booking panel under the rates; on phones a calendar section in the profile body. One click on a free date starts the booking with it set. Fully booked, sparse, loading, error, logged-out and own-profile states. Live, so try it.</p></a>
     </div>
   </section>
 
@@ -68,7 +69,35 @@
 </div>
 
 <div class="container--editorial" style="padding: var(--space-7) 0; border-top: var(--border-hair) solid var(--border-hairline);">
-  <h2 style="font-family:var(--font-display); font-weight:800; font-size:var(--text-2xl); margin-bottom: var(--space-4);">Why nine screens, and what moved</h2>
+  <h2 style="font-family:var(--font-display); font-weight:800; font-size:var(--text-2xl); margin-bottom: var(--space-4);">B03b: availability on the profile (tester F8, proposed 07/11/2026)</h2>
+  <ul class="plain-list">
+    <li><strong>What it is.</strong> The model's free dates, shown up front instead of behind "Select dates". Desktop: a compact month calendar in the booking panel under the rates, with free dates green, unavailable dates muted and struck, today and the notice window unavailable, month arrows, a short legend and one honest line ("Free dates are from Imogen's calendar, which needs 48 hours' notice. Imogen will confirm your request."). Clicking a free date sets it as the start date and the panel moves to the B04 state: summary, price, "Request to book".</li>
+    <li><strong>One cobalt action.</strong> The panel button stays the only cobalt thing on screen. The calendar uses green, ink and a faint tint, never cobalt, and "Clear dates" and "See January" are ink text links. The button reads "Select dates" until a date is chosen (and moves focus to the first free day), then "Request to book".</li>
+    <li><strong>Phone recommendation.</strong> A calendar section in the profile body, after "Travel and notice" and above Location and reviews, with three "Next free" chips on top. Tapping a free date opens the existing B04 sheet with that start date set. The bottom bar stays the only cobalt action. A strip alone cannot answer "is this model free on my date", and a sheet-only design is the problem being fixed.</li>
+    <li><strong>States mocked:</strong> a date clicked, a fully booked month with a link to the next month that has dates, unavailable-by-default with next-free chips, loading, could not load, logged out, and the model viewing their own profile. Replaces the Start/End fields and popover in the B03 panel; B03 itself is unchanged.</li>
+    <li><strong>Rendering.</strong> Built and checked by reading the code only. I could not open it in a browser, so the layout, contrast and 375px behaviour have not been looked at yet; the PM should view it before it goes to Neil.</li>
+  </ul>
+  <div class="oq-list" style="margin-top:var(--space-5);">
+    <div class="oq-item">
+      <h3>12. Should dates inside the model's minimum notice be unavailable in the profile calendar?</h3>
+      <p>The brief asks for it, and it keeps the calendar honest at a glance. But open question 3 says notice is a guide: B03 and B04 let a client request inside it and the model can decline. With an inline calendar that picks dates, muting them quietly enforces notice, and a client with an urgent shoot has no way to ask. It is a product rule, so it is yours.</p>
+      <p class="oq-rec"><strong>Recommendation:</strong> mute them, as designed. Models set a notice precisely so late requests do not arrive, and a calendar that shows a date as bookable and then warns is worse. Question 3 then becomes "enforced in the picker, still decided by the model". If urgent shoots matter, add a "message about short notice" route later.</p>
+    </div>
+    <div class="oq-item">
+      <h3>13. Who should see a model's free dates?</h3>
+      <p>Showing which days a model is free tells any visitor, logged in or not, when she is likely to be busy or alone. That is a privacy and safety surface, and it is also easy to scrape.</p>
+      <p class="oq-rec"><strong>Recommendation:</strong> show the calendar only to logged-in, approved clients. Everyone else sees "Log in to see Imogen's free dates" in the same place (state mocked). Costs a little discovery for logged-out visitors, which the profile still serves with rates and portfolio.</p>
+    </div>
+    <div class="oq-item">
+      <h3>14. Should a pending request make a date look unavailable?</h3>
+      <p>Today only accepted bookings and the model's own blocks remove a date. A date can show green while another client's request for it is waiting for the model, so two clients can ask for the same day and one will be declined or expire. The note says the model confirms every request, so it is honest, but it can still disappoint.</p>
+      <p class="oq-rec"><strong>Recommendation:</strong> leave pending requests alone for v1, keep the note, and watch how often it happens. Dimming dates on pending requests would also tell visitors how busy a model is, and a single request could hide a date from everyone for 48 hours.</p>
+    </div>
+  </div>
+</div>
+
+<div class="container--editorial" style="padding: 0 0 var(--space-7); border-top: var(--border-hair) solid var(--border-hairline);">
+  <h2 style="font-family:var(--font-display); font-weight:800; font-size:var(--text-2xl); margin: var(--space-7) 0 var(--space-4);">Why nine screens, and what moved</h2>
   <ul class="plain-list">
     <li><strong>Filters (B02) is its own file</strong> because on a phone it is a different surface (a full-height sheet) with its own states, and on desktop the same panel is the sidebar. B01 contains the live panel too.</li>
     <li><strong>Date selection (B04) and Price breakdown (B05) are components shown standalone</strong> rather than only inside the profile and checkout. Each is used in four places, so a single reference stops them drifting apart. They are also embedded and live in B03 and B06.</li>
@@ -121,7 +150,7 @@
     <div class="oq-item">
       <h3>3. Minimum notice: should the system enforce it?</h3>
       <p>Today it is a stated preference only (the model can decline any request). B03 and B04 show it as a guide and, if a client picks a start date inside it, a calm non-blocking line. Enforcing it would be a product rule change and would hide dates models may well accept.</p>
-      <p class="oq-rec"><strong>Recommendation:</strong> keep it a guide for v1, as designed. Revisit if models report requests arriving too late.</p>
+      <p class="oq-rec"><strong>Recommendation:</strong> keep it a guide for v1, as designed. Revisit if models report requests arriving too late. (See also question 12, which touches this.)</p>
     </div>
 
     <div class="oq-item">
@@ -181,6 +210,7 @@
     <li><strong>Search:</strong> compact 2-up card below 900px and full card from 900px (ListingCard and results grid CSS); date and city controls moved to the search header; price filter changed from slider to min and max fields; mobile filter sheet restyle; "How far they'll travel" filter changed to multi-select, match any (Console); drop the "Oldest" sort option (config).</li>
     <li><strong>Model page:</strong> remove the map (<code>SectionMapMaybe</code>); replace <code>UserCard</code>, "Hello, I'm {name}" and Contact with the "Checked before going live" section; show half-day and hourly rates (already stored); show the minimum notice and travel fields; rename "Book now" to "Select dates" then "Request to book". The 8 hydration errors need a Developer look.</li>
     <li><strong>Calendar:</strong> restyle the template's date picker to the ink and tint treatment; surface the model's <code>min_booking_notice</code> and the current time for the informational line.</li>
+    <li><strong>Profile availability (B03b, only if approved):</strong> render the existing availability data inline in the booking panel (desktop) and as a body section (phone) instead of only inside the date picker; green free days, muted struck unavailable days, today and the notice window unavailable; pass a clicked date to the picker as the start date; skeleton and error states; hide it for logged-out and not-yet-approved visitors if question 13 is agreed; give the sticky aside a max height with its own scroll at short viewports.</li>
     <li><strong>Checkout:</strong> reorder <code>StripePaymentForm</code> (shoot fields, licence, payment); remove <code>ShippingDetails</code> and <code>StripePaymentAddress</code> in favour of name, postcode and country mapped into Stripe billing details; collapse <code>MobileOrderBreakdown</code> into the summary; replace the listed template strings (B06 copy table).</li>
     <li><strong>Sole-trader private-residence rule (SAF-06):</strong> in the v1 safety scope, but I found no enforcement of it in <code>src</code>. B06 shows a disabled-option state ready for it.</li>
     <li><strong>Deadline and statuses:</strong> expose "reply by" (the earlier of 48 hours after authorisation and the shoot start) on the booking page and in both lists, and add the status chips and the label changes in B09 to the lists and the booking page.</li>
@@ -196,13 +226,13 @@
   <ul class="plain-list">
     <li><strong>Public claims:</strong> the trust line and the "Checked before going live" section (question 1); "free to cancel until 48 hours before" (question 8).</li>
     <li><strong>Legal surfaces:</strong> the licence summary shown to the client (B06), the sentence above Accept (B08, question 10), and the draft wording flag.</li>
-    <li><strong>Safety surfaces:</strong> the private-residence note to the client (B06), the disabled sole-trader state, the model's safety note and shareable summary (B08).</li>
-    <li><strong>Product rules:</strong> questions 2, 3, 4, 5, 7 and 9 each touch a rule, so none is assumed in the design beyond what is stated.</li>
+    <li><strong>Safety surfaces:</strong> the private-residence note to the client (B06), the disabled sole-trader state, the model's safety note and shareable summary (B08); who can see a model's free dates (B03b, question 13).</li>
+    <li><strong>Product rules:</strong> questions 2, 3, 4, 5, 7, 9, 12 and 14 each touch a rule, so none is assumed in the design beyond what is stated.</li>
   </ul>
 </div>
 
 <footer class="map-foot">
-  <div class="container--editorial">Rogue Talent - design mockups for review only. Not built. ux-designer, 01/11/2026. Test-environment context only: no live data, no live payment screens. Mobile was designed at 375px and every screen was checked by the PM at 375 x 667 (iPhone SE) on 01/11/2026: nothing scrolls sideways, and the search screen header was tightened so models show on the first screen. Em dashes and en dashes: none in these files (checked by search).</div>
+  <div class="container--editorial">Rogue Talent - design mockups for review only. Not built. ux-designer, 01/11/2026 (B03b added 07/11/2026). Test-environment context only: no live data, no live payment screens. Mobile was designed at 375px and every screen was checked by the PM at 375 x 667 (iPhone SE) on 01/11/2026: nothing scrolls sideways, and the search screen header was tightened so models show on the first screen. B03b has not yet had that check. Em dashes and en dashes: none in these files (checked by search).</div>
 </footer>
 
 </body>

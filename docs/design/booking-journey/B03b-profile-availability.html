@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>B03b · Profile availability - Rogue Talent booking mockups</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Hanken+Grotesk:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="journey.css">
+<link rel="stylesheet" href="availability.css">
+</head>
+<body class="has-bar">
+
+<div class="mock-toolbar">
+  <span class="tag">Mock</span>
+  <a href="index.html">Journey map</a>
+  <span class="divider">·</span>
+  <span class="title">Client · B03b · Profile availability</span>
+  <span class="mock-flag">Example data</span>
+  <span class="spacer"></span>
+  <a href="B03-model-profile.html">← B03 Model profile</a>
+  <a href="B04-date-selection.html">Next: Date selection →</a>
+</div>
+
+<header class="app-nav">
+  <a class="rt-nav__brand" href="index.html">Rogue<span>.</span></a>
+  <nav class="app-nav__links" aria-label="Main">
+    <a class="is-active" href="B01-search-results.html">Browse models</a>
+    <a href="B09-booking-status.html">Your bookings</a>
+  </nav>
+  <div class="app-nav__actions">
+    <span class="rt-status rt-status--verified app-nav__status"><span class="rt-status__dot"></span>Verified</span>
+    <a class="icon-btn" href="#" aria-label="Account menu"><span class="rt-avatar rt-avatar--sm">B</span></a>
+  </div>
+</header>
+
+<main class="page">
+
+  <a class="back-link" href="B01-search-results.html"><i class="ico ico-arrow-left"></i>Back to results</a>
+
+  <div class="notice" style="margin-bottom:var(--space-5);">
+    <i class="ico ico-info"></i>
+    <p><strong>How to read this page.</strong> The live profile below is B03 with availability added (desktop: the calendar sits in the booking panel under the rates; phone: a calendar section in the profile body). Try it: click a green date. Mock "today" is Sun 01/11/2026 and Imogen asks for 48 hours' notice, so today, Mon 2 and Tue 3 Nov are not available. Below it are the states, then the phone comparison. All names, dates and prices are example data.</p>
+  </div>
+
+  <div class="profile-grid">
+
+    <article>
+      <header class="profile-head">
+        <span class="rt-eyebrow">Manchester</span>
+        <h1 class="profile-name">Imogen H.</h1>
+        <div class="chip-row" aria-label="Modelling categories">
+          <span class="rt-tag">Fashion</span><span class="rt-tag">Editorial</span><span class="rt-tag">Commercial</span>
+        </div>
+      </header>
+
+      <section class="psection" aria-labelledby="h-rates">
+        <h2 id="h-rates">Rates</h2>
+        <div class="rate-grid">
+          <div class="rate-cell rate-cell--main"><span class="rate-cell__lbl">Day rate</span><span class="rate-cell__amt">£380</span><span class="rate-cell__sub">What bookings are charged at</span></div>
+          <div class="rate-cell"><span class="rate-cell__lbl">Half-day</span><span class="rate-cell__amt">£220</span><span class="rate-cell__sub">For reference</span></div>
+          <div class="rate-cell"><span class="rate-cell__lbl">Hourly</span><span class="rate-cell__amt">£50</span><span class="rate-cell__sub">For reference</span></div>
+        </div>
+        <p class="small muted">Bookings on Rogue Talent are charged per full day at the day rate. You pay one flat 15% booking fee on top. Imogen keeps 100% of the day rate.</p>
+      </section>
+
+      <section class="psection" aria-labelledby="h-travel">
+        <h2 id="h-travel">Travel and notice</h2>
+        <dl class="kv-rows">
+          <div class="kv-row"><dt>Based in</dt><dd>Manchester</dd></div>
+          <div class="kv-row"><dt>How far Imogen will travel</dt><dd>National</dd></div>
+          <div class="kv-row"><dt>Minimum notice</dt><dd>48 hours</dd></div>
+        </dl>
+      </section>
+
+      <!-- Phone only: the recommended placement. Hidden from 900px up, where the calendar lives in the booking panel. -->
+      <section class="psection avail-section only-phone" aria-labelledby="h-avail" data-pscope>
+        <h2 id="h-avail">Availability</h2>
+        <div class="nextfree" data-nextfree></div>
+        <div class="pcal" data-scenario="main" data-from="2026-11" data-handoff="sheet-dates"></div>
+        <div class="cal__legend"><span><i class="fre"></i>Free</span><span><i class="una"></i>Not available</span></div>
+        <p class="avail-hint">Tap a free date to start a request with that date.</p>
+        <p class="pcal-note">Free dates are from Imogen's calendar, which needs 48 hours' notice. Imogen will confirm your request.</p>
+      </section>
+
+      <section class="psection" aria-label="Rest of profile">
+        <p class="small muted" style="border:var(--border-hair) dashed var(--border-hairline);border-radius:var(--radius-lg);padding:var(--space-5);">Location, reviews and "Checked before going live" continue exactly as in B03. On phones the Availability section above sits directly before Location, so it is above the reviews.</p>
+      </section>
+    </article>
+
+    <!-- Desktop booking panel: sticky. Calendar under the rates, read-only until a date is clicked. -->
+    <aside class="profile-aside" aria-label="Book Imogen">
+      <div class="panel" id="booking-panel" data-pscope>
+        <div class="panel__price">£380 <small>/ day</small></div>
+        <hr class="panel__rule">
+        <div class="panel__sectionhead"><h3>Availability</h3></div>
+        <div class="pcal" data-scenario="main" data-from="2026-11"></div>
+        <div class="cal__legend"><span><i class="fre"></i>Free</span><span><i class="una"></i>Not available</span><span><i class="sel"></i>Selected</span></div>
+        <p class="pcal-note">Free dates are from Imogen's calendar, which needs 48 hours' notice. Imogen will confirm your request.</p>
+
+        <div class="notice notice--error" data-show-when="conflict" hidden><i class="ico ico-alert"></i><p>Imogen isn't available on <strong data-bind="conflictDate"></strong>, so that range can't be booked. Pick dates that don't include it.</p></div>
+
+        <div class="stack stack--sm" data-show-when="dates" hidden>
+          <div class="cal-summary"><span class="cal-summary__main" data-bind="summaryMain"></span><span class="cal-summary__sub" data-bind="summarySub"></span></div>
+          <dl class="breakdown">
+            <div class="breakdown__row"><dt data-bind="rate">£380 x 1 day</dt><dd data-bind="sub">£380</dd></div>
+            <div class="breakdown__row"><dt>Booking fee (15%)</dt><dd data-bind="fee">£57</dd></div>
+            <div class="breakdown__row breakdown__row--total"><dt>Total</dt><dd data-bind="total">£437</dd></div>
+          </dl>
+          <p class="breakdown__note">Imogen keeps 100% of the day rate (<span data-bind="keeps">£380</span>). Travel is included in the rate.</p>
+          <button class="link-btn" type="button" data-clear-dates>Clear dates</button>
+        </div>
+
+        <a class="rt-btn rt-btn--primary rt-btn--lg rt-btn--block" href="#" data-cta><span data-bind="ctaLabel">Select dates</span></a>
+        <p class="panel__fine">You won't be charged yet. Your card is only charged if Imogen accepts, and Imogen has 48 hours to reply.</p>
+      </div>
+    </aside>
+
+  </div>
+
+  <!-- ============ States ============ -->
+  <div class="state-label">States · booking panel on desktop (each panel is its own view in product, so each has one cobalt action or none)</div>
+  <div class="state-grid" style="grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));margin-bottom:var(--space-7);">
+
+    <div class="stack stack--sm">
+      <span class="rt-eyebrow">A free date clicked (the B04 state, start date set)</span>
+      <div class="panel" data-pscope>
+        <div class="panel__price">£380 <small>/ day</small></div>
+        <hr class="panel__rule">
+        <div class="panel__sectionhead"><h3>Availability</h3></div>
+        <div class="pcal" data-scenario="main" data-from="2026-11" data-start="2026-11-24"></div>
+        <div class="cal__legend"><span><i class="fre"></i>Free</span><span><i class="una"></i>Not available</span><span><i class="sel"></i>Selected</span></div>
+        <p class="pcal-note">Free dates are from Imogen's calendar, which needs 48 hours' notice. Imogen will confirm your request.</p>
+        <div class="notice notice--error" data-show-when="conflict" hidden><i class="ico ico-alert"></i><p>Imogen isn't available on <strong data-bind="conflictDate"></strong>, so that range can't be booked. Pick dates that don't include it.</p></div>
+        <div class="stack stack--sm" data-show-when="dates" hidden>
+          <div class="cal-summary"><span class="cal-summary__main" data-bind="summaryMain"></span><span class="cal-summary__sub" data-bind="summarySub"></span></div>
+          <dl class="breakdown">
+            <div class="breakdown__row"><dt data-bind="rate"></dt><dd data-bind="sub"></dd></div>
+            <div class="breakdown__row"><dt>Booking fee (15%)</dt><dd data-bind="fee"></dd></div>
+            <div class="breakdown__row breakdown__row--total"><dt>Total</dt><dd data-bind="total"></dd></div>
+          </dl>
+          <p class="breakdown__note">Imogen keeps 100% of the day rate (<span data-bind="keeps"></span>). Travel is included in the rate.</p>
+          <button class="link-btn" type="button" data-clear-dates>Clear dates</button>
+        </div>
+        <a class="rt-btn rt-btn--primary rt-btn--lg rt-btn--block" href="B06-checkout.html" data-cta><span data-bind="ctaLabel">Request to book</span></a>
+        <p class="panel__fine">You won't be charged yet. Your card is only charged if Imogen accepts, and Imogen has 48 hours to reply.</p>
+      </div>
+      <p class="xs muted">One click sets the start date and, as in B04, a single day. The button changes to "Request to book" and goes to checkout (B06). Clicking a later free day adds days; clicking a range that crosses a busy day shows the B04 message.</p>
+    </div>
+
+    <div class="stack stack--sm">
+      <span class="rt-eyebrow">Fully booked month</span>
+      <div class="panel" data-pscope>
+        <div class="panel__price">£380 <small>/ day</small></div>
+        <hr class="panel__rule">
+        <div class="panel__sectionhead"><h3>Availability</h3></div>
+        <div class="nextfree" data-nextfree></div>
+        <div class="pcal" data-scenario="booked" data-from="2026-12"></div>
+        <div class="cal__legend"><span><i class="fre"></i>Free</span><span><i class="una"></i>Not available</span></div>
+        <p class="pcal-note">Free dates are from Imogen's calendar, which needs 48 hours' notice. Imogen will confirm your request.</p>
+        <a class="rt-btn rt-btn--primary rt-btn--lg rt-btn--block" href="#" data-cta><span data-bind="ctaLabel">Select dates</span></a>
+        <p class="panel__fine">You won't be charged yet. Your card is only charged if Imogen accepts, and Imogen has 48 hours to reply.</p>
+      </div>
+      <p class="xs muted">December has no free dates. The message sits under the grid with a text link to the next month that has free dates (it skips ahead if the next month is full too). Next free dates are shown above the calendar, so a client never has to hunt.</p>
+    </div>
+
+    <div class="stack stack--sm">
+      <span class="rt-eyebrow">Unavailable by default, a few open dates</span>
+      <div class="panel" data-pscope>
+        <div class="panel__price">£380 <small>/ day</small></div>
+        <hr class="panel__rule">
+        <div class="panel__sectionhead"><h3>Availability</h3></div>
+        <div class="nextfree" data-nextfree></div>
+        <div class="pcal" data-scenario="sparse" data-from="2026-11"></div>
+        <div class="cal__legend"><span><i class="fre"></i>Free</span><span><i class="una"></i>Not available</span></div>
+        <p class="pcal-note">Free dates are from Imogen's calendar, which needs 48 hours' notice. Imogen will confirm your request.</p>
+        <a class="rt-btn rt-btn--primary rt-btn--lg rt-btn--block" href="#" data-cta><span data-bind="ctaLabel">Select dates</span></a>
+        <p class="panel__fine">You won't be charged yet. Your card is only charged if Imogen accepts, and Imogen has 48 hours to reply.</p>
+      </div>
+      <p class="xs muted">Same component. Mostly muted with a few green dates reads as "rarely free", which is true, so the design says nothing extra. The "Next free" chips matter most here: they are one click to a booking, and they work across months.</p>
+    </div>
+
+    <div class="stack stack--sm">
+      <span class="rt-eyebrow">Loading</span>
+      <div class="panel" data-pscope>
+        <div class="panel__price">£380 <small>/ day</small></div>
+        <hr class="panel__rule">
+        <div class="panel__sectionhead"><h3>Availability</h3></div>
+        <div class="pcal" data-scenario="loading" data-from="2026-11"></div>
+        <a class="rt-btn rt-btn--primary rt-btn--lg rt-btn--block rt-btn--disabled" href="#" aria-disabled="true"><span>Select dates</span></a>
+        <p class="panel__fine">You won't be charged yet. Your card is only charged if Imogen accepts, and Imogen has 48 hours to reply.</p>
+      </div>
+      <p class="xs muted">Flat grey blocks that fade slowly (no shimmer gradient; still when the visitor prefers reduced motion). The rest of the page does not wait for it. The cobalt button is disabled until dates load.</p>
+    </div>
+
+    <div class="stack stack--sm">
+      <span class="rt-eyebrow">Could not load</span>
+      <div class="panel" data-pscope>
+        <div class="panel__price">£380 <small>/ day</small></div>
+        <hr class="panel__rule">
+        <div class="panel__sectionhead"><h3>Availability</h3></div>
+        <div class="pcal" data-scenario="error" data-from="2026-11"></div>
+        <a class="rt-btn rt-btn--primary rt-btn--lg rt-btn--block rt-btn--disabled" href="#" aria-disabled="true"><span>Select dates</span></a>
+      </div>
+      <p class="xs muted">Same wording as the B04 load error, with a retry. Red is correct here: it is an error, not availability.</p>
+    </div>
+
+    <div class="stack stack--sm">
+      <span class="rt-eyebrow">Logged out (if Neil agrees open question 13)</span>
+      <div class="panel">
+        <div class="panel__price">£380 <small>/ day</small></div>
+        <hr class="panel__rule">
+        <div class="panel__sectionhead"><h3>Availability</h3></div>
+        <div class="notice"><i class="ico ico-lock"></i><p>Log in to see Imogen's free dates. Clients are reviewed and ID verified before they can book.</p></div>
+        <a class="rt-btn rt-btn--primary rt-btn--lg rt-btn--block" href="#">Log in to book</a>
+        <a class="rt-btn rt-btn--ghost rt-btn--block" href="#" style="min-height:44px;">Create a client account</a>
+      </div>
+      <p class="xs muted">Replaces the calendar with one line, in the same place. The other B03 panel states (awaiting approval, ID not verified) show the same line.</p>
+    </div>
+
+    <div class="stack stack--sm">
+      <span class="rt-eyebrow">Model viewing their own profile</span>
+      <div class="panel" data-pscope>
+        <div class="panel__price">£380 <small>/ day</small></div>
+        <hr class="panel__rule">
+        <div class="panel__sectionhead"><h3>Your availability</h3></div>
+        <div class="pcal" data-scenario="own" data-from="2026-11" data-readonly></div>
+        <div class="cal__legend"><span><i class="fre"></i>Free</span><span><i class="una"></i>Not available</span></div>
+        <p class="pcal-note">This is how clients see your calendar. Dates inside your 48 hours' notice show as not available.</p>
+        <a class="rt-btn rt-btn--secondary rt-btn--lg rt-btn--block" href="#">Edit your availability</a>
+        <a class="rt-btn rt-btn--ghost rt-btn--block" href="#" style="min-height:44px;">Edit your profile</a>
+      </div>
+      <p class="xs muted">Same calendar, not clickable and no hover. No cobalt button: B03 already gives the model a secondary "Edit your profile", and this adds the more useful "Edit your availability" beside it. The "Edit your profile" link here is the only ghost style on the panel.</p>
+    </div>
+
+  </div>
+
+  <!-- ============ Phone comparison ============ -->
+  <div class="state-label">Phone, 375px · three ways to show availability, one recommended</div>
+  <div class="frames-3 only-desktop" style="margin-bottom:var(--space-7);">
+
+    <div class="stack stack--sm">
+      <span class="rt-eyebrow">Recommended · calendar section in the profile body</span>
+      <div class="device-frame">
+        <div class="device-frame__bar">375px · profile body, after Travel and notice, before Location and reviews</div>
+        <div class="frame-body" data-pscope>
+          <h2 style="font-family:var(--font-display);font-weight:800;font-size:var(--text-xl);letter-spacing:var(--tracking-tight);">Availability</h2>
+          <div class="nextfree" data-nextfree></div>
+          <div class="pcal" data-scenario="main" data-from="2026-11" data-readonly></div>
+          <div class="cal__legend"><span><i class="fre"></i>Free</span><span><i class="una"></i>Not available</span></div>
+          <p class="avail-hint">Tap a free date to start a request with that date.</p>
+          <p class="pcal-note">Free dates are from Imogen's calendar, which needs 48 hours' notice. Imogen will confirm your request.</p>
+        </div>
+        <div class="book-bar" style="position:static;">
+          <div class="book-bar__price"><b>£380</b><small>per day</small></div>
+          <span class="rt-btn rt-btn--primary rt-btn--lg">Select dates</span>
+        </div>
+      </div>
+      <p class="xs muted">Static picture; resize this page below 900px for the live one. The bar stays the only cobalt action.</p>
+    </div>
+
+    <div class="stack stack--sm">
+      <span class="rt-eyebrow">Then a tap on a date opens B04 with it set</span>
+      <div class="device-frame">
+        <div class="device-frame__bar">375px · the B04 sheet, start date already chosen</div>
+        <div class="sheet" data-pscope>
+          <div class="sheet__head"><h2 class="sheet__title">Choose your dates</h2><span class="icon-btn"><i class="ico ico-close"></i></span></div>
+          <div class="sheet__body">
+            <div class="pcal" data-scenario="main" data-from="2026-11" data-layout="stack" data-months="2" data-start="2026-11-24"></div>
+            <div class="cal__legend"><span><i class="fre"></i>Free</span><span><i class="una"></i>Not available</span><span><i class="sel"></i>Selected</span></div>
+            <div class="cal-summary" data-show-when="dates" hidden><span class="cal-summary__main" data-bind="summaryMain"></span><span class="cal-summary__sub" data-bind="summarySub"></span></div>
+            <dl class="breakdown" data-show-when="dates" hidden>
+              <div class="breakdown__row"><dt data-bind="rate"></dt><dd data-bind="sub"></dd></div>
+              <div class="breakdown__row"><dt>Booking fee (15%)</dt><dd data-bind="fee"></dd></div>
+              <div class="breakdown__row breakdown__row--total"><dt>Total</dt><dd data-bind="total"></dd></div>
+            </dl>
+          </div>
+          <div class="sheet__foot">
+            <a class="rt-btn rt-btn--primary rt-btn--lg rt-btn--block" href="B06-checkout.html" data-sheet-cta><span data-bind="sheetCta">Request to book</span></a>
+            <p class="panel__fine">You won't be charged yet. Your card is only charged if Imogen accepts.</p>
+          </div>
+        </div>
+      </div>
+      <p class="xs muted">This is the existing B03 sheet. The only change is that it can open with a start date set. Cobalt: the footer button only.</p>
+    </div>
+
+    <div class="stack stack--sm">
+      <span class="rt-eyebrow">Considered, not recommended · a "Next free dates" strip</span>
+      <div class="device-frame">
+        <div class="device-frame__bar">375px · strip only, no calendar</div>
+        <div class="frame-body" data-pscope>
+          <h2 style="font-family:var(--font-display);font-weight:800;font-size:var(--text-xl);letter-spacing:var(--tracking-tight);">Availability</h2>
+          <div class="nextfree" data-nextfree></div>
+          <div class="pcal" data-scenario="main" data-from="2026-11" data-layout="stack" data-months="0" hidden></div>
+          <button class="link-btn" type="button">See all dates</button>
+        </div>
+      </div>
+      <p class="xs muted">Cheap and short, but it cannot answer the question clients actually have ("is she free on 24 November?") without a second tap. A date in mind is ruled in or out only by seeing the month.</p>
+    </div>
+
+  </div>
+
+  <div class="only-phone">
+    <p class="small muted" style="padding-bottom:var(--space-5);">The live phone version is the page above: the Availability section in the profile body, the sticky bottom bar, and the sheet. Tap a green date.</p>
+  </div>
+
+</main>
+
+<!-- Phone: sticky bottom bar. Its only job is the single cobalt action. -->
+<div class="book-bar">
+  <div class="book-bar__price"><b>£380</b><small>per day</small></div>
+  <a class="rt-btn rt-btn--primary rt-btn--lg" href="#" data-bar-cta>Select dates</a>
+</div>
+
+<!-- Phone: dates sheet (B04), opened by the bar or by tapping a free date in the body calendar -->
+<div class="sheet-root sheet-root--mobile" id="sheet-dates" role="dialog" aria-modal="true" aria-labelledby="sd-title">
+  <div class="sheet-backdrop"></div>
+  <div class="sheet" data-pscope>
+    <div class="sheet__head"><h2 class="sheet__title" id="sd-title">Choose your dates</h2><button class="icon-btn" type="button" data-close-sheet aria-label="Close"><i class="ico ico-close"></i></button></div>
+    <div class="sheet__body">
+      <div class="pcal" data-scenario="main" data-from="2026-11" data-layout="stack" data-months="4"></div>
+      <div class="cal__legend"><span><i class="fre"></i>Free</span><span><i class="una"></i>Not available</span><span><i class="sel"></i>Selected</span></div>
+      <div class="notice notice--error" data-show-when="conflict" hidden><i class="ico ico-alert"></i><p>Imogen isn't available on <strong data-bind="conflictDate"></strong>, so that range can't be booked. Pick dates that don't include it.</p></div>
+      <div class="cal-summary" data-show-when="dates" hidden><span class="cal-summary__main" data-bind="summaryMain"></span><span class="cal-summary__sub" data-bind="summarySub"></span></div>
+      <div class="stack stack--sm" data-show-when="dates" hidden>
+        <dl class="breakdown">
+          <div class="breakdown__row"><dt data-bind="rate"></dt><dd data-bind="sub"></dd></div>
+          <div class="breakdown__row"><dt>Booking fee (15%)</dt><dd data-bind="fee"></dd></div>
+          <div class="breakdown__row breakdown__row--total"><dt>Total</dt><dd data-bind="total"></dd></div>
+        </dl>
+        <p class="breakdown__note">Imogen keeps 100% of the day rate (<span data-bind="keeps"></span>). Travel is included in the rate.</p>
+      </div>
+      <p class="pcal-note">Free dates are from Imogen's calendar, which needs 48 hours' notice. Imogen will confirm your request.</p>
+    </div>
+    <div class="sheet__foot">
+      <a class="rt-btn rt-btn--primary rt-btn--lg rt-btn--block rt-btn--disabled" href="#" data-sheet-cta><span data-bind="sheetCta">Select your dates</span></a>
+      <p class="panel__fine">You won't be charged yet. Your card is only charged if Imogen accepts.</p>
+    </div>
+  </div>
+</div>
+
+<div class="notes-dock">
+  <details class="design-notes" open>
+    <summary>Design notes</summary>
+    <ul>
+      <li><strong>Desktop: the calendar goes in the panel, under the price and above the button.</strong> It replaces the Start and End fields and the popover from B03, because a calendar that is already on screen does not need two boxes that open another calendar. After a click, the panel shows the chosen dates as a summary line, then the breakdown. This is the B04 behaviour in place: first click sets a single day, a later free day extends it, a range across a busy day gives the B04 message.</li>
+      <li><strong>One cobalt action: the panel button, and only the panel button.</strong> The calendar never uses cobalt. Free days are green (success tint and text), unavailable days are muted ink-300 with a hairline strike, and selected days are ink-900 with a faint accent-50 band, exactly the B04 treatment. Before a date is chosen the button reads "Select dates" and moves focus to the first free day (the calendar is already visible, so the button is a guide rather than a gate); after, it reads "Request to book" and goes to checkout. The "Clear dates" and "See April" actions are ink text links, not ghost buttons, so the only accent colour on the screen is the one primary. Hover on a free day is a 1px green keyline.</li>
+      <li><strong>Not colour alone.</strong> Free days are also bolder (700) than unavailable days (500), and unavailable days carry the hairline strike used in B04. Today has the small ink dot and is unavailable. The green text on its tint is the same pair as the existing available badge; the Developer should confirm its contrast on the tint at 14px (the text is 700 weight).</li>
+      <li><strong>Notice window.</strong> Today and everything inside the model's minimum notice are shown as not available, as briefed. The note under the legend says so in half a sentence, because the notice is already public on the profile. This differs from B04 and B03, where notice is a guide that a client can override. See open question 12.</li>
+      <li><strong>Phone recommendation: a calendar section in the profile body</strong>, after "Travel and notice" (notice is context for it) and before Location and reviews. It is one month, 44px cells, with the "Next free" chips above it. Tapping a free date opens the B04 sheet with that start date set; the bottom bar remains the only cobalt action (the sheet has its own, for the same reason B03's sheet does). Why not the others: the strip alone cannot answer "is this model free on my date", and "inside the sheet only" is the status quo, which is the problem being fixed. Cost: about 400px of extra scroll on a profile that is already long, which is why it sits below the facts a client reads first and is not repeated on desktop.</li>
+      <li><strong>Next free dates.</strong> Three chips of the nearest free days, shown on phone always and on desktop only when the visible month is empty or sparse, so the panel stays short when the calendar is healthy. One click starts the booking with that date and moves the calendar to its month.</li>
+      <li><strong>Empty month.</strong> "No free dates in December. See January" in a hairline box under the grid, with the link going to the next month that has any free date (it names that month, so it never sends a client to another empty one).</li>
+      <li><strong>Honesty.</strong> One short line under the legend: "Free dates are from Imogen's calendar, which needs 48 hours' notice. Imogen will confirm your request." Pronoun-neutral, as B03. It sits beside the existing fine print ("You won't be charged yet..."), which already says the model can decline. No claim that a green date is held or guaranteed. Pending requests do not block a date, so two clients can ask for the same day; see open question 14.</li>
+      <li><strong>Model's own view.</strong> The same calendar, read-only, with "This is how clients see your calendar" and a secondary "Edit your availability". It is a preview of what clients see; editing is in the wizard's availability step.</li>
+      <li><strong>Engineering.</strong> The calendar reads the same availability data as the B04 picker: the model's calendar, existing bookings, and <code>min_booking_notice</code>. Nothing new is stored. The load is the one already needed for the date picker, moved earlier; the page should not block on it (skeleton state). When dates are chosen the panel grows by about 170px; at short viewports give the sticky aside <code>max-height: calc(100vh - 48px)</code> with its own scroll. Phone body calendar tap passes the date to the sheet as the start date. Week starts Monday. This page's script is <code>availability.js</code>; it reuses the booking.js pick and price logic but is not product code.</li>
+      <li><strong>Continuity.</strong> The model here is Imogen Hart (shown "Imogen H.", as B03 shows "Ava C."), Manchester, £380. B03 and the rest of the set still use Ava C. at £450; if this is approved, the sample model should be unified in a later pass. Half-day £220 and hourly £50 are made-up sample values.</li>
+    </ul>
+  </details>
+</div>
+<div class="container--editorial"><div class="mock-pager"><a href="B03-model-profile.html">← B03 Model profile</a><a href="B04-date-selection.html">Next: Date selection →</a></div></div>
+
+<script src="availability.js"></script>
+</body>
+</html>
