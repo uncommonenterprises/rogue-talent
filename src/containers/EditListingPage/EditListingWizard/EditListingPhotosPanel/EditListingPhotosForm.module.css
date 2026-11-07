@@ -69,6 +69,141 @@
   pointer-events: none;
 }
 
+/* ================ Choosing the cover and the order (F5) ================ */
+
+/* Finished photos can be dragged into a new position (desktop). */
+.photoTileMovable {
+  cursor: grab;
+}
+
+.photoTileDragging {
+  opacity: 0.4;
+}
+
+/* The place a dragged photo will land: cobalt keyline, as for the file drop zone. */
+.photoTileDropTarget {
+  border-color: var(--accent-500);
+  box-shadow: 0 0 0 3px var(--accent-100);
+}
+
+/* Strip under each photo: [move earlier] [Make cover] [move later] */
+.tileActions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-1);
+  padding: var(--space-1);
+  line-height: var(--leading-snug);
+  background-color: var(--white);
+  border-top: var(--border-hair) solid var(--border-hairline);
+  cursor: default;
+}
+
+.tileActionsSpacer {
+  flex: 1;
+}
+
+/* rt-btn--secondary, icon-sized for the tile strip */
+.orderButton {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  color: var(--ink-900);
+  background-color: var(--white);
+  border: var(--border-hair) solid var(--ink-200);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background-color var(--dur-fast) var(--ease-standard),
+    border-color var(--dur-fast) var(--ease-standard);
+
+  &:hover {
+    background-color: var(--ink-50);
+    border-color: var(--ink-400);
+  }
+
+  &:active {
+    background-color: var(--ink-100);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--shadow-focus);
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: default;
+    pointer-events: none;
+  }
+}
+
+/* Line icon: sanitize.css sets svg { fill: currentColor }, which would fill the outline. */
+.orderIcon {
+  display: block;
+  fill: none;
+}
+
+/* rt-btn--secondary --sm, compact: "Make cover" */
+.makeCoverButton {
+  flex: 1;
+  min-width: 0;
+  min-height: 32px;
+  margin: 0;
+  padding: 4px var(--space-1);
+  font-family: var(--font-sans);
+  font-weight: var(--weight-bold);
+  font-size: var(--text-xs);
+  line-height: var(--leading-snug);
+  text-align: center;
+  white-space: normal;
+  color: var(--ink-900);
+  background-color: var(--white);
+  border: var(--border-hair) solid var(--ink-900);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background-color var(--dur-fast) var(--ease-standard),
+    transform var(--dur-fast) var(--ease-standard);
+
+  &:hover {
+    background-color: var(--ink-50);
+  }
+
+  &:active {
+    background-color: var(--ink-100);
+    transform: translateY(1px);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--shadow-focus);
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: default;
+    pointer-events: none;
+  }
+}
+
+/* Read out by screen readers only (where a photo moved to). */
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
 .addMoreTile {
   margin: 0;
 }

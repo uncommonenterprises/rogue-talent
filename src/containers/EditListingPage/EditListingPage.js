@@ -48,9 +48,11 @@ import {
   requestUpdateListing,
   requestImageUpload,
   removeListingImage,
+  setListingImageOrder,
   savePayoutDetails,
 } from './EditListingPage.duck';
 import EditListingWizard, { isOnboardingShellFlow } from './EditListingWizard/EditListingWizard';
+import { applyImageOrder } from './EditListingWizard/portfolioOrder';
 import { getModelProfileRoute } from './modelProfileRoute';
 import css from './EditListingPage.module.css';
 
@@ -112,6 +114,7 @@ const pickRenderableImages = (
  * @param {Function} props.onUpdateListing - The on update listing function
  * @param {Function} props.onImageUpload - The on image upload function
  * @param {Function} props.onRemoveListingImage - The on remove listing image function
+ * @param {Function} props.onReorderListingImages - Stores a new portfolio order (image keys)
  * @param {Function} props.onManageDisableScrolling - The on manage disable scrolling function
  * @param {Function} props.onPayoutDetailsChange - The on payout details change function
  * @param {Function} props.onPayoutDetailsSubmit - The on payout details submit function
@@ -158,6 +161,7 @@ export const EditListingPageComponent = props => {
     onUpdateProfile,
     onImageUpload,
     onRemoveListingImage,
+    onReorderListingImages,
     onManageDisableScrolling,
     onPayoutDetailsSubmit,
     onPayoutDetailsChange,
@@ -270,6 +274,7 @@ export const EditListingPageComponent = props => {
       uploadedImages,
       uploadedImagesOrder,
       removedImageIds,
+      imageOrder,
       addExceptionError = null,
       deleteExceptionError = null,
     } = page;
@@ -290,11 +295,10 @@ export const EditListingPageComponent = props => {
 
     // Show form if user is posting a new listing or editing existing one
     const disableForm = page.redirectToListing && !showListingsError;
-    const images = pickRenderableImages(
-      currentListing,
-      uploadedImages,
-      uploadedImagesOrder,
-      removedImageIds
+    // The portfolio in the order the model chose (F5), until that order is saved.
+    const images = applyImageOrder(
+      pickRenderableImages(currentListing, uploadedImages, uploadedImagesOrder, removedImageIds),
+      imageOrder
     );
 
     const titleId = isNewListingFlow
@@ -347,6 +351,7 @@ export const EditListingPageComponent = props => {
           getAccountLinkInProgress={getAccountLinkInProgress}
           onImageUpload={onImageUpload}
           onRemoveImage={onRemoveListingImage}
+          onReorderImages={onReorderListingImages}
           currentUser={currentUser}
           onManageDisableScrolling={onManageDisableScrolling}
           stripeOnboardingReturnURL={params.returnURLType}
@@ -460,6 +465,7 @@ const mapDispatchToProps = dispatch => ({
     dispatch(savePayoutDetails(values, isUpdateCall)),
   onGetStripeConnectAccountLink: params => dispatch(getStripeConnectAccountLink(params)),
   onRemoveListingImage: imageId => dispatch(removeListingImage(imageId)),
+  onReorderListingImages: imageKeys => dispatch(setListingImageOrder(imageKeys)),
   onResendVerificationEmail: () => dispatch(sendVerificationEmail()),
 });
 

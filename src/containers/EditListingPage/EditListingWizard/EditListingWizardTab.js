@@ -131,6 +131,7 @@ const EditListingWizardTab = props => {
     onManageDisableScrolling,
     onListingTypeChange,
     onRemoveImage,
+    onReorderImages,
     updatedTab,
     updateInProgress,
     tabSubmitButtonText,
@@ -352,6 +353,7 @@ const EditListingWizardTab = props => {
           images={images}
           onImageUpload={onImageUpload}
           onRemoveImage={onRemoveImage}
+          onReorderImages={onReorderImages}
         />
       );
     }

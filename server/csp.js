@@ -150,9 +150,15 @@ exports.csp = (reportUri, reportOnly) => {
   // const { imgSrc = [self] } = defaultDirectives;
   // const exampleImgSrc = imgSrc.concat('my-custom-domain.example.com');
 
+  // F5: a model's cover photo is copied into their profile picture in the browser, which
+  // downloads the cover from the Sharetribe image CDN (imgix) with fetch().
+  const { connectSrc = [self] } = defaultDirectives;
+  const customConnectSrc = connectSrc.concat('*.imgix.net', 'sharetribe.imgix.net');
+
   const customDirectives = {
     // Example: Add custom directive override
     // imgSrc: exampleImgSrc,
+    connectSrc: customConnectSrc,
   };
 
   // ================ END CUSTOM CSP URLs ================ //

@@ -38,6 +38,7 @@ const getInitialValues = params => {
  * @param {boolean} props.updateInProgress - Whether the update is in progress
  * @param {Function} props.onSubmit - The submit function
  * @param {Function} props.onRemoveImage - The remove image function
+ * @param {Function} [props.onReorderImages] - Stores a new photo order (array of image keys)
  * @param {Object} props.listingImageConfig - The listing image config
  * @returns {JSX.Element}
  */
@@ -55,6 +56,7 @@ const EditListingPhotosPanel = props => {
     updateInProgress,
     onSubmit,
     onRemoveImage,
+    onReorderImages,
     listingImageConfig,
     backLinkProps,
     updatePageTitle: UpdatePageTitle,
@@ -103,6 +105,7 @@ const EditListingPhotosPanel = props => {
           onSubmit(updateValues);
         }}
         onRemoveImage={onRemoveImage}
+        onReorderImages={onReorderImages}
         saveActionMsg={submitButtonText}
         backLinkProps={backLinkProps}
         updated={panelUpdated}
