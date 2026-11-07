@@ -7,6 +7,8 @@
 
 import { SCHEMA_TYPE_MULTI_ENUM, SCHEMA_TYPE_TEXT } from '../../../util/types';
 
+export const MEASUREMENTS_SECTION_ID = 'measurements';
+
 export const PROFILE_FIELD_SECTIONS = [
   {
     id: 'basics',
@@ -14,7 +16,7 @@ export const PROFILE_FIELD_SECTIONS = [
     keys: ['gender', 'height_cm'],
   },
   {
-    id: 'measurements',
+    id: MEASUREMENTS_SECTION_ID,
     labelId: 'EditListingDetailsForm.sectionMeasurements',
     keys: ['waist_cm', 'hips_cm', 'bust_chest_cm', 'shoe_size_uk'],
   },
@@ -29,6 +31,12 @@ export const PROFILE_FIELD_SECTIONS = [
     keys: ['model_website_url', 'instagram_url'],
   },
 ];
+
+// Length fields (stored in whole cm) that the Measurements cm / inches switch shows in inches.
+// Shoe size isn't a length. Height stays in cm: it sits in Basics, away from the switch, and
+// people in the UK give height in feet and inches rather than plain inches.
+// A key missing from config is simply skipped.
+export const INCHES_SWITCH_FIELD_KEYS = ['waist_cm', 'hips_cm', 'bust_chest_cm'];
 
 // Where unmapped fields go.
 export const DEFAULT_PROFILE_SECTION_ID = 'style';

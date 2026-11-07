@@ -208,4 +208,69 @@ describe('EditListingDetailsForm "Your profile" step (sign-up journey screen 09)
       .closest('section');
     expect(styleSection).toContainElement(screen.getByLabelText('Languages (optional)'));
   });
+
+  it('has a collapsed "How to measure" guide in Measurements', () => {
+    renderProfileForm();
+    const measurements = screen
+      .getByRole('heading', { name: 'EditListingDetailsForm.sectionMeasurements' })
+      .closest('section');
+    const toggle = screen.getByText('EditListingDetailsForm.howToMeasureToggle');
+    expect(measurements).toContainElement(toggle);
+    const details = toggle.closest('details');
+    expect(details).not.toHaveAttribute('open');
+    expect(details).toHaveTextContent('EditListingDetailsForm.howToMeasureWaist');
+    expect(details).toHaveTextContent('EditListingDetailsForm.howToMeasureHips');
+    expect(details).toHaveTextContent('EditListingDetailsForm.howToMeasureBust');
+  });
+
+  it('switches waist, hips and bust/chest to inches, leaving height and shoe size alone', async () => {
+    const user = userEvent.setup();
+    renderProfileForm();
+
+    const cm = screen.getByRole('radio', { name: 'EditListingDetailsForm.measurementUnitCm' });
+    const inches = screen.getByRole('radio', { name: 'EditListingDetailsForm.measurementUnitIn' });
+    expect(cm).toBeChecked();
+    expect(screen.getByLabelText(/^Waist \(cm\)/)).toBeInTheDocument();
+
+    await user.click(inches);
+
+    expect(inches).toBeChecked();
+    expect(screen.getByLabelText(/^Waist \(in\)/)).toBeInTheDocument();
+    expect(screen.getByLabelText(/^Hips \(in\)/)).toBeInTheDocument();
+    expect(screen.getByLabelText(/^Bust\/Chest \(in\)/)).toBeInTheDocument();
+    expect(screen.getByLabelText(/^Height \(cm\)/)).toBeInTheDocument();
+    expect(screen.getByLabelText(/^Shoe size \(UK\)/)).toBeInTheDocument();
+
+    await user.click(cm);
+    expect(screen.getByLabelText(/^Waist \(cm\)/)).toBeInTheDocument();
+  });
+
+  it('keeps the value in cm when switching units', async () => {
+    const user = userEvent.setup();
+    renderProfileForm();
+
+    await user.click(
+      screen.getByRole('radio', { name: 'EditListingDetailsForm.measurementUnitIn' })
+    );
+    await user.type(screen.getByLabelText(/^Waist \(in\)/), '30');
+    await user.click(
+      screen.getByRole('radio', { name: 'EditListingDetailsForm.measurementUnitCm' })
+    );
+
+    // 30 in = 76.2 cm, saved as 76
+    expect(screen.getByLabelText(/^Waist \(cm\)/)).toHaveValue(76);
+  });
+
+  it('leaves out the switch and guide when there are no length measurements', () => {
+    const lengthKeys = ['waist_cm', 'hips_cm', 'bust_chest_cm'];
+    renderProfileForm(profileFields.filter(f => !lengthKeys.includes(f.key)));
+    expect(
+      screen.queryByRole('radio', { name: 'EditListingDetailsForm.measurementUnitIn' })
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText('EditListingDetailsForm.howToMeasureToggle')).not.toBeInTheDocument();
+    // Shoe size still has its Measurements section.
+    expect(
+      screen.getByRole('heading', { name: 'EditListingDetailsForm.sectionMeasurements' })
+    ).toBeInTheDocument();
+  });
 });

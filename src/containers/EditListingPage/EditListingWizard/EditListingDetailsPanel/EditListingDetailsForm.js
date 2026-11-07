@@ -7,13 +7,14 @@ import classNames from 'classnames';
 import { FormattedMessage, useIntl } from '../../../../util/reactIntl';
 import { displayDescription } from '../../../../util/configHelpers.js';
 import { useConfiguration } from '../../../../context/configurationContext.js';
-import { EXTENDED_DATA_SCHEMA_TYPES, propTypes } from '../../../../util/types';
+import { EXTENDED_DATA_SCHEMA_TYPES, SCHEMA_TYPE_LONG, propTypes } from '../../../../util/types';
 import {
   isFieldForCategory,
   isFieldForListingType,
   isValidCurrencyForTransactionProcess,
 } from '../../../../util/fieldHelpers';
 import { maxLength, required, composeValidators } from '../../../../util/validators';
+import { UNIT_IN, swapLabelUnit } from '../../../../util/lengthUnits';
 
 // Import shared components
 import {
@@ -27,6 +28,8 @@ import {
 
 // Import modules from parent directory
 import {
+  INCHES_SWITCH_FIELD_KEYS,
+  MEASUREMENTS_SECTION_ID,
   PROFILE_FIELD_DISPLAY,
   groupProfileFields,
   isFullWidthProfileField,
@@ -34,6 +37,7 @@ import {
 import { WizardActions, wizardPrimaryButtonClassName } from '../WizardShell/WizardShell';
 
 // Import modules from this directory
+import { HowToMeasure, MeasurementUnitSwitch, useMeasurementUnit } from './MeasurementsHelp';
 import css from './EditListingDetailsForm.module.css';
 
 const TITLE_MAX_LENGTH = 60;
@@ -293,8 +297,21 @@ const scrollToField = namespacedKey => {
   }
 };
 
+// Whether the cm / inches switch applies to this field (a listed key with a number value).
+const isInchesSwitchField = fieldConfig =>
+  INCHES_SWITCH_FIELD_KEYS.includes(fieldConfig?.key) &&
+  fieldConfig?.schemaType === SCHEMA_TYPE_LONG;
+
 const AddListingFields = props => {
-  const { listingType, listingFieldsConfig, selectedCategories, formId, intl } = props;
+  const {
+    listingType,
+    listingFieldsConfig,
+    selectedCategories,
+    formId,
+    intl,
+    measurementUnit,
+    onMeasurementUnitChange,
+  } = props;
   const targetCategoryIds = Object.values(selectedCategories);
 
   const isEligible = fieldConfig =>
@@ -305,9 +322,14 @@ const AddListingFields = props => {
     const cellClasses = classNames(css.fieldAnchor, css.fieldCell, {
       [css.fieldCellFullWidth]: isFullWidthProfileField(fieldConfig),
     });
+    // Switching units remounts the field so its validation messages switch units too. The
+    // value itself is kept: the form always holds whole centimetres.
+    const isLengthField = isInchesSwitchField(fieldConfig);
     return (
       <div key={namespacedKey} id={`field-${namespacedKey}`} className={cellClasses}>
         <CustomExtendedDataField
+          key={isLengthField ? measurementUnit : namespacedKey}
+          displayInInches={isLengthField && measurementUnit === UNIT_IN}
           className={css.field}
           name={namespacedKey}
           fieldConfig={fieldConfig}
@@ -328,12 +350,35 @@ const AddListingFields = props => {
 
   return (
     <>
-      {sections.map(section => (
-        <section key={section.id} className={css.fieldSection}>
+      {sections.map(section => {
+        // Measurements gets a "How to measure" guide and a cm / in switch, but only when it
+        // holds at least one of the length fields they're about.
+        const hasLengthFields =
+          section.id === MEASUREMENTS_SECTION_ID && section.fields.some(isInchesSwitchField);
+        const heading = (
           <h2 className={css.sectionHeading}>{intl.formatMessage({ id: section.labelId })}</h2>
-          <div className={css.fieldGrid}>{section.fields.map(renderField)}</div>
-        </section>
-      ))}
+        );
+        return (
+          <section key={section.id} className={css.fieldSection}>
+            {hasLengthFields ? (
+              <>
+                <div className={css.sectionHeader}>
+                  {heading}
+                  <MeasurementUnitSwitch
+                    formId={formId}
+                    unit={measurementUnit}
+                    onChange={onMeasurementUnitChange}
+                  />
+                </div>
+                <HowToMeasure fieldKeys={section.fields.map(f => f.key)} />
+              </>
+            ) : (
+              heading
+            )}
+            <div className={css.fieldGrid}>{section.fields.map(renderField)}</div>
+          </section>
+        );
+      })}
     </>
   );
 };
@@ -409,6 +454,8 @@ const EditListingDetailsForm = props => (
       const intl = useIntl();
       const { listingType, transactionProcessAlias, unitType } = values;
       const [allCategoriesChosen, setAllCategoriesChosen] = useState(false);
+      // cm / inches for the length measurements: display only, never saved to the listing.
+      const [measurementUnit, setMeasurementUnit] = useMeasurementUnit();
 
       const titleRequiredMessage = intl.formatMessage({
         id: 'EditListingDetailsForm.titleRequired',
@@ -469,10 +516,17 @@ const EditListingDetailsForm = props => (
         ? listingFieldsConfig
             .filter(f => isEligibleListingField(f, listingType, targetCategoryIds))
             .filter(f => !!f?.saveConfig?.isRequired)
-            .map(f => ({
-              key: namespacedFieldKey(f),
-              label: f?.saveConfig?.label || f?.label,
-            }))
+            .map(f => {
+              const label = f?.saveConfig?.label || f?.label;
+              return {
+                key: namespacedFieldKey(f),
+                // Match the field's own label, e.g. "Waist (in)" while inches are shown.
+                label:
+                  measurementUnit === UNIT_IN && isInchesSwitchField(f)
+                    ? swapLabelUnit(label, UNIT_IN)
+                    : label,
+              };
+            })
             .filter(f => !!errors?.[f.key])
         : [];
 
@@ -545,6 +599,8 @@ const EditListingDetailsForm = props => (
               selectedCategories={pickSelectedCategories(values)}
               formId={formId}
               intl={intl}
+              measurementUnit={measurementUnit}
+              onMeasurementUnitChange={setMeasurementUnit}
             />
           )}
 
