@@ -168,7 +168,9 @@ export const listingFields = [
     },
     saveConfig: {
       label: 'Hips (cm)',
-      isRequired: true,
+      // Optional since 07/11/2026 (Neil, tester feedback F6): first-time male models often
+      // don't know it. Console test marketplace matches.
+      isRequired: false,
     },
   },
   {
