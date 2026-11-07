@@ -22,6 +22,9 @@ const reconcileOwnListing = require('./api/reconcile-own-listing');
 const verifyNudge = require('./api/verify-nudge');
 const resubmitForReview = require('./api/resubmit-for-review');
 const reviewDecisionEmails = require('./api/review-decision-emails');
+const reviewAccess = require('./api/review-access');
+const reviewQueue = require('./api/review-queue');
+const reviewProfile = require('./api/review-profile');
 
 const createUserWithIdp = require('./api/auth/createUserWithIdp');
 
@@ -91,6 +94,13 @@ router.post('/resubmit-for-review', resubmitForReview);
 // scheduled cron (every 10 minutes) pings this with the CRON_SECRET. Dormant + fail-safe until
 // provisioned (see server/api/review-decision-emails.js).
 router.post('/cron/review-decision-emails', reviewDecisionEmails);
+
+// Review tool stage 1 (READ-ONLY): reviewers' queue and review page data. Reviewers (metadata
+// roles) and admins (REVIEW_ADMIN_USER_IDS) only, checked from the caller's own session on every
+// request; everyone else gets one identical 404 (see server/api-util/reviewerRoles.js).
+router.get('/review/access', reviewAccess);
+router.get('/review/queue', reviewQueue);
+router.get('/review/user/:userId', reviewProfile);
 
 // Create user with identity provider (e.g. Facebook or Google)
 // This endpoint is called to create a new user after user has confirmed

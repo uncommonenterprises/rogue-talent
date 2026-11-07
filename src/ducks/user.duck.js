@@ -5,7 +5,13 @@ import * as log from '../util/log';
 import { LISTING_STATE_DRAFT } from '../util/types';
 import { storableError } from '../util/errors';
 import { isUserAuthorized } from '../util/userHelpers';
-import { isModelUser } from '../util/accountStatus';
+import { isModelUser, isAccountStatusFlowEnabled } from '../util/accountStatus';
+import { fetchReviewAccess } from '../util/api';
+import {
+  hasReviewerRole,
+  readCachedReviewAccess,
+  writeCachedReviewAccess,
+} from '../util/reviewTool';
 import {
   getStatesNeedingProviderAttention,
   getStatesNeedingCustomerAttention,
@@ -122,8 +128,7 @@ export const fetchCurrentUserProfileListingThunk = createAsyncThunk(
     // Only for a known model. Skipping (rather than resolving null) matters: a "fetched, no
     // listing" result for a user who simply wasn't loaded yet would send a model with a draft
     // to a blank new profile.
-    condition: (userMaybe, { getState }) =>
-      isModelUser(userMaybe || getState().user?.currentUser),
+    condition: (userMaybe, { getState }) => isModelUser(userMaybe || getState().user?.currentUser),
   }
 );
 
@@ -231,6 +236,44 @@ export const fetchCurrentUserNotifications = () => (dispatch, getState, sdk) => 
   return dispatch(fetchCurrentUserNotificationsThunk()).unwrap();
 };
 
+/////////////////////////////////////////////////////////////////
+// Review tool: should the nav show the "Review queue" link?   //
+/////////////////////////////////////////////////////////////////
+// Display only; every review endpoint re-checks access on the server. A reviewer role in
+// metadata is enough to show the link without a call. Admins are an env-var list on the server
+// that the browser can't see, so for everyone else the server is asked once per tab session
+// (cached 15 minutes in sessionStorage). Browser only, and only while the account-status flow
+// (which the review tool belongs to) is on.
+const fetchCurrentUserReviewAccessPayloadCreator = currentUser => {
+  const userId = currentUser?.id?.uuid;
+  if (hasReviewerRole(currentUser)) {
+    return Promise.resolve({ userId, canReview: true });
+  }
+  const cached = readCachedReviewAccess(userId);
+  if (cached !== null) {
+    return Promise.resolve({ userId, canReview: cached });
+  }
+  return fetchReviewAccess()
+    .then(response => response?.canReview === true)
+    .catch(() => false)
+    .then(canReview => {
+      writeCachedReviewAccess(userId, canReview);
+      return { userId, canReview };
+    });
+};
+
+export const fetchCurrentUserReviewAccessThunk = createAsyncThunk(
+  'user/fetchCurrentUserReviewAccess',
+  fetchCurrentUserReviewAccessPayloadCreator,
+  {
+    condition: (currentUser, { getState }) =>
+      typeof window !== 'undefined' &&
+      isAccountStatusFlowEnabled() &&
+      !!currentUser?.id?.uuid &&
+      getState().user?.currentUserReviewAccessFor !== currentUser.id.uuid,
+  }
+);
+
 const fetchCurrentUserPayloadCreator = (options, thunkAPI) => {
   const { getState, dispatch, extra: sdk, rejectWithValue } = thunkAPI;
   const state = getState();
@@ -315,6 +358,9 @@ const fetchCurrentUserPayloadCreator = (options, thunkAPI) => {
         if (!currentUser.attributes.emailVerified) {
           dispatch(fetchCurrentUserHasOrders());
         }
+
+        // Review tool nav link (browser only, once per user; see the thunk's condition).
+        dispatch(fetchCurrentUserReviewAccessThunk(currentUser));
       }
 
       // Make sure auth info is up to date
@@ -395,6 +441,9 @@ const userSlice = createSlice({
     currentUserHasOrdersError: null,
     sendVerificationEmailInProgress: false,
     sendVerificationEmailError: null,
+    // Review tool nav link (display only): the user id the answer is for, and the answer.
+    currentUserReviewAccessFor: null,
+    currentUserCanReview: false,
   },
   reducers: {
     clearCurrentUser: state => {
@@ -407,6 +456,8 @@ const userSlice = createSlice({
       state.currentUserProfileListingInProgress = false;
       state.currentUserSaleNotificationCount = 0;
       state.currentUserOrderNotificationCount = 0;
+      state.currentUserReviewAccessFor = null;
+      state.currentUserCanReview = false;
 
       state.currentUserNotificationCountError = null;
     },
@@ -419,6 +470,16 @@ const userSlice = createSlice({
   },
   extraReducers: builder => {
     builder
+      // fetchCurrentUserReviewAccess (set the user on pending so it is only asked once)
+      .addCase(fetchCurrentUserReviewAccessThunk.pending, (state, action) => {
+        state.currentUserReviewAccessFor = action.meta.arg?.id?.uuid || null;
+        state.currentUserCanReview = false;
+      })
+      .addCase(fetchCurrentUserReviewAccessThunk.fulfilled, (state, action) => {
+        if (action.payload?.userId === state.currentUserReviewAccessFor) {
+          state.currentUserCanReview = action.payload.canReview === true;
+        }
+      })
       // fetchCurrentUser
       .addCase(fetchCurrentUserThunk.pending, state => {
         state.currentUserShowError = null;

@@ -114,6 +114,10 @@ export const ProfileAbout = props => {
  * "Checked before going live". Replaces the template's map, generic field list and "About the
  * listing author" (run-through finding 10; open question 7: no Contact button). The model's bio
  * leads as an "About" section when there is one (tester F, F4).
+ *
+ * `reviewMode` (review tool, R02): the same sections a client sees, minus reviews (a pending
+ * model has none) and "Checked before going live" (it would claim a review that has not
+ * happened yet).
  */
 const ProfileDetails = props => {
   const {
@@ -124,6 +128,7 @@ const ProfileDetails = props => {
     author,
     reviews = [],
     fetchReviewsError,
+    reviewMode = false,
   } = props;
   const intl = useIntl();
   const opt = key =>
@@ -316,83 +321,89 @@ const ProfileDetails = props => {
         </Section>
       ) : null}
 
-      <Section
-        id="profile-reviews"
-        titleId={reviews.length > 0 ? 'ListingPage.reviewsTitle' : 'ListingPage.reviewsTitleEmpty'}
-        titleValues={{ count: reviews.length }}
-      >
-        {fetchReviewsError ? (
-          <p className={css.errorText}>
-            <FormattedMessage id="ListingPage.reviewsError" />
-          </p>
-        ) : null}
-        {average ? (
-          <div className={css.reviewSummary}>
-            <span className={css.reviewScore}>
-              {intl.formatNumber(average, { maximumFractionDigits: 1 })}
-            </span>
-            <div className={css.reviewSummaryText}>
-              <Stars rating={average} />
-              <span className={css.smallMuted}>
-                <FormattedMessage id="ListingPage.reviewsOverall" />
+      {reviewMode ? null : (
+        <Section
+          id="profile-reviews"
+          titleId={
+            reviews.length > 0 ? 'ListingPage.reviewsTitle' : 'ListingPage.reviewsTitleEmpty'
+          }
+          titleValues={{ count: reviews.length }}
+        >
+          {fetchReviewsError ? (
+            <p className={css.errorText}>
+              <FormattedMessage id="ListingPage.reviewsError" />
+            </p>
+          ) : null}
+          {average ? (
+            <div className={css.reviewSummary}>
+              <span className={css.reviewScore}>
+                {intl.formatNumber(average, { maximumFractionDigits: 1 })}
               </span>
+              <div className={css.reviewSummaryText}>
+                <Stars rating={average} />
+                <span className={css.smallMuted}>
+                  <FormattedMessage id="ListingPage.reviewsOverall" />
+                </span>
+              </div>
             </div>
-          </div>
-        ) : !fetchReviewsError ? (
-          <p className={css.smallMuted}>
-            <FormattedMessage id="ListingPage.noReviews" />
-          </p>
-        ) : null}
-        {reviews.length > 0 ? (
-          <div>
-            {reviews.map(r => (
-              <div className={css.review} key={r.id.uuid}>
-                <div className={css.reviewMeta}>
-                  <Avatar className={css.reviewAvatar} user={r.author} disableProfileLink />
-                  <div>
-                    <strong>
-                      <UserDisplayName user={r.author} intl={intl} />
-                    </strong>
-                    <div className={css.reviewDate}>
-                      {intl.formatDate(r.attributes.createdAt, {
-                        month: 'short',
-                        year: 'numeric',
-                      })}
+          ) : !fetchReviewsError ? (
+            <p className={css.smallMuted}>
+              <FormattedMessage id="ListingPage.noReviews" />
+            </p>
+          ) : null}
+          {reviews.length > 0 ? (
+            <div>
+              {reviews.map(r => (
+                <div className={css.review} key={r.id.uuid}>
+                  <div className={css.reviewMeta}>
+                    <Avatar className={css.reviewAvatar} user={r.author} disableProfileLink />
+                    <div>
+                      <strong>
+                        <UserDisplayName user={r.author} intl={intl} />
+                      </strong>
+                      <div className={css.reviewDate}>
+                        {intl.formatDate(r.attributes.createdAt, {
+                          month: 'short',
+                          year: 'numeric',
+                        })}
+                      </div>
                     </div>
                   </div>
+                  <p className={css.reviewText}>{r.attributes.content}</p>
                 </div>
-                <p className={css.reviewText}>{r.attributes.content}</p>
-              </div>
-            ))}
-          </div>
-        ) : null}
-      </Section>
+              ))}
+            </div>
+          ) : null}
+        </Section>
+      )}
 
-      <Section id="profile-checked" titleId="ListingPage.checkedTitle">
-        <ul className={css.checkedList}>
-          <li>
-            <RtIcon name="check" className={css.checkedIcon} />
-            <span>
-              <FormattedMessage
-                id="ListingPage.checkedProfile"
-                values={{ strong: text => <strong>{text}</strong> }}
-              />
-            </span>
-          </li>
-          <li>
-            <RtIcon name="check" className={css.checkedIcon} />
-            <span>
-              <FormattedMessage
-                id="ListingPage.checkedId"
-                values={{ strong: text => <strong>{text}</strong> }}
-              />
-            </span>
-          </li>
-        </ul>
-        <p className={css.smallMuted}>
-          <FormattedMessage id="ListingPage.checkedNote" />
-        </p>
-      </Section>
+      {reviewMode ? null : (
+        <Section id="profile-checked" titleId="ListingPage.checkedTitle">
+          <ul className={css.checkedList}>
+            <li>
+              <RtIcon name="check" className={css.checkedIcon} />
+              <span>
+                <FormattedMessage
+                  id="ListingPage.checkedProfile"
+                  values={{ strong: text => <strong>{text}</strong> }}
+                />
+              </span>
+            </li>
+            <li>
+              <RtIcon name="check" className={css.checkedIcon} />
+              <span>
+                <FormattedMessage
+                  id="ListingPage.checkedId"
+                  values={{ strong: text => <strong>{text}</strong> }}
+                />
+              </span>
+            </li>
+          </ul>
+          <p className={css.smallMuted}>
+            <FormattedMessage id="ListingPage.checkedNote" />
+          </p>
+        </Section>
+      )}
     </>
   );
 };

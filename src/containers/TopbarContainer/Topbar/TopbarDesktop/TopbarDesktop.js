@@ -64,6 +64,7 @@ const ProfileMenu = ({
   showManageListingsLink,
   showAccountStatusLink,
   showProfileSettingsLink,
+  showReviewQueueLink,
   intl,
 }) => {
   const currentPageClass = page => {
@@ -83,6 +84,17 @@ const ProfileMenu = ({
         <Avatar className={css.avatar} user={currentUser} disableProfileLink />
       </MenuLabel>
       <MenuContent className={css.profileMenuContent}>
+        {showReviewQueueLink ? (
+          <MenuItem key="ReviewQueuePage">
+            <NamedLink
+              className={classNames(css.menuLink, currentPageClass('ReviewQueuePage'))}
+              name="ReviewQueuePage"
+            >
+              <span className={css.menuItemBorder} />
+              <FormattedMessage id="TopbarDesktop.reviewQueueLink" />
+            </NamedLink>
+          </MenuItem>
+        ) : null}
         {showAccountStatusLink ? (
           <MenuItem key="AccountStatusPage">
             <NamedLink
@@ -161,6 +173,7 @@ const ProfileMenu = ({
  * @param {boolean} props.showAccountStatusLink add "Account status" to the profile menu
  * @param {boolean} [props.showProfileSettingsLink] add "Profile settings" to the profile menu
  *   (default true; models don't get it, see util/settingsPages.js)
+ * @param {boolean} [props.showReviewQueueLink] add "Review queue" (reviewers and admins only)
  * @returns {JSX.Element} search icon
  */
 const TopbarDesktop = props => {
@@ -186,6 +199,7 @@ const TopbarDesktop = props => {
     primaryLink,
     showAccountStatusLink = false,
     showProfileSettingsLink = true,
+    showReviewQueueLink = false,
   } = props;
   const [mounted, setMounted] = useState(false);
 
@@ -236,6 +250,7 @@ const TopbarDesktop = props => {
       showManageListingsLink={showCreateListingsLink}
       showAccountStatusLink={showAccountStatusLink}
       showProfileSettingsLink={showProfileSettingsLink}
+      showReviewQueueLink={showReviewQueueLink}
       intl={intl}
     />
   ) : null;
