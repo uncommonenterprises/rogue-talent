@@ -884,7 +884,7 @@
   "EditListingPricingPanel.listingPriceCurrencyInvalid": "The currency of your profile is different from the marketplace currency ({marketplaceCurrency}). You cannot edit your rates.",
   "EditListingPricingPanel.title": "Edit the pricing of {listingTitle}",
   "EditListingProfileForm.bioCounter": "{count} / {maxLength}",
-  "EditListingProfileForm.bioHint": "A few lines about you and the work you enjoy. Please don't include contact details or social handles.",
+  "EditListingProfileForm.bioHint": "A few lines about you and the work you enjoy. Add your Instagram and website in the boxes on 'Your profile'.",
   "EditListingProfileForm.bioLabel": "A short bio (optional)",
   "EditListingProfileForm.bioTooLong": "Please keep this to {maxLength} characters or fewer.",
   "EditListingProfileForm.cityHint": "Search suggestions appear as you type. Choose your city from the list.",
