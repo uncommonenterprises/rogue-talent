@@ -39,6 +39,8 @@ const PaymentMethodsPage = loadable(() => import(/* webpackChunkName: "PaymentMe
 const PrivacyPolicyPage = loadable(() => import(/* webpackChunkName: "PrivacyPolicyPage" */ '../containers/PrivacyPolicyPage/PrivacyPolicyPage'));
 const ProfilePage = loadable(() => import(/* webpackChunkName: "ProfilePage" */ '../containers/ProfilePage/ProfilePage'));
 const ProfileSettingsPage = loadable(() => import(/* webpackChunkName: "ProfileSettingsPage" */ '../containers/ProfileSettingsPage/ProfileSettingsPage'));
+const ReviewProfilePage = loadable(() => import(/* webpackChunkName: "ReviewProfilePage" */ '../containers/ReviewProfilePage/ReviewProfilePage'));
+const ReviewQueuePage = loadable(() => import(/* webpackChunkName: "ReviewQueuePage" */ '../containers/ReviewQueuePage/ReviewQueuePage'));
 const RequestQuotePage = loadable(() => import(/* webpackChunkName: "RequestQuotePage" */ '../containers/RequestQuotePage/RequestQuotePage'));
 const SafetySettingsPage = loadable(() => import(/* webpackChunkName: "SafetySettingsPage" */ '../containers/SafetySettingsPage/SafetySettingsPage'));
 const SafetyReportPage = loadable(() => import(/* webpackChunkName: "SafetyReportPage" */ '../containers/SafetyReportPage/SafetyReportPage'));
@@ -487,6 +489,25 @@ const routeConfiguration = (layoutConfig, accessControlConfig) => {
       authPage: 'LoginPage',
       component: AccountStatusPage,
       loadData: pageDataLoadingAPI.AccountStatusPage.loadData,
+    },
+    {
+      // Review tool stage 1 (read-only): the review queue (R01) and one person's review page
+      // (R02 model / R04 client). Reviewers and admins only; the server checks every request
+      // and everyone else sees "You don't have access to this page". noindex on the page.
+      path: '/review',
+      name: 'ReviewQueuePage',
+      auth: true,
+      authPage: 'LoginPage',
+      component: ReviewQueuePage,
+      loadData: pageDataLoadingAPI.ReviewQueuePage.loadData,
+    },
+    {
+      path: '/review/:userId',
+      name: 'ReviewProfilePage',
+      auth: true,
+      authPage: 'LoginPage',
+      component: ReviewProfilePage,
+      loadData: pageDataLoadingAPI.ReviewProfilePage.loadData,
     },
     {
       path: '/styleguide',

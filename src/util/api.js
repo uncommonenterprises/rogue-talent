@@ -190,3 +190,27 @@ export const reconcileOwnListing = () => {
 export const resubmitForReview = () => {
   return post('/api/resubmit-for-review', {});
 };
+
+// Review tool stage 1 (read-only). GET requests to the server's review endpoints; the server
+// resolves the caller from the session cookie and checks the reviewer role / admin list itself.
+// Callers without access get one identical 404 ({ error: 'not-found', status: 404 }).
+const get = (path, options = {}) =>
+  request(path, { ...options, method: methods.GET, headers: { Accept: 'application/json' } });
+
+// Can the logged-in user use the review tool? Resolves { canReview, isAdmin }; rejects (404) for
+// everyone else. Display only (the nav link). See `server/api/review-access.js`.
+export const fetchReviewAccess = () => {
+  return get('/api/review/access');
+};
+
+// The review queue (people waiting for a decision, oldest first).
+// See `server/api/review-queue.js`.
+export const fetchReviewQueue = () => {
+  return get('/api/review/queue');
+};
+
+// One person's review page data ({ kind: 'model' | 'client' | 'not-waiting', ... }).
+// See `server/api/review-profile.js`.
+export const fetchReviewProfile = userId => {
+  return get(`/api/review/user/${encodeURIComponent(userId)}`);
+};

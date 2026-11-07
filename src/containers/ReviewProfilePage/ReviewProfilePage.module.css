@@ -1,0 +1,576 @@
+@import '../../styles/customMediaQueries.css';
+
+/* Review page (R02 model / R04 client / R07 states; docs/design/review-tool/review.css "R02 /
+   R04 review panel"). The model layout reuses the profile page's own classes
+   (ListingPage/ModelProfile/ModelProfile.module.css). Design-system tokens only. */
+
+.banner {
+  margin: var(--space-3) 0;
+}
+
+/* ---- Review panel ---- */
+.panelAside {
+  margin-top: var(--space-6);
+
+  @media (--viewportBooking) {
+    margin-top: var(--space-5);
+  }
+
+  /* Tall panel: scroll inside it rather than past the bottom of the screen. */
+  @media (--viewportBooking) {
+    & > .panel {
+      max-height: calc(100vh - var(--topbarHeightDesktop) - var(--space-7));
+      overflow-y: auto;
+    }
+  }
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  background: var(--white);
+  border: var(--border-hair) solid var(--border-hairline);
+  border-radius: var(--radius-lg);
+  font-family: var(--font-sans);
+  scroll-margin-top: var(--space-4);
+}
+
+.panelHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.panelTitle {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-display);
+  font-weight: var(--weight-extrabold);
+  font-size: var(--text-xl);
+  letter-spacing: var(--tracking-tight);
+  line-height: 1.15;
+  color: var(--text-primary);
+}
+
+.sec {
+  border-top: var(--border-hair) solid var(--border-hairline);
+  padding-top: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.secTitle {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  font-family: var(--font-sans);
+  font-weight: var(--weight-bold);
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--text-muted);
+  scroll-margin-top: calc(var(--topbarHeightDesktop) + var(--space-4));
+}
+
+.draftFlag {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-weight: var(--weight-regular);
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  line-height: 1.2;
+  color: var(--amber-700);
+  background: var(--amber-50);
+  border: 1px solid var(--amber-100);
+  padding: 3px 7px;
+  border-radius: var(--radius-sm);
+}
+
+.kv {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+
+  & > div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--space-3);
+    font-size: var(--text-sm);
+  }
+
+  & dt {
+    color: var(--text-secondary);
+  }
+
+  & dd {
+    margin: 0;
+    font-weight: var(--weight-semibold);
+    color: var(--text-primary);
+    text-align: right;
+    min-width: 0;
+  }
+
+  & dd small {
+    display: block;
+    font-weight: var(--weight-regular);
+    font-size: var(--text-xs);
+    color: var(--text-muted);
+  }
+}
+
+.hint {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  line-height: var(--leading-normal);
+  color: var(--text-muted);
+}
+
+.checklistForm {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.checklist {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Every checklist row is a 44px+ tap target. */
+.checkRow {
+  display: block;
+  min-height: 44px;
+  padding: var(--space-2) 0;
+  line-height: 1.4;
+
+  & + & {
+    border-top: var(--border-hair) solid var(--border-subtle);
+  }
+}
+
+.progress {
+  margin: 0;
+  padding: 0;
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+
+  & b {
+    color: var(--text-primary);
+  }
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+
+  & button {
+    min-height: 48px;
+  }
+}
+
+.actionsHint {
+  margin: 0;
+  padding: 0;
+  font-size: var(--text-xs);
+  line-height: var(--leading-normal);
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.decisionLine {
+  margin: 0;
+  padding: 0;
+  font-size: var(--text-sm);
+  line-height: var(--leading-normal);
+  color: var(--text-secondary);
+}
+
+/* Phone bottom bar (R02): a count and a jump to the decision. Secondary on purpose: the only
+   cobalt action on the page is Approve. */
+.mobileBar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--white);
+  border-top: var(--border-hair) solid var(--border-hairline);
+
+  @media (--viewportBooking) {
+    display: none;
+  }
+}
+
+.mobileBarCount {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+}
+
+.mobileBarLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 var(--space-4);
+  font-weight: var(--weight-bold);
+  font-size: var(--text-sm);
+  color: var(--text-primary);
+  background: var(--white);
+  border: var(--border-key) solid var(--ink-900);
+  border-radius: var(--radius-lg);
+  text-decoration: none;
+
+  &:hover {
+    background: var(--ink-50);
+    text-decoration: none;
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--shadow-focus);
+  }
+}
+
+/* Phone summary card (R02): hidden on desktop, where the panel is beside the profile. */
+.mini {
+  margin: var(--space-3) 0;
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  background: var(--white);
+  border: var(--border-hair) solid var(--border-hairline);
+  border-radius: var(--radius-lg);
+  font-family: var(--font-sans);
+
+  & .kv {
+    gap: var(--space-2);
+  }
+
+  @media (--viewportBooking) {
+    display: none;
+  }
+}
+
+.jump {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 44px;
+  font-weight: var(--weight-bold);
+  font-size: var(--text-sm);
+  color: var(--accent-600);
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+/* ---- Client page (R04) ---- */
+.clientPage {
+  width: 100%;
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: 0 var(--space-4) var(--space-8);
+  font-family: var(--font-sans);
+
+  /* Room for the fixed phone bar */
+  @media (--viewportBelowBooking) {
+    padding-bottom: 96px;
+  }
+
+  @media (--viewportBooking) {
+    padding: 0 var(--space-5) var(--space-9);
+  }
+}
+
+.whoHead {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-5) 0;
+  border-bottom: var(--border-hair) solid var(--border-hairline);
+}
+
+.monogramLarge {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--ink-100);
+  font-family: var(--font-display);
+  font-weight: var(--weight-bold);
+  font-size: var(--text-lg);
+  color: var(--ink-600);
+}
+
+.whoText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.eyebrow {
+  font-weight: var(--weight-bold);
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.whoName {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-display);
+  font-weight: var(--weight-extrabold);
+  font-size: var(--text-2xl);
+  letter-spacing: var(--tracking-tight);
+  line-height: 1.1;
+  color: var(--text-primary);
+}
+
+.whoSub {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+}
+
+.cols {
+  display: block;
+  padding-top: var(--space-5);
+
+  @media (--viewportBooking) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 380px;
+    gap: var(--space-8);
+    align-items: start;
+  }
+}
+
+.facts {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.factSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.factTitle {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-display);
+  font-weight: var(--weight-bold);
+  font-size: var(--text-lg);
+  letter-spacing: var(--tracking-tight);
+  color: var(--text-primary);
+}
+
+.factRows {
+  margin: 0;
+  padding: 0;
+  border: var(--border-hair) solid var(--border-hairline);
+  border-radius: var(--radius-lg);
+  background: var(--white);
+
+  & > div {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    padding: var(--space-3) var(--space-4);
+    border-top: var(--border-hair) solid var(--border-hairline);
+    font-size: var(--text-sm);
+
+    @media (--viewportMedium) {
+      flex-direction: row;
+      justify-content: space-between;
+      gap: var(--space-4);
+    }
+  }
+
+  & > div:first-child {
+    border-top: 0;
+  }
+
+  & dt {
+    color: var(--text-secondary);
+    flex: none;
+  }
+
+  & dd {
+    margin: 0;
+    font-weight: var(--weight-semibold);
+    color: var(--text-primary);
+    min-width: 0;
+    overflow-wrap: anywhere;
+
+    @media (--viewportMedium) {
+      text-align: right;
+    }
+  }
+
+  & dd small {
+    display: block;
+    font-weight: var(--weight-regular);
+    font-size: var(--text-xs);
+    color: var(--text-muted);
+  }
+}
+
+.notGiven {
+  font-weight: var(--weight-regular);
+  color: var(--text-muted);
+}
+
+.companyNumber {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 var(--space-3);
+
+  @media (--viewportMedium) {
+    justify-content: flex-end;
+  }
+}
+
+/* An ID, which is what the mono face is for (R04). */
+.mono {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  letter-spacing: 0.02em;
+}
+
+.extLink {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-weight: var(--weight-bold);
+  font-size: var(--text-sm);
+  color: var(--accent-600);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* ---- Plain states (not waiting, errors, loading) ---- */
+.plainPage {
+  width: 100%;
+  max-width: 520px;
+  margin: 0 auto;
+  padding: var(--space-8) var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  font-family: var(--font-sans);
+}
+
+.plainTitle {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-display);
+  font-weight: var(--weight-extrabold);
+  font-size: var(--text-2xl);
+  letter-spacing: var(--tracking-tight);
+  line-height: 1.1;
+  color: var(--text-primary);
+
+  @media (--viewportSmall) {
+    font-size: var(--text-3xl);
+  }
+}
+
+.plainText {
+  margin: 0;
+  padding: 0;
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
+  color: var(--text-secondary);
+}
+
+.primaryLink {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0 var(--space-5);
+  font-weight: var(--weight-bold);
+  font-size: var(--text-sm);
+  color: var(--on-accent);
+  background: var(--accent-500);
+  border-radius: var(--radius-lg);
+  text-decoration: none;
+
+  &:hover {
+    background: var(--accent-600);
+    color: var(--on-accent);
+    text-decoration: none;
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--shadow-focus);
+  }
+}
+
+.secondaryButton {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 var(--space-5);
+  font-family: var(--font-sans);
+  font-weight: var(--weight-bold);
+  font-size: var(--text-sm);
+  color: var(--text-primary);
+  background: var(--white);
+  border: var(--border-key) solid var(--ink-900);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+
+  &:hover {
+    background: var(--ink-50);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--shadow-focus);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    color: var(--text-disabled);
+    border-color: var(--ink-300);
+  }
+}

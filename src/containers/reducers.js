@@ -23,6 +23,8 @@ import ManageAccountPage from './ManageAccountPage/ManageAccountPage.duck';
 import ProfilePage from './ProfilePage/ProfilePage.duck';
 import ProfileSettingsPage from './ProfileSettingsPage/ProfileSettingsPage.duck';
 import RequestQuotePage from './RequestQuotePage/RequestQuotePage.duck';
+import ReviewProfilePage from './ReviewProfilePage/ReviewProfilePage.duck';
+import ReviewQueuePage from './ReviewQueuePage/ReviewQueuePage.duck';
 import SafetyReportPage from './SafetyReportPage/SafetyReportPage.duck';
 import SafetySettingsPage from './SafetySettingsPage/SafetySettingsPage.duck';
 import SearchPage from './SearchPage/SearchPage.duck';
@@ -50,6 +52,8 @@ export {
   ProfilePage,
   ProfileSettingsPage,
   RequestQuotePage,
+  ReviewProfilePage,
+  ReviewQueuePage,
   SafetyReportPage,
   SafetySettingsPage,
   SearchPage,

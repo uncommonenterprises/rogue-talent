@@ -1,0 +1,57 @@
+@import '../../styles/customMediaQueries.css';
+
+/* R07 state 1 (review.css .plain-page). Design-system tokens only. */
+
+.root {
+  width: 100%;
+  max-width: 520px;
+  margin: 0 auto;
+  padding: var(--space-8) var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.title {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-display);
+  font-weight: var(--weight-extrabold);
+  font-size: var(--text-2xl);
+  letter-spacing: var(--tracking-tight);
+  line-height: 1.1;
+  color: var(--text-primary);
+
+  @media (--viewportSmall) {
+    font-size: var(--text-3xl);
+  }
+}
+
+/* The only action on the view, so it is the cobalt button (rt-btn primary). */
+.homeLink {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0 var(--space-5);
+  font-family: var(--font-sans);
+  font-weight: var(--weight-bold);
+  font-size: var(--text-sm);
+  color: var(--on-accent);
+  background: var(--accent-500);
+  border-radius: var(--radius-lg);
+  text-decoration: none;
+  transition: background-color var(--dur-fast) var(--ease-standard);
+
+  &:hover {
+    background: var(--accent-600);
+    color: var(--on-accent);
+    text-decoration: none;
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--shadow-focus);
+  }
+}
