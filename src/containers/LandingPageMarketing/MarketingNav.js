@@ -7,6 +7,7 @@ import { FormattedMessage, useIntl } from '../../util/reactIntl';
 import { pathByRouteName } from '../../util/routes';
 import { isAccountStatusFlowEnabled, isModelUser } from '../../util/accountStatus';
 import { isClientUser } from '../../util/userHelpers';
+import { showProfileSettingsForUser } from '../../util/settingsPages';
 import { useMounted } from '../../util/useMounted';
 import { logout } from '../../ducks/auth.duck';
 import {
@@ -65,7 +66,10 @@ const AccountMenu = ({ currentUser, isModel, inboxLabelId }) => {
               ? [item('status', 'AccountStatusPage', 'TopbarMobileMenu.accountStatusLink')]
               : []),
             item('inbox', 'InboxPage', inboxLabelId, { tab: isModel ? 'sales' : 'orders' }),
-            item('profile', 'ProfileSettingsPage', 'TopbarDesktop.profileSettingsLink'),
+            // Tester F F5 part C: models have no Profile settings page.
+            ...(showProfileSettingsForUser(currentUser)
+              ? [item('profile', 'ProfileSettingsPage', 'TopbarDesktop.profileSettingsLink')]
+              : []),
             item('account', 'AccountSettingsPage', 'TopbarDesktop.accountSettingsLink'),
             <MenuItem key="logout">
               <InlineTextButton rootClassName={css.menuLink} onClick={handleLogout}>

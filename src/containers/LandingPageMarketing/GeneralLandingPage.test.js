@@ -60,9 +60,10 @@ describe('GeneralLandingPage', () => {
     expect(
       screen.getByRole('button', { name: 'TopbarDesktop.screenreader.profileMenu' })
     ).toBeInTheDocument();
+    // Tester F F5 part C: models have no Profile settings page, so the menu doesn't offer it.
     expect(
-      screen.getByRole('link', { name: 'TopbarDesktop.profileSettingsLink' })
-    ).toBeInTheDocument();
+      screen.queryByRole('link', { name: 'TopbarDesktop.profileSettingsLink' })
+    ).not.toBeInTheDocument();
     expect(
       screen.getByRole('link', { name: 'TopbarDesktop.accountSettingsLink' })
     ).toBeInTheDocument();
@@ -82,5 +83,9 @@ describe('GeneralLandingPage', () => {
     expect(inboxLinks).toHaveLength(2);
     inboxLinks.forEach(link => expect(link).toHaveAttribute('href', '/inbox/orders'));
     expect(screen.getByRole('link', { name: 'MarketingNav.browseTalent' })).toBeInTheDocument();
+    // Clients keep Profile settings in the account menu.
+    expect(
+      screen.getByRole('link', { name: 'TopbarDesktop.profileSettingsLink' })
+    ).toBeInTheDocument();
   });
 });

@@ -54,6 +54,7 @@ describe('Application - node environment', () => {
       '/account/contact-details': loginPath,
       '/account/change-password': loginPath,
       '/account/payments': loginPath,
+      '/account/safety': loginPath,
       '/verify-email': loginPath,
     };
     Object.entries(urlRedirects).forEach(([url, redirectPath]) => {

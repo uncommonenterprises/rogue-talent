@@ -64,6 +64,7 @@ const scrollToTab = (currentPage, scrollLeft, setScrollLeft) => {
  * @param {string?} props.accountSettingsNavProps.currentPage
  * @param {boolean?} props.accountSettingsNavProps.showPaymentMethods
  * @param {boolean?} props.accountSettingsNavProps.showPayoutDetails
+ * @param {boolean?} props.accountSettingsNavProps.showSafety - the models-only "Safety" page
  * @returns {JSX.Element} Side nav with navigation to different account settings
  */
 const LayoutWrapperAccountSettingsSideNav = props => {
@@ -90,7 +91,12 @@ const LayoutWrapperAccountSettingsSideNav = props => {
     }
   }, [mounted]);
 
-  const { currentPage, showPaymentMethods, showPayoutDetails } = accountSettingsNavProps;
+  const {
+    currentPage,
+    showPaymentMethods,
+    showPayoutDetails,
+    showSafety,
+  } = accountSettingsNavProps;
   const payoutDetailsMaybe = showPayoutDetails
     ? [
         {
@@ -119,6 +125,20 @@ const LayoutWrapperAccountSettingsSideNav = props => {
       ]
     : [];
 
+  // Tester F F5 part C: models' private-residence boundary (SAF-13) lives on its own page.
+  const safetyMaybe = showSafety
+    ? [
+        {
+          text: <FormattedMessage id="LayoutWrapperAccountSettingsSideNav.safetyTabTitle" />,
+          selected: currentPage === 'SafetySettingsPage',
+          id: 'SafetySettingsPageTab',
+          linkProps: {
+            name: 'SafetySettingsPage',
+          },
+        },
+      ]
+    : [];
+
   const tabs = [
     {
       text: <FormattedMessage id="LayoutWrapperAccountSettingsSideNav.contactDetailsTabTitle" />,
@@ -138,6 +158,7 @@ const LayoutWrapperAccountSettingsSideNav = props => {
     },
     ...payoutDetailsMaybe,
     ...paymentMethodsMaybe,
+    ...safetyMaybe,
     {
       text: <FormattedMessage id="LayoutWrapperAccountSettingsSideNav.manageAccountTabTitle" />,
       selected: currentPage === 'ManageAccountPage',

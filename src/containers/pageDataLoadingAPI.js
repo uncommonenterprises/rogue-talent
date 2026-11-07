@@ -21,6 +21,7 @@ import { loadData as PrivacyPolicyPageLoader } from './PrivacyPolicyPage/Privacy
 import { loadData as ProfilePageLoader } from './ProfilePage/ProfilePage.duck';
 import { loadData as ProfileSettingsPageLoader } from './ProfileSettingsPage/ProfileSettingsPage.duck';
 import { loadData as RequestQuotePageLoader } from './RequestQuotePage/RequestQuotePage.duck';
+import { loadData as SafetySettingsPageLoader } from './SafetySettingsPage/SafetySettingsPage.duck';
 import { loadData as SearchPageLoader } from './SearchPage/SearchPage.duck';
 import { loadData as StripePayoutPageLoader } from './StripePayoutPage/StripePayoutPage.duck';
 import { loadData as TermsOfServicePageLoader } from './TermsOfServicePage/TermsOfServicePage.duck';
@@ -90,6 +91,9 @@ const getPageDataLoadingAPI = () => {
     },
     RequestQuotePage: {
       loadData: RequestQuotePageLoader,
+    },
+    SafetySettingsPage: {
+      loadData: SafetySettingsPageLoader,
     },
     SearchPage: {
       loadData: SearchPageLoader,

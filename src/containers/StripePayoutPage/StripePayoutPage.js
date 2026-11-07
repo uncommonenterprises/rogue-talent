@@ -9,6 +9,7 @@ import { FormattedMessage, useIntl } from '../../util/reactIntl';
 import { ensureCurrentUser } from '../../util/data';
 import { propTypes } from '../../util/types';
 import { showCreateListingLinkForUser, showPaymentDetailsForUser } from '../../util/userHelpers';
+import { showProfileSettingsForUser, showSafetySettingsForUser } from '../../util/settingsPages';
 import { getDisplayAccountType } from '../../util/stripeConnect';
 import { isScrollingDisabled } from '../../ducks/ui.duck';
 import {
@@ -182,6 +183,7 @@ export const StripePayoutPageComponent = props => {
     currentPage: 'StripePayoutPage',
     showPaymentMethods,
     showPayoutDetails,
+    showSafety: showSafetySettingsForUser(currentUser),
   };
 
   return (
@@ -196,6 +198,7 @@ export const StripePayoutPageComponent = props => {
             <UserNav
               currentPage="StripePayoutPage"
               showManageListingsLink={showManageListingsLink}
+              showProfileSettingsLink={showProfileSettingsForUser(currentUser)}
             />
           </>
         }

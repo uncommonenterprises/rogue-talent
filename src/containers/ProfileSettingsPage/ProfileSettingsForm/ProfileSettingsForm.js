@@ -19,7 +19,6 @@ import {
   ImageFromFile,
   IconSpinner,
   FieldTextInput,
-  FieldCheckbox,
   H4,
   CustomExtendedDataField,
 } from '../../../components';
@@ -70,35 +69,6 @@ const DisplayNameMaybe = props => {
       />
       <p className={css.extraInfo}>
         <FormattedMessage id="ProfileSettingsForm.displayNameInfo" />
-      </p>
-    </div>
-  );
-};
-
-// SAF-13: model-only private-residence boundary control. A single opt-out toggle,
-// saved to the model's USER privateData (safety_boundaries.no_private_residence).
-// Enforced silently server-side by SAF-14 (server/api-util/residenceBoundary.js).
-const SafetyBoundariesMaybe = props => {
-  const { userTypeConfig, intl } = props;
-  const isModel = userTypeConfig?.userType === 'model';
-  if (!isModel) {
-    return null;
-  }
-
-  return (
-    <div className={css.sectionContainer}>
-      <H4 as="h2" className={css.sectionTitle}>
-        <FormattedMessage id="ProfileSettingsForm.safetyBoundariesHeading" />
-      </H4>
-      <FieldCheckbox
-        id="noPrivateResidence"
-        name="noPrivateResidence"
-        label={intl.formatMessage({
-          id: 'ProfileSettingsForm.noPrivateResidenceLabel',
-        })}
-      />
-      <p className={css.extraInfo}>
-        <FormattedMessage id="ProfileSettingsForm.noPrivateResidenceInfo" />
       </p>
     </div>
   );
@@ -425,7 +395,6 @@ class ProfileSettingsFormComponent extends Component {
                 ))}
               </div>
 
-              <SafetyBoundariesMaybe userTypeConfig={userTypeConfig} intl={intl} />
               {submitError}
               <Button
                 className={css.submitButton}

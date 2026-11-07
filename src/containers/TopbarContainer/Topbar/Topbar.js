@@ -12,6 +12,7 @@ import { parse, stringify } from '../../../util/urlHelpers';
 import { createResourceLocatorString, matchPathname, pathByRouteName } from '../../../util/routes';
 import { isAccountStatusFlowEnabled, isModelUser } from '../../../util/accountStatus';
 import { isClientUser } from '../../../util/userHelpers';
+import { showProfileSettingsForUser } from '../../../util/settingsPages';
 import {
   AccountStatusBadge,
   Button,
@@ -237,6 +238,9 @@ const TopbarComponent = props => {
     isAuthenticated &&
     isAccountStatusFlowEnabled() &&
     (isModelUser(currentUser) || isClientUser(currentUser));
+  // Tester F F5 part C: models have no "Profile settings" page. Hidden until the current user
+  // has loaded, so a model never sees it flash up.
+  const showProfileSettingsLink = showProfileSettingsForUser(currentUser);
   const { customer: isCustomer, provider: isProvider } = getCurrentUserTypeRoles(
     config,
     currentUser
@@ -291,6 +295,7 @@ const TopbarComponent = props => {
       inboxTab={topbarInboxTab}
       primaryLink={primaryLink}
       showAccountStatusLink={showAccountStatusLink}
+      showProfileSettingsLink={showProfileSettingsLink}
     />
   );
 
@@ -436,6 +441,7 @@ const TopbarComponent = props => {
           accountStatus={accountStatus}
           primaryLink={primaryLink}
           showAccountStatusLink={showAccountStatusLink}
+          showProfileSettingsLink={showProfileSettingsLink}
         />
       </div>
       <Modal

@@ -49,6 +49,40 @@ export const savePhoneNumber = params => dispatch => {
   return dispatch(requestSavePhoneNumberThunk({ phoneNumber: params.phoneNumber })).unwrap();
 };
 
+// Tester F F5 part C: models edit their first and last name here (they have no Profile settings
+// page). Only the name is sent, so nothing else on the profile changes.
+export const saveNameThunk = createAsyncThunk(
+  'ContactDetailsPage/saveName',
+  ({ firstName, lastName }, { dispatch, extra: sdk, rejectWithValue }) => {
+    return sdk.currentUser
+      .updateProfile(
+        { firstName, lastName },
+        {
+          expand: true,
+          include: ['profileImage'],
+          'fields.image': ['variants.square-small', 'variants.square-small2x'],
+        }
+      )
+      .then(response => {
+        const entities = denormalisedResponseEntities(response);
+        if (entities.length !== 1) {
+          throw new Error('Expected a resource in the sdk.currentUser.updateProfile response');
+        }
+        dispatch(setCurrentUser(entities[0]));
+        return entities[0];
+      })
+      .catch(e => {
+        return rejectWithValue(storableError(e));
+      });
+  }
+);
+// Backward compatible wrapper for the saveName thunk
+export const saveName = params => dispatch => {
+  return dispatch(
+    saveNameThunk({ firstName: params.firstName, lastName: params.lastName })
+  ).unwrap();
+};
+
 export const saveEmailThunk = createAsyncThunk(
   'ContactDetailsPage/requestSaveEmail',
   ({ email, currentPassword }, { dispatch, extra: sdk, rejectWithValue }) => {
@@ -158,6 +192,9 @@ const contactDetailsSlice = createSlice({
     contactDetailsChanged: false,
     resetPasswordInProgress: false,
     resetPasswordError: null,
+    saveNameInProgress: false,
+    saveNameError: null,
+    nameChanged: false,
   },
   reducers: {
     saveContactDetailsClear: state => {
@@ -169,6 +206,20 @@ const contactDetailsSlice = createSlice({
   },
   extraReducers: builder => {
     builder
+      // Save name (models)
+      .addCase(saveNameThunk.pending, state => {
+        state.saveNameInProgress = true;
+        state.saveNameError = null;
+        state.nameChanged = false;
+      })
+      .addCase(saveNameThunk.fulfilled, state => {
+        state.saveNameInProgress = false;
+        state.nameChanged = true;
+      })
+      .addCase(saveNameThunk.rejected, (state, action) => {
+        state.saveNameInProgress = false;
+        state.saveNameError = action.payload;
+      })
       // Reset password
       .addCase(resetPasswordThunk.pending, state => {
         state.resetPasswordInProgress = true;

@@ -1,5 +1,6 @@
 import React from 'react';
 import { FormattedMessage } from '../../util/reactIntl';
+import { isModelUser } from '../../util/accountStatus';
 import {
   isInquiryProcessAlias,
   isNegotiationProcessAlias,
@@ -7,6 +8,9 @@ import {
 } from '../../transactions/transaction';
 
 import { Heading, Modal } from '../../components';
+
+import { getModelEditProfileRoute } from '../EditListingPage/modelProfileRoute';
+
 import UserCard from './UserCard/UserCard';
 import InquiryForm from './InquiryForm/InquiryForm';
 
@@ -38,6 +42,11 @@ const SectionAuthorMaybe = props => {
   const isInquiryProcess = isInquiryProcessAlias(transactionProcessAlias);
   const isNegotiationProcess = isNegotiationProcessAlias(transactionProcessAlias);
   const showContact = !(isInquiryProcess || (isNegotiationProcess && unitType === OFFER));
+  // Tester F F5 part C: a model's "Edit profile" goes to the "Your profile" wizard (the card only
+  // shows it on their own listing, i.e. this one), not to Profile settings.
+  const editProfileLinkPropsMaybe = isModelUser(currentUser)
+    ? { editProfileLinkProps: getModelEditProfileRoute({ profileListing: listing }) }
+    : {};
 
   return (
     <section id="author" className={css.sectionAuthor}>
@@ -50,6 +59,7 @@ const SectionAuthorMaybe = props => {
         onContactUser={onContactUser}
         showContact={showContact}
         contactLinkId={CONTACT_USER_LINK}
+        {...editProfileLinkPropsMaybe}
       />
       <Modal
         id="ListingPage.inquiry"

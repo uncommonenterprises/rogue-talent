@@ -13,6 +13,7 @@ import {
   pickUserFieldsData,
   showCreateListingLinkForUser,
 } from '../../util/userHelpers';
+import { showProfileSettingsForUser } from '../../util/settingsPages';
 import { isScrollingDisabled } from '../../ducks/ui.duck';
 
 import {
@@ -21,10 +22,15 @@ import {
   Page,
   UserNav,
   NamedLink,
+  NamedRedirect,
   LayoutSingleColumn,
 } from '../../components';
 
-import { getAccountStatus, isAccountStatusFlowEnabled } from '../../util/accountStatus';
+import {
+  getAccountStatus,
+  isAccountStatusFlowEnabled,
+  isModelUser,
+} from '../../util/accountStatus';
 
 import TopbarContainer from '../../containers/TopbarContainer/TopbarContainer';
 import FooterContainer from '../../containers/FooterContainer/FooterContainer';
@@ -59,7 +65,10 @@ const ViewProfileLink = props => {
 };
 
 /**
- * ProfileSettingsPage
+ * ProfileSettingsPage (clients). Models don't have this page (tester feedback F5, part C): their
+ * profile is the "Your profile" wizard, their name is on Account settings > Contact details and
+ * their private-residence boundary on Account settings > Safety. A model reaching this page (an
+ * old link or bookmark) is redirected to Contact details.
  *
  * @component
  * @param {Object} props
@@ -100,7 +109,7 @@ export const ProfileSettingsPageComponent = props => {
   const publicUserFields = userFields.filter(uf => uf.scope === 'public');
 
   const handleSubmit = (values, userType) => {
-    const { firstName, lastName, displayName, bio: rawBio, noPrivateResidence, ...rest } = values;
+    const { firstName, lastName, displayName, bio: rawBio, ...rest } = values;
 
     const displayNameMaybe = displayName
       ? { displayName: displayName.trim() }
@@ -109,19 +118,8 @@ export const ProfileSettingsPageComponent = props => {
     // Ensure that the optional bio is a string
     const bio = rawBio || '';
 
-    // SAF-13: model private-residence boundary. Persisted to the model's USER privateData
-    // so it is never readable by clients; SAF-14 enforces it silently server-side.
-    const privateDataMaybe =
-      userType === 'model'
-        ? {
-            privateData: {
-              safety_boundaries: {
-                no_private_residence: noPrivateResidence === true,
-              },
-            },
-          }
-        : {};
-
+    // The SAF-13 private-residence boundary is saved on Account settings > Safety (models only,
+    // see SafetySettingsPage), never from here.
     const profile = {
       firstName: firstName.trim(),
       lastName: lastName.trim(),
@@ -130,7 +128,6 @@ export const ProfileSettingsPageComponent = props => {
       publicData: {
         ...pickUserFieldsData(rest, 'public', userType, userFields),
       },
-      ...privateDataMaybe,
     };
     const uploadedImage = props.image;
 
@@ -144,14 +141,7 @@ export const ProfileSettingsPageComponent = props => {
   };
 
   const user = ensureCurrentUser(currentUser);
-  const {
-    firstName,
-    lastName,
-    displayName,
-    bio,
-    publicData,
-    privateData,
-  } = user?.attributes.profile;
+  const { firstName, lastName, displayName, bio, publicData } = user?.attributes.profile;
   // I.e. the status is active, not pending-approval or banned
   const isUnauthorizedUser = currentUser && !isUserAuthorized(currentUser);
 
@@ -173,9 +163,6 @@ export const ProfileSettingsPageComponent = props => {
         ...displayNameMaybe,
         bio,
         profileImage: user.profileImage,
-        // SAF-13: reflect the model's saved private-residence boundary (privateData is
-        // readable by its owner, i.e. the current user).
-        noPrivateResidence: privateData?.safety_boundaries?.no_private_residence === true,
         ...initialValuesForUserFields(publicData, 'public', userType, userFields),
       }}
       profileImage={profileImage}
@@ -205,6 +192,12 @@ export const ProfileSettingsPageComponent = props => {
     ? getAccountStatus({ currentUser, ownListing })
     : null;
 
+  // Models have no Profile settings page: send old links and bookmarks to Contact details (where
+  // their name now lives). On a full page load this is a server-side redirect.
+  if (isModelUser(currentUser)) {
+    return <NamedRedirect name="ContactDetailsPage" />;
+  }
+
   return (
     <Page className={css.root} title={title} scrollingDisabled={scrollingDisabled}>
       <LayoutSingleColumn
@@ -214,6 +207,7 @@ export const ProfileSettingsPageComponent = props => {
             <UserNav
               currentPage="ProfileSettingsPage"
               showManageListingsLink={showManageListingsLink}
+              showProfileSettingsLink={showProfileSettingsForUser(currentUser)}
             />
           </>
         }

@@ -63,6 +63,7 @@ const ProfileMenu = ({
   onLogout,
   showManageListingsLink,
   showAccountStatusLink,
+  showProfileSettingsLink,
   intl,
 }) => {
   const currentPageClass = page => {
@@ -104,15 +105,17 @@ const ProfileMenu = ({
             </NamedLink>
           </MenuItem>
         ) : null}
-        <MenuItem key="ProfileSettingsPage">
-          <NamedLink
-            className={classNames(css.menuLink, currentPageClass('ProfileSettingsPage'))}
-            name="ProfileSettingsPage"
-          >
-            <span className={css.menuItemBorder} />
-            <FormattedMessage id="TopbarDesktop.profileSettingsLink" />
-          </NamedLink>
-        </MenuItem>
+        {showProfileSettingsLink ? (
+          <MenuItem key="ProfileSettingsPage">
+            <NamedLink
+              className={classNames(css.menuLink, currentPageClass('ProfileSettingsPage'))}
+              name="ProfileSettingsPage"
+            >
+              <span className={css.menuItemBorder} />
+              <FormattedMessage id="TopbarDesktop.profileSettingsLink" />
+            </NamedLink>
+          </MenuItem>
+        ) : null}
         <MenuItem key="AccountSettingsPage">
           <NamedLink
             className={classNames(css.menuLink, currentPageClass('AccountSettingsPage'))}
@@ -156,6 +159,8 @@ const ProfileMenu = ({
  *   shows it (the account-status page does); renders the compact rt-status chip, linked to it
  * @param {Object} props.primaryLink the primary provider action (see primaryActionLink)
  * @param {boolean} props.showAccountStatusLink add "Account status" to the profile menu
+ * @param {boolean} [props.showProfileSettingsLink] add "Profile settings" to the profile menu
+ *   (default true; models don't get it, see util/settingsPages.js)
  * @returns {JSX.Element} search icon
  */
 const TopbarDesktop = props => {
@@ -180,6 +185,7 @@ const TopbarDesktop = props => {
     accountStatus,
     primaryLink,
     showAccountStatusLink = false,
+    showProfileSettingsLink = true,
   } = props;
   const [mounted, setMounted] = useState(false);
 
@@ -229,6 +235,7 @@ const TopbarDesktop = props => {
       onLogout={onLogout}
       showManageListingsLink={showCreateListingsLink}
       showAccountStatusLink={showAccountStatusLink}
+      showProfileSettingsLink={showProfileSettingsLink}
       intl={intl}
     />
   ) : null;

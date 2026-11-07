@@ -73,6 +73,8 @@ const CustomLinkComponent = ({ linkConfig, currentPage }) => {
  * @param {Function} props.onLogout
  * @param {Object} props.primaryLink the primary provider action (see primaryActionLink)
  * @param {boolean} props.showAccountStatusLink add the "Account status" link
+ * @param {boolean} [props.showProfileSettingsLink] add the "Profile settings" link (default true;
+ *   models don't get it, see util/settingsPages.js)
  * @returns {JSX.Element} search icon
  */
 const TopbarMobileMenu = props => {
@@ -89,6 +91,7 @@ const TopbarMobileMenu = props => {
     showCreateListingsLink,
     primaryLink: primaryLinkProp,
     showAccountStatusLink = false,
+    showProfileSettingsLink = true,
   } = props;
 
   const user = ensureCurrentUser(currentUser);
@@ -216,11 +219,13 @@ const TopbarMobileMenu = props => {
           </li>
           {accountStatusLinkMaybe}
           {manageListingsLinkMaybe}
-          <li className={classNames(css.navigationLink, currentPageClass('ProfileSettingsPage'))}>
-            <NamedLink name="ProfileSettingsPage">
-              <FormattedMessage id="TopbarMobileMenu.profileSettingsLink" />
-            </NamedLink>
-          </li>
+          {showProfileSettingsLink ? (
+            <li className={classNames(css.navigationLink, currentPageClass('ProfileSettingsPage'))}>
+              <NamedLink name="ProfileSettingsPage">
+                <FormattedMessage id="TopbarMobileMenu.profileSettingsLink" />
+              </NamedLink>
+            </li>
+          ) : null}
           <li className={classNames(css.navigationLink, currentPageClass('AccountSettingsPage'))}>
             <NamedLink name="AccountSettingsPage">
               <FormattedMessage id="TopbarMobileMenu.accountSettingsLink" />

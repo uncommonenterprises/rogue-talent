@@ -74,6 +74,8 @@ const ExpandableBio = props => {
  * @param {propTypes.currentUser} props.currentUser - The current user
  * @param {function} props.onContactUser - The on contact user function
  * @param {boolean} [props.showContact] - Whether to show the contact user button
+ * @param {Object} [props.editProfileLinkProps] - NamedLink props for the own-profile "Edit profile"
+ *   link. Defaults to Profile settings; models get the "Your profile" wizard (F5 part C)
  * @returns {JSX.Element} user card component
  */
 const UserCard = props => {
@@ -90,6 +92,7 @@ const UserCard = props => {
     onContactUser,
     showContact = true,
     contactLinkId = 'contactUserLink',
+    editProfileLinkProps = { name: 'ProfileSettingsPage' },
   } = props;
 
   const userIsCurrentUser = user && user.type === 'currentUser';
@@ -129,7 +132,7 @@ const UserCard = props => {
   const editProfileMobile = (
     <span className={css.editProfileMobile}>
       <span className={css.linkSeparator}>•</span>
-      <NamedLink name="ProfileSettingsPage">
+      <NamedLink {...editProfileLinkProps}>
         <FormattedMessage id="ListingPage.editProfileLink" />
       </NamedLink>
     </span>
@@ -137,7 +140,7 @@ const UserCard = props => {
 
   const editProfileDesktop =
     mounted && isCurrentUser ? (
-      <NamedLink className={css.editProfileDesktop} name="ProfileSettingsPage">
+      <NamedLink className={css.editProfileDesktop} {...editProfileLinkProps}>
         <FormattedMessage id="ListingPage.editProfileLink" />
       </NamedLink>
     ) : null;

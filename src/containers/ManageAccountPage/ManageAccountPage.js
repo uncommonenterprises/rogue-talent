@@ -14,6 +14,7 @@ import {
   initialValuesForUserFields,
   pickUserFieldsData,
 } from '../../util/userHelpers';
+import { showProfileSettingsForUser, showSafetySettingsForUser } from '../../util/settingsPages';
 import { pathByRouteName } from '../../util/routes';
 
 import { isScrollingDisabled } from '../../ducks/ui.duck';
@@ -114,6 +115,7 @@ export const ManageAccountPageComponent = props => {
     currentPage: 'ManageAccountPage',
     showPaymentMethods,
     showPayoutDetails,
+    showSafety: showSafetySettingsForUser(currentUser),
   };
 
   return (
@@ -128,6 +130,7 @@ export const ManageAccountPageComponent = props => {
             <UserNav
               currentPage="ManageAccountPage"
               showManageListingsLink={showManageListingsLink}
+              showProfileSettingsLink={showProfileSettingsForUser(currentUser)}
             />
           </>
         }
