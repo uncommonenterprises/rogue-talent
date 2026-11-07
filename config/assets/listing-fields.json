@@ -90,7 +90,7 @@
         ]
       },
       "saveConfig": {
-        "required": true
+        "required": false
       },
       "key": "hips_cm",
       "filterConfig": {
