@@ -6,9 +6,10 @@ import { types as sdkTypes } from '../../../util/sdkLoader';
 import { renderWithProviders as render, testingLibrary } from '../../../util/testHelpers';
 
 import EstimatedCustomerBreakdownMaybe from '../EstimatedCustomerBreakdownMaybe';
+import BookingDatesForm from './BookingDatesForm';
 
-const { Money } = sdkTypes;
-const { screen, within } = testingLibrary;
+const { Money, UUID } = sdkTypes;
+const { screen, within, fireEvent, waitFor } = testingLibrary;
 
 const lineItems = [
   {
@@ -88,5 +89,100 @@ describe('EstimatedCustomerBreakdownMaybe', () => {
     expect(total).toBeInTheDocument();
     const totalPayIn = within(total.parentNode.parentNode);
     expect(totalPayIn.getByText('$21.98')).toBeInTheDocument();
+  });
+});
+
+// B03b: a free date clicked on the profile's availability calendar opens the existing date
+// picker with that date as the start date.
+describe('BookingDatesForm: date handed over from the availability calendar', () => {
+  const DAY_MS = 24 * 60 * 60 * 1000;
+  const utcKey = d => d.toISOString().slice(0, 10);
+  const today = new Date();
+  const startOfTodayUtc = new Date(
+    Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate())
+  );
+  const pickedKey = utcKey(new Date(startOfTodayUtc.getTime() + 10 * DAY_MS));
+  const slotStart = new Date(startOfTodayUtc.getTime() + DAY_MS);
+  const slotEnd = new Date(startOfTodayUtc.getTime() + 60 * DAY_MS);
+  const timeSlots = [
+    {
+      id: new UUID('ts-1'),
+      type: 'timeSlot',
+      attributes: { start: slotStart, end: slotEnd, seats: 1 },
+    },
+  ];
+  const monthKey = d => d.toISOString().slice(0, 7);
+  const monthlyTimeSlots = [0, 1, 2].reduce((acc, i) => {
+    const d = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth() + i, 1));
+    return { ...acc, [monthKey(d)]: { timeSlots, fetchTimeSlotsInProgress: false } };
+  }, {});
+
+  const formProps = {
+    formId: 'TestBookingDatesForm',
+    price: new Money(38000, 'GBP'),
+    listingId: new UUID('listing-1'),
+    isOwnListing: false,
+    lineItemUnitType: 'line-item/day',
+    monthlyTimeSlots,
+    onFetchTimeSlots: jest.fn(),
+    onFetchTransactionLineItems: jest.fn(),
+    fetchLineItemsInProgress: false,
+    lineItems: null,
+    timeZone: 'Etc/UTC',
+    dayCountAvailableForBooking: 90,
+    marketplaceName: 'MarketplaceX',
+    modelName: 'Imogen',
+    onSubmit: jest.fn(),
+  };
+
+  it('desktop: clicking a date in the preview sets it as the start and opens the picker in place', async () => {
+    const onDatesChange = jest.fn();
+    const { container } = render(
+      <BookingDatesForm
+        {...formProps}
+        layout="popover"
+        onDatesChange={onDatesChange}
+        renderAvailabilityPreview={onPickDate => (
+          <button type="button" onClick={() => onPickDate(pickedKey)}>
+            preview-free-day
+          </button>
+        )}
+      />
+    );
+    // Before: the preview shows, the picker does not
+    expect(screen.getByText('BookingDatesForm.startLabel')).toBeInTheDocument();
+    expect(screen.queryByText('BookingDatesForm.done')).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByText('preview-free-day'));
+
+    await waitFor(() => {
+      // The picker has replaced the preview, with the start date chosen and no end date yet
+      expect(screen.queryByText('preview-free-day')).not.toBeInTheDocument();
+      expect(screen.getByText('BookingDatesForm.done')).toBeInTheDocument();
+      const cell = container.querySelector(`td[data-date="${pickedKey}"]`);
+      expect(cell).toHaveAttribute('aria-selected', 'true');
+      // End field still empty: the client picks an end day (or the same day again)
+      const endButton = container.querySelector('#TestBookingDatesForm\\.bookingEndDate');
+      expect(endButton.textContent).toContain('BookingDatesForm.addDate');
+      const startButton = container.querySelector('#TestBookingDatesForm\\.bookingStartDate');
+      expect(startButton.textContent).not.toContain('BookingDatesForm.addDate');
+    });
+    expect(onDatesChange).toHaveBeenCalledWith(false);
+  });
+
+  it('phone: a date tapped in the profile section becomes the start date in the dates sheet', async () => {
+    const { container, rerender } = render(<BookingDatesForm {...formProps} layout="stack" />);
+    expect(container.querySelector('td[aria-selected="true"]')).toBeNull();
+
+    rerender(
+      <BookingDatesForm {...formProps} layout="stack" pickedStart={{ dayKey: pickedKey, seq: 1 }} />
+    );
+
+    await waitFor(() => {
+      const cell = container.querySelector(`td[data-date="${pickedKey}"]`);
+      expect(cell).toHaveAttribute('aria-selected', 'true');
+    });
+    // Only a start date: the sheet's button still asks for dates
+    expect(screen.getByText('BookingDatesForm.selectYourDates')).toBeInTheDocument();
   });
 });

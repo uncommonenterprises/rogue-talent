@@ -2,6 +2,7 @@ import {
   formatBookingDay,
   getInclusiveDayCount,
   findFirstUnavailableDay,
+  getPickedStartFormValue,
 } from './bookingDates.helpers';
 
 describe('booking calendar helpers', () => {
@@ -26,5 +27,22 @@ describe('booking calendar helpers', () => {
       findFirstUnavailableDay([new Date(2026, 10, 9), new Date(2026, 10, 13)], isUnavailable)
     ).toBeNull();
     expect(findFirstUnavailableDay(null, isUnavailable)).toBeNull();
+  });
+
+  it('turns a date handed over from the profile calendar into a start date with no end yet', () => {
+    // Start of that day in the listing's time zone, the same value a picker click produces
+    expect(getPickedStartFormValue('2026-11-24', 'Europe/London')).toEqual({
+      startDate: new Date('2026-11-24T00:00:00.000Z'),
+      endDate: null,
+    });
+    expect(
+      getPickedStartFormValue('2026-11-24', 'Europe/Helsinki').startDate.toISOString()
+    ).toEqual('2026-11-23T22:00:00.000Z');
+    // British Summer Time
+    expect(getPickedStartFormValue('2026-07-01', 'Europe/London').startDate.toISOString()).toEqual(
+      '2026-06-30T23:00:00.000Z'
+    );
+    expect(getPickedStartFormValue('24/11/2026', 'Europe/London')).toBeNull();
+    expect(getPickedStartFormValue('2026-11-24', null)).toBeNull();
   });
 });

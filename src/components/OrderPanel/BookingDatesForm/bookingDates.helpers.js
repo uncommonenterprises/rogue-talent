@@ -1,6 +1,7 @@
 /**
  * Small, pure helpers for the booking calendar (B04).
  */
+import { parseDateFromISO8601 } from '../../../util/dates';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -50,4 +51,22 @@ export const findFirstUnavailableDay = (range, isUnavailable) => {
     }
   }
   return null;
+};
+
+/**
+ * The booking form value for a date handed over from the profile's availability calendar
+ * (B03b): that day as the START date, no end date yet, so the picker opens mid-range and the
+ * client taps an end day (or the same day again for a single day). The value is in the form's
+ * own format: the start of the day in the listing's time zone, the same as a picker click.
+ *
+ * @param {string} dayKey calendar day in the listing's time zone, e.g. '2026-11-24'
+ * @param {string} timeZone listing time zone
+ * @returns {{ startDate: Date, endDate: null }|null} null for an invalid day key
+ */
+export const getPickedStartFormValue = (dayKey, timeZone) => {
+  if (typeof dayKey !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(dayKey) || !timeZone) {
+    return null;
+  }
+  const startDate = parseDateFromISO8601(dayKey, timeZone);
+  return isNaN(startDate) ? null : { startDate, endDate: null };
 };

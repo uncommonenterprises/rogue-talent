@@ -93,6 +93,7 @@ const FieldBookingDatesComponent = props => {
     startDateId,
     endDateId,
     conflictNotice,
+    preview,
   } = props;
 
   const { startDate, endDate } = input.value || {};
@@ -163,6 +164,19 @@ const FieldBookingDatesComponent = props => {
   }
 
   const emptyLabel = intl.formatMessage({ id: 'BookingDatesForm.addDate' });
+  const popoverActions = (
+    <div className={css.popoverActions}>
+      <button type="button" className={css.ghostButton} onClick={handleClear}>
+        <FormattedMessage id="BookingDatesForm.clearDates" />
+      </button>
+      <button type="button" className={css.doneButton} onClick={() => onOpenChange(false)}>
+        <FormattedMessage id="BookingDatesForm.done" />
+      </button>
+    </div>
+  );
+  // B03b: with an availability preview, the picker opens IN PLACE of the preview (inside the
+  // sticky panel's flow, so the panel's own scroll can reach it) instead of as a popover.
+  const hasPreview = !!preview;
   return (
     <OutsideClickHandler
       className={classNames(css.root, className)}
@@ -177,6 +191,20 @@ const FieldBookingDatesComponent = props => {
           }
         }}
       >
+        {hasPreview ? (
+          isOpen ? (
+            <div
+              className={css.inlinePicker}
+              role="group"
+              aria-label={intl.formatMessage({ id: 'BookingDatesForm.chooseDates' })}
+            >
+              {calendarContent}
+              {popoverActions}
+            </div>
+          ) : (
+            <div className={css.previewSlot}>{preview}</div>
+          )
+        ) : null}
         <div className={css.dateField}>
           <button
             id={startDateId}
@@ -209,21 +237,14 @@ const FieldBookingDatesComponent = props => {
             </span>
           </button>
         </div>
-        {isOpen ? (
+        {isOpen && !hasPreview ? (
           <div
             className={css.popover}
             role="dialog"
             aria-label={intl.formatMessage({ id: 'BookingDatesForm.chooseDates' })}
           >
             {calendarContent}
-            <div className={css.popoverActions}>
-              <button type="button" className={css.ghostButton} onClick={handleClear}>
-                <FormattedMessage id="BookingDatesForm.clearDates" />
-              </button>
-              <button type="button" className={css.doneButton} onClick={() => onOpenChange(false)}>
-                <FormattedMessage id="BookingDatesForm.done" />
-              </button>
-            </div>
+            {popoverActions}
           </div>
         ) : null}
       </div>
@@ -242,6 +263,8 @@ const FieldBookingDatesComponent = props => {
  * @param {Object} props
  * @param {string} props.name Final Form field name
  * @param {'popover'|'stack'} [props.layout] desktop popover or phone stack
+ * @param {ReactNode} [props.preview] desktop only: the profile's availability calendar (B03b).
+ *   Shown above the Start / End fields; opening the picker replaces it in place.
  * @returns {JSX.Element}
  */
 const FieldBookingDates = props => <Field component={FieldBookingDatesComponent} {...props} />;

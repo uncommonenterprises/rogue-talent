@@ -24,7 +24,11 @@ import { Form, PrimaryButton, Notice, PriceBreakdown } from '../../../components
 
 import FetchLineItemsError from '../FetchLineItemsError/FetchLineItemsError.js';
 import FieldBookingDates from './FieldBookingDates';
-import { findFirstUnavailableDay, formatBookingDay } from './bookingDates.helpers';
+import {
+  findFirstUnavailableDay,
+  formatBookingDay,
+  getPickedStartFormValue,
+} from './bookingDates.helpers';
 
 import css from './BookingDatesForm.module.css';
 
@@ -399,6 +403,21 @@ const getStartAndEndOnTimeZone = (startDate, endDate, isDaily, timeZone) => {
   return { startDate: parsedStart, endDate: endDateForAPI };
 };
 
+/**
+ * Applies a date handed over from outside the form (the phone profile's availability section,
+ * B03b) once per hand-off. Renders nothing.
+ */
+const PickedStartListener = props => {
+  const { pickedStart, onPick } = props;
+  const seq = pickedStart?.seq;
+  useEffect(() => {
+    if (pickedStart?.dayKey) {
+      onPick(pickedStart.dayKey);
+    }
+  }, [seq]);
+  return null;
+};
+
 const onPriceVariantChange = props => value => {
   const { form: formApi, seatsEnabled } = props;
 
@@ -435,6 +454,11 @@ const onPriceVariantChange = props => value => {
  * @param {Array<Object>} [props.priceVariants] - The price variants
  * @param {ReactNode} [props.priceVariantFieldComponent] - The component to use for the price variant field
  * @param {boolean} props.isPublishedListing - Whether the listing is published
+ * @param {Function} [props.renderAvailabilityPreview] - desktop (B03b): onPickDate => the
+ *   profile's availability calendar, shown above the date fields. A click on a free day sets it
+ *   as the start date and opens the picker in its place.
+ * @param {Object} [props.pickedStart] - phone (B03b): { dayKey, seq } handed over from the
+ *   profile's availability section; each new seq sets that day as the start date.
  * @returns {JSX.Element}
  */
 export const BookingDatesForm = props => {
@@ -463,6 +487,8 @@ export const BookingDatesForm = props => {
     minNoticeKey,
     travelFeePolicy,
     onDatesChange,
+    renderAvailabilityPreview,
+    pickedStart,
     ...rest
   } = props;
   const intl = useIntl();
@@ -630,6 +656,43 @@ export const BookingDatesForm = props => {
           ? intl.formatMessage({ id: `BookingDatesForm.noticePhrase.${minNoticeKey}` })
           : null;
 
+        // B03b hand-off: a free day chosen on the profile's availability calendar becomes the
+        // start date (no end date yet) and the picker opens on it. Nothing is booked or held.
+        const applyPickedStart = dayKey => {
+          const value = getPickedStartFormValue(dayKey, timeZone);
+          if (!value) {
+            return;
+          }
+          formRenderProps.form.change('bookingDates', value);
+          setConflictDate(null);
+          if (onDatesChange) {
+            onDatesChange(false);
+          }
+          const pickedMonth = getStartOf(value.startDate, 'month', timeZone);
+          setCurrentMonth(pickedMonth);
+          [pickedMonth, nextMonthFn(pickedMonth, timeZone)].forEach(month => {
+            if (onFetchTimeSlots && !monthlyTimeSlots[monthIdString(month, timeZone)]) {
+              fetchMonthData(
+                month,
+                listingId,
+                dayCountAvailableForBooking,
+                timeZone,
+                onFetchTimeSlots
+              );
+            }
+          });
+          if (!isStack) {
+            setCalendarOpen(true);
+          }
+        };
+        const availabilityPreview =
+          !isStack && renderAvailabilityPreview
+            ? renderAvailabilityPreview(applyPickedStart)
+            : null;
+        const pickedStartListener = pickedStart ? (
+          <PickedStartListener pickedStart={pickedStart} onPick={applyPickedStart} />
+        ) : null;
+
         const conflictNotice = conflictDate ? (
           <Notice variant="error" role="alert">
             <FormattedMessage
@@ -709,6 +772,7 @@ export const BookingDatesForm = props => {
             isBlockedBetween={isBlockedBetween(allTimeSlots, timeZone)}
             onRangeConflict={handleRangeConflict}
             conflictNotice={conflictNotice}
+            preview={availabilityPreview}
             disabled={datesDisabled}
             showPreviousMonthStepper={showPreviousMonthStepper(currentMonth, timeZone)}
             showNextMonthStepper={showNextMonthStepper(
@@ -765,6 +829,7 @@ export const BookingDatesForm = props => {
           // sits in a sticky footer.
           return (
             <Form id={formId} onSubmit={handleSubmit} className={classes}>
+              {pickedStartListener}
               <div className={css.sheetBody}>
                 {loadError}
                 {dateField}
@@ -800,6 +865,7 @@ export const BookingDatesForm = props => {
             className={classes}
             enforcePagePreloadFor="CheckoutPage"
           >
+            {pickedStartListener}
             {PriceVariantFieldComponent ? (
               <PriceVariantFieldComponent
                 priceVariants={priceVariants}

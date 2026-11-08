@@ -220,3 +220,16 @@
   line-height: 1.5;
   color: var(--text-secondary);
 }
+
+/* B03b: the picker opened in place of the availability preview (desktop panel). In the flow,
+   not floating, so the sticky panel's own scroll reaches all of it. */
+.previewSlot {
+  margin-bottom: var(--space-4);
+}
+
+.inlinePicker {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
