@@ -18,7 +18,7 @@ import {
 } from '../../../util/dates';
 import { LINE_ITEM_DAY, propTypes } from '../../../util/types';
 import { timeSlotsPerDate } from '../../../util/generators';
-import { isInsideMinimumNotice } from '../../../util/modelProfile';
+import { isDayInsideNoticeWindow } from '../../../util/modelProfile';
 
 import { Form, PrimaryButton, Notice, PriceBreakdown } from '../../../components';
 
@@ -588,7 +588,7 @@ export const BookingDatesForm = props => {
     dayCountAvailableForBooking,
     timeZone
   );
-  const isDayBlockedForBooking = isDayBlockedFn({
+  const isDayBlockedByTimeSlots = isDayBlockedFn({
     allTimeSlots,
     monthlyTimeSlots,
     isDaily: props.lineItemUnitType === LINE_ITEM_DAY,
@@ -596,6 +596,16 @@ export const BookingDatesForm = props => {
     endDate: null,
     timeZone,
   });
+  // Minimum notice is enforced (open question 12, "enforced in the picker, still decided by the
+  // model"): today and every day inside the model's notice can't be a start or an end date,
+  // exactly as the profile's availability calendar shows them.
+  const isDayInsideNotice = day =>
+    isDayInsideNoticeWindow({
+      dayStart: getStartOf(timeOfDayFromLocalToTimeZone(day, timeZone), 'day', timeZone),
+      noticeKey: minNoticeKey,
+      timeZone,
+    });
+  const isDayBlockedForBooking = day => isDayBlockedByTimeSlots(day) || isDayInsideNotice(day);
   const handleRangeConflict = range => {
     const firstUnavailable = range
       ? findFirstUnavailableDay(
@@ -649,13 +659,6 @@ export const BookingDatesForm = props => {
           onFetchTimeSlots
         );
 
-        // Minimum notice is a guide, never a block (open question 3).
-        const showNoticeGuide =
-          hasDates && isInsideMinimumNotice({ startDate, noticeKey: minNoticeKey });
-        const noticePhrase = showNoticeGuide
-          ? intl.formatMessage({ id: `BookingDatesForm.noticePhrase.${minNoticeKey}` })
-          : null;
-
         // B03b hand-off: a free day chosen on the profile's availability calendar becomes the
         // start date (no end date yet) and the picker opens on it. Nothing is booked or held.
         const applyPickedStart = dayKey => {
@@ -701,15 +704,6 @@ export const BookingDatesForm = props => {
                 name: modelName,
                 date: <strong>{formatBookingDay(intl, conflictDate)}</strong>,
               }}
-            />
-          </Notice>
-        ) : null;
-
-        const noticeGuide = showNoticeGuide ? (
-          <Notice>
-            <FormattedMessage
-              id="BookingDatesForm.minimumNotice"
-              values={{ name: modelName, notice: noticePhrase }}
             />
           </Notice>
         ) : null;
@@ -833,7 +827,6 @@ export const BookingDatesForm = props => {
               <div className={css.sheetBody}>
                 {loadError}
                 {dateField}
-                {noticeGuide}
                 {breakdown}
                 <FetchLineItemsError error={fetchLineItemsError} />
               </div>
@@ -876,7 +869,6 @@ export const BookingDatesForm = props => {
             ) : null}
             {loadError}
             {dateField}
-            {noticeGuide}
             {breakdown}
             <FetchLineItemsError error={fetchLineItemsError} />
             {hasDates ? (

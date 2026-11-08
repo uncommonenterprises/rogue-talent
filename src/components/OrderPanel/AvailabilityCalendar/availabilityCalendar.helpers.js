@@ -16,7 +16,7 @@
  */
 import { getStartOf, parseDateFromISO8601, stringifyDateToISO8601 } from '../../../util/dates';
 import { timeSlotsPerDate } from '../../../util/generators';
-import { isInsideMinimumNotice } from '../../../util/modelProfile';
+import { isDayInsideNoticeWindow } from '../../../util/modelProfile';
 
 import { getAllTimeSlots } from '../booking.shared';
 
@@ -194,8 +194,9 @@ export const getAvailabilityModel = ({
     if (dayKey > lastBookableKey) {
       return DAY_UNAVAILABLE;
     }
-    const startDate = dayStartInTimeZone(dayKey, timeZone);
-    if (isInsideMinimumNotice({ startDate, noticeKey, now })) {
+    // The same rule the date picker applies (util/modelProfile.js).
+    const dayStart = dayStartInTimeZone(dayKey, timeZone);
+    if (isDayInsideNoticeWindow({ dayStart, noticeKey, timeZone, now })) {
       return DAY_NOTICE;
     }
     return perDay[dayKey]?.hasAvailability === true ? DAY_FREE : DAY_UNAVAILABLE;

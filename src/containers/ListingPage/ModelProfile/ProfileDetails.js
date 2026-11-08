@@ -185,7 +185,13 @@ const ProfileDetails = props => {
   const city = getModelCity(publicData);
   const travelCharged = publicData.travel_fee_policy === 'charged-separately';
   const notice = opt('min_booking_notice');
-  const showNotice = notice && publicData.min_booking_notice !== 'same-day';
+  // Notice is enforced (open question 12): the sub-line states it plainly ("Imogen needs at least
+  // 48 hours' notice before a shoot"). Same-day or unknown values have no phrase, so no sub-line.
+  const noticeKey = publicData.min_booking_notice;
+  const noticePhrase = ['24-hours', '48-hours', '1-week', '2-weeks'].includes(noticeKey)
+    ? intl.formatMessage({ id: `BookingDatesForm.noticePhrase.${noticeKey}` })
+    : null;
+  const showNotice = notice && !!noticePhrase;
   const average = getAverageRating(reviews);
 
   return (
@@ -303,7 +309,10 @@ const ProfileDetails = props => {
               <>
                 {notice}
                 <small>
-                  <FormattedMessage id="ListingPage.noticeGuide" values={{ name: modelName }} />
+                  <FormattedMessage
+                    id="ListingPage.noticeGuide"
+                    values={{ name: modelName, notice: noticePhrase }}
+                  />
                 </small>
               </>
             ) : notice ? (

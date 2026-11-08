@@ -186,3 +186,87 @@ describe('BookingDatesForm: date handed over from the availability calendar', ()
     expect(screen.getByText('BookingDatesForm.selectYourDates')).toBeInTheDocument();
   });
 });
+
+// Open question 12 ("enforced in the picker, still decided by the model"): today and every day
+// inside the model's minimum notice can't be picked, as a start or an end date.
+describe('BookingDatesForm: minimum notice is enforced in the picker', () => {
+  const DAY_MS = 24 * 60 * 60 * 1000;
+  const today = new Date();
+  const startOfTodayUtc = new Date(
+    Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate())
+  );
+  const keyIn = days =>
+    new Date(startOfTodayUtc.getTime() + days * DAY_MS).toISOString().slice(0, 10);
+  // Free every day from today for 60 days, so only the notice rule can block a day
+  const timeSlots = [
+    {
+      id: new UUID('ts-notice'),
+      type: 'timeSlot',
+      attributes: {
+        start: startOfTodayUtc,
+        end: new Date(startOfTodayUtc.getTime() + 60 * DAY_MS),
+        seats: 1,
+      },
+    },
+  ];
+  const monthlyTimeSlots = [0, 1, 2].reduce((acc, i) => {
+    const d = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth() + i, 1));
+    return {
+      ...acc,
+      [d.toISOString().slice(0, 7)]: { timeSlots, fetchTimeSlotsInProgress: false },
+    };
+  }, {});
+  const props = {
+    formId: 'NoticeBookingDatesForm',
+    price: new Money(38000, 'GBP'),
+    listingId: new UUID('listing-notice'),
+    isOwnListing: false,
+    lineItemUnitType: 'line-item/day',
+    monthlyTimeSlots,
+    onFetchTimeSlots: jest.fn(),
+    onFetchTransactionLineItems: jest.fn(),
+    fetchLineItemsInProgress: false,
+    lineItems: null,
+    timeZone: 'Etc/UTC',
+    dayCountAvailableForBooking: 90,
+    marketplaceName: 'MarketplaceX',
+    modelName: 'Imogen',
+    onSubmit: jest.fn(),
+    layout: 'stack',
+  };
+  const cell = (container, key) => container.querySelector(`td[data-date="${key}"]`);
+
+  it('48 hours: today, tomorrow and the day after are blocked; three days out is free', () => {
+    const { container } = render(<BookingDatesForm {...props} minNoticeKey="48-hours" />);
+    [0, 1, 2].forEach(d =>
+      expect(cell(container, keyIn(d))).toHaveAttribute('aria-disabled', 'true')
+    );
+    expect(cell(container, keyIn(3))).toHaveAttribute('aria-disabled', 'false');
+  });
+
+  it('a day inside the notice cannot be picked as a start or an end', () => {
+    const { container } = render(<BookingDatesForm {...props} minNoticeKey="48-hours" />);
+    // Start inside the notice: nothing is selected
+    fireEvent.click(cell(container, keyIn(1)));
+    expect(container.querySelector('td[aria-selected="true"]')).toBeNull();
+    // Start outside it, then try to end (or restart) inside it: still only the start
+    fireEvent.click(cell(container, keyIn(5)));
+    fireEvent.click(cell(container, keyIn(2)));
+    const selected = container.querySelectorAll('td[aria-selected="true"]');
+    expect(selected).toHaveLength(1);
+    expect(selected[0]).toHaveAttribute('data-date', keyIn(5));
+  });
+
+  it('1 week: every day up to a week out is blocked', () => {
+    const { container } = render(<BookingDatesForm {...props} minNoticeKey="1-week" />);
+    expect(cell(container, keyIn(6))).toHaveAttribute('aria-disabled', 'true');
+    expect(cell(container, keyIn(8))).toHaveAttribute('aria-disabled', 'false');
+  });
+
+  it('same-day notice still blocks today, and no longer shows the old "you can still send" warning', () => {
+    const { container } = render(<BookingDatesForm {...props} minNoticeKey="same-day" />);
+    expect(cell(container, keyIn(0))).toHaveAttribute('aria-disabled', 'true');
+    expect(cell(container, keyIn(1))).toHaveAttribute('aria-disabled', 'false');
+    expect(container.textContent).not.toContain('BookingDatesForm.minimumNotice');
+  });
+});

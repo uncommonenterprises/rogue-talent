@@ -2,10 +2,13 @@
  * Helpers for reading a model's profile (the `model-profile` listing) on the discovery and
  * booking journey (design: docs/design/booking-journey B01-B04). Pure functions, no React.
  */
+import { getStartOf } from './dates';
 
 // The model's minimum-notice options (listing field `min_booking_notice`) in hours.
-// Minimum notice is a GUIDE, not a rule (Neil, open question 3, 01/11/2026): nothing here blocks
-// a booking; it only decides whether to show the calm "asks for at least ... notice" line.
+// Minimum notice is ENFORCED in the browser (Neil, open question 12, 07/11/2026: "Yes, grey them
+// out", superseding the 01/11 "a guide, not a rule"): today and every day inside the notice are
+// not available in the profile calendar and cannot be picked in the date picker. The model still
+// decides every request. The server does not check it (client-side only, for now).
 export const MIN_NOTICE_HOURS = {
   'same-day': 0,
   '24-hours': 24,
@@ -58,7 +61,7 @@ export const getMinNoticeHours = noticeKey =>
 
 /**
  * Is the chosen start date inside the model's minimum notice? The shoot is treated as starting
- * at the beginning of the start day (the conservative reading). Informational only.
+ * at the beginning of the start day (the conservative reading).
  *
  * @param {Object} params
  * @param {Date} params.startDate start of the first booked day (listing time zone)
@@ -72,6 +75,29 @@ export const isInsideMinimumNotice = ({ startDate, noticeKey, now = new Date() }
     return false;
   }
   return startDate.getTime() - now.getTime() < hours * HOUR_MS;
+};
+
+/**
+ * Is this calendar day held back by the model's notice? Today (and anything earlier) always is;
+ * so is any later day that starts inside `min_booking_notice`. The one rule shared by the
+ * profile's availability calendar and the date picker, so the two always agree.
+ *
+ * @param {Object} params
+ * @param {Date} params.dayStart start of the day in the listing's time zone
+ * @param {string} [params.noticeKey] value of `min_booking_notice`
+ * @param {string} params.timeZone listing time zone
+ * @param {Date} [params.now] current time (defaults to new Date())
+ * @returns {boolean}
+ */
+export const isDayInsideNoticeWindow = ({ dayStart, noticeKey, timeZone, now = new Date() }) => {
+  if (!(dayStart instanceof Date) || isNaN(dayStart)) {
+    return false;
+  }
+  const startOfToday = getStartOf(now, 'day', timeZone);
+  if (dayStart.getTime() <= startOfToday.getTime()) {
+    return true;
+  }
+  return isInsideMinimumNotice({ startDate: dayStart, noticeKey, now });
 };
 
 const findField = (config, key) => (config?.listing?.listingFields || []).find(f => f.key === key);
