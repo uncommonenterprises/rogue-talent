@@ -244,6 +244,48 @@ describe('BookingDatesForm: minimum notice is enforced in the picker', () => {
     expect(cell(container, keyIn(3))).toHaveAttribute('aria-disabled', 'false');
   });
 
+  // F8 live check (08/11/2026): after a hand-off on the phone, a pointer left over a cell from
+  // the tap that opened the sheet drew a range from that cell (dark "start", tinted days), though
+  // the real value was the handed-over start date only.
+  it('phone sheet: a leftover hover never draws a range the client did not choose', async () => {
+    const { container, rerender } = render(<BookingDatesForm {...props} minNoticeKey="48-hours" />);
+    rerender(
+      <BookingDatesForm
+        {...props}
+        minNoticeKey="48-hours"
+        pickedStart={{ dayKey: keyIn(8), seq: 1 }}
+      />
+    );
+    await waitFor(() => expect(cell(container, keyIn(8))).toHaveAttribute('aria-selected', 'true'));
+    fireEvent.mouseEnter(cell(container, keyIn(1)).firstChild); // blocked (notice)
+    fireEvent.mouseEnter(cell(container, keyIn(4)).firstChild); // free
+    [1, 4, 6].forEach(d => {
+      expect(cell(container, keyIn(d)).className).not.toMatch(/dateStart|dateInRange/);
+    });
+  });
+
+  it('desktop: hovering a blocked day previews no range; a free day still does', async () => {
+    const { container } = render(
+      <BookingDatesForm
+        {...props}
+        layout="popover"
+        minNoticeKey="48-hours"
+        renderAvailabilityPreview={onPickDate => (
+          <button type="button" onClick={() => onPickDate(keyIn(8))}>
+            preview-free-day
+          </button>
+        )}
+      />
+    );
+    fireEvent.click(screen.getByText('preview-free-day'));
+    await waitFor(() => expect(cell(container, keyIn(8))).toHaveAttribute('aria-selected', 'true'));
+    fireEvent.mouseEnter(cell(container, keyIn(2)).firstChild); // blocked (notice)
+    expect(cell(container, keyIn(2)).className).not.toMatch(/dateStart/);
+    expect(cell(container, keyIn(5)).className).not.toMatch(/dateInRange/);
+    fireEvent.mouseEnter(cell(container, keyIn(10)).firstChild); // free: the normal preview
+    expect(cell(container, keyIn(9)).className).toMatch(/dateInRange/);
+  });
+
   it('a day inside the notice cannot be picked as a start or an end', () => {
     const { container } = render(<BookingDatesForm {...props} minNoticeKey="48-hours" />);
     // Start inside the notice: nothing is selected

@@ -81,6 +81,7 @@ const CalendarMonth = props => {
     endDateOffset,
     intl,
     title,
+    hoverPreview = true,
   } = props;
   const [hoveredDate, setHoveredDate] = useState(null);
   const [keyboardUsed, setKeyboardUsed] = useState(false);
@@ -109,13 +110,17 @@ const CalendarMonth = props => {
   };
 
   const onMouseEnter = event => {
-    if (disabled) {
+    // The hover preview only helps a mouse user. On the phone sheet (stack layout) it is off: a
+    // pointer left over a cell from the tap that opened the sheet would otherwise draw a range
+    // the client never chose (F8 live check, 08/11/2026). A day that can't be picked never
+    // previews a range either.
+    if (disabled || !hoverPreview) {
       return;
     }
 
     const date = getLocalDateFromISOString(event.target.closest('td').dataset.date);
 
-    setHoveredDate(date);
+    setHoveredDate(isDayBlocked(date) ? null : date);
   };
 
   const onMouseLeave = () => {
@@ -634,6 +639,7 @@ const DatePicker = props => {
                 currentMonth={month}
                 visible={true}
                 title={monthTitle}
+                hoverPreview={false}
                 {...commonMonthProps}
               />
             );
