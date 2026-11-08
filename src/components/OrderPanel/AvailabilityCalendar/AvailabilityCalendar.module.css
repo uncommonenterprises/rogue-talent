@@ -1,8 +1,10 @@
 @import '../../../styles/customMediaQueries.css';
 
 /* B03b read-only availability calendar. Tokens only; no gradients, no shadows.
-   Free = green tint + green bold text (the rt-badge--available pair; availability is green,
-   never red). Not available = muted ink-300, struck through. The calendar never uses cobalt:
+   Free = green tint + bold ink-900 text (availability is green, never red). Green text on the
+   tint measured 4.25:1, under WCAG AA's 4.5:1 for 14px text, and the design system has no darker
+   green token, so the number is ink-900 (15.7:1) and the green lives in the fill and the hover
+   keyline. Not available = muted ink-300, struck through. The calendar never uses cobalt:
    the panel's button stays the only cobalt action. Week starts Monday. */
 
 .root {
@@ -123,7 +125,7 @@
 
 .free {
   font-weight: var(--weight-bold);
-  color: var(--status-success);
+  color: var(--ink-900);
   background-color: rgba(30, 127, 82, 0.12);
   cursor: pointer;
 
