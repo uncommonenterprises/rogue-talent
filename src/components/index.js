@@ -144,6 +144,7 @@ export {
   FullLicenceLink,
 } from './LicenceSummary/LicenceSummary';
 export { default as OrderPanel } from './OrderPanel/OrderPanel';
+export { default as ProfileAvailability } from './OrderPanel/AvailabilityCalendar/ProfileAvailability';
 export { default as ListingCard } from './ListingCard/ListingCard';
 export { default as Map } from './Map/Map';
 export { default as Page } from './Page/Page';

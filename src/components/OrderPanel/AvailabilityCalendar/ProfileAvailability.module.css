@@ -1,0 +1,146 @@
+@import '../../../styles/customMediaQueries.css';
+
+/* B03b availability block (desktop panel and phone profile section). Tokens only. */
+
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+/* Panel section head: tracked uppercase label, as the mockup's panel__sectionhead */
+.heading {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-sans);
+  font-weight: var(--weight-bold);
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  line-height: 1.4;
+  color: var(--text-muted);
+}
+
+/* Phone body section: the calendar sits in a hairline frame */
+.framedCalendar {
+  padding: var(--space-3) var(--space-3) var(--space-2);
+  background: var(--white);
+  border: var(--border-hair) solid var(--border-hairline);
+  border-radius: var(--radius-lg);
+}
+
+/* Legend: free (green tint) and not available (struck ink) */
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-4);
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  line-height: 1.4;
+  color: var(--text-secondary);
+}
+
+.legendItem {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+
+  & i {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border-radius: var(--radius-sm);
+  }
+}
+
+.legendFree {
+  background: rgba(30, 127, 82, 0.12);
+  border: var(--border-hair) solid rgba(30, 127, 82, 0.4);
+}
+
+.legendUnavailable {
+  position: relative;
+  background: var(--white);
+  border: var(--border-hair) solid var(--ink-200);
+
+  &::after {
+    content: '';
+    position: absolute;
+    left: 2px;
+    right: 2px;
+    top: 50%;
+    border-top: var(--border-hair) solid var(--ink-300);
+  }
+}
+
+.hint {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+/* The honest line under the legend */
+.note {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+/* Quiet "no dates" line used where the panel already shows a notice box */
+.quietLine {
+  display: flex;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.quietIcon {
+  flex: none;
+  margin-top: 3px;
+  color: var(--text-muted);
+}
+
+/* rt-btn secondary --lg --block, as a link (the model's "Edit your availability") */
+.secondaryLink {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 52px;
+  padding: 15px 28px;
+  font-family: var(--font-sans);
+  font-weight: var(--weight-bold);
+  font-size: var(--text-base);
+  line-height: 1;
+  text-align: center;
+  color: var(--ink-900);
+  background: var(--white);
+  border: var(--border-key) solid var(--ink-900);
+  border-radius: var(--radius-lg);
+  text-decoration: none;
+  transition: background var(--dur-fast) var(--ease-standard);
+
+  &:hover {
+    background: var(--ink-50);
+    text-decoration: none;
+  }
+  &:active {
+    transform: translateY(1px);
+  }
+  &:focus {
+    outline: none;
+  }
+  &:focus-visible {
+    box-shadow: var(--shadow-focus);
+  }
+}
