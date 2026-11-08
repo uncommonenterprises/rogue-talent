@@ -80,17 +80,21 @@
   <div class="oq-list" style="margin-top:var(--space-5);">
     <div class="oq-item">
       <h3>12. Should dates inside the model's minimum notice be unavailable in the profile calendar?</h3>
+      <p class="oq-rec"><strong>Decided 07/11/2026:</strong> yes, grey them out (Neil: "Yes, grey them out").</p>
       <p>The brief asks for it, and it keeps the calendar honest at a glance. But open question 3 says notice is a guide: B03 and B04 let a client request inside it and the model can decline. With an inline calendar that picks dates, muting them quietly enforces notice, and a client with an urgent shoot has no way to ask. It is a product rule, so it is yours.</p>
       <p class="oq-rec"><strong>Recommendation:</strong> mute them, as designed. Models set a notice precisely so late requests do not arrive, and a calendar that shows a date as bookable and then warns is worse. Question 3 then becomes "enforced in the picker, still decided by the model". If urgent shoots matter, add a "message about short notice" route later.</p>
     </div>
     <div class="oq-item">
       <h3>13. Who should see a model's free dates?</h3>
+      <p class="oq-rec"><strong>Decided 08/11/2026:</strong> logged-in, approved clients only (Neil: "Yes, approved clients only").</p>
       <p>Showing which days a model is free tells any visitor, logged in or not, when she is likely to be busy or alone. That is a privacy and safety surface, and it is also easy to scrape.</p>
       <p class="oq-rec"><strong>Recommendation:</strong> show the calendar only to logged-in, approved clients. Everyone else sees "Log in to see Imogen's free dates" in the same place (state mocked). Costs a little discovery for logged-out visitors, which the profile still serves with rates and portfolio.</p>
     </div>
     <div class="oq-item">
       <h3>14. Should a pending request make a date look unavailable?</h3>
+      <p class="oq-rec"><strong>Decided 08/11/2026:</strong> a date held by a waiting request shows exactly like a booked date, plain "not available" (Neil: "Yes, plain not available"). No separate "requested" state.</p>
       <p>Today only accepted bookings and the model's own blocks remove a date. A date can show green while another client's request for it is waiting for the model, so two clients can ask for the same day and one will be declined or expire. The note says the model confirms every request, so it is honest, but it can still disappoint.</p>
+      <p class="oq-rec"><strong>Correction (PM, 08/11/2026):</strong> the premise above is wrong. In Sharetribe a pending booking reserves the date (Integration API booking states: pending "reserves time slot: yes"). A request holds the date for at most 48 hours (or until the shoot starts), then it is released if not accepted. Two clients cannot ask for the same day.</p>
       <p class="oq-rec"><strong>Recommendation:</strong> leave pending requests alone for v1, keep the note, and watch how often it happens. Dimming dates on pending requests would also tell visitors how busy a model is, and a single request could hide a date from everyone for 48 hours.</p>
     </div>
   </div>
