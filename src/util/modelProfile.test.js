@@ -5,6 +5,8 @@ import {
   isInsideMinimumNotice,
   isDayInsideNoticeWindow,
 } from './modelProfile';
+import { parseDateFromISO8601 } from './dates';
+import noticeCases from './minimumNotice.cases.json';
 
 describe('modelProfile helpers', () => {
   describe('getModelCity', () => {
@@ -86,6 +88,23 @@ describe('modelProfile helpers', () => {
     });
     it('is false for a missing day', () => {
       expect(isDayInsideNoticeWindow({ dayStart: null, timeZone: tz, now })).toBe(false);
+    });
+  });
+
+  // The server mirrors this rule (server/api-util/minimumNoticeGate.js); both test suites run
+  // these same cases so the browser and the server always agree.
+  describe('isDayInsideNoticeWindow: shared cases with the server gate', () => {
+    noticeCases.cases.forEach(c => {
+      it(c.name, () => {
+        expect(
+          isDayInsideNoticeWindow({
+            dayStart: parseDateFromISO8601(c.day, c.timeZone),
+            noticeKey: c.noticeKey || undefined,
+            timeZone: c.timeZone,
+            now: new Date(c.now),
+          })
+        ).toBe(c.inside);
+      });
     });
   });
 });

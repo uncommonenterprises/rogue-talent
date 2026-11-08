@@ -4,6 +4,7 @@ import { FormattedMessage } from '../../util/reactIntl';
 import { NamedLink } from '../../components';
 import {
   isAccountApprovalRequiredError,
+  isBookingInsideNoticeError,
   isBookingUnavailableError,
   isClientAccountRequiredError,
   isIdentityVerificationRequiredError,
@@ -28,7 +29,8 @@ export const getErrorMessages = (
   isPaymentExpired,
   retrievePaymentIntentError,
   speculateTransactionError,
-  listingLink
+  listingLink,
+  modelName = ''
 ) => {
   let listingNotFoundErrorMessage = null;
   let initiateOrderErrorMessage = null;
@@ -44,6 +46,11 @@ export const getErrorMessages = (
   } else if (isBookingUnavailableError(initiateOrderError)) {
     // SAF-14: generic, reason-free "not available" message. Never reveals the boundary.
     initiateOrderErrorMessage = <FormattedMessage id="CheckoutPage.bookingUnavailableMessage" />;
+  } else if (isBookingInsideNoticeError(initiateOrderError)) {
+    // F8: the start date is inside the model's notice (the server mirrors the date picker).
+    initiateOrderErrorMessage = (
+      <FormattedMessage id="CheckoutPage.bookingInsideNotice" values={{ name: modelName }} />
+    );
   } else if (isClientAccountRequiredError(initiateOrderError)) {
     // A model account tried to book. Same wording as the booking panel (OrderPanel).
     initiateOrderErrorMessage = <FormattedMessage id="CheckoutPage.clientAccountRequired" />;
@@ -126,6 +133,10 @@ export const getErrorMessages = (
   if (isTransactionInitiateMissingStripeAccountError(speculateTransactionError)) {
     speculateErrorMessage = (
       <FormattedMessage id="CheckoutPage.providerStripeAccountMissingError" />
+    );
+  } else if (isBookingInsideNoticeError(speculateTransactionError)) {
+    speculateErrorMessage = (
+      <FormattedMessage id="CheckoutPage.bookingInsideNotice" values={{ name: modelName }} />
     );
   } else if (isBookingUnavailableError(speculateTransactionError)) {
     // SAF-14: generic, reason-free "not available" message. Never reveals the boundary.

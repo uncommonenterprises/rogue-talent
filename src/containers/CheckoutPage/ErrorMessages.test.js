@@ -47,4 +47,21 @@ describe('CheckoutPage error messages: booking gates', () => {
       '/verify-identity'
     );
   });
+
+  it('F8: a start date inside the notice gets the friendly "choose a later date" message', () => {
+    const { initiateOrderErrorMessage, speculateErrorMessage } = getErrorMessages(
+      false,
+      apiError('booking-inside-notice'),
+      false,
+      null,
+      apiError('booking-inside-notice'),
+      null,
+      'Imogen'
+    );
+    render(<div>{initiateOrderErrorMessage}</div>, { messages: enMessages });
+    expect(
+      screen.getByText("That date is inside Imogen's notice period. Please choose a later date.")
+    ).toBeInTheDocument();
+    expect(speculateErrorMessage).not.toBeNull();
+  });
 });

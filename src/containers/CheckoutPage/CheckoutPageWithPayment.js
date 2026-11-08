@@ -546,7 +546,8 @@ export const CheckoutPageWithPayment = props => {
     isPaymentExpired,
     retrievePaymentIntentError,
     speculateTransactionError,
-    listingLink
+    listingLink,
+    getModelFirstName(listing?.author, listingTitle)
   );
 
   const isBooking = processName === BOOKING_PROCESS_NAME;

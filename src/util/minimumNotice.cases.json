@@ -1,0 +1,133 @@
+{
+  "_about": "Shared cases for the minimum-notice rule. Used by BOTH src/util/modelProfile.test.js (isDayInsideNoticeWindow, browser) and server/api-util/minimumNoticeGate.test.js (isBookingStartInsideNotice, server) so the two copies of the rule cannot drift. 'day' is a calendar day in 'timeZone'; 'inside' is true when that day cannot be booked.",
+  "cases": [
+    {
+      "name": "48 hours: day after tomorrow is inside",
+      "now": "2026-11-01T16:20:00Z",
+      "timeZone": "Europe/London",
+      "day": "2026-11-03",
+      "noticeKey": "48-hours",
+      "inside": true
+    },
+    {
+      "name": "48 hours: three days out is outside",
+      "now": "2026-11-01T16:20:00Z",
+      "timeZone": "Europe/London",
+      "day": "2026-11-04",
+      "noticeKey": "48-hours",
+      "inside": false
+    },
+    {
+      "name": "no notice set: tomorrow is bookable",
+      "now": "2026-11-01T16:20:00Z",
+      "timeZone": "Europe/London",
+      "day": "2026-11-02",
+      "noticeKey": null,
+      "inside": false
+    },
+    {
+      "name": "same-day notice: tomorrow is bookable",
+      "now": "2026-11-01T16:20:00Z",
+      "timeZone": "Europe/London",
+      "day": "2026-11-02",
+      "noticeKey": "same-day",
+      "inside": false
+    },
+    {
+      "name": "unknown notice value: treated as none",
+      "now": "2026-11-01T16:20:00Z",
+      "timeZone": "Europe/London",
+      "day": "2026-11-02",
+      "noticeKey": "3-days",
+      "inside": false
+    },
+    {
+      "name": "today is never bookable, even with no notice",
+      "now": "2026-11-01T16:20:00Z",
+      "timeZone": "Europe/London",
+      "day": "2026-11-01",
+      "noticeKey": null,
+      "inside": true
+    },
+    {
+      "name": "a past day is never bookable",
+      "now": "2026-11-01T16:20:00Z",
+      "timeZone": "Europe/London",
+      "day": "2026-10-30",
+      "noticeKey": "same-day",
+      "inside": true
+    },
+    {
+      "name": "1 week: six days and a bit out is inside",
+      "now": "2026-11-01T16:20:00Z",
+      "timeZone": "Europe/London",
+      "day": "2026-11-08",
+      "noticeKey": "1-week",
+      "inside": true
+    },
+    {
+      "name": "1 week: just over a week out is outside",
+      "now": "2026-11-01T16:20:00Z",
+      "timeZone": "Europe/London",
+      "day": "2026-11-09",
+      "noticeKey": "1-week",
+      "inside": false
+    },
+    {
+      "name": "2 weeks: thirteen days and a bit out is inside",
+      "now": "2026-11-01T16:20:00Z",
+      "timeZone": "Europe/London",
+      "day": "2026-11-15",
+      "noticeKey": "2-weeks",
+      "inside": true
+    },
+    {
+      "name": "2 weeks: just over two weeks out is outside",
+      "now": "2026-11-01T16:20:00Z",
+      "timeZone": "Europe/London",
+      "day": "2026-11-16",
+      "noticeKey": "2-weeks",
+      "inside": false
+    },
+    {
+      "name": "time zone: 04:30 UTC on 2 Nov is already 2 Nov (today) in London",
+      "now": "2026-11-02T04:30:00Z",
+      "timeZone": "Europe/London",
+      "day": "2026-11-02",
+      "noticeKey": null,
+      "inside": true
+    },
+    {
+      "name": "time zone: the same moment is still 1 Nov in New York, so 2 Nov is tomorrow",
+      "now": "2026-11-02T04:30:00Z",
+      "timeZone": "America/New_York",
+      "day": "2026-11-02",
+      "noticeKey": null,
+      "inside": false
+    },
+    {
+      "name": "time zone: in New York 2 Nov starts 30 minutes later, inside 24 hours",
+      "now": "2026-11-02T04:30:00Z",
+      "timeZone": "America/New_York",
+      "day": "2026-11-02",
+      "noticeKey": "24-hours",
+      "inside": true
+    },
+    {
+      "name": "British Summer Time: 23:30 on 1 Jul, 2 Jul is tomorrow",
+      "now": "2026-07-01T22:30:00Z",
+      "timeZone": "Europe/London",
+      "day": "2026-07-02",
+      "noticeKey": null,
+      "inside": false
+    },
+    {
+      "name": "British Summer Time: 2 Jul starts in 30 minutes, inside 24 hours",
+      "now": "2026-07-01T22:30:00Z",
+      "timeZone": "Europe/London",
+      "day": "2026-07-02",
+      "noticeKey": "24-hours",
+      "inside": true
+    }
+  ]
+}

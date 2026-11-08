@@ -15,6 +15,10 @@
  *      check is switched on, CLOSED on a lookup error.
  *   3. Provider-Verified gate (providerVerifiedGate.js). Speculative calls allowed. Fails OPEN
  *      when unconfigured, CLOSED on a lookup error.
+ *   4. Minimum notice (minimumNoticeGate.js, F8 follow-up 08/11/2026): a daily booking may not
+ *      start today or inside the model's min_booking_notice (listing time zone), the same rule
+ *      the date picker applies. Runs for speculative and real calls. Fails CLOSED when the
+ *      listing or its time zone is missing.
  * All three must run BEFORE getTrustedSdk, and coexist with Sharetribe's own native
  * email-verification / initiateTransactions permission gate.
  *
@@ -26,6 +30,7 @@
 const { enforceResidenceBoundary } = require('./residenceBoundary');
 const { enforceClientIdentityVerification } = require('./clientIdentityGate');
 const { enforceProviderVerified } = require('./providerVerifiedGate');
+const { enforceMinimumNotice } = require('./minimumNoticeGate');
 
 // Transitions that turn an existing transaction into a payable booking request. Only these
 // run the gates in transition-privileged; every other privileged transition (e.g. a provider
@@ -77,7 +82,8 @@ const enforceBookingGates = ({
 }) =>
   enforceResidenceBoundary({ listing, providerId, existingProtectedData, orderData, bodyParams })
     .then(() => enforceClientIdentityVerification({ sdk, isSpeculative }))
-    .then(() => enforceProviderVerified({ listing, providerId, isSpeculative }));
+    .then(() => enforceProviderVerified({ listing, providerId, isSpeculative }))
+    .then(() => enforceMinimumNotice({ listing, orderData, bodyParams }));
 
 module.exports = {
   enforceBookingGates,

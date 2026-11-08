@@ -146,6 +146,13 @@ export const isTransactionInitiateBookingTimeNotAvailableError = error =>
 export const isBookingUnavailableError = error => hasErrorWithCode(error, 'booking-not-available');
 
 /**
+ * F8: Check if a booking was refused because its start date is today or inside the model's
+ * minimum notice. The server (server/api-util/minimumNoticeGate.js) returns the code
+ * `booking-inside-notice`; the checkout asks the client to choose a later date.
+ */
+export const isBookingInsideNoticeError = error => hasErrorWithCode(error, 'booking-inside-notice');
+
+/**
  * SAF-03: Check if a booking was blocked because the requesting client is not
  * identity-verified. The server (server/api-util/clientIdentityGate.js) returns the
  * code `identity-verification-required`; the checkout renders a "verify your identity"
