@@ -280,7 +280,10 @@ describe('OrderPanel', () => {
       // B03: logged out, the panel and the phone bar both offer "Log in to book"
       expect(queryAllByText('OrderPanel.perDayShort')).toHaveLength(1);
       expect(queryAllByText('OrderPanel.perDayLong')).toHaveLength(1);
-      expect(getByText('OrderPanel.loggedOutLede')).toBeInTheDocument();
+      // B03b: daily bookings show the availability area, with no dates for a logged-out
+      // visitor; its line replaces the old lede (nightly, below, keeps the lede)
+      expect(getByText('ProfileAvailability.lockedLoggedOut')).toBeInTheDocument();
+      expect(queryAllByText('OrderPanel.loggedOutLede')).toHaveLength(0);
       expect(queryAllByText('OrderPanel.logInToBook')).toHaveLength(2);
       expect(getByText('OrderPanel.createClientAccount')).toBeInTheDocument();
       // No author line or contact before a request exists (open question 7)

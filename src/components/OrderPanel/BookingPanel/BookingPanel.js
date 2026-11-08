@@ -72,7 +72,10 @@ const StateLink = props => {
         <NamedLink
           name="EditListingPage"
           params={editParams}
-          className={classNames(css.secondaryLink, className)}
+          className={classNames(
+            variant === 'ghost' ? css.inkGhostLink : css.secondaryLink,
+            className
+          )}
         >
           <FormattedMessage id="OrderPanel.editProfile" />
         </NamedLink>
@@ -103,6 +106,8 @@ const StateLink = props => {
  * @param {Function} props.onManageDisableScrolling
  * @param {Object} [props.editParams] own profile: EditListingPage params
  * @param {string} [props.fromPath] current path, so log in returns here
+ * @param {Function} [props.renderAvailability] ({ hideCalendar }) => the B03b availability
+ *   block for the non-booking states (the booking state gets it inside the form)
  * @returns {JSX.Element}
  */
 const BookingPanel = props => {
@@ -123,6 +128,7 @@ const BookingPanel = props => {
     onManageDisableScrolling,
     editParams,
     fromPath,
+    renderAvailability,
   } = props;
 
   const formattedPrice = formatPrice(intl, price, marketplaceCurrency);
@@ -137,12 +143,23 @@ const BookingPanel = props => {
     </div>
   ) : null;
 
+  // B03b: availability sits under the rate. The "no dates" line renders straight away (it
+  // matches the server render); the calendar itself waits until the desktop layout is known.
+  const availabilityBlock =
+    !isBookState && renderAvailability
+      ? renderAvailability({ hideCalendar: isPhone !== false })
+      : null;
+  const hasAvailability = !!renderAvailability;
+
   const stateBody =
     panelState === PANEL_LOGGED_OUT ? (
       <>
-        <p className={css.lede}>
-          <FormattedMessage id="OrderPanel.loggedOutLede" values={{ name: modelName }} />
-        </p>
+        {/* The availability line says the same thing ("Log in to see ... free dates") */}
+        {hasAvailability ? null : (
+          <p className={css.lede}>
+            <FormattedMessage id="OrderPanel.loggedOutLede" values={{ name: modelName }} />
+          </p>
+        )}
         <StateLink panelState={panelState} fromPath={fromPath} />
         <NamedLink
           name="SignupForUserTypePage"
@@ -177,7 +194,11 @@ const BookingPanel = props => {
         <p className={css.lede}>
           <FormattedMessage id="OrderPanel.ownProfileLede" />
         </p>
-        <StateLink panelState={panelState} editParams={editParams} />
+        <StateLink
+          panelState={panelState}
+          editParams={editParams}
+          variant={hasAvailability ? 'ghost' : 'secondary'}
+        />
       </>
     ) : panelState === PANEL_CLOSED ? (
       <p className={css.lede}>
@@ -222,11 +243,16 @@ const BookingPanel = props => {
       {/* Desktop: sticky panel (aligned with the location line by the page layout) */}
       <div className={css.panel}>
         {priceLine}
-        {isBookState
-          ? isPhone === false
-            ? renderBookingForm('popover', setHasDates)
-            : null
-          : stateBody}
+        {isBookState ? (
+          isPhone === false ? (
+            renderBookingForm('popover', setHasDates)
+          ) : null
+        ) : (
+          <>
+            {availabilityBlock}
+            {stateBody}
+          </>
+        )}
       </div>
 
       {/* Phone: bottom bar */}

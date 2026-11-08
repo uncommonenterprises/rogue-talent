@@ -59,12 +59,18 @@
 }
 
 /* Top of the booking panel lines up with the location eyebrow (the head's top padding), not
-   the gallery edge (Neil's B03 change, 01/11/2026). It sticks just below the sticky topbar. */
+   the gallery edge (Neil's B03 change, 01/11/2026). It sticks just below the sticky topbar.
+   B03b: with the availability calendar (and, once dates are chosen, the price breakdown) the
+   panel can be taller than a laptop screen, so at short viewports the aside scrolls on its own.
+   The height leaves the same gap below the panel as above it, under the sticky topbar. */
 .aside {
   @media (--viewportBooking) {
     position: sticky;
     top: calc(var(--topbarHeightDesktop) + var(--space-5));
     margin-top: var(--space-5);
+    max-height: calc(100vh - var(--topbarHeightDesktop) - var(--space-5) * 2);
+    overflow-y: auto;
+    overscroll-behavior: contain;
   }
 }
 

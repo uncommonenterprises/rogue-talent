@@ -128,6 +128,33 @@
   }
 }
 
+/* B03b: inside a panel with the availability calendar, the model's "Edit your profile" is an ink
+   ghost button (never cobalt), under the secondary "Edit your availability". */
+.inkGhostLink {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 44px;
+  padding: 12px 20px;
+  font-family: var(--font-sans);
+  font-weight: var(--weight-bold);
+  font-size: var(--text-sm);
+  line-height: 1;
+  color: var(--text-primary);
+  border-radius: var(--radius-lg);
+  text-decoration: none;
+
+  &:hover {
+    background: var(--ink-100);
+    text-decoration: none;
+  }
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--shadow-focus);
+  }
+}
+
 /* ---- Phone bottom bar ---- */
 .bar {
   position: fixed;

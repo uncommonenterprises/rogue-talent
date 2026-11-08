@@ -118,6 +118,10 @@ export const ProfileAbout = props => {
  * `reviewMode` (review tool, R02): the same sections a client sees, minus reviews (a pending
  * model has none) and "Checked before going live" (it would claim a review that has not
  * happened yet).
+ *
+ * `availability` (B03b, phones only): the availability calendar as a section after "Travel and
+ * notice" (notice is its context) and before Location and reviews. On desktop it lives in the
+ * booking panel instead, so the page passes nothing there.
  */
 const ProfileDetails = props => {
   const {
@@ -129,6 +133,8 @@ const ProfileDetails = props => {
     reviews = [],
     fetchReviewsError,
     reviewMode = false,
+    availability = null,
+    availabilityTitleId = 'ProfileAvailability.title',
   } = props;
   const intl = useIntl();
   const opt = key =>
@@ -306,6 +312,12 @@ const ProfileDetails = props => {
           </KvRow>
         </dl>
       </Section>
+
+      {availability ? (
+        <Section id="profile-availability" titleId={availabilityTitleId}>
+          {availability}
+        </Section>
+      ) : null}
 
       {city ? (
         <Section id="profile-location" titleId="ListingPage.locationTitle">

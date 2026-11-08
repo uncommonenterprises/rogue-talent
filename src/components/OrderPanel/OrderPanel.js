@@ -41,7 +41,9 @@ import { ModalInMobile, PrimaryButton, AvatarSmall, H1, H2 } from '../../compone
 import PriceVariantPicker from './PriceVariantPicker/PriceVariantPicker';
 import SubmitFinePrint from './SubmitFinePrint/SubmitFinePrint';
 import BookingPanel from './BookingPanel/BookingPanel';
+import ProfileAvailability from './AvailabilityCalendar/ProfileAvailability';
 import { getBookingPanelState } from './bookingPanelState';
+import { getAvailabilityViewerState } from './availabilityViewer';
 
 import css from './OrderPanel.module.css';
 
@@ -270,6 +272,8 @@ const hasValidPriceVariants = priceVariants => {
  * @param {string} props.marketplaceCurrency - The currency used in the marketplace
  * @param {number} props.dayCountAvailableForBooking - Number of days available for booking
  * @param {string} props.marketplaceName - Name of the marketplace
+ * @param {Object} [props.pickedStart] - { dayKey, seq }: a free date tapped in the phone
+ *   profile's availability section (B03b), handed to the dates sheet as the start date
  *
  * @returns {JSX.Element} Component that displays the order panel with appropriate form
  */
@@ -312,6 +316,7 @@ const OrderPanel = props => {
     currentUser,
     isAuthenticated = false,
     editParams,
+    pickedStart,
   } = props;
 
   const publicData = listing?.attributes?.publicData || {};
@@ -444,6 +449,34 @@ const OrderPanel = props => {
       ? getBookingPanelState({ isAuthenticated, currentUser, isOwnListing, isClosed })
       : getBookingPanelState({ isAuthenticated: false, currentUser: null, isClosed });
     const modelName = getModelFirstName(author, listing?.attributes?.title);
+
+    // B03b: the model's free dates, read-only, in the panel under the rate (desktop). Only
+    // logged-in, approved clients see dates (availabilityViewer.js); everyone else gets a short
+    // line in the same place, and the model sees their own calendar as a preview.
+    const availabilityViewerState = getAvailabilityViewerState({
+      panelState,
+      currentUser: mounted ? currentUser : null,
+    });
+    const showAvailability = lineItemUnitType === LINE_ITEM_DAY && !!timeZone && !isClosed;
+    const renderAvailability = showAvailability
+      ? ({ onPickDate, hideCalendar = false } = {}) => (
+          <ProfileAvailability
+            variant="panel"
+            viewerState={availabilityViewerState}
+            hideCalendar={hideCalendar}
+            modelName={modelName}
+            noticeKey={publicData?.min_booking_notice}
+            monthlyTimeSlots={monthlyTimeSlots}
+            onFetchTimeSlots={onFetchTimeSlots}
+            listingId={listing.id}
+            timeZone={timeZone}
+            dayCountAvailableForBooking={dayCountAvailableForBooking}
+            onPickDate={onPickDate}
+            editParams={editParams}
+          />
+        )
+      : null;
+
     const renderBookingForm = (layout, onDatesChange) =>
       showBookingDatesForm ? (
         <BookingDatesForm
@@ -458,6 +491,12 @@ const OrderPanel = props => {
           monthlyTimeSlots={monthlyTimeSlots}
           onFetchTimeSlots={onFetchTimeSlots}
           timeZone={timeZone}
+          renderAvailabilityPreview={
+            layout === 'popover' && renderAvailability
+              ? onPickDate => renderAvailability({ onPickDate })
+              : null
+          }
+          pickedStart={layout === 'stack' ? pickedStart : null}
           {...priceVariantsMaybe}
           {...sharedProps}
         />
@@ -465,6 +504,7 @@ const OrderPanel = props => {
 
     return (
       <BookingPanel
+        renderAvailability={renderAvailability}
         className={classes}
         panelState={panelState}
         price={price}

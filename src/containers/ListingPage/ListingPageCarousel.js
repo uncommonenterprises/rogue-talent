@@ -6,6 +6,8 @@ import { useDispatch, useSelector, useStore } from 'react-redux';
 import { FormattedMessage } from '../../util/reactIntl';
 import { LISTING_STATE_CLOSED, propTypes } from '../../util/types';
 import { getModelFirstName } from '../../util/modelProfile';
+import { parse, stringify } from '../../util/urlHelpers';
+import { useIsPhoneLayout } from '../../util/useIsPhoneLayout';
 import { OFFER, REQUEST } from '../../transactions/transaction';
 
 // Global ducks (for Redux actions and thunks)
@@ -14,7 +16,21 @@ import { manageDisableScrolling, isScrollingDisabled } from '../../ducks/ui.duck
 import { initializeCardPaymentData } from '../../ducks/stripe.duck.js';
 
 // Shared components
-import { Page, NamedLink, OrderPanel, LayoutSingleColumn, RtIcon } from '../../components';
+import {
+  Page,
+  NamedLink,
+  OrderPanel,
+  ProfileAvailability,
+  LayoutSingleColumn,
+  RtIcon,
+} from '../../components';
+import { getBookingPanelState } from '../../components/OrderPanel/bookingPanelState';
+import {
+  getAvailabilityViewerState,
+  VIEWER_LOADING,
+  VIEWER_NONE,
+  VIEWER_OWN,
+} from '../../components/OrderPanel/availabilityViewer';
 
 // Related components and modules
 import TopbarContainer from '../TopbarContainer/TopbarContainer';
@@ -44,6 +60,10 @@ const MIN_LENGTH_FOR_LONG_WORDS_IN_TITLE = 16;
 
 export const ListingPageComponent = props => {
   const [mounted, setMounted] = useState(false);
+  // B03b phones: a free date tapped in the profile's availability section, handed to the dates
+  // sheet as the start date ({ dayKey, seq }; seq makes a repeat tap of the same day count).
+  const [pickedStart, setPickedStart] = useState(null);
+  const isPhone = useIsPhoneLayout();
 
   useEffect(() => {
     setMounted(true);
@@ -145,6 +165,49 @@ export const ListingPageComponent = props => {
   };
   const isNegotiation = processType === 'negotiation';
 
+  // B03b: on phones the availability calendar is a section in the profile body (on desktop it
+  // is in the booking panel). Rendered only after mount: who may see dates depends on the
+  // logged-in user, and the layout on the screen width.
+  const timeZone = currentListing.attributes.availabilityPlan?.timezone;
+  const isListingClosed = currentListing.attributes.state === LISTING_STATE_CLOSED;
+  const availabilityViewerState = mounted
+    ? getAvailabilityViewerState({
+        panelState: getBookingPanelState({
+          isAuthenticated,
+          currentUser,
+          isOwnListing,
+          isClosed: isListingClosed,
+        }),
+        currentUser,
+      })
+    : VIEWER_NONE;
+  const showPhoneAvailability =
+    isPhone === true &&
+    processType === 'booking' &&
+    unitType === 'day' &&
+    !!timeZone &&
+    ![VIEWER_NONE, VIEWER_LOADING].includes(availabilityViewerState);
+  const handlePhonePickDate = dayKey => {
+    setPickedStart(prev => ({ dayKey, seq: (prev?.seq || 0) + 1 }));
+    const { pathname, search, state } = location;
+    history.push(`${pathname}?${stringify({ ...parse(search), orderOpen: true })}`, state);
+  };
+  const phoneAvailability = showPhoneAvailability ? (
+    <ProfileAvailability
+      variant="section"
+      viewerState={availabilityViewerState}
+      modelName={modelName}
+      noticeKey={publicData?.min_booking_notice}
+      monthlyTimeSlots={restOfProps.monthlyTimeSlots}
+      onFetchTimeSlots={restOfProps.onFetchTimeSlots}
+      listingId={currentListing.id}
+      timeZone={timeZone}
+      dayCountAvailableForBooking={config.stripe.dayCountAvailableForBooking}
+      onPickDate={handlePhonePickDate}
+      editParams={editParams}
+    />
+  ) : null;
+
   const commonParams = { params, history, routes: routeConfiguration };
   // The Contact button and "About the listing author" are gone (B03, open question 7): before a
   // request exists there is no messaging; the conversation lives on the booking (B07).
@@ -245,6 +308,12 @@ export const ListingPageComponent = props => {
                 author={ensuredAuthor}
                 reviews={reviews}
                 fetchReviewsError={fetchReviewsError}
+                availability={phoneAvailability}
+                availabilityTitleId={
+                  availabilityViewerState === VIEWER_OWN
+                    ? 'ProfileAvailability.titleOwn'
+                    : 'ProfileAvailability.title'
+                }
               />
             </article>
             <aside
@@ -265,6 +334,7 @@ export const ListingPageComponent = props => {
                 currentUser={currentUser}
                 isAuthenticated={isAuthenticated}
                 editParams={editParams}
+                pickedStart={pickedStart}
                 validListingTypes={config.listing.listingTypes}
                 marketplaceCurrency={config.currency}
                 dayCountAvailableForBooking={config.stripe.dayCountAvailableForBooking}
